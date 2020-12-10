@@ -1,0 +1,368 @@
+# Warning: This file is auto-generated and might be overwritten by
+#          univention-config-registry.
+#          Please edit the following file(s) instead:
+# Warnung: Diese Datei wurde automatisch generiert und kann durch
+#          univention-config-registry ueberschrieben werden.
+#          Bitte bearbeiten Sie an Stelle dessen die folgende(n) Datei(en):
+#
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/10univention-ldap-server_schema
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/11univention-saml-schema
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/13univention-virtual-machine-manager_schema
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/25univention-ldap-server_local-schema
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/30univention-ldap-server_head
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/31modules
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/39configdb
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/39monitor
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/40univention-ldap-server_database
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/41univention-ldap-overlay-memberof
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/60univention-ldap-server_acl-master
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/62univention-ldap-server_acl-portal
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/63univention-ldap-server_acl-master-password
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/64univention-ldap-server_acl-master-admin-settings
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/66univention-appcenter_app.acl
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/66univention-ldap-server_acl-master-uvmm
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/70univention-ldap-server_acl-master-end
+# 	/etc/univention/templates/files/etc/ldap/slapd.conf.d/99translog
+#
+
+include         /etc/ldap/schema/core.schema
+include         /etc/ldap/schema/cosine.schema
+include         /etc/ldap/schema/nis.schema
+include         /etc/ldap/schema/inetorgperson.schema
+include         /etc/ldap/schema/ppolicy.schema
+include         /usr/share/univention-ldap/schema/samba.schema
+include         /usr/share/univention-ldap/schema/mail.schema
+include         /usr/share/univention-ldap/schema/user.schema
+include         /usr/share/univention-ldap/schema/directory.schema
+include         /usr/share/univention-ldap/schema/policy.schema
+include         /usr/share/univention-ldap/schema/dnszone.schema
+include         /usr/share/univention-ldap/schema/univention.schema
+include         /usr/share/univention-ldap/schema/lock.schema
+include         /usr/share/univention-ldap/schema/custom-attribute.schema
+include         /usr/share/univention-ldap/schema/krb5-kdc.schema
+include         /usr/share/univention-ldap/schema/dhcp.schema
+include         /usr/share/univention-ldap/schema/portal.schema
+include         /usr/share/univention-ldap/schema/univention-dhcp.schema
+include         /usr/share/univention-ldap/schema/univention-default.schema
+include         /usr/share/univention-ldap/schema/license.schema
+include         /usr/share/univention-ldap/schema/share.schema
+include         /usr/share/univention-ldap/schema/printer.schema
+include         /usr/share/univention-ldap/schema/automount.schema
+include         /usr/share/univention-ldap/schema/network.schema
+include         /usr/share/univention-ldap/schema/solaris.schema
+include         /usr/share/univention-ldap/schema/courier.schema
+include         /usr/share/univention-ldap/schema/univention-scalix.schema
+include         /usr/share/univention-ldap/schema/univention-syntax.schema
+include         /usr/share/univention-ldap/schema/admin-settings.schema
+include         /usr/share/univention-ldap/schema/template.schema
+include         /usr/share/univention-ldap/schema/univention-ldap-acl.schema
+include         /usr/share/univention-ldap/schema/nagios.schema
+include         /usr/share/univention-ldap/schema/univention-directory.schema
+include         /usr/share/univention-ldap/schema/univention-objecttype.schema
+include         /usr/share/univention-ldap/schema/msgpo.schema
+include         /usr/share/univention-ldap/schema/univention-object-metadata.schema
+include         /usr/share/univention-ldap/schema/univention-ldap-extension.schema
+include         /usr/share/univention-ldap/schema/udm-extension.schema
+include         /usr/share/univention-ldap/schema/univention-data.schema
+
+include         /usr/share/univention-ldap/schema/univention-saml.schema
+
+include     /usr/share/univention-ldap/schema/univention-virtual-machine-manager.schema
+
+include         /var/lib/univention-ldap/local-schema/self-service-passwordreset.schema
+include         /var/lib/univention-ldap/local-schema/univention-app.schema
+
+
+pidfile			/var/run/slapd/slapd.pid
+argsfile		/var/run/slapd/slapd.args
+loglevel		none
+allow			bind_v2 update_anon
+
+TLSCertificateFile	/etc/univention/ssl/ucs-6045.fg-organization.intranet/cert.pem
+TLSCertificateKeyFile	/etc/univention/ssl/ucs-6045.fg-organization.intranet/private.key
+TLSCACertificateFile	/etc/univention/ssl/ucsCA/CAcert.pem
+TLSCipherSuite	HIGH:MEDIUM:!aNULL:!MD5:!RC4
+TLSProtocolMin	3.1
+TLSDHParamFile	/etc/ldap/dh_2048.pem
+
+sizelimit 400000
+idletimeout 360
+attributeoptions "entry-" "lang-"
+
+modulepath	/usr/lib/ldap
+moduleload	back_mdb.so
+moduleload	translog.so
+moduleload	k5pwd.so
+moduleload	pwd_scheme_kinit.so
+moduleload	shadowbind.so
+
+moduleload	constraint.so
+moduleload	accesslog.so
+### cn=config backend
+database config
+# no rootdn/updatedn, thus no access via LDAP:// for cn=admin
+# access via LDAPI (simple or SASL EXTERNAL bind):
+access to *
+    by sockname="PATH=/var/run/slapd/ldapi" write
+    by * none
+
+### cn=Monitor backend for statistical information
+
+### database definition
+
+
+database	mdb
+suffix		"dc=fg-organization,dc=intranet"
+
+overlay		translog
+translog	/var/lib/univention-ldap/listener/listener
+overlay		k5pwd
+overlay		pwd_scheme_kinit
+overlay		shadowbind
+shadowbind-ignore-filter "(|(objectClass=univentionDomainController)(userPassword={KINIT}))"
+# lastbind overlay module has been disabled by UCR
+
+
+maxsize	2147483648
+
+threads		16
+tool-threads	1
+
+index	cn,givenName,mail,sn,uid pres,eq,sub,approx
+index	aRecord,automountInformation,description,displayName,macAddress,mailAlternativeAddress,mailPrimaryAddress,ou,relativeDomainName,univentionUDMPropertyLongDescription,univentionUDMPropertyShortDescription,zoneName pres,eq,sub
+index	dhcpHWAddress,gidNumber,homeDirectory,krb5PrincipalName,memberUid,objectClass,uidNumber,uniqueMember,univentionMailHomeServer,univentionObjectFlag,univentionPolicyReference,univentionUDMPropertyCLIName,univentionUDMPropertyDefault,univentionUDMPropertyDeleteObjectClass,univentionUDMPropertyDoNotSearch,univentionUDMPropertyHook,univentionUDMPropertyLayoutOverwritePosition,univentionUDMPropertyLayoutOverwriteTab,univentionUDMPropertyLayoutPosition,univentionUDMPropertyLayoutTabAdvanced,univentionUDMPropertyLayoutTabName,univentionUDMPropertyLdapMapping,univentionUDMPropertyModule,univentionUDMPropertyMultivalue,univentionUDMPropertyObjectClass,univentionUDMPropertyOptions,univentionUDMPropertySyntax,univentionUDMPropertyTranslationLongDescription,univentionUDMPropertyTranslationShortDescription,univentionUDMPropertyTranslationTabName,univentionUDMPropertyValueMayChange,univentionUDMPropertyValueRequired,univentionUDMPropertyVersion pres,eq
+index	name pres,sub
+index	pTRRecord,sambaSID,univentionInventoryNumber eq,sub
+index	shadowMax pres
+index	cNAMERecord,entryUUID,sambaAcctFlags,sambaDomainName,sambaGroupType,sambaPrimaryGroupSID,sambaSIDList,secretary,shadowExpire,univentionAppID,univentionCanonicalRecipientRewriteEnabled,univentionDataType,univentionLicenseModule,univentionLicenseObject,univentionNagiosHostname,univentionObjectType,univentionServerRole,univentionService,univentionShareGid,univentionShareSambaName,univentionShareWriteable,univentionUDMOptionModule eq
+index	associatedDomain,default,employeeNumber,printerModel,univentionOperatingSystem,univentionSyntaxDescription sub
+
+limits users time.soft=-1 time.hard=-1
+
+rootdn		"cn=admin,dc=fg-organization,dc=intranet"
+rootpw      "univention"
+
+
+directory	"/var/lib/univention-ldap/ldap"
+lastmod		on
+
+add_content_acl on
+
+overlay constraint
+constraint_attribute uidNumber regex ^[^0]+[0-9]*$
+constraint_attribute gidNumber regex ^[^0]+[0-9]*$
+
+moduleload			 memberof.so
+overlay				 memberof
+memberof-group-oc	 posixGroup
+memberof-member-ad	 uniqueMember
+memberof-memberof-ad	 memberOf
+memberof-dangling	 ignore
+memberof-refint		 false
+
+
+authz-regexp
+    uid=([^,]*),cn=(gssapi|saml),cn=auth
+    ldap:///dc=fg-organization,dc=intranet??sub?uid=$1
+
+access to attrs=uid value=root by * none stop
+access to attrs=userPassword
+    by anonymous auth
+    by * none break
+
+access to dn="cn=admin,dc=fg-organization,dc=intranet"
+    by self write
+    by * none
+
+access to *
+    by sockname="PATH=/var/run/slapd/ldapi" write
+    by dn.base="uid=Administrator,cn=users,dc=fg-organization,dc=intranet" write
+    by * none break
+
+access to dn="uid=Administrator,cn=users,dc=fg-organization,dc=intranet"
+    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet" write
+    by self write
+    by * +0 break
+
+access to dn="uid=join-backup,cn=users,dc=fg-organization,dc=intranet"
+    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet" write
+    by self write
+    by * +0 break
+
+access to dn="uid=join-slave,cn=users,dc=fg-organization,dc=intranet"
+    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet" write
+    by self write
+    by * +0 break
+
+access to attrs=entry,objectClass,uniqueMember,ou,uid,loginShell,homeDirectory,uidNumber,gidNumber,sn,cn,gecos,description,memberUid
+    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet" write
+    by * +0 break
+
+access to attrs=univentionOperatingSystem,univentionOperatingSystemVersion
+    by self write
+    by * none break
+
+
+access to dn="cn=portal,cn=univention,dc=fg-organization,dc=intranet" attrs=children
+	by dn.onelevel="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+	by dn.onelevel="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+	by * +0 break
+
+access to dn.children="cn=portal,cn=univention,dc=fg-organization,dc=intranet" attrs=entry,@univentionObject,@univentionPortalEntry,@univentionPortal
+	by dn.onelevel="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+	by dn.onelevel="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+	by * +0 break
+# grant write access to users own UMC properties
+access to attrs="univentionUMCProperty" filter="objectClass=person"
+   by self write
+   by * none break
+access to filter="objectClass=person" attrs=objectClass value=univentionPerson
+   by self write
+   by * none break
+
+
+
+access to dn="cn=admin-settings,cn=univention,dc=fg-organization,dc=intranet" attrs=children
+	by users write
+	by * +0 break
+
+
+access to dn.regex="^uid=([^,]+),cn=admin-settings,cn=univention,dc=fg-organization,dc=intranet$" filter="objectClass=univentionAdminUserSettings" attrs=objectClass value=univentionAdminUserSettings
+	by dn.regex="^uid=$1,.*dc=fg-organization,dc=intranet$$" write
+	by * none stop
+
+access to dn.regex="^uid=([^,]+),cn=admin-settings,cn=univention,dc=fg-organization,dc=intranet$" filter="objectClass=univentionAdminUserSettings" attrs=objectClass
+	by dn.regex="^uid=$1,.*dc=fg-organization,dc=intranet$$" none
+	by * +0 break
+
+access to dn.regex="^uid=([^,]+),cn=admin-settings,cn=univention,dc=fg-organization,dc=intranet$" filter="objectClass=univentionAdminUserSettings" attrs=entry,@univentionAdminUserSettings
+	by dn.regex="^uid=$1,.*dc=fg-organization,dc=intranet$$" write
+	by * none stop
+
+
+access to dn.regex="^univentionAppID=([^,]+),cn=([^,]+),cn=apps,cn=univention,dc=fg-organization,dc=intranet$" filter="(objectClass=univentionApp)" attrs=entry,@univentionApp,@univentionObject
+	by dn.onelevel="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+	by dn.onelevel="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+	by * read break
+
+access to dn.regex="^cn=([^,]+),cn=apps,cn=univention,dc=fg-organization,dc=intranet$" attrs=children,entry,@organizationalRole,@univentionObject
+	by dn.onelevel="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+	by dn.onelevel="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+	by * read break
+
+access to dn="cn=apps,cn=univention,dc=fg-organization,dc=intranet" attrs=children
+	by dn.onelevel="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+	by dn.onelevel="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+	by * read break
+
+
+
+access to dn.regex="^univentionVirtualMachineUUID=([^,]+),cn=Information,cn=Virtual Machine Manager,dc=fg-organization,dc=intranet$" filter="(objectClass=univentionVirtualMachine)" attrs=entry,@univentionVirtualMachine,@univentionObject
+	by dn.onelevel="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+	by dn.onelevel="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+	by * read break
+
+access to dn.regex="^cn=([^,]+),cn=CloudConnection,cn=Virtual Machine Manager,dc=fg-organization,dc=intranet$" filter="(objectClass=univentionVirtualMachineCloudConnection)" attrs=entry,@univentionVirtualMachineCloudConnection,@univentionVirtualMachineHostOC,@univentionObject
+	by dn.onelevel="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+	by dn.onelevel="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+	by * read break
+
+access to dn.regex="^cn=(Information|CloudConnection),cn=Virtual Machine Manager,dc=fg-organization,dc=intranet$" attrs=children,entry
+	by dn.onelevel="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+	by dn.onelevel="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+	by * read break
+
+
+
+access to dn.regex="^cn=([^,]+),cn=([^,]+),cn=temporary,cn=univention,dc=fg-organization,dc=intranet$" filter="objectClass=lock" attrs="entry,@univentionObject,@lock"
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to dn.regex="^cn=([^,]+),cn=temporary,cn=univention,dc=fg-organization,dc=intranet$" attrs=children,entry
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to dn.regex="^cn=([^,]+),cn=temporary,cn=univention,dc=fg-organization,dc=intranet$" attrs=univentionLastUsedValue
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to dn.subtree="cn=computers,dc=fg-organization,dc=intranet" attrs=children,entry
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to dn.children="dc=fg-organization,dc=intranet" filter="(objectClass=univentionWindows)" attrs="!univentionShare"
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to dn.children="dc=fg-organization,dc=intranet" filter="(&(objectClass=univentionGroup)(cn=Windows Hosts))" attrs="!posixAccount,!univentionShare"
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to dn.base="cn=samba,dc=fg-organization,dc=intranet" attrs=children
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to dn.children="dc=fg-organization,dc=intranet" filter="(objectClass=sambaDomain)" attrs=@sambaDomain
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to dn.regex="^cn=.*,cn=dc,cn=computers,dc=fg-organization,dc=intranet$" attrs=userPassword,krb5Key,krb5KDCFlags,sambaNTPassword,sambaLMPassword,sambaPwdLastSet,pwhistory,krb5KeyVersionNumber,univentionWindowsReinstall,sambaPwdCanChange,sambaPwdMustChange
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by self write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" read
+   by * none
+access to dn.regex="^cn=.*,cn=memberserver,cn=computers,dc=fg-organization,dc=intranet$" attrs=userPassword,krb5Key,krb5KDCFlags,sambaNTPassword,sambaLMPassword,sambaPwdLastSet,pwhistory,krb5KeyVersionNumber,univentionWindowsReinstall,sambaPwdCanChange,sambaPwdMustChange
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by self write
+   by * none
+access to dn.regex="^cn=.*,cn=memberserver,cn=computers,dc=fg-organization,dc=intranet$" attrs=objectClass,sambaSID,sambaPrimaryGroupSID,displayName,sambaAcctFlags
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to attrs=userPassword,krb5Key,krb5KDCFlags,sambaNTPassword,sambaLMPassword,sambaPwdLastSet,pwhistory,krb5KeyVersionNumber,univentionWindowsReinstall,sambaPwdCanChange,sambaPwdMustChange,sambaPasswordHistory,sambaClearTextPassword,sambaPreviousClearTextPassword
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by dn.children="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" read
+   by * none
+access to attrs=sambaAcctFlags
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by * +0 break
+access to attrs=shadowMax,krb5PasswordEnd,shadowLastChange
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by dn.children="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" read
+   by * +0 break
+access to dn.base="cn=idmap,cn=univention,dc=fg-organization,dc=intranet" attrs=children,@organizationalRole,@sambaIdmapEntry,@sambaSidEntry
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by dn.children="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+   by * none
+access to dn.children="cn=idmap,cn=univention,dc=fg-organization,dc=intranet" attrs=entry,@univentionObject,@sambaUnixIdPool,@sambaIdmapEntry,@sambaSidEntry,@organizationalRole
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by dn.children="cn=dc,cn=computers,dc=fg-organization,dc=intranet" write
+   by dn.children="cn=memberserver,cn=computers,dc=fg-organization,dc=intranet" write
+   by * none
+access to dn.subtree="dc=fg-organization,dc=intranet" attrs=entry,uid
+   by anonymous auth
+   by * +0 break
+access to *
+   by set="user & [cn=Domain Admins,cn=groups,dc=fg-organization,dc=intranet]/uniqueMember*" write
+   by users read
+
+### cn=translog backend
+database	mdb
+suffix	"cn=translog"
+directory	"/var/lib/univention-ldap/translog"
+maxsize	2147483648
+envflags	nosync
+checkpoint	0 1
+
+
+limits dn.children=cn=peercred,cn=external,cn=auth size.prtotal=unlimited
+# access via LDAPI (simple or SASL EXTERNAL bind):
+access to *
+    by sockname="PATH=/var/run/slapd/ldapi" write
+    by users read
+    by * none
