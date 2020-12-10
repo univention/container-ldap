@@ -5,7 +5,21 @@ version: '3.7'
 services:
   listener:
     build: './listener'
+    volumes:
+      - listener-data:/var/lib/univention-ldap/listener/listener:ro
   openldap:
-    build: './openldap'
+    #build: './openldap'
+    image: docker-registry.knut.univention.de/univention-openldap:latest
+    ports:
+      - 389:389
+      - 636:636
+    volumes:
+      - db_data:/var/lib/univention-ldap/ldap/:rw
+      - translog_data:/var/lib/univention-ldap/translog/:rw
+      - listener-data:/var/lib/univention-ldap/listener/listener:rw
+volumes:
+  db-data: {}
+  translog-data: {}
+  listener-data: {}
 
 ...
