@@ -34,6 +34,9 @@ then
     chmod 644 "dh_2048.pem"
     mv "dh_2048.pem" "univention-openldap/etc/ldap/"
 
+    # TODO: Find a way to have the translog overlay do this
+    mkdir -p univention-openldap/var/lib/univention-ldap/listener/
+    touch univention-openldap/var/lib/univention-ldap/listener/listener
 fi
 
 docker build -t univention-openldap:${SUITE}-slim-portable \
