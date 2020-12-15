@@ -15,8 +15,8 @@ services:
       - 389:389
       - 636:636
     volumes:
-      - db_data:/var/lib/univention-ldap/ldap/:rw
-      - translog_data:/var/lib/univention-ldap/translog/:rw
+      - db-data:/var/lib/univention-ldap/ldap/:rw
+      - translog-data:/var/lib/univention-ldap/translog/:rw
       - listener-data:/var/lib/univention-ldap/listener/listener:rw
 volumes:
   db-data: {}
