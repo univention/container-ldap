@@ -5,6 +5,7 @@ version: '3.5'
 services:
   listener:
     build: './listener'
+    env_file: .env.listener
     volumes:
       - listener-data:/var/lib/univention-ldap/listener/listener:ro
   openldap:
