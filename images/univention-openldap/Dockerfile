@@ -30,7 +30,9 @@ RUN apt-get update && \
                        libgssapi-krb5-2 \
                        libkrb5-26-heimdal \
                        libkadm5srv8-heimdal \
-                       openssl
+                       openssl \
+                       # 30 Mb extra, only needed for slapd.conf and ldif generation:
+                       python3
 
 COPY etc/ldap/dh_2048.pem /etc/ldap/dh_2048.pem
 COPY etc/ldap/slapd.conf /etc/ldap/slapd.conf
@@ -38,15 +40,22 @@ COPY etc/ldap/schema/core.schema /etc/ldap/schema/core.schema
 COPY etc/ldap/schema/cosine.schema /etc/ldap/schema/cosine.schema
 COPY etc/ldap/schema/nis.schema /etc/ldap/schema/nis.schema
 COPY etc/univention/ssl /etc/univention/ssl
+COPY etc/univention/templates/files/etc/ldap/slapd.conf.d etc/univention/templates/files/etc/ldap/slapd.conf.d
+# This info file is also a dependency of the templates
+COPY etc/univention/templates/info/univention-ldap-server.info etc/univention/templates/info/univention-ldap-server.info
 COPY usr/lib/ldap/translog.so /usr/lib/ldap/translog.so
 COPY usr/lib/ldap/k5pwd.so /usr/lib/ldap/k5pwd.so
 COPY usr/lib/ldap/pwd_scheme_kinit.so /usr/lib/ldap/pwd_scheme_kinit.so
 COPY usr/lib/ldap/shadowbind.so /usr/lib/ldap/shadowbind.so
 COPY usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.10 /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.10
+COPY usr/sbin/ucr /usr/sbin/ 
+COPY usr/sbin/solve.py /usr/sbin/ 
 COPY usr/share/univention-ldap/ /usr/share/univention-ldap/
 COPY var/lib/univention-ldap/ /var/lib/univention-ldap/
 
-ENTRYPOINT ["/usr/sbin/slapd", "-f", "/etc/ldap/slapd.conf", "-d", "9999", "-h", "ldapi:/// ldap://:389/ ldaps://:636/"]
+COPY container-entrypoint.sh /usr/local/bin
+
+ENTRYPOINT ["container-entrypoint.sh"]
 
 # Since in the classic UCS the ports 7636 and 7389 were only needed
 # for avoiding conflict with Samba domain controller service
