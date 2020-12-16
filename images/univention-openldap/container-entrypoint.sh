@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+touch /var/lib/univention-ldap/listener/listener
+
 cat /etc/univention/templates/files/etc/ldap/slapd.conf.d/* | solve.py --ldapbase 'dc=fg-organization,dc=intranet' --domainname 'fg-organization.intranet' > /etc/ldap/slapd.conf
 
 # TODO: Remove this
