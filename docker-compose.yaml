@@ -4,10 +4,12 @@ version: '3.5'
 
 services:
   listener:
-    build: './listener'
+    #build: './listener'
+    image: bash:latest
     env_file: .env.listener
+    entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
     volumes:
-      - listener-data:/var/lib/univention-ldap/listener/listener:ro
+      - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
     #build: './openldap'
     image: docker-registry.knut.univention.de/univention-openldap:latest
@@ -17,10 +19,14 @@ services:
     volumes:
       - db-data:/var/lib/univention-ldap/ldap/:rw
       - translog-data:/var/lib/univention-ldap/translog/:rw
-      - listener-data:/var/lib/univention-ldap/listener/listener:rw
+      - listener-data:/var/lib/univention-ldap/listener/:rw
+
 volumes:
-  db-data: {}
-  translog-data: {}
-  listener-data: {}
+  db-data:
+  translog-data:
+  listener-data:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
 
 ...
