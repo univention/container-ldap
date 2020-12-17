@@ -13,7 +13,6 @@ UNIV_MMBR_SCH="all/univention-ldap-overlay-memberof_12.0.0-1A~5.0.0.202009231618
 UNIV_ACLM_SCH="all/univention-ldap-acl-master_16.0.4-2A~5.0.0.202011301749_all.deb"
 UNIV_APPC_SCH="all/univention-appcenter_9.0.1-7A~5.0.0.202012141225_all.deb"
 
-#UNIV_NOTIFIER="amd64/univention-directory-notifier_14.0.4-3A~5.0.0.202012011441_amd64.deb"
 if [[ ! -f "${UNIV_PATCHED_SLAPD_DEB##*/}" ]];
 then
     scp "omar:${OMAR_UCS_5}/${UNIV_PATCHED_SLAPD_DEB}" .
@@ -57,18 +56,10 @@ then
     scp galant:~fgeczi/ssl_fg-organization.tar.bz2 .
     tar -xf ssl_fg-organization.tar.bz2 -C univention-openldap/
 
-    # TODO: Extract schemas from NOTIFIER and LDAP_SRV
-    scp galant:~fgeczi/univention-ldap_schemas.tar.bz2 .
-    tar -xf univention-ldap_schemas.tar.bz2 -C univention-openldap/
-
     # As seen in /usr/share/univention-ldap/create-dh-parameter-files
     openssl dhparam -out "dh_2048.pem" -2 2048
     chmod 644 "dh_2048.pem"
     mv "dh_2048.pem" "univention-openldap/etc/ldap/"
-
-    # TODO: Find a way to have the translog overlay do this
-    mkdir -p univention-openldap/var/lib/univention-ldap/listener/
-    touch univention-openldap/var/lib/univention-ldap/listener/listener
 
     cp ucr solve.py univention-openldap/usr/sbin/
 fi

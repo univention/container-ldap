@@ -45,12 +45,17 @@ setup_translog_ldif() {
             -l /usr/share/univention-ldap/translog.ldif
 }
 
+setup_listener_path() {
+    # TODO: Shouldn't the translog overlay be able to do this?
+    mkdir -p /var/lib/univention-ldap/listener/
+    touch /var/lib/univention-ldap/listener/listener
+}
 
-touch /var/lib/univention-ldap/listener/listener
 
 setup_slapd_conf
 setup_initial_ldif
 setup_translog_ldif
+setup_listener_path
 
 # TODO: Remove this
 sed -i '/^rootdn\t\t.*/a rootpw\t\t"univention"' /etc/ldap/slapd.conf
