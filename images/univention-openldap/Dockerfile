@@ -51,6 +51,12 @@ COPY usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.10 /usr/lib/x86_64-linux-gnu
 COPY usr/sbin/ucr /usr/sbin/ 
 COPY usr/sbin/solve.py /usr/sbin/ 
 COPY usr/share/univention-ldap/ /usr/share/univention-ldap/
+
+# This is actually duplication but used as a canary so these ldif files can't be missing
+COPY usr/share/univention-ldap/base.ldif /usr/share/univention-ldap/
+COPY usr/share/univention-ldap/core-edition.ldif /usr/share/univention-ldap/
+COPY usr/share/univention-ldap/translog.ldif /usr/share/univention-ldap/
+
 COPY var/lib/univention-ldap/ /var/lib/univention-ldap/
 
 COPY container-entrypoint.sh /usr/local/bin
