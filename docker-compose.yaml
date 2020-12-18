@@ -11,7 +11,7 @@ services:
     volumes:
       - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
-    #build: './openldap'
+    build: './images/univention-openldap'
     image: docker-registry.knut.univention.de/univention-openldap:latest
     ports:
       - 389:389
