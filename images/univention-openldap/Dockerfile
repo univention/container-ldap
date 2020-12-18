@@ -1,10 +1,23 @@
-ARG SUITE
-FROM debian:${SUITE}
+FROM debian:buster-slim as builder
 
+COPY sources.list /etc/apt/sources.list
 
+RUN cd /tmp && \
+    apt-get update && \
+    apt-get download \
+                    slapd \
+                    libldap-2.4-2  \
+                    univention-ldap-config \
+                    univention-ldap-server \
+                    univention-saml-schema \
+                    univention-virtual-machine-manager-schema \
+                    univention-ldap-overlay-memberof \
+                    univention-ldap-acl-master
 
-RUN useradd Administrator \
-    -p $6$6M7LMsXo2wgniZGE$tGxma/MBb1kUqx9.GZ8UwpvEwOXUXalcyYOykGebUU2EBdccOPCWDyKmvIOsDjDw1vVRb7TW9V4vxxtjB6Yqw.
+RUN dpkg --force-all -i /tmp/*.deb || true
+
+###############################################################################
+FROM debian:buster-slim
 
 RUN apt-get update && \
     # Install apt-utils otherwise we can't seem to
@@ -31,35 +44,43 @@ RUN apt-get update && \
                        libkrb5-26-heimdal \
                        libkadm5srv8-heimdal \
                        openssl \
-                       # 30 Mb extra, only needed for slapd.conf and ldif generation:
+                       # 30 Mb extra, only needed for slapd.conf and ldif generation
+                       # TODO: Remove when "Config-Adapter" sidecar is ready
                        python3
 
-COPY etc/ldap/dh_2048.pem /etc/ldap/dh_2048.pem
-COPY etc/ldap/slapd.conf /etc/ldap/slapd.conf
-COPY etc/ldap/schema/core.schema /etc/ldap/schema/core.schema
-COPY etc/ldap/schema/cosine.schema /etc/ldap/schema/cosine.schema
-COPY etc/ldap/schema/nis.schema /etc/ldap/schema/nis.schema
-COPY etc/univention/ssl /etc/univention/ssl
-COPY etc/univention/templates/files/etc/ldap/slapd.conf.d etc/univention/templates/files/etc/ldap/slapd.conf.d
-# This info file is also a dependency of the templates
-COPY etc/univention/templates/info/univention-ldap-server.info etc/univention/templates/info/univention-ldap-server.info
-COPY usr/lib/ldap/translog.so /usr/lib/ldap/translog.so
-COPY usr/lib/ldap/k5pwd.so /usr/lib/ldap/k5pwd.so
-COPY usr/lib/ldap/pwd_scheme_kinit.so /usr/lib/ldap/pwd_scheme_kinit.so
-COPY usr/lib/ldap/shadowbind.so /usr/lib/ldap/shadowbind.so
-COPY usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.10 /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.10
-COPY usr/sbin/ucr /usr/sbin/ 
-COPY usr/sbin/solve.py /usr/sbin/ 
-COPY usr/share/univention-ldap/ /usr/share/univention-ldap/
+# As seen in /usr/share/univention-ldap/create-dh-parameter-files
+RUN cd /etc/ldap && \
+    openssl dhparam -out "dh_2048.pem" -2 2048 && \
+    chmod 644 "dh_2048.pem" && \
+    cd -
 
-# This is actually duplication but used as a canary so these ldif files can't be missing
-COPY usr/share/univention-ldap/base.ldif /usr/share/univention-ldap/
-COPY usr/share/univention-ldap/core-edition.ldif /usr/share/univention-ldap/
-COPY usr/share/univention-ldap/translog.ldif /usr/share/univention-ldap/
+COPY --from=builder /etc/ldap/schema/core.schema /etc/ldap/schema/core.schema
+COPY --from=builder /etc/ldap/schema/cosine.schema /etc/ldap/schema/cosine.schema
+COPY --from=builder /etc/ldap/schema/nis.schema /etc/ldap/schema/nis.schema
+COPY --from=builder /etc/univention/templates/files/etc/ldap/slapd.conf.d \
+                    /etc/univention/templates/files/etc/ldap/slapd.conf.d
+# This "info" file is also a dependency of the templates
+COPY --from=builder /etc/univention/templates/info/univention-ldap-server.info \
+                    /etc/univention/templates/info/univention-ldap-server.info
+COPY --from=builder /usr/lib/ldap/translog.so /usr/lib/ldap/translog.so
+COPY --from=builder /usr/lib/ldap/k5pwd.so /usr/lib/ldap/k5pwd.so
+COPY --from=builder /usr/lib/ldap/pwd_scheme_kinit.so /usr/lib/ldap/pwd_scheme_kinit.so
+COPY --from=builder /usr/lib/ldap/shadowbind.so /usr/lib/ldap/shadowbind.so
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.10 \
+                    /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.10
+COPY --from=builder /usr/share/univention-ldap/schema /usr/share/univention-ldap/schema
+COPY --from=builder /usr/share/univention-ldap/base.ldif /usr/share/univention-ldap/base.ldif
+COPY --from=builder /usr/share/univention-ldap/core-edition.ldif /usr/share/univention-ldap/core-edition.ldif
+COPY --from=builder /usr/share/univention-ldap/translog.ldif /usr/share/univention-ldap/translog.ldif
+COPY --from=builder /var/lib/univention-ldap/ /var/lib/univention-ldap/
 
-COPY var/lib/univention-ldap/ /var/lib/univention-ldap/
+COPY                local-schema /var/lib/univention-ldap/local-schema
+COPY                ssl /etc/univention/ssl
+COPY                ucr /usr/sbin/
+COPY                solve.py /usr/sbin/
+COPY                Administrator_user.ldif /Administrator_user.ldif
 
-COPY container-entrypoint.sh /usr/local/bin
+COPY                container-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT ["container-entrypoint.sh"]
 

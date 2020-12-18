@@ -36,7 +36,7 @@ setup_initial_ldif() {
     cat /usr/share/univention-ldap/base.ldif \
         /usr/share/univention-ldap/core-edition.ldif |\
     solve.py --ldapbase "${ldap_base}" --domainname "${domainname}"|\
-    sed -e "${filter_string}" | slapadd -f /etc/ldap/slapd.conf 
+    sed -e "${filter_string}" | slapadd -f /etc/ldap/slapd.conf
 }
 
 setup_translog_ldif() {
@@ -51,13 +51,35 @@ setup_listener_path() {
     touch /var/lib/univention-ldap/listener/listener
 }
 
+setup_administrator_user() {
+    printf -v password_hash '%s' \
+            '$6$6M7LMsXo2wgniZGE$tGxma/MBb1kUqx9.GZ8UwpvEwOXUXal' \
+            'cyYOykGebUU2EBdccOPCWDyKmvIOsDjDw1vVRb7TW9V4vxxtjB6Yqw.'
+
+    useradd Administrator -p "${password_hash}"
+    cat /Administrator_user.ldif | \
+    solve.py --ldapbase "${ldap_base}" --domainname "${domainname}"|\
+    slapadd -f /etc/ldap/slapd.conf
+}
+
+setup_ssl_certificates() {
+    # TODO: Fix this in Config Adapter
+    # Check univention-ssl/debian/univention-ssl.postinst
+    # and make-certificates.sh
+    target_dir="/etc/univention/ssl/ucs-6045.${domainname}"
+    mkdir -p "${target_dir}"
+    mv /etc/univention/ssl/cert.pem /etc/univention/ssl/private.key "${target_dir}/"
+}
+
 
 setup_slapd_conf
 setup_initial_ldif
 setup_translog_ldif
 setup_listener_path
+setup_administrator_user
+setup_ssl_certificates
 
 # TODO: Remove this
-sed -i '/^rootdn\t\t.*/a rootpw\t\t"univention"' /etc/ldap/slapd.conf
+#sed -i '/^rootdn\t\t.*/a rootpw\t\t"univention"' /etc/ldap/slapd.conf
 
 /usr/sbin/slapd -f /etc/ldap/slapd.conf -d 9999 -h "ldapi:/// ldap://:389/ ldaps://:636/"
