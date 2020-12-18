@@ -2,11 +2,16 @@
 
 set -x
 
+init_variables() {
+    DOMAIN_NAME="${DOMAIN_NAME:fg-organization.intranet}" # univention-organization.intranet
+    LDAP_BASE_DN="${LDAP_BASE_DN:dc=fg-organization,dc=intranet}"# dc=univention-organization,dc=intranet
+}
+
 setup_slapd_conf() {
 
     cat /etc/univention/templates/files/etc/ldap/slapd.conf.d/* |\
-    solve.py --ldapbase 'dc=fg-organization,dc=intranet' \
-             --domainname 'fg-organization.intranet' \
+    solve.py --ldapbase "${LDAP_BASE_DN}" \
+             --domainname "${DOMAIN_NAME}" \
              > /etc/ldap/slapd.conf
 }
 
@@ -14,8 +19,8 @@ setup_initial_ldif() {
     # Inspired by 01univention-ldap-server-init.inst
     pw_crypt="univention"
     backup_crypt="univention"
-    ldap_base="dc=fg-organization,dc=intranet"
-    domainname="fg-organization.intranet"
+    ldap_base="${LDAP_BASE_DN}"
+    domainname="${DOMAIN_NAME}"
     sambadomain="${domainname%%.*}"
     realm="$(echo "$domainname" | sed -e 's/dc=//g;s/,/./g;s/[a-z]/\u&/g')"
     firstdc="$(echo "$ldap_base" | sed -e 's|,.*||g;s|.*=||')"
@@ -72,6 +77,7 @@ setup_ssl_certificates() {
 }
 
 
+init_variables
 setup_slapd_conf
 setup_initial_ldif
 setup_translog_ldif
