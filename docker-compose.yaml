@@ -20,13 +20,18 @@ services:
     volumes:
       - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
       - db-data:/var/lib/univention-ldap/ldap/:rw
+      - last-id-data:/var/lib/univention-ldap/last-id-data/:rw
       - translog-data:/var/lib/univention-ldap/translog/:rw
       - listener-data:/var/lib/univention-ldap/listener/:rw
 
 volumes:
+  # OpenLDAP only:
   db-data:
+  last-id-data:
   translog-data:
+  # Notifier + OpenLDAP
   notify-transaction-data:
+  # Listener + OpenLDAP
   listener-data:
     driver_opts:
       type: tmpfs
