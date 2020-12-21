@@ -26,6 +26,12 @@ setup_last_id_path() {
     touch /var/lib/univention-ldap/last-id-data/last_id
     ln -s /var/lib/univention-ldap/last-id-data/last_id \
           /var/lib/univention-ldap/last_id
+
+    # If the last_id file exists, then it should never be empty
+    # otherwise the translog overlay gets stuck at ID -1
+    if [[ ! -s /var/lib/univention-ldap/last_id ]]; then
+        echo '0' > /var/lib/univention-ldap/last_id
+    fi
 }
 
 setup_slapd_conf() {
