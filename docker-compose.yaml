@@ -18,6 +18,7 @@ services:
       - 389:389
       - 636:636
     volumes:
+      - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
       - db-data:/var/lib/univention-ldap/ldap/:rw
       - translog-data:/var/lib/univention-ldap/translog/:rw
       - listener-data:/var/lib/univention-ldap/listener/:rw
@@ -25,6 +26,7 @@ services:
 volumes:
   db-data:
   translog-data:
+  notify-transaction-data:
   listener-data:
     driver_opts:
       type: tmpfs
