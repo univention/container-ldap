@@ -4,10 +4,10 @@ version: '3.5'
 
 services:
   listener:
-    #build: './listener'
-    image: bash:latest
+    build: './listener'
+    #image: bash:latest
     env_file: .env.listener
-    entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
+    #entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
     volumes:
       - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
