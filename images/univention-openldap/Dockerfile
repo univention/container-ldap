@@ -2,7 +2,7 @@ FROM debian:buster-slim as builder
 
 COPY sources.list /etc/apt/sources.list
 
-RUN cd /tmp && \
+RUN cd "$(mktemp --directory)" && chown _apt . && \
     apt-get update && \
     apt-get download \
                     slapd \
@@ -12,9 +12,8 @@ RUN cd /tmp && \
                     univention-saml-schema \
                     univention-virtual-machine-manager-schema \
                     univention-ldap-overlay-memberof \
-                    univention-ldap-acl-master
-
-RUN dpkg --force-all -i /tmp/*.deb || true
+                    univention-ldap-acl-master && \
+    (dpkg --force-all -i ./*.deb || true)
 
 ###############################################################################
 FROM debian:buster-slim
