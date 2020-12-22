@@ -3,8 +3,8 @@
 set -euxo pipefail
 
 init_variables() {
-  DOMAIN_NAME="${DOMAIN_NAME:fg-organization.intranet}" # univention-organization.intranet
-  LDAP_BASE_DN="${LDAP_BASE_DN:dc=fg-organization,dc=intranet}"# dc=univention-organization,dc=intranet
+  DOMAIN_NAME="${DOMAIN_NAME:-fg-organization.intranet}"
+  LDAP_BASE_DN="${LDAP_BASE_DN:-dc=fg-organization,dc=intranet}"
 }
 
 setup_listener_path() {
@@ -44,6 +44,18 @@ setup_slapd_conf() {
 
 setup_initial_ldif() {
   # Inspired by 01univention-ldap-server-init.inst
+
+  #if [[ "mdb" = "$ldap_database_type" ]; then
+  if true; then # Let's assume that type is always mdb
+    database_name="data"
+  fi
+
+  files="$(find /var/lib/univention-ldap/ldap/ -name "${database_name}.*" -type f)"
+
+  if [[ ! -z "${files}" ]]; then
+    return 0
+  fi
+
   pw_crypt="univention"
   backup_crypt="univention"
   ldap_base="${LDAP_BASE_DN}"
@@ -74,6 +86,14 @@ setup_initial_ldif() {
 
 setup_translog_ldif() {
   # Inspired by /usr/share/univention-ldap/setup-translog
+  translog_exists="$(slapcat -f /etc/ldap/slapd.conf \
+                             -b cn=translog \
+                             -H 'ldap:///cn=translog??base' || true)"
+
+  if [[ -n "${translog_exists}" ]]; then
+    return 0
+  fi
+
   slapadd -f /etc/ldap/slapd.conf \
           -b cn=translog \
           -l /usr/share/univention-ldap/translog.ldif
@@ -85,8 +105,18 @@ setup_administrator_user() {
     'cyYOykGebUU2EBdccOPCWDyKmvIOsDjDw1vVRb7TW9V4vxxtjB6Yqw.'
 
   useradd Administrator --password "${password_hash}"
+
+
+  admin_exists="$(slapcat -f /etc/ldap/slapd.conf \
+                          -b uid=Administrator,cn=users,${LDAP_BASE_DN} \
+                  || true)"
+
+  if [[ -n "${admin_exists}" ]]; then
+    return 0
+  fi
+
   cat /Administrator_user.ldif \
-    | solve.py --ldapbase "${ldap_base}" --domainname "${domainname}" \
+    | solve.py --ldapbase "${LDAP_BASE_DN}" --domainname "${DOMAIN_NAME}" \
     | slapadd -f /etc/ldap/slapd.conf
 }
 
@@ -94,7 +124,7 @@ setup_ssl_certificates() {
   # TODO: Fix this in Config Adapter
   # Check univention-ssl/debian/univention-ssl.postinst
   # and make-certificates.sh
-  target_dir="/etc/univention/ssl/ucs-6045.${domainname}"
+  target_dir="/etc/univention/ssl/ucs-6045.${DOMAIN_NAME}"
   mkdir --parents "${target_dir}"
   mv /etc/univention/ssl/cert.pem /etc/univention/ssl/private.key \
      "${target_dir}/"
