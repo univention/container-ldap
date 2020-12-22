@@ -106,7 +106,8 @@ setup_administrator_user() {
     '$6$6M7LMsXo2wgniZGE$tGxma/MBb1kUqx9.GZ8UwpvEwOXUXal' \
     'cyYOykGebUU2EBdccOPCWDyKmvIOsDjDw1vVRb7TW9V4vxxtjB6Yqw.'
 
-  useradd Administrator --password "${password_hash}"
+  getent passwd Administrator &&
+    useradd Administrator --password "${password_hash}"
 
 
   admin_exists="$(slapcat -f /etc/ldap/slapd.conf \
