@@ -28,7 +28,7 @@ class Registry(collections.UserDict):
 configRegistry = Registry(
     {
         'domainname':
-            args.domainname,  #'fg-organization.intranet'
+            args.domainname,  # 'fg-organization.intranet'
         'hostname':
             'ucs-6045',
         'ldap/acl/nestedgroups':
@@ -44,7 +44,7 @@ configRegistry = Registry(
         'ldap/autostart':
             'yes',
         'ldap/base':
-            args.ldapbase,  #'dc=fg-organization,dc=intranet'
+            args.ldapbase,  # 'dc=fg-organization,dc=intranet'
         'ldap/binaryattributes':
             '',
         'ldap/cachesize':
