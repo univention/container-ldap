@@ -1,3 +1,2 @@
-deb     [trusted=yes]  http://192.168.0.10/build2/    ucs_5.0-0/all/
-deb     [trusted=yes]  http://192.168.0.10/build2/    ucs_5.0-0/$(ARCH)/
-deb-src [trusted=yes]  http://192.168.0.10/build2/    ucs_5.0-0/source/ 
+deb     [trusted=yes]  http://omar.knut.univention.de/build2/    ucs_5.0-0/all/
+deb     [trusted=yes]  http://omar.knut.univention.de/build2/    ucs_5.0-0/$(ARCH)/
