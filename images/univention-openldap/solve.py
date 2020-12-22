@@ -240,8 +240,10 @@ configRegistry = Registry(
                 'univentionUDMPropertyShortDescription',
                 'zoneName',
             ),
+        # This is normally not in UCR,
+        # only something that evaluate to true in 31modules
         'ldap/k5pwd':
-            True,  # This is normally not in UCR, only something that evaluate to true in 31modules
+            True,
         'ldap/limits':
             'users time.soft=-1 time.hard=-1',
         'ldap/monitor':
@@ -383,7 +385,10 @@ for line in sys.stdin:
             # TODO: Complete this, if needed
             if line in (
                 'from univention.lib.misc import custom_groupname\n',
-                'from univention.lib.misc import custom_username, custom_groupname\n',
+                (
+                    'from univention.lib.misc import '
+                    'custom_username, custom_groupname\n'
+                ),
             ):
                 # line = 'custom_groupname = lambda x: x\n'
                 continue
