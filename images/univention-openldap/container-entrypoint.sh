@@ -125,9 +125,12 @@ setup_ssl_certificates() {
   # Check univention-ssl/debian/univention-ssl.postinst
   # and make-certificates.sh
   target_dir="/etc/univention/ssl/ucs-6045.${DOMAIN_NAME}"
-  mkdir --parents "${target_dir}"
-  mv /etc/univention/ssl/cert.pem /etc/univention/ssl/private.key \
-     "${target_dir}/"
+  mkdir --parents "${target_dir}" /etc/univention/ssl/ucsCA/
+
+  echo "${CA_CERT}" > /etc/univention/ssl/ucsCA/CAcert.pem
+  echo "${CERT_PEM}" > "${target_dir}/cert.pem"
+  echo "${PRIVATE_KEY}" > "${target_dir}/private.key"
+
 }
 
 

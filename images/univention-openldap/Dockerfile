@@ -74,7 +74,6 @@ COPY --from=builder /usr/share/univention-ldap/translog.ldif /usr/share/univenti
 COPY --from=builder /var/lib/univention-ldap/ /var/lib/univention-ldap/
 
 COPY                local-schema /var/lib/univention-ldap/local-schema
-COPY                ssl /etc/univention/ssl
 COPY                ucr /usr/sbin/
 COPY                solve.py /usr/sbin/
 COPY                Administrator_user.ldif /Administrator_user.ldif
