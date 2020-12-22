@@ -224,10 +224,9 @@ for line in sys.stdin:
         if inside_section:
             # Workaround for some import that doesn't do much anyway
             # TODO: Complete this, if needed
-            if (
-                line == 'from univention.lib.misc import custom_groupname\n' or
-                line ==
-                'from univention.lib.misc import custom_username, custom_groupname\n'
+            if line in (
+                'from univention.lib.misc import custom_groupname\n',
+                'from univention.lib.misc import custom_username, custom_groupname\n',
             ):
                 # line = 'custom_groupname = lambda x: x\n'
                 continue
