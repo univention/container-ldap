@@ -353,10 +353,17 @@ def resolve_variable(line):
     return line
 
 
+# TODO: Complete this
+def custom_groupname(x):
+    return x
+
+
+# TODO: Complete this
+def custom_username(x):
+    return x
+
+
 inside_section, to_be_compiled = False, []
-# TODO: Complete these
-custom_groupname = lambda x: x
-custom_username = lambda x: x
 
 for line in sys.stdin:
     # The original implementation is in:
