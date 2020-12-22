@@ -368,44 +368,49 @@ def custom_groupname(x):
 def custom_username(x):
     return x
 
+def main():
+    inside_section, to_be_compiled = False, []
 
-inside_section, to_be_compiled = False, []
+    for line in sys.stdin:
+        # The original implementation is in:
+        # base/univention-config-registry/python/
+        # univention/config_registry/handler.py
+        if line == '@%@UCRWARNING=# @%@\n':
+            warning_string()
+            continue
 
-for line in sys.stdin:
-    # The original implementation is in:
-    # base/univention-config-registry/python/
-    # univention/config_registry/handler.py
-    if line == '@%@UCRWARNING=# @%@\n':
-        warning_string()
-        continue
+        if '@%@' in line:
+            line = resolve_variable(line)
 
-    if '@%@' in line:
-        line = resolve_variable(line)
+        if line == '@!@\n':
+            if not inside_section:
+                inside_section = True
 
-    if line == '@!@\n':
-        if not inside_section:
-            inside_section = True
-
-        else:
-            inside_section = False
-            exec(''.join(to_be_compiled))  # pylint: disable=exec-used
-            print('')
-            to_be_compiled = []
-
-    else:
-        if inside_section:
-            # Workaround for some import that doesn't do much anyway
-            # TODO: Complete this, if needed
-            if line in (
-                'from univention.lib.misc import custom_groupname\n',
-                (
-                    'from univention.lib.misc import '
-                    'custom_username, custom_groupname\n'
-                ),
-            ):
-                # line = 'custom_groupname = lambda x: x\n'
-                continue
-            to_be_compiled += line
+            else:
+                inside_section = False
+                exec(''.join(to_be_compiled), globals())  # pylint: disable=exec-used
+                print('')
+                to_be_compiled = []
 
         else:
-            print(line, end='')
+            if inside_section:
+                # Workaround for some import that doesn't do much anyway
+                # TODO: Complete this, if needed
+                if line in (
+                    'from univention.lib.misc import custom_groupname\n',
+                    (
+                        'from univention.lib.misc import '
+                        'custom_username, custom_groupname\n'
+                    ),
+                ):
+                    # line = 'custom_groupname = lambda x: x\n'
+                    continue
+                to_be_compiled += line
+
+            else:
+                print(line, end='')
+    return
+
+
+if __name__ == '__main__':
+    main()
