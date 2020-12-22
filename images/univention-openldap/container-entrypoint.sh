@@ -22,10 +22,12 @@ setup_last_id_path() {
   # So in order to keep the last_id file on a separate volum
   # we mount a volume under /var/lib/univention-ldap/last-id-data/
   # and create a symbolic link in runtime.
-  mkdir --parents /var/lib/univention-ldap/last-id-data/
-  touch /var/lib/univention-ldap/last-id-data/last_id
-  ln --symbolic /var/lib/univention-ldap/last-id-data/last_id \
-                /var/lib/univention-ldap/last_id
+  if [[ ! -L /var/lib/univention-ldap/last_id ]]; then
+    mkdir --parents /var/lib/univention-ldap/last-id-data/
+    touch /var/lib/univention-ldap/last-id-data/last_id
+    ln --symbolic /var/lib/univention-ldap/last-id-data/last_id \
+                  /var/lib/univention-ldap/last_id
+  fi
 
   # If the last_id file exists, then it should never be empty
   # otherwise the translog overlay gets stuck at ID -1
