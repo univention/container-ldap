@@ -368,6 +368,7 @@ def custom_groupname(x):
 def custom_username(x):
     return x
 
+
 def main():
     inside_section, to_be_compiled = False, []
 
@@ -388,7 +389,10 @@ def main():
 
             else:
                 inside_section = False
-                exec(''.join(to_be_compiled), globals())  # pylint: disable=exec-used
+                exec(  # pylint: disable=exec-used
+                    ''.join(to_be_compiled),
+                    globals(),
+                )
                 print('')
                 to_be_compiled = []
 
