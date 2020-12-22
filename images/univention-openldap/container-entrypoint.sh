@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x
+set -euxo pipefail
 
 init_variables() {
   DOMAIN_NAME="${DOMAIN_NAME:fg-organization.intranet}" # univention-organization.intranet
