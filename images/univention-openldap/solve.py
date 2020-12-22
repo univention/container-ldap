@@ -375,7 +375,7 @@ for line in sys.stdin:
 
         else:
             inside_section = False
-            exec(''.join(to_be_compiled))
+            exec(''.join(to_be_compiled))  # pylint: disable=exec-used
             print('')
             to_be_compiled = []
 
