@@ -130,9 +130,9 @@ setup_ssl_certificates() {
   target_dir="/etc/univention/ssl/ucs-6045.${DOMAIN_NAME}"
   mkdir --parents "${target_dir}" /etc/univention/ssl/ucsCA/
 
-  ln -s "${CA_CERT_FILE}" /etc/univention/ssl/ucsCA/CAcert.pem
-  ln -s "${CERT_PEM_FILE}" "${target_dir}/cert.pem"
-  ln -s "${PRIVATE_KEY_FILE}" "${target_dir}/private.key"
+  ln --symbolic --force "${CA_CERT_FILE}" "/etc/univention/ssl/ucsCA/CAcert.pem"
+  ln --symbolic --force "${CERT_PEM_FILE}" "${target_dir}/cert.pem"
+  ln --symbolic --force "${PRIVATE_KEY_FILE}" "${target_dir}/private.key"
 
 }
 
