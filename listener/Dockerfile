@@ -23,7 +23,6 @@ RUN \
   set -euxo pipefail && \
   curl -fsSL https://updates.software-univention.de/univention-archive-key-ucs-4x.gpg | \
     apt-key add - && \
-  echo "192.168.0.10 omar.knut.univention.de" >> /etc/hosts && \
   apt-get update && \
   apt-get --assume-yes --verbose-versions install univention-directory-listener
 
