@@ -16,7 +16,7 @@ RUN \
   echo "postfix postfix/mailname string univention-directory-listener" | debconf-set-selections && \
   apt-get --assume-yes --verbose-versions install postfix
 
-COPY 15_ucs-online-version.list /etc/apt/sources.list.d/
+COPY sources.list /etc/apt/sources.list.d/15_ucs-online-version.list
 
 # listener
 RUN \
