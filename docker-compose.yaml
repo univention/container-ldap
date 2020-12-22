@@ -4,37 +4,37 @@ version: '3.8'
 
 services:
   listener:
-    build: './listener'
+    build: ./listener
     #image: bash:latest
     env_file: .env.listener
     #entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
     volumes:
-      - listener-data:/var/lib/univention-ldap/listener/:ro
+    - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
-    build: './images/univention-openldap'
+    build: ./images/univention-openldap
     image: docker-registry.knut.univention.de/univention-openldap:latest
     env_file: .env.univention-openldap
     ports:
-      - 389:389
-      - 636:636
+    - 389:389
+    - 636:636
     secrets:
-      - ca_cert
-      - cert_pem
-      - private_key
+    - ca_cert
+    - cert_pem
+    - private_key
     volumes:
-      - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
-      - db-data:/var/lib/univention-ldap/ldap/:rw
-      - last-id-data:/var/lib/univention-ldap/last-id-data/:rw
-      - translog-data:/var/lib/univention-ldap/translog/:rw
-      - listener-data:/var/lib/univention-ldap/listener/:rw
+    - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
+    - db-data:/var/lib/univention-ldap/ldap/:rw
+    - last-id-data:/var/lib/univention-ldap/last-id-data/:rw
+    - translog-data:/var/lib/univention-ldap/translog/:rw
+    - listener-data:/var/lib/univention-ldap/listener/:rw
 
 secrets:
-   ca_cert:
-     file: CAcert.pem
-   cert_pem:
-     file: cert.pem
-   private_key:
-     file: private.key
+  ca_cert:
+    file: CAcert.pem
+  cert_pem:
+    file: cert.pem
+  private_key:
+    file: private.key
 
 volumes:
   # OpenLDAP only:
