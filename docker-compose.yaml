@@ -1,6 +1,6 @@
 ---
 
-version: '3.5'
+version: '3.8'
 
 services:
   listener:
@@ -11,19 +11,39 @@ services:
     volumes:
       - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
-    #build: './openldap'
+    build: './images/univention-openldap'
     image: docker-registry.knut.univention.de/univention-openldap:latest
+    env_file: .env.univention-openldap
     ports:
       - 389:389
       - 636:636
+    secrets:
+      - ca_cert
+      - cert_pem
+      - private_key
     volumes:
+      - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
       - db-data:/var/lib/univention-ldap/ldap/:rw
+      - last-id-data:/var/lib/univention-ldap/last-id-data/:rw
       - translog-data:/var/lib/univention-ldap/translog/:rw
       - listener-data:/var/lib/univention-ldap/listener/:rw
 
+secrets:
+   ca_cert:
+     file: CAcert.pem
+   cert_pem:
+     file: cert.pem
+   private_key:
+     file: private.key
+
 volumes:
+  # OpenLDAP only:
   db-data:
+  last-id-data:
   translog-data:
+  # Notifier + OpenLDAP
+  notify-transaction-data:
+  # Listener + OpenLDAP
   listener-data:
     driver_opts:
       type: tmpfs
