@@ -102,13 +102,6 @@ setup_translog_ldif() {
 }
 
 setup_administrator_user() {
-  printf -v password_hash '%s' \
-    '$6$6M7LMsXo2wgniZGE$tGxma/MBb1kUqx9.GZ8UwpvEwOXUXal' \
-    'cyYOykGebUU2EBdccOPCWDyKmvIOsDjDw1vVRb7TW9V4vxxtjB6Yqw.'
-
-  getent passwd Administrator &&
-    useradd Administrator --password "${password_hash}"
-
 
   admin_exists="$(slapcat -f /etc/ldap/slapd.conf \
                           -b uid=Administrator,cn=users,${LDAP_BASE_DN} \
