@@ -105,6 +105,7 @@ setup_administrator_user() {
 
   admin_exists="$(slapcat -f /etc/ldap/slapd.conf \
                           -b uid=Administrator,cn=users,${LDAP_BASE_DN} \
+                          -s uid=Administrator,cn=users,${LDAP_BASE_DN} \
                   || true)"
 
   if [[ -n "${admin_exists}" ]]; then
