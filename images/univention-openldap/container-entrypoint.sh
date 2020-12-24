@@ -64,7 +64,7 @@ setup_initial_ldif() {
 
   files="$(find /var/lib/univention-ldap/ldap/ -name "${database_name}.*" -type f)"
 
-  if [[ ! -z "${files}" ]]; then
+  if [[ -n "${files}" ]]; then
     return 0
   fi
 
@@ -114,7 +114,7 @@ setup_translog_ldif() {
 setup_administrator_user() {
 
   admin_exists="$(slapcat -f /etc/ldap/slapd.conf \
-                          -b uid=Administrator,cn=users,${LDAP_BASE_DN} \
+                          -b "uid=Administrator,cn=users,${LDAP_BASE_DN}" \
                           -H "ldap:///uid=Administrator,cn=users,${LDAP_BASE_DN}" \
                   || true)"
 
@@ -122,6 +122,7 @@ setup_administrator_user() {
     return 0
   fi
 
+  # shellcheck disable=SC2002
   cat /Administrator_user.ldif \
     | solve.py --ldapbase "${LDAP_BASE_DN}" --domainname "${DOMAIN_NAME}" \
     | slapadd -f /etc/ldap/slapd.conf
