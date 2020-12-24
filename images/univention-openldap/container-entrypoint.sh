@@ -2,9 +2,19 @@
 
 set -euxo pipefail
 
-init_variables() {
-  DOMAIN_NAME="${DOMAIN_NAME:-fg-organization.intranet}"
-  LDAP_BASE_DN="${LDAP_BASE_DN:-dc=fg-organization,dc=intranet}"
+check_unset_variables() {
+  var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" "CA_CERT_FILE" \
+              "CERT_PEM_FILE" "PRIVATE_KEY_FILE" )
+  for var_name in "${var_names[@]}"; do
+    if [[ -z "${!var_name:-}" ]]; then
+      echo "ERROR: '${var_name}' is unset."
+      var_unset=true
+    fi
+  done
+
+  if [[ -n "${var_unset:-}" ]]; then
+    exit 1
+  fi
 }
 
 setup_listener_path() {
@@ -131,7 +141,7 @@ setup_ssl_certificates() {
 }
 
 
-init_variables
+check_unset_variables
 setup_listener_path
 setup_last_id_path
 setup_slapd_conf
