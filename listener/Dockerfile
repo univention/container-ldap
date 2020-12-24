@@ -21,6 +21,7 @@ COPY sources.list /etc/apt/sources.list.d/15_ucs-online-version.list
 # listener
 RUN \
   set -euxo pipefail && \
+  echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
   curl -fsSL https://updates.software-univention.de/univention-archive-key-ucs-4x.gpg | \
     apt-key add - && \
   apt-get update && \

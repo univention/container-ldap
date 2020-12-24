@@ -5,7 +5,8 @@ FROM debian:buster-slim as builder
 
 COPY sources.list /etc/apt/sources.list
 
-RUN cd "$(mktemp --directory)" && chown _apt . && \
+RUN echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
+    cd "$(mktemp --directory)" && chown _apt . && \
     apt-get update && \
     apt-get download \
                     slapd \
