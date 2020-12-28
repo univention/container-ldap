@@ -33,7 +33,7 @@ repos:
 # shellcheck doesn't have it's own .pre-commit-hooks.yaml
 # https://github.com/koalaman/shellcheck/pull/1032
 - repo: git://github.com/detailyang/pre-commit-shell
-  rev: 1.0.5
+  rev: v1.0.6
   hooks:
   - id: shell-lint
 ...
