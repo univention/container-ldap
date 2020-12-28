@@ -1,7 +1,38 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Univention Config Registry
+#
+# Copyright 2020 Univention GmbH
+#
+# https://www.univention.de/
+#
+# All rights reserved.
+#
+# The source code of this program is made available
+# under the terms of the GNU Affero General Public License version 3
+# (GNU AGPL V3) as published by the Free Software Foundation.
+#
+# Binary versions of this program provided by Univention to you as
+# well as other copyrighted, protected or trademarked materials like
+# Logos, graphics, fonts, specific documentations and configurations,
+# cryptographic keys etc. are subject to a license agreement between
+# you and Univention and not subject to the GNU AGPL V3.
+#
+# In the case you use this program under the terms of the GNU AGPL V3,
+# the program is provided in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public
+# License with the Debian GNU/Linux or Univention distribution in file
+# /usr/share/common-licenses/AGPL-3; if not, see
+# <https://www.gnu.org/licenses/>.
 
-# Replacement for "univention-config-registry" get and filter
+"""Replacement for "univention-config-registry" get and filter"""
 
+# included
 import argparse
 import collections
 import sys
@@ -18,7 +49,10 @@ args = parser.parse_args()
 
 
 class Registry(collections.UserDict):
+    """Container-class to hold UCR items"""
     def is_true(self, key, default=None, value=None):
+        """Get item from value-param, data-dict or default and
+        compare it to strings which stand for True"""
         if value is None:
             value = self.data.get(key)  # type: ignore
             if value is None:
@@ -26,6 +60,8 @@ class Registry(collections.UserDict):
         return value.lower() in ('yes', 'true', '1', 'enable', 'enabled', 'on')
 
     def is_false(self, key, default=None, value=None):
+        """Get item from value-param, data-dict or default and
+        compare it to strings which stand for False"""
         if value is None:
             value = self.data.get(key)  # type: ignore
             if value is None:
@@ -347,6 +383,7 @@ WARNING_TEXT = '''\
 
 # TODO: Check if full porting of warning_string() is needed
 def warning_string():
+    """Print out a warning message and all filenames from the template-dir"""
     print(WARNING_TEXT, end='')
     path = "/etc/univention/templates/files/etc/ldap/slapd.conf.d/"
     for f in sorted(listdir(path)):
@@ -354,6 +391,7 @@ def warning_string():
 
 
 def resolve_variable(line):
+    """Replaces a UC-Template-variable with a value from UCR"""
     # VARIABLE_PATTERN = re.compile('@%@([^@]+)@%@')
     if '@%@ldap/debug/level@%@' in line:
         line = re.sub(
@@ -370,15 +408,18 @@ def resolve_variable(line):
 
 # TODO: Complete this
 def custom_groupname(x):
+    """Stub function for UC-Ttemplates"""
     return x
 
 
 # TODO: Complete this
 def custom_username(x):
+    """Stub function for UC-Ttemplates"""
     return x
 
 
 def main():
+    """Parses UC-Templates from stdin and calls exec on embedded code"""
     inside_section, to_be_compiled = False, []
 
     for line in sys.stdin:
