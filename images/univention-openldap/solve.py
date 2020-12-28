@@ -39,13 +39,13 @@ import os
 import sys
 import re
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser()  # pylint: disable=invalid-name
 
 parser.add_argument('--ldapbase', type=str, required=True)
 
 parser.add_argument('--domainname', type=str, required=True)
 
-args = parser.parse_args()
+args = parser.parse_args()  # pylint: disable=invalid-name
 
 
 class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
@@ -83,7 +83,7 @@ class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
         )
 
 
-configRegistry = Registry(
+config_registry = Registry(  # pylint: disable=invalid-name
     {
         'domainname':
             args.domainname,  # 'fg-organization.intranet'
@@ -409,14 +409,14 @@ def resolve_variable(line):
     # VARIABLE_PATTERN = re.compile('@%@([^@]+)@%@')
     if '@%@ldap/debug/level@%@' in line:
         line = re.sub(
-            '@%@ldap/debug/level@%@', configRegistry['ldap/debug/level'], line
+            '@%@ldap/debug/level@%@', config_registry['ldap/debug/level'], line
         )
     if '@%@hostname@%@' in line:
-        line = re.sub('@%@hostname@%@', configRegistry['hostname'], line)
+        line = re.sub('@%@hostname@%@', config_registry['hostname'], line)
     if '@%@domainname@%@' in line:
-        line = re.sub('@%@domainname@%@', configRegistry['domainname'], line)
+        line = re.sub('@%@domainname@%@', config_registry['domainname'], line)
     if '@%@ldap/base@%@' in line:
-        line = re.sub('@%@ldap/base@%@', configRegistry['ldap/base'], line)
+        line = re.sub('@%@ldap/base@%@', config_registry['ldap/base'], line)
     return line
 
 
