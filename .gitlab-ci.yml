@@ -3,7 +3,7 @@
 stages:
 - test-stage
 
-image: python:3.7
+image: python:3.7-alpine
 
 variables:
   PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
@@ -14,22 +14,16 @@ cache:
   - venv/
 
 before_script:
-- cat /etc/issue.net
-- apt-get update
 - pip install virtualenv
 - virtualenv venv
 - source venv/bin/activate
 - pip install --upgrade pip
-- python --version
-- pip --version
-- which python
-- which pip
 
 pre-commit-job:
   stage: test-stage
   when: manual
   script:
-  - apt-get --yes --verbose-versions install shellcheck
+  - apk add gcc git musl-dev shellcheck
   - pip install pre-commit
   - pre-commit run --all-files
 
