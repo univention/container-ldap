@@ -3,7 +3,8 @@
 set -euxo pipefail
 
 check_unset_variables() {
-  var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" "LDAP_CN_ADMIN_PW_HASH" \
+  var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" \
+              "LDAP_CN_ADMIN_PW_HASH" "LDAP_CN_BACKUP_PW_HASH" \
               "CA_CERT_FILE" "CERT_PEM_FILE" "PRIVATE_KEY_FILE" )
   for var_name in "${var_names[@]}"; do
     if [[ -z "${!var_name:-}" ]]; then
@@ -69,7 +70,7 @@ setup_initial_ldif() {
   fi
 
   pw_crypt="${LDAP_CN_ADMIN_PW_HASH}"
-  backup_crypt="univention"
+  backup_crypt="${LDAP_CN_BACKUP_PW_HASH}"
   ldap_base="${LDAP_BASE_DN}"
   domainname="${DOMAIN_NAME}"
   sambadomain="${domainname%%.*}"
