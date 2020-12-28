@@ -18,11 +18,20 @@ args = parser.parse_args()
 
 
 class Registry(collections.UserDict):
-    def is_true(self, key, default=None):
-        return bool(self.data.get(key) or default)
+    def is_true(self, key, default=None, value=None):
+        if value is None:
+            value = self.data.get(key)  # type: ignore
+            if value is None:
+                return default
+        return value.lower() in ('yes', 'true', '1', 'enable', 'enabled', 'on')
 
-    def is_false(self, key, default=None):
-        return not self.is_true(key, default)
+    def is_false(self, key, default=None, value=None):
+        if value is None:
+            value = self.data.get(key)  # type: ignore
+            if value is None:
+                return default
+        return value.lower() in ('no', 'false', '0', 'disable', 'disabled', 'off')
+
 
 
 configRegistry = Registry(
@@ -249,15 +258,15 @@ configRegistry = Registry(
         # This is normally not in UCR,
         # only something that evaluate to true in 31modules
         'ldap/k5pwd':
-            True,
+            'True',
         'ldap/limits':
             'users time.soft=-1 time.hard=-1',
         'ldap/monitor':
-            False,  # Would be nice to see a working monitor backend
+            'False',  # Would be nice to see a working monitor backend
         'ldap/monitor/acl/read/groups/':
             '',  # What is even a sensible default here?
         'ldap/pwd_scheme_kinit':
-            True,
+            'True',
         'ldap/master/port':
             '7389',
         'ldap/master':
@@ -265,7 +274,7 @@ configRegistry = Registry(
         'ldap/maxopenfiles':
             '8192',
         'ldap/overlay/lastbind':
-            False,  # TODO Add lastbind.la to image
+            'False',  # TODO Add lastbind.la to image
         'ldap/overlay/lastbind/precision':
             '3600',
         'ldap/overlay/memberof':
@@ -287,9 +296,9 @@ configRegistry = Registry(
         'ldap/policy/cron':
             '5 * * * *',
         'ldap/ppolicy':
-            False,  # TODO See if this has dependencies
+            'False',  # TODO See if this has dependencies
         'ldap/ppolicy/enabled':
-            False,
+            'False',
         'ldap/ppolicy/default':
             '',
         'ldap/server/ip':
