@@ -48,7 +48,7 @@ parser.add_argument('--domainname', type=str, required=True)
 args = parser.parse_args()
 
 
-class Registry(collections.UserDict):
+class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
     """Container-class to hold UCR items"""
     def is_true(self, key, default=None, value=None):
         """Get item from value-param, data-dict or default and
