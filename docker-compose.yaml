@@ -22,6 +22,7 @@ services:
     - cert_pem
     - private_key
     volumes:
+    - ./ssl/dh_2048.pem:/etc/ldap/dh_2048.pem:ro
     - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
     - db-data:/var/lib/univention-ldap/ldap/:rw
     - last-id-data:/var/lib/univention-ldap/last-id-data/:rw
@@ -30,11 +31,11 @@ services:
 
 secrets:
   ca_cert:
-    file: CAcert.pem
+    file: ssl/secret/CAcert.pem
   cert_pem:
-    file: cert.pem
+    file: ssl/secret/cert.pem
   private_key:
-    file: private.key
+    file: ssl/secret/private.key
 
 volumes:
   # OpenLDAP only:

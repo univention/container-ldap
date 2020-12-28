@@ -54,12 +54,6 @@ RUN apt-get update && \
                        # TODO: Remove when "Config-Adapter" sidecar is ready
                        python3
 
-# As seen in /usr/share/univention-ldap/create-dh-parameter-files
-RUN cd /etc/ldap && \
-    openssl dhparam -out "dh_2048.pem" -2 2048 && \
-    chmod 644 "dh_2048.pem" && \
-    cd -
-
 ###############################################################################
 # Copy from builder image
 ###############################################################################
