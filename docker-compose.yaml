@@ -34,9 +34,9 @@ services:
 
 secrets:
   ca_cert:
-    file: ssl/secret/CAcert.pem
+    file: ssl/certs/CAcert.pem
   cert_pem:
-    file: ssl/secret/cert.pem
+    file: ssl/certs/cert.pem
   private_key:
     file: ssl/secret/private.key
 
