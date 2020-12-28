@@ -23,7 +23,7 @@ pre-commit-job:
   stage: test-stage
   when: manual
   script:
-  - apk add gcc git musl-dev shellcheck
+  - apk add bash gcc git musl-dev shellcheck
   - pip install pre-commit
   - pre-commit run --all-files
 
