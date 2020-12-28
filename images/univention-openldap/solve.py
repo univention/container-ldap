@@ -57,7 +57,14 @@ class Registry(collections.UserDict):
             value = self.data.get(key)  # type: ignore
             if value is None:
                 return default
-        return value.lower() in ('yes', 'true', '1', 'enable', 'enabled', 'on')
+        return value.lower() in (
+            'yes',
+            'true',
+            '1',
+            'enable',
+            'enabled',
+            'on',
+        )
 
     def is_false(self, key, default=None, value=None):
         """Get item from value-param, data-dict or default and
@@ -66,8 +73,14 @@ class Registry(collections.UserDict):
             value = self.data.get(key)  # type: ignore
             if value is None:
                 return default
-        return value.lower() in ('no', 'false', '0', 'disable', 'disabled', 'off')
-
+        return value.lower() in (
+            'no',
+            'false',
+            '0',
+            'disable',
+            'disabled',
+            'off',
+        )
 
 
 configRegistry = Registry(
