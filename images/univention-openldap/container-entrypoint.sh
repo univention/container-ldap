@@ -3,8 +3,8 @@
 set -euxo pipefail
 
 check_unset_variables() {
-  var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" "CA_CERT_FILE" \
-              "CERT_PEM_FILE" "PRIVATE_KEY_FILE" )
+  var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" "LDAP_CN_ADMIN_PW_HASH" \
+              "CA_CERT_FILE" "CERT_PEM_FILE" "PRIVATE_KEY_FILE" )
   for var_name in "${var_names[@]}"; do
     if [[ -z "${!var_name:-}" ]]; then
       echo "ERROR: '${var_name}' is unset."
@@ -68,7 +68,7 @@ setup_initial_ldif() {
     return 0
   fi
 
-  pw_crypt="univention"
+  pw_crypt="${LDAP_CN_ADMIN_PW_HASH}"
   backup_crypt="univention"
   ldap_base="${LDAP_BASE_DN}"
   domainname="${DOMAIN_NAME}"
