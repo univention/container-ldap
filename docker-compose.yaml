@@ -8,6 +8,9 @@ services:
     #image: bash:latest
     env_file: .env.listener
     #entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
+    secrets:
+    - ca_cert
+    - cert_pem
     volumes:
     - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
