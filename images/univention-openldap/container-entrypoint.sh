@@ -111,23 +111,6 @@ setup_translog_ldif() {
           -l /usr/share/univention-ldap/translog.ldif
 }
 
-setup_administrator_user() {
-
-  admin_exists="$(slapcat -f /etc/ldap/slapd.conf \
-                          -b "uid=Administrator,cn=users,${LDAP_BASE_DN}" \
-                          -H "ldap:///uid=Administrator,cn=users,${LDAP_BASE_DN}" \
-                  || true)"
-
-  if [[ -n "${admin_exists}" ]]; then
-    return 0
-  fi
-
-  # shellcheck disable=SC2002
-  cat /Administrator_user.ldif \
-    | solve.py --ldapbase "${LDAP_BASE_DN}" --domainname "${DOMAIN_NAME}" \
-    | slapadd -f /etc/ldap/slapd.conf
-}
-
 setup_ssl_certificates() {
   # TODO: Fix this in Config Adapter
   # Check univention-ssl/debian/univention-ssl.postinst
@@ -148,7 +131,6 @@ setup_last_id_path
 setup_slapd_conf
 setup_initial_ldif
 setup_translog_ldif
-setup_administrator_user
 setup_ssl_certificates
 
 # TODO: Remove this

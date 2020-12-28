@@ -90,7 +90,6 @@ COPY --from=builder /var/lib/univention-ldap/ /var/lib/univention-ldap/
 COPY local-schema /var/lib/univention-ldap/local-schema
 COPY ucr /usr/sbin/
 COPY solve.py /usr/sbin/
-COPY Administrator_user.ldif /Administrator_user.ldif
 
 COPY container-entrypoint.sh /usr/local/bin
 
