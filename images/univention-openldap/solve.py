@@ -35,9 +35,9 @@
 # included
 import argparse
 import collections
+import os
 import sys
 import re
-from os import listdir
 
 parser = argparse.ArgumentParser()
 
@@ -399,8 +399,9 @@ def warning_string():
     """Print out a warning message and all filenames from the template-dir"""
     print(WARNING_TEXT, end='')
     path = "/etc/univention/templates/files/etc/ldap/slapd.conf.d/"
-    for f in sorted(listdir(path)):
-        print('# \t' + path + f)
+    for file_name in sorted(os.listdir(path)):
+        file_path = os.path.join(path, file_name)
+        print('# \t{}'.format(file_path))
 
 
 def resolve_variable(line):
@@ -420,15 +421,15 @@ def resolve_variable(line):
 
 
 # TODO: Complete this
-def custom_groupname(x):
+def custom_groupname(value):
     """Stub function for UC-Ttemplates"""
-    return x
+    return value
 
 
 # TODO: Complete this
-def custom_username(x):
+def custom_username(value):
     """Stub function for UC-Ttemplates"""
-    return x
+    return value
 
 
 def main():
