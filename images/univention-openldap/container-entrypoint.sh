@@ -81,8 +81,8 @@ setup_initial_ldif() {
   sid="S-1-5-21-4181270633-4020214626-836608356"
 
   printf -v filter_string '%s' \
-    "s|@@%%@@ldap\.pw@@%%@@|$pw_crypt|;"\
-    "s|@@%%@@backup\.pw@@%%@@|$backup_crypt|;"\
+    "s|@@%%@@ldap\\.pw@@%%@@|$pw_crypt|;"\
+    "s|@@%%@@backup\\.pw@@%%@@|$backup_crypt|;"\
     "s|@@%%@@sambadomain@@%%@@|$sambadomain|;"\
     "s|@@%@@sambadomain@@%@@|$sambadomain|;"\
     "s|@@%%@@firstdc@@%%@@|$firstdc|;"\
