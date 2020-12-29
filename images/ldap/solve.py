@@ -434,7 +434,9 @@ def custom_username(value):
 
 def main():
     """Parses UC-Templates from stdin and calls exec on embedded code"""
-    inside_section, to_be_compiled = False, []
+    inside_section = False
+    initial_to_be_compiled = ('configRegistry = config_registry\n', )
+    to_be_compiled = list(initial_to_be_compiled)
 
     for line in sys.stdin:
         # The original implementation is in:
@@ -454,12 +456,11 @@ def main():
             else:
                 inside_section = False
                 exec(  # pylint: disable=exec-used
-                    ''.join(to_be_compiled).replace('configRegistry',
-                                                    'config_registry'),
+                    ''.join(to_be_compiled),
                     globals(),
                 )
                 print('')
-                to_be_compiled = []
+                to_be_compiled = list(initial_to_be_compiled)
 
         else:
             if inside_section:
