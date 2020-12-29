@@ -28,4 +28,11 @@ repos:
   hooks:
   - id: pylint
 
+# This is a wrapper for shellcheck as long as
+# shellcheck doesn't have it's own .pre-commit-hooks.yaml
+# https://github.com/koalaman/shellcheck/pull/1032
+- repo: git://github.com/detailyang/pre-commit-shell
+  rev: v1.0.6
+  hooks:
+  - id: shell-lint
 ...
