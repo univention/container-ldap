@@ -9,22 +9,23 @@ repos:
   hooks:
   - id: check-added-large-files
   - id: check-merge-conflict
+  - id: check-yaml
   - id: end-of-file-fixer
   - id: fix-encoding-pragma
   - id: trailing-whitespace
 
 - repo: https://github.com/pre-commit/mirrors-yapf
-  rev: v0.29.0
+  rev: v0.30.0
   hooks:
   - id: yapf
 
 - repo: https://gitlab.com/pycqa/flake8
-  rev: 3.7.9
+  rev: 3.8.4
   hooks:
   - id: flake8
 
 - repo: https://github.com/PyCQA/pylint
-  rev: pylint-2.4.4
+  rev: pylint-2.6.0
   hooks:
   - id: pylint
 
@@ -32,7 +33,7 @@ repos:
 # shellcheck doesn't have it's own .pre-commit-hooks.yaml
 # https://github.com/koalaman/shellcheck/pull/1032
 - repo: git://github.com/detailyang/pre-commit-shell
-  rev: v1.0.6
+  rev: 1.0.5
   hooks:
   - id: shell-lint
 ...
