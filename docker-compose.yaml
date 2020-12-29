@@ -4,7 +4,7 @@ version: '3.8'
 
 services:
   listener:
-    build: ./listener
+    build: ./images/listener
     #image: bash:latest
     env_file: .env.listener
     #entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
@@ -14,7 +14,7 @@ services:
     volumes:
     - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
-    build: ./images/univention-openldap
+    build: ./images/ldap
     #image: docker-registry.knut.univention.de/univention-openldap:latest
     env_file: .env.univention-openldap
     ports:
