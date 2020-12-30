@@ -454,7 +454,8 @@ def main():
             else:
                 inside_section = False
                 exec(  # pylint: disable=exec-used
-                    ''.join(to_be_compiled),
+                    ''.join(to_be_compiled).replace('configRegistry',
+                                                    'config_registry'),
                     globals(),
                 )
                 print('')
