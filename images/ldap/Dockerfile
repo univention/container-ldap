@@ -9,15 +9,16 @@ RUN echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
     cd "$(mktemp --directory)" && chown _apt . && \
     apt-get update && \
     apt-get download \
-                    slapd \
-                    libldap-2.4-2  \
-                    univention-ldap-config \
-                    univention-ldap-server \
-                    univention-saml-schema \
-                    univention-virtual-machine-manager-schema \
-                    univention-ldap-overlay-memberof \
-                    univention-ldap-acl-master && \
-    (dpkg --force-all -i ./*.deb || true)
+        slapd \
+        libldap-2.4-2  \
+        univention-ldap-config \
+        univention-ldap-server \
+        univention-saml-schema \
+        univention-virtual-machine-manager-schema \
+        univention-ldap-overlay-memberof \
+        univention-ldap-acl-master && \
+    (dpkg --force-all -i ./*.deb || true) && \
+    rm -rf /var/lib/apt/lists/*
 
 
 ###############################################################################
@@ -28,7 +29,7 @@ FROM debian:buster-slim
 RUN apt-get update && \
     # Install apt-utils otherwise we can't seem to
     # do non-interactive package configuration
-    apt-get install -y apt-utils && \
+    apt-get install --no-install-recommends -y apt-utils && \
     \
     # Do the non-interactive package configuration
     # of slapd otherwise the build process would
@@ -40,19 +41,21 @@ RUN apt-get update && \
         # Confirm password:
         echo slapd slapd/password2 password 'temppwd'; \
     } | debconf-set-selections && \
-    apt-get install -y slapd \
-                       libsasl2-2 \
-                       libsasl2-modules \
-                       libsasl2-modules-db \
-                       libsasl2-modules-gssapi-heimdal \
-                       krb5-config \
-                       libgssapi-krb5-2 \
-                       libkrb5-26-heimdal \
-                       libkadm5srv8-heimdal \
-                       openssl \
-                       # 30 Mb extra, only needed for slapd.conf and ldif gen
-                       # TODO: Remove when "Config-Adapter" sidecar is ready
-                       python3
+    apt-get install --no-install-recommends -y \
+        slapd \
+        libsasl2-2 \
+        libsasl2-modules \
+        libsasl2-modules-db \
+        libsasl2-modules-gssapi-heimdal \
+        krb5-config \
+        libgssapi-krb5-2 \
+        libkrb5-26-heimdal \
+        libkadm5srv8-heimdal \
+        openssl \
+        # 30 Mb extra, only needed for slapd.conf and ldif gen
+        # TODO: Remove when "Config-Adapter" sidecar is ready
+        python3 && \
+    rm -rf /var/lib/apt/lists/*
 
 ###############################################################################
 # Copy from builder image
