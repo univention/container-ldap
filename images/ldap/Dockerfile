@@ -1,7 +1,8 @@
 ###############################################################################
 # Builder image
 ###############################################################################
-FROM debian:buster-slim as builder
+ARG DEBIAN_BASE_IMAGE_TAG
+FROM debian:${DEBIAN_BASE_IMAGE_TAG} as builder
 
 COPY sources.list /etc/apt/sources.list
 
@@ -24,7 +25,8 @@ RUN echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
 ###############################################################################
 # Final image
 ###############################################################################
-FROM debian:buster-slim
+ARG DEBIAN_BASE_IMAGE_TAG
+FROM debian:${DEBIAN_BASE_IMAGE_TAG}
 
 RUN apt-get update && \
     # Install apt-utils otherwise we can't seem to

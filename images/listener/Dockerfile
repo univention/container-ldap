@@ -1,7 +1,8 @@
 ###############################################################################
 # Single image
 ###############################################################################
-FROM debian:buster-slim
+ARG DEBIAN_BASE_IMAGE_TAG
+FROM debian:${DEBIAN_BASE_IMAGE_TAG}
 
 SHELL ["/bin/bash", "-c"]
 

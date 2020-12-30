@@ -4,7 +4,10 @@ version: '3.8'
 
 services:
   listener:
-    build: ./images/listener
+    build:
+      context: ./images/listener
+      args:
+        DEBIAN_BASE_IMAGE_TAG: buster-slim
     #image: bash:latest
     env_file: .env.listener
     #entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
@@ -14,7 +17,10 @@ services:
     volumes:
     - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
-    build: ./images/ldap
+    build:
+      context: ./images/ldap
+      args:
+        DEBIAN_BASE_IMAGE_TAG: buster-slim
     #image: docker-registry.knut.univention.de/univention-openldap:latest
     env_file: .env.univention-openldap
     ports:
