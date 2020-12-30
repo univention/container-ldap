@@ -401,7 +401,7 @@ def warning_string():
     path = "/etc/univention/templates/files/etc/ldap/slapd.conf.d/"
     for file_name in sorted(os.listdir(path)):
         file_path = os.path.join(path, file_name)
-        print('# \t{}'.format(file_path))
+        print(f'# \t{file_path}')
 
 
 def resolve_variable(line):
