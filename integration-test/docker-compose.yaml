@@ -1,0 +1,16 @@
+---
+
+version: '3.8'
+
+services:
+  test:
+    image: compose_test:latest
+    entrypoint: 'bash -c "/ldap_test.sh"'
+    networks:
+        - public_ldap
+
+networks:
+  public_ldap:
+    external:
+      name: container-ldap_default
+...
