@@ -9,6 +9,7 @@ services:
       args:
         DEBIAN_BASE_IMAGE_TAG: buster-slim
     #image: bash:latest
+    image: docker-registry.knut.univention.de/upx/container-ldap/listener:${CI_PIPELINE_TAG}test
     env_file: .env.listener
     #entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
     secrets:
@@ -21,6 +22,7 @@ services:
       context: ./images/notifier
       args:
         DEBIAN_BASE_IMAGE_TAG: buster-slim
+    image: docker-registry.knut.univention.de/upx/container-ldap/notifier:${CI_PIPELINE_TAG}test
     volumes:
     - notify-transaction-data:/var/lib/univention-ldap/notify/:rw
     - listener-data:/var/lib/univention-ldap/listener/:ro
@@ -32,7 +34,7 @@ services:
         DEB_BUILDER_REGISTRY: docker-registry.knut.univention.de
         DEB_BUILDER_IMAGE: univention-openldap_deb_builder
         DEB_BUILDER_TAG: latest
-    #image: docker-registry.knut.univention.de/univention-openldap:latest
+    image: docker-registry.knut.univention.de/upx/container-ldap/openldap:${CI_PIPELINE_TAG}test
     env_file: .env.univention-openldap
     ports:
     - 389:389
