@@ -14,8 +14,9 @@ cache:
   - venv/
 
 before_script:
-- pip install virtualenv
-- virtualenv venv
+- apk add gcc musl-dev libffi-dev make openssl-dev bash git shellcheck
+- pip install virtualenv docker-compose
+- if [ ! -f venv/bin/activate ]; then virtualenv venv; fi
 - source venv/bin/activate
 - pip install --upgrade pip
 
@@ -23,8 +24,10 @@ pre-commit-job:
   stage: test-stage
   when: manual
   script:
-  - apk add bash gcc git musl-dev shellcheck
   - pip install pre-commit
+  # Compose lint would fail without the referenced env files
+  - cp .env.listener.example .env.listener
+  - cp .env.univention-openldap.example .env.univention-openldap
   - pre-commit run --all-files
 
 ...
