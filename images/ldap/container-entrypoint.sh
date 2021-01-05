@@ -43,16 +43,16 @@ setup_last_id_path() {
   # If the last_id file exists, then it should never be empty
   # otherwise the translog overlay gets stuck at ID -1
   if [[ ! -s /var/lib/univention-ldap/last_id ]]; then
-    echo '0' > /var/lib/univention-ldap/last_id
+    echo -n '0' > /var/lib/univention-ldap/last_id
   fi
 }
 
 setup_slapd_conf() {
 
   cat /etc/univention/templates/files/etc/ldap/slapd.conf.d/* \
-    | solve.py --ldapbase "${LDAP_BASE_DN}" \
-               --domainname "${DOMAIN_NAME}" \
-               > /etc/ldap/slapd.conf
+    | ucr-light-filter --ldapbase "${LDAP_BASE_DN}" \
+                       --domainname "${DOMAIN_NAME}" \
+                       > /etc/ldap/slapd.conf
 }
 
 setup_initial_ldif() {
@@ -78,7 +78,7 @@ setup_initial_ldif() {
   firstdc="$(echo "$ldap_base" | sed -e 's|,.*||g;s|.*=||')"
 
   # TODO: check /usr/sbin/univention-newsid
-  sid="S-1-5-21-4181270633-4020214626-836608356"
+  sid="S-1-5-21-UNSET"
 
   printf -v filter_string '%s' \
     "s|@@%%@@ldap\\.pw@@%%@@|$pw_crypt|;"\
@@ -92,7 +92,7 @@ setup_initial_ldif() {
 
   cat /usr/share/univention-ldap/base.ldif \
       /usr/share/univention-ldap/core-edition.ldif \
-    | solve.py --ldapbase "${ldap_base}" --domainname "${domainname}" \
+    | ucr-light-filter --ldapbase "${ldap_base}" --domainname "${domainname}" \
     | sed -e "${filter_string}" \
     | slapadd -f /etc/ldap/slapd.conf
 }
@@ -138,5 +138,5 @@ setup_ssl_certificates
 #sed -i '/^rootdn\t\t.*/a rootpw\t\t"univention"' /etc/ldap/slapd.conf
 
 /usr/sbin/slapd -f /etc/ldap/slapd.conf \
-                -d 9999 \
+                -d acl -d trace -d config -d conns \
                 -h "ldapi:/// ldap://:389/ ldaps://:636/"
