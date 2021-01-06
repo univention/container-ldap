@@ -21,3 +21,18 @@ Alternatively you open /etc/docker/daemon.json and add/edit the line
 Generate your own DH-Parameters with:
 
    openssl dhparam -out "dh_2048.pem" -2 2048
+
+
+#### pre-commit container
+
+Build the container with:
+
+    docker build --tag pre-commit:container-ldap images/pre-commit/
+
+Run pre-commit:
+
+    sudo mkdir --parents /root/.cache/pre-commit
+    docker run \
+      --mount type=bind,source=${PWD},target=/code \
+      --mount type=bind,source=/root/.cache/pre-commit,target=/root/.cache/pre-commit \
+      pre-commit:container-ldap
