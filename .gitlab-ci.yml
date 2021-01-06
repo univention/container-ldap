@@ -6,11 +6,13 @@ stages:
 image: python:3.7-alpine
 
 variables:
-  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
+  PIP_CACHE_DIR: ${CI_PROJECT_DIR}/.cache/pip
+  PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
 
 cache:
   paths:
   - .cache/pip
+  - .cache/pre-commit
   - venv/
 
 before_script:
