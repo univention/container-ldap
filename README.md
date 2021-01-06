@@ -15,5 +15,5 @@ Generate your own DH-Parameters with:
 
 ### Or configure docker client to skip SSL
 
-Alternatively you open /etc/docker/daemin.json and add/edit the line
+Alternatively you open /etc/docker/daemon.json and add/edit the line
     "insecure-registries" : [ "docker-registry.knut.univention.de" ],
