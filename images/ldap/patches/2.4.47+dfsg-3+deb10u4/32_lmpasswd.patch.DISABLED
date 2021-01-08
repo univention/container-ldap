@@ -1,0 +1,12 @@
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/debian/configure.options openldap-2.4.31/debian/configure.options
+--- openldap-2.4.31.orig/debian/configure.options	2012-07-19 14:41:49.308920086 +0200
++++ openldap-2.4.31/debian/configure.options	2012-07-19 14:41:50.400917372 +0200
+@@ -96,7 +96,7 @@
+ #    --enable-crypt	  enable crypt(3) passwords [no]
+ --enable-crypt
+ #    --enable-lmpasswd	  enable LAN Manager passwords [no]
+---disable-lmpasswd
++--enable-lmpasswd
+ #    --enable-spasswd	  enable (Cyrus) SASL password verification [no]
+ --enable-spasswd
+ #    --enable-modules	  enable dynamic module support [no]

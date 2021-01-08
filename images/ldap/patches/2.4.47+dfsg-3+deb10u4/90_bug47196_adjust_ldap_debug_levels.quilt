@@ -1,0 +1,61 @@
+Bug #47196: Avoid LDAP_DEBUG_NONE and LDAP_DEBUG_ANY if not critical
+
+
+From 3086c6fba1bd3d05793e4d579137e0a1bb3f31e3 Mon Sep 17 00:00:00 2001
+From: Arvid Requate <requate@univention.de>
+Date: Tue, 10 Jul 2018 19:01:57 +0200
+Subject: [PATCH] Bug #47196: Avoid LDAP_DEBUG_NONE and LDAP_DEBUG_ANY if not
+ critical
+
+---
+ servers/slapd/connection.c          | 2 +-
+ servers/slapd/overlays/constraint.c | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/servers/slapd/connection.c b/servers/slapd/connection.c
+index 145bcff..c523f2d 100644
+--- a/servers/slapd/connection.c
++++ b/servers/slapd/connection.c
+@@ -1710,7 +1710,7 @@ connection_input( Connection *conn , conn_readinfo *cri )
+ 			? slap_conn_max_pending_auth
+ 			: slap_conn_max_pending;
+ 
+-		Debug( LDAP_DEBUG_ANY,
++		Debug( LDAP_DEBUG_CONNS,
+ 			"connection_input: conn=%lu deferring operation: %s\n",
+ 			conn->c_connid, defer, 0 );
+ 		conn->c_n_ops_pending++;
+diff --git a/servers/slapd/overlays/constraint.c b/servers/slapd/overlays/constraint.c
+index 5c65b42..6c73b80 100644
+--- a/servers/slapd/overlays/constraint.c
++++ b/servers/slapd/overlays/constraint.c
+@@ -381,7 +381,7 @@ constraint_cf_gen( ConfigArgs *c )
+ 						snprintf( c->cr_msg, sizeof( c->cr_msg ),
+ 							"%s %s: URI %s DN normalization failed",
+ 							c->argv[0], c->argv[1], c->argv[3] );
+-						Debug( LDAP_DEBUG_CONFIG|LDAP_DEBUG_NONE,
++						Debug( LDAP_DEBUG_CONFIG,
+ 							   "%s: %s\n", c->log, c->cr_msg, 0 );
+ 						rc = ARG_BAD_CONF;
+ 						goto done;
+@@ -551,7 +551,7 @@ done:;
+ 				on->on_bi.bi_private = a2;
+ 
+ 			} else {
+-				Debug( LDAP_DEBUG_CONFIG|LDAP_DEBUG_NONE,
++				Debug( LDAP_DEBUG_CONFIG,
+ 					   "%s: %s\n", c->log, c->cr_msg, 0 );
+ 				constraint_free( &ap, 0 );
+ 			}
+@@ -959,7 +959,7 @@ constraint_update( Operation *op, SlapReply *rs )
+ 		return LDAP_OTHER;
+ 	}
+ 	
+-	Debug( LDAP_DEBUG_CONFIG|LDAP_DEBUG_NONE, "constraint_update()\n", 0,0,0);
++	Debug( LDAP_DEBUG_CONFIG, "constraint_update()\n", 0,0,0);
+ 	if ((m = modlist) == NULL) {
+ 		op->o_bd->bd_info = (BackendInfo *)(on->on_info);
+ 		send_ldap_error(op, rs, LDAP_INVALID_SYNTAX,
+-- 
+2.11.0
+

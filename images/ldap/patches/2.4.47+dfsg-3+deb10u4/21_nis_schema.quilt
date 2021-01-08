@@ -1,0 +1,35 @@
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/servers/slapd/schema/nis.schema openldap-2.4.31/servers/slapd/schema/nis.schema
+--- openldap-2.4.31.orig/servers/slapd/schema/nis.schema	2012-07-19 14:40:03.375917755 +0200
++++ openldap-2.4.31/servers/slapd/schema/nis.schema	2012-07-19 14:41:49.588916989 +0200
+@@ -54,8 +54,8 @@
+ 
+ attributetype ( 1.3.6.1.1.1.1.3 NAME 'homeDirectory'
+ 	DESC 'The absolute path to the home directory'
+-	EQUALITY caseExactIA5Match
+-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
++	EQUALITY caseExactMatch
++	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+ 
+ attributetype ( 1.3.6.1.1.1.1.4 NAME 'loginShell'
+ 	DESC 'The path to the login shell'
+@@ -91,9 +91,9 @@
+ 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+ 
+ attributetype ( 1.3.6.1.1.1.1.12 NAME 'memberUid'
+-	EQUALITY caseExactIA5Match
+-	SUBSTR caseExactIA5SubstringsMatch
+-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
++	EQUALITY caseExactMatch
++	SUBSTR caseExactSubstringsMatch
++	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+ 
+ attributetype ( 1.3.6.1.1.1.1.13 NAME 'memberNisNetgroup'
+ 	EQUALITY caseExactIA5Match
+@@ -137,6 +137,7 @@
+ attributetype ( 1.3.6.1.1.1.1.22 NAME 'macAddress'
+ 	DESC 'MAC address'
+ 	EQUALITY caseIgnoreIA5Match
++	SUBSTR caseIgnoreIA5SubstringsMatch
+ 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{128} )
+ 
+ attributetype ( 1.3.6.1.1.1.1.23 NAME 'bootParameter'

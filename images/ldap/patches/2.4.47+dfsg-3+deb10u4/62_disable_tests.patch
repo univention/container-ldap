@@ -1,0 +1,13 @@
+diff --git debian/rules debian/rules
+--- debian/rules
++++ debian/rules
+@@ -87,6 +87,9 @@ autoreconf:
+ override_dh_autoreconf:
+ 	dh_autoreconf debian/rules -- autoreconf
+ 
++override_dh_auto_test:
++	:
++
+ override_dh_auto_configure:
+ 	# Check if we include the RFCs, Internet-Drafts, or upstream schemas
+ 	# with RFC text (which are non DFSG-free).  You can set DFSG_NONFREE

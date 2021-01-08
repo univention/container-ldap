@@ -1,0 +1,25 @@
+This patch adds a new overlay module pwd_scheme_kinit. It allows to set
+the userPassword attribute to {KINIT}. The overlay module checks the
+password against the Kerberos KDC.  It can be used to authenticate
+against an Active Directory domain.
+
+UCS Bug: https://forge.univention.org/bugzilla/show_bug.cgi?id=35092
+
+diff --git debian/rules debian/rules
+--- debian/rules
++++ debian/rules
+@@ -23,7 +23,7 @@ ifneq ($(filter stage1,$(DEB_BUILD_PROFILES)),)
+ 	CONFIG += --disable-slapd
+ endif
+ 
+-CONTRIB_MODULES = autogroup lastbind passwd passwd/pbkdf2 passwd/sha2 smbk5pwd k5pwd
++CONTRIB_MODULES = autogroup lastbind passwd passwd/pbkdf2 passwd/sha2 smbk5pwd k5pwd pwd_scheme_kinit
+ 
+ # Ensure CC is set correctly for cross builds, unless it has already 
+ # been set explicitly.
+diff --git debian/slapd.install debian/slapd.install
+--- debian/slapd.install
++++ debian/slapd.install
+@@ -10000,0 +10000,2 @@
++usr/lib/ldap/pwd_scheme_kinit.so*
++usr/lib/ldap/pwd_scheme_kinit.la

@@ -1,0 +1,48 @@
+--- a/servers/slapd/overlays/ppolicy.c.orig	2020-07-03 17:44:01.505809000 +0200
++++ b/servers/slapd/overlays/ppolicy.c	2020-07-03 17:47:10.765809000 +0200
+@@ -210,6 +210,7 @@ static struct schema_info pwd_UsSchema[]
+ };
+ 
+ static ldap_pvt_thread_mutex_t chk_syntax_mutex;
++static ldap_pvt_thread_mutex_t pwdFailureTime_mutex;
+ 
+ enum {
+ 	PPOLICY_DEFAULT = 1,
+@@ -1026,11 +1026,13 @@ ppolicy_bind_response( Operation *op, Sl
+ 		goto locked;
+ 	}
+ 
++	ldap_pvt_thread_mutex_lock( &pwdFailureTime_mutex );
+ 	op->o_bd->bd_info = (BackendInfo *)on->on_info;
+ 	rc = be_entry_get_rw( op, &op->o_req_ndn, NULL, NULL, 0, &e );
+ 	op->o_bd->bd_info = bi;
+ 
+ 	if ( rc != LDAP_SUCCESS ) {
++		ldap_pvt_thread_mutex_unlock( &pwdFailureTime_mutex );
+ 		return SLAP_CB_CONTINUE;
+ 	}
+ 
+@@ -1358,6 +1357,7 @@ locked:
+ 		op->o_callback->sc_cleanup = ppolicy_ctrls_cleanup;
+ 	}
+ 	op->o_bd->bd_info = bi;
++	ldap_pvt_thread_mutex_unlock( &pwdFailureTime_mutex );
+ 	return SLAP_CB_CONTINUE;
+ }
+ 
+@@ -2412,6 +2413,7 @@ ppolicy_db_init(
+ 	lib_account = PyImport_ImportModule("univention.lib.account");
+ 
+ 	ldap_pvt_thread_mutex_init( &chk_syntax_mutex );
++	ldap_pvt_thread_mutex_init( &pwdFailureTime_mutex );
+ 
+ 	return 0;
+ }
+@@ -2457,6 +2460,7 @@ ppolicy_db_destroy(
+ 	Py_Finalize();
+ 
+ 	ldap_pvt_thread_mutex_destroy( &chk_syntax_mutex );
++	ldap_pvt_thread_mutex_destroy( &pwdFailureTime_mutex );
+ 	return 0;
+ }
+ 
