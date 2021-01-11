@@ -22,7 +22,8 @@ COPY --from=venv \
   /venv
 
 RUN \
-  apk add bash docker-compose gcc git musl-dev shellcheck && \
+  apk add --no-cache bash docker-compose gcc git musl-dev shellcheck && \
+  rm -rf /var/cache/apk/* && \
   /venv/bin/pip install pre-commit && \
   rm -rf /root/.cache/pip/ && \
   mkdir /code
