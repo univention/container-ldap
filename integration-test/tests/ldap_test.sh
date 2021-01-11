@@ -42,24 +42,24 @@ anonymous_search () {
   exit 1
 }
 
-cn_backup_user () {
-  backup_user_exists="$(\
+cn_admin_user () {
+  admin_user_exists="$(\
     ldapsearch -x -h "${LDAP_CONTAINER}" -p 389 \
-               -D "cn=backup,${LDAP_BASE_DN}" \
-               -w univention123 -b "cn=backup,${LDAP_BASE_DN}" \
+               -D "cn=admin,${LDAP_BASE_DN}" \
+               -w univention -b "cn=admin,${LDAP_BASE_DN}" \
     || true)"
 
-  if [[ -n "${backup_user_exists}" ]]; then
-    echo "TEST OK: Backup cn=backup user can query itself"
-    #echo "${backup_user_exists}"
+  if [[ -n "${admin_user_exists}" ]]; then
+    echo "TEST OK: The cn=admin user can query itself"
+    #echo "${admin_user_exists}"
     return 0
   fi
 
-  echo "ERROR: Backup user doesn't exist!">&2
-  echo "${backup_user_exists}">&2
+  echo "ERROR: Admin user can't query itself!">&2
+  echo "${admin_user_exists}">&2
   exit 1
 }
 
 translog_overlay
 anonymous_search
-cn_backup_user
+cn_admin_user
