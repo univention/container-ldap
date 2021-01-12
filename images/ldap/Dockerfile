@@ -22,7 +22,6 @@ RUN echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
 ###############################################################################
 # Builder image for OpenLDAP currently in deb package
 ###############################################################################
-ARG DEBIAN_BASE_IMAGE_TAG
 FROM debian:${DEBIAN_BASE_IMAGE_TAG} as deb_builder
 
 RUN echo 'deb-src http://deb.debian.org/debian buster main' \
@@ -111,7 +110,6 @@ RUN ls -lah ~/src/debian/slapd*.deb
 ###############################################################################
 # Final image
 ###############################################################################
-ARG DEBIAN_BASE_IMAGE_TAG
 FROM debian:${DEBIAN_BASE_IMAGE_TAG}
 
 RUN apt-get update && \
