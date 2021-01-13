@@ -5,7 +5,7 @@ ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
 
 FROM debian:${DEBIAN_BASE_IMAGE_TAG} AS build
 
-ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-4x.gpg
+ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
 
 # Ignore questions from debconf
 ARG DEBIAN_FRONTEND=noninteractive
