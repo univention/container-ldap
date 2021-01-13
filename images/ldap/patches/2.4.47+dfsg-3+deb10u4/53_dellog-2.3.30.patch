@@ -1,0 +1,18 @@
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/debian/configure.options openldap-2.4.31/debian/configure.options
+--- openldap-2.4.31.orig/debian/configure.options	2012-07-19 14:41:50.528918918 +0200
++++ openldap-2.4.31/debian/configure.options	2012-07-19 14:44:33.840919378 +0200
+@@ -146,6 +146,7 @@
+ #    --enable-memberof	  Reverse Group Membership overlay no|yes|mod [no]
+ #    --enable-ppolicy	  Password Policy overlay no|yes|mod [no]
+ #    --enable-proxycache	  Proxy Cache overlay no|yes|mod [no]
++--enable-dellog=mod
+ #    --enable-refint	  Referential Integrity overlay no|yes|mod [no]
+ #    --enable-retcode	  Return Code testing overlay no|yes|mod [no]
+ #    --enable-rwm       	  Rewrite/Remap overlay no|yes|mod [no]
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/debian/slapd.install openldap-2.4.31/debian/configure.options
+--- openldap-2.4.31.orig/debian/slapd.install	2012-07-19 14:41:50.528918918 +0200
++++ openldap-2.4.31/debian/slapd.install	2012-07-19 14:44:33.840919378 +0200
+@@ -10000,0 +10000,3 @@
++usr/lib/ldap/dellog-2.4.so*
++usr/lib/ldap/dellog.so*
++usr/lib/ldap/dellog.la

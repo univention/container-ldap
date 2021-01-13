@@ -1,0 +1,40 @@
+This patch avoids an OID-change of internal attributes or objectclasses,
+which affect the previously installed version of OpenLDAP.
+
+As the univention-directory-replication.py filters in the previous release
+have not been updated yet to filter out the modified OIDs, the attributes
+and objectclasses in question would end up in schema.conf and the
+previously installed version of OpenLDAP (on all UCS DCs that were not updated
+yet) would not start again if a slapd restart occured. Even without slapd
+restarts the update itself would fail, as slapd.preinst starts slapcat from
+the previously installed OpenLDAP version.
+
+Before this patch is removed univention-directory-replication.py filters
+must be extended to the new OIDs. This has been done in the cases of OLcfg
+and entryDN.
+This back-patch for the OIDs may then be safely removed for some later Release.
+
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/servers/slapd/bconfig.c openldap-2.4.31/servers/slapd/bconfig.c
+--- openldap-2.4.31.orig/servers/slapd/bconfig.c	2012-07-19 14:40:03.363918481 +0200
++++ openldap-2.4.31/servers/slapd/bconfig.c	2012-07-19 14:41:50.261415728 +0200
+@@ -204,7 +204,7 @@
+ 
+ static OidRec OidMacros[] = {
+ 	/* OpenLDAProot:1.12.2 */
+-	{ "OLcfg", "1.3.6.1.4.1.4203.1.12.2" },
++	{ "OLcfg", "1.3.6.1.4.1.4203.666.11.1" },
+ 	{ "OLcfgAt", "OLcfg:3" },
+ 	{ "OLcfgGlAt", "OLcfgAt:0" },
+ 	{ "OLcfgBkAt", "OLcfgAt:1" },
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/servers/slapd/schema_prep.c openldap-2.4.31/servers/slapd/schema_prep.c
+--- openldap-2.4.31.orig/servers/slapd/schema_prep.c	2012-07-19 14:40:03.367919733 +0200
++++ openldap-2.4.31/servers/slapd/schema_prep.c	2012-07-19 14:41:50.261415728 +0200
+@@ -532,7 +532,7 @@
+ 		offsetof(struct slap_internal_schema, si_ad_collectiveExclusions) },
+ #endif
+ 
+-	{ "entryDN", "( 1.3.6.1.1.20 NAME 'entryDN' "   
++	{ "entryDN", "( 1.3.6.1.4.1.4203.666.1.33 NAME 'entryDN' "   
+ 			"DESC 'DN of the entry' "
+ 			"EQUALITY distinguishedNameMatch "
+ 			"SYNTAX 1.3.6.1.4.1.1466.115.121.1.12 "

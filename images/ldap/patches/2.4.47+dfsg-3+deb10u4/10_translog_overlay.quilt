@@ -1,0 +1,545 @@
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/configure openldap-2.4.31/configure
+--- openldap-2.4.31.orig/configure	2012-07-19 14:40:03.439918158 +0200
++++ openldap-2.4.31/configure	2012-07-19 14:41:49.145415399 +0200
+@@ -780,6 +780,7 @@
+ SLAPD_NDB_LIBS
+ BDB_LIBS
+ SLAPD_LIBS
++BUILD_TRANSLOG
+ LDAP_LIBS
+ BUILD_VALSORT
+ BUILD_UNIQUE
+@@ -1708,6 +1709,7 @@
+     --enable-translucent  Translucent Proxy overlay no|yes|mod [no]
+     --enable-unique       Attribute Uniqueness overlay no|yes|mod [no]
+     --enable-valsort      Value Sorting overlay no|yes|mod [no]
++    --enable-translog	  Transactions Log overlay no|yes|mod [no]
+ 
+ Library Generation & Linking Options
+   --enable-static[=PKGS]  build static libraries [default=yes]
+@@ -3640,6 +3642,28 @@
+ fi
+ # end --with-cyrus_sasl
+ 
++# OpenLDAP --enable-translog
++	# Check whether --enable-translog or --disable-translog was given.
++if test "${enable_translog+set}" = set; then
++  enableval="$enable_translog"
++
++	ol_arg=invalid
++	for ol_val in no yes mod ; do
++		if test "$enableval" = "$ol_val" ; then
++			ol_arg="$ol_val"
++		fi
++	done
++	if test "$ol_arg" = "invalid" ; then
++		{ { echo "$as_me:$LINENO: error: bad value $enableval for --enable-translog" >&5
++echo "$as_me: error: bad value $enableval for --enable-translog" >&2;}
++   { (exit 1); exit 1; }; }
++	fi
++	ol_enable_translog="$ol_arg"
++
++else
++  	ol_enable_translog="no"
++fi; # end --enable-translog
++
+ # OpenLDAP --with-fetch
+ 
+ # Check whether --with-fetch was given.
+@@ -4423,7 +4447,8 @@
+ 	syncprov \
+ 	translucent \
+ 	unique \
+-	valsort"
++	valsort \
++	translog"
+ 
+ # Check whether --enable-xxslapoverlays was given.
+ if test "${enable_xxslapoverlays+set}" = set; then :
+@@ -4890,6 +4915,29 @@
+ 
+ # end --enable-valsort
+ 
++# OpenLDAP --enable-translog
++
++	# Check whether --enable-translog or --disable-translog was given.
++if test "${enable_translog+set}" = set; then
++  enableval="$enable_translog"
++
++	ol_arg=invalid
++	for ol_val in no yes mod ; do
++		if test "$enableval" = "$ol_val" ; then
++			ol_arg="$ol_val"
++		fi
++	done
++	if test "$ol_arg" = "invalid" ; then
++		{ { echo "$as_me:$LINENO: error: bad value $enableval for --enable-translog" >&5
++echo "$as_me: error: bad value $enableval for --enable-translog" >&2;}
++   { (exit 1); exit 1; }; }
++	fi
++	ol_enable_translog="$ol_arg"
++
++else
++  	ol_enable_translog=${ol_enable_overlays:-no}
++fi;
++# end --enable-translog
+ 
+ # Check whether --enable-xxliboptions was given.
+ if test "${enable_xxliboptions+set}" = set; then :
+@@ -5113,6 +5161,7 @@
+ BUILD_TRANSLUCENT=no
+ BUILD_UNIQUE=no
+ BUILD_VALSORT=no
++BUILD_TRANSLOG=no
+ 
+ SLAPD_STATIC_OVERLAYS=
+ SLAPD_DYNAMIC_OVERLAYS=
+@@ -24710,6 +24759,22 @@
+ 
+ fi
+ 
++if test "$ol_enable_translog" != no ; then
++	BUILD_TRANSLOG=$ol_enable_translog
++	if test "$ol_enable_translog" = mod ; then
++		MFLAG=SLAPD_MOD_DYNAMIC
++		SLAPD_DYNAMIC_OVERLAYS="$SLAPD_DYNAMIC_OVERLAYS translog.la"
++	else
++		MFLAG=SLAPD_MOD_STATIC
++		SLAPD_STATIC_OVERLAYS="$SLAPD_STATIC_OVERLAYS translog.o"
++	fi
++
++cat >>confdefs.h <<_ACEOF
++#define SLAPD_OVER_TRANSLOG $MFLAG
++_ACEOF
++
++fi
++
+ if test "$ol_enable_valsort" != no ; then
+ 	BUILD_VALSORT=$ol_enable_valsort
+ 	if test "$ol_enable_valsort" = mod ; then
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/configure.in openldap-2.4.31/configure.in
+--- openldap-2.4.31.orig/configure.in	2012-07-19 14:40:03.415919250 +0200
++++ openldap-2.4.31/configure.in	2012-07-19 14:41:49.145415399 +0200
+@@ -355,7 +355,8 @@
+ 	syncprov \
+ 	translucent \
+ 	unique \
+-	valsort"
++	valsort \
++	translog"
+ 
+ AC_ARG_ENABLE(xxslapoverlays,[
+ SLAPD Overlay Options:])
+@@ -402,6 +403,8 @@
+ 	no, [no yes mod], ol_enable_overlays)
+ OL_ARG_ENABLE(valsort,[    --enable-valsort      Value Sorting overlay],
+ 	no, [no yes mod], ol_enable_overlays)
++OL_ARG_ENABLE(translog,[    --enable-translog      Transactions Log overlay],
++	no, [no yes mod], ol_enable_overlays)
+ 
+ dnl ----------------------------------------------------------------
+ AC_ARG_ENABLE(xxliboptions,[
+@@ -570,6 +573,7 @@
+ BUILD_TRANSLUCENT=no
+ BUILD_UNIQUE=no
+ BUILD_VALSORT=no
++BUILD_TRANSLOG=no
+ 
+ SLAPD_STATIC_OVERLAYS=
+ SLAPD_DYNAMIC_OVERLAYS=
+@@ -3043,6 +3047,18 @@
+ 	AC_DEFINE_UNQUOTED(SLAPD_OVER_VALSORT,$MFLAG,[define for Value Sorting overlay])
+ fi
+ 
++if test "$ol_enable_translog" != no ; then
++	BUILD_TRANSLOG=$ol_enable_translog
++	if test "$ol_enable_translog" = mod ; then
++		MFLAG=SLAPD_MOD_DYNAMIC
++		SLAPD_DYNAMIC_OVERLAYS="$SLAPD_DYNAMIC_OVERLAYS translog.la"
++	else
++		MFLAG=SLAPD_MOD_STATIC
++		SLAPD_STATIC_OVERLAYS="$SLAPD_STATIC_OVERLAYS translog.o"
++	fi
++	AC_DEFINE_UNQUOTED(SLAPD_OVER_TRANSLOG,$MFLAG,[define for Transactions Log overlay])
++fi
++
+ if test "$ol_enable_rewrite" != no ; then
+ 	AC_DEFINE(ENABLE_REWRITE,1,[define to enable rewriting in back-ldap and back-meta])
+ 	BUILD_REWRITE=yes
+@@ -3120,6 +3136,7 @@
+   AC_SUBST(BUILD_TRANSLUCENT)
+   AC_SUBST(BUILD_UNIQUE)
+   AC_SUBST(BUILD_VALSORT)
++  AC_SUBST(BUILD_TRANSLOG)
+ 
+ AC_SUBST(LDAP_LIBS)
+ AC_SUBST(SLAPD_LIBS)
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/include/portable.hin openldap-2.4.31/include/portable.hin
+--- openldap-2.4.31.orig/include/portable.hin	2012-07-19 14:40:03.415919250 +0200
++++ openldap-2.4.31/include/portable.hin	2012-07-19 14:41:49.145415399 +0200
+@@ -1026,6 +1026,9 @@
+ /* define for Value Sorting overlay */
+ #undef SLAPD_OVER_VALSORT
+ 
++/* define for Translog overlay */
++#undef SLAPD_OVER_TRANSLOG
++
+ /* define to support PASSWD backend */
+ #undef SLAPD_PASSWD
+ 
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/servers/slapd/overlays/Makefile.in openldap-2.4.31/servers/slapd/overlays/Makefile.in
+--- openldap-2.4.31.orig/servers/slapd/overlays/Makefile.in	2012-07-19 14:40:03.379921977 +0200
++++ openldap-2.4.31/servers/slapd/overlays/Makefile.in	2012-07-19 14:41:49.149415346 +0200
+@@ -33,7 +33,8 @@
+ 	syncprov.c \
+ 	translucent.c \
+ 	unique.c \
+-	valsort.c
++	valsort.c \
++	translog.c
+ OBJS = statover.o \
+ 	@SLAPD_STATIC_OVERLAYS@ \
+ 	overlays.o
+@@ -125,6 +126,9 @@
+ valsort.la : valsort.lo
+ 	$(LTLINK_MOD) -module -o $@ valsort.lo version.lo $(LINK_LIBS)
+ 
++translog.la : translog.lo
++	$(LTLINK_MOD) -module -o $@ translog.lo version.lo $(LINK_LIBS)
++
+ install-local:	$(PROGRAMS)
+ 	@if test -n "$?" ; then \
+ 		$(MKDIR) $(DESTDIR)$(moduledir); \
+diff -Nuar -x '*.orig' openldap-2.4.31.orig/servers/slapd/overlays/translog.c openldap-2.4.31/servers/slapd/overlays/translog.c
+--- openldap-2.4.31.orig/servers/slapd/overlays/translog.c	1970-01-01 01:00:00.000000000 +0100
++++ openldap-2.4.31/servers/slapd/overlays/translog.c	2012-07-19 14:41:49.149415346 +0200
+@@ -0,0 +1,329 @@
++/* translog.c - log modifications for replication purposes */
++
++#include "portable.h"
++
++#ifdef SLAPD_OVER_TRANSLOG
++
++#define MAX_PATH_LEN 4096
++
++#include <stdio.h>
++#include <unistd.h>
++#include <ac/string.h>
++#include <ac/ctype.h>
++#include "slap.h"
++
++//#define WITH_STAMP	/* enable timestamp in translog file */
++//#define O_DEBUG		/* enable debug messages */
++
++#ifdef WITH_STAMP
++#include <time.h>
++#endif
++
++typedef struct translog_data {
++	ldap_pvt_thread_mutex_t ad_mutex;
++	char *ad_logfile;
++} translog_data;
++
++static FILE* fopen_lock ( const char *name, const char *type, FILE **l_file )
++{
++	char buf[MAX_PATH_LEN];
++	FILE *file;
++	int count=0;
++	int rc;
++
++	snprintf( buf, sizeof(buf), "%s.lock", name );
++
++	if ( (*l_file = fopen ( buf, type )) == NULL ) {
++		return NULL;
++	}
++
++	while ( (rc=lockf( fileno(*l_file), F_TEST, 0 ) ) != 0 ) {
++		count++;
++		usleep(1000);
++	}
++
++	lockf( fileno(*l_file), F_LOCK, 0 );
++
++	if ( (file = fopen( name, type ) ) == NULL ) {
++
++		lockf( fileno(*l_file), F_ULOCK, 0 );
++		fclose(*l_file);
++		l_file  = NULL;
++	}
++
++	return file;
++}
++
++static int fclose_lock ( FILE *file, FILE *l_file )
++{
++	int rc;
++
++	if ( file != NULL ) {
++		if ( file->_fileno != -1 ) {
++			fclose ( file );
++		}
++	}
++
++	file  = NULL;
++
++	rc=lockf( fileno(l_file), F_ULOCK, 0 );
++	if ( rc == 0 ) {
++		if ( l_file != NULL ) {
++			if ( l_file->_fileno != -1 ) {
++				fclose(l_file);
++			}
++		}
++	}
++	l_file  = NULL;
++
++	return 0;
++}
++
++static long get_last_id( Operation *op )
++{
++	/* Get the last used Transaction ID from Transaction-Log file
++	 * Returns:
++	 * 	-1 und errors
++	 * 	0 if Transaction-Log file is empty
++	 * 	last Transaction ID if Transaction-Log file is nonempty
++	 */
++	FILE *f;
++	int i = 2;
++	char c;
++	long id = -1;
++	
++	slap_overinst *on = (slap_overinst *)op->o_bd->bd_info;
++	translog_data *ad = on->on_bi.bi_private;
++
++	Debug( LDAP_DEBUG_TRACE, "OVER: get_last_id\n", 0, 0, 0);
++
++	/* if the file /var/lib/univention-ldap/last_id exists, we read the last id
++	 * from this file
++	 */
++	f = fopen( "/var/lib/univention-ldap/last_id", "r" );
++
++	if ( f != NULL ) {
++		fscanf( f, "%ld", & id );
++		fclose( f );
++
++		return id;
++	}
++
++	if ( ( f = fopen( "/var/lib/univention-ldap/notify/transaction", "r" ) ) == NULL ) {
++		Debug( LDAP_DEBUG_ANY, "OVER: unable to open transaction file\n", 0, 0, 0);
++		id = -1;
++		return id;
++	}
++
++	do {
++		i++;
++		fseek( f, -i, SEEK_END);
++		c = fgetc ( f ) ;
++	} while ( c != '\n' && c != -1 && c != 255 && ftell(f) != 1);
++
++	if ( c == -1 || c == 255 ) {
++		/* emty file */
++		id = 0;
++
++	} else if ( ftell(f) == 1) {
++		/* only one entry */
++		fseek( f, 0, SEEK_SET);
++#ifdef WITH_STAMP
++		fseek(f, 24, SEEK_CUR);
++#endif
++		fscanf( f, "%ld", &id);
++
++	} else {
++#ifdef WITH_STAMP
++		fseek(f, 24, SEEK_CUR);
++#endif
++		fscanf( f, "%ld", &id);
++	}
++
++	fclose(f);
++	return id;
++}
++
++static int translog_response(Operation *op, SlapReply *rs) {
++	/* Handel all requests and responses from and to database backend
++	 * Returns:
++	 * 	SLAP_CB_CONTINUE in all cases
++	 */
++	slap_overinst *on = (slap_overinst *)op->o_bd->bd_info;
++	translog_data *ad = on->on_bi.bi_private;
++	FILE *file, *l_file;
++	char what;
++	long lastid = -1;
++#ifdef WITH_STAMP
++	/* convert UNIX timestamp and remove \n from ctime string */
++	time_t timeval =  slap_get_time();
++	char *timestr = ctime(&timeval);
++	int ti = 0;
++	for (ti; (timestr[ti] != '\0') && (timestr[ti] != '\n'); ti++);
++		timestr[ti] = '\0';
++#endif
++
++	if ( rs->sr_err != LDAP_SUCCESS ) {
++		Debug( LDAP_DEBUG_TRACE, "OVER: rs->sr_err != LDAP_SUCCESS on \"%s\" ERR: 0x%02x\n", op->o_req_dn.bv_val, rs->sr_err, 0 );
++		return SLAP_CB_CONTINUE;
++	}
++
++	if ( !op->o_bd || !ad->ad_logfile ) {
++		Debug( LDAP_DEBUG_TRACE, "OVER: BackendDB or logfile not specified\n", 0, 0, 0 );
++		return SLAP_CB_CONTINUE;
++	}
++
++	switch(op->o_tag) {
++		case LDAP_REQ_MODRDN:	what = 'r';	break; /* 0x6cU == LDAP_REQ_MODDN == LDAP_REQ_RENAME */
++		case LDAP_REQ_DELETE:	what = 'd';	break; /* 0x4aU */
++		case LDAP_REQ_ADD:		what = 'a';	break; /* 0x68U */
++		case LDAP_REQ_MODIFY:	what = 'm';	break; /* 0x66U */
++		case LDAP_REQ_SEARCH:	return SLAP_CB_CONTINUE; /* 0x63U get rid of search debug messages */ 
++		default:
++			Debug( LDAP_DEBUG_TRACE, "OVER: SWITCH(o_tag) default, case was: \"%lu\"\n", (unsigned long) op->o_tag, 0, 0 );
++			return SLAP_CB_CONTINUE;
++	}
++
++	ldap_pvt_thread_mutex_lock(&ad->ad_mutex);
++
++	if((file = fopen_lock(ad->ad_logfile, "a", &l_file)) == NULL) {
++		Debug( LDAP_DEBUG_ANY, "OVER: Could not open translog file\n", 0, 0, 0 );
++		
++		ldap_pvt_thread_mutex_unlock(&ad->ad_mutex);
++		return SLAP_CB_CONTINUE;
++	}
++
++	lastid = get_last_id(op);
++	if ( lastid > -1 ) {
++		Debug( LDAP_DEBUG_TRACE, "OVER: Found ID \"%ld\"\n", lastid, 0, 0 );
++#ifdef WITH_STAMP
++		fprintf(file, "[%s] ", timestr, 0, 0);
++#endif
++		fprintf(file, "%ld %s %c\n", ++lastid, op->o_req_dn.bv_val, what);
++		if ( what == 'r' && op->orr_newSup ) {
++			/* print newsuperior as add in translog file */
++			fprintf(file, "%ld %s,%s a\n", ++lastid, op->orr_newrdn.bv_val, op->orr_newSup->bv_val);
++		} else if ( what == 'r' ) {
++			struct berval   pdn;
++			dnParent( &op->o_req_dn, &pdn );
++			fprintf(file, "%ld %s,%s a\n", ++lastid, op->orr_newrdn.bv_val, pdn.bv_val);
++		}
++	} else {
++		Debug( LDAP_DEBUG_ANY, "OVER: Could not find last ID, lastid seems to be: \"%ld\"\n", lastid, 0, 0 );
++#ifdef WITH_STAMP
++		fprintf(file, "[%s] ", timestr, 0, 0);
++#endif
++		fprintf(file, "<TransID> %s %c\n", op->o_req_dn.bv_val, what);
++		if ( what == 'r' && op->orr_newSup ) {
++			/* print newsuperior as add in translog file */
++			fprintf(file, "%ld %s,%s a\n", ++lastid, op->orr_newrdn.bv_val, op->orr_newSup->bv_val);
++		} else if ( what == 'r' ) {
++			struct berval   pdn;
++			dnParent( &op->o_req_dn, &pdn );
++			fprintf(file, "%ld %s,%s a\n", ++lastid, op->orr_newrdn.bv_val, pdn.bv_val);
++		}
++	}
++
++	fclose_lock(file, l_file);
++
++	file = fopen( "/var/lib/univention-ldap/last_id", "w" );
++	fprintf( file, "%ld", lastid );
++	fclose( file );
++
++#ifdef O_DEBUG
++	/* Test if the entry is in backend allready */
++	int rc;
++	Entry *e;
++	/* set "real" backend as next backend */
++	op->o_bd->bd_info = on->on_info->oi_orig;
++	rc = be_entry_get_rw( op, &op->o_req_ndn, NULL, NULL, 0, &e );
++	Debug( LDAP_DEBUG_TRACE, "OVER: Fetched Object, returncode was \"%d\"\n", rc, 0, 0);
++	if ( e ) {
++		Debug( LDAP_DEBUG_TRACE, "OVER: Fetched Object \"%s\"\n", e->e_ndn, 0, 0);
++	}
++	op->o_bd->bd_info = (BackendInfo *)on;
++#endif
++
++	ldap_pvt_thread_mutex_unlock(&ad->ad_mutex);
++	return SLAP_CB_CONTINUE;
++}
++
++static slap_overinst translog;
++
++static int translog_db_init( BackendDB *be ) {
++	Debug( LDAP_DEBUG_TRACE, "OVER: db_init\n", 0, 0, 0 );
++	
++	slap_overinst *on = (slap_overinst *)be->bd_info;
++	translog_data *ad = ch_calloc(1, sizeof(translog_data));
++
++	on->on_bi.bi_private = ad;
++	ldap_pvt_thread_mutex_init( &ad->ad_mutex );
++	return 0;
++}
++
++static int translog_db_close( BackendDB *be ) {
++	Debug( LDAP_DEBUG_TRACE, "OVER: db_close\n", 0, 0, 0 );
++	
++	slap_overinst *on = (slap_overinst *)be->bd_info;
++	translog_data *ad = on->on_bi.bi_private;
++
++	free( ad->ad_logfile );
++	ad->ad_logfile = NULL;
++	return 0;
++}
++
++static int translog_db_destroy( BackendDB *be ) {
++	Debug( LDAP_DEBUG_TRACE, "OVER: db_destroy\n", 0, 0, 0 );
++	
++	slap_overinst *on = (slap_overinst *)be->bd_info;
++	translog_data *ad = on->on_bi.bi_private;
++
++	ldap_pvt_thread_mutex_destroy( &ad->ad_mutex );
++	free( ad );
++	return 0;
++}
++
++static int translog_config( BackendDB *be, const char *fname, int lineno, int argc, char **argv ) {
++	slap_overinst *on = (slap_overinst *) be->bd_info;
++	translog_data *ad = on->on_bi.bi_private;
++	
++	Debug( LDAP_DEBUG_CONFIG|LDAP_DEBUG_TRACE, "OVER: Configuring Translog Overlay\n", 0, 0, 0 );
++	
++	/* log file */
++	if ( strcasecmp( argv[0], "translog" ) == 0 ) {
++		if ( argc < 2 ) {
++			Debug( LDAP_DEBUG_ANY, "%s: line %d: missing filename in \"translog <filename>\" line\n", fname, lineno, 0 );
++			return(1);
++		}
++		Debug( LDAP_DEBUG_CONFIG, "OVER: Configured Translog Overlay to use file \"%s\"\n", ch_strdup( argv[1] ), 0, 0 );
++
++		/* save filename in translog_data */
++		ad->ad_logfile = ch_strdup( argv[1] );
++		return 0;
++	}
++	return SLAP_CONF_UNKNOWN;
++}
++
++int translog_init() {
++	Debug( LDAP_DEBUG_TRACE, "OVER: Loading Translog Overlay\n", 0, 0, 0 );
++
++	translog.on_bi.bi_type = "translog";
++	translog.on_bi.bi_db_init = translog_db_init;
++	translog.on_bi.bi_db_config = translog_config;
++	translog.on_bi.bi_db_close = translog_db_close;
++	translog.on_bi.bi_db_destroy = translog_db_destroy;
++	translog.on_response = translog_response;
++
++	return overlay_register(&translog);
++}
++
++#if SLAPD_OVER_TRANSLOG == SLAPD_MOD_DYNAMIC
++int
++init_module( int argc, char *argv[] )
++{
++	return translog_init();
++}
++#endif
++
++#endif /* SLAPD_OVER_TRANSLOG */
++

@@ -1,0 +1,24 @@
+diff --git debian/slapd.postinst debian/slapd.postinst
+--- debian/slapd.postinst
++++ debian/slapd.postinst
+@@ -300,6 +300,9 @@ if [ -e /var/lib/univention-ldap/schema.conf ]; then
+ 	fi
+ fi
+ 
++# Commit possibly new but still uncommited slapd init script and slapd.conf
++[ -x /usr/sbin/univention-config-registry ] && /usr/sbin/univention-config-registry commit /etc/init.d/slapd /etc/ldap/slapd.conf
++
+ # Configuration.
+ if is_initial_configuration "$@"; then
+ 	postinst_initial_configuration
+diff --git debian/control debian/control
+--- debian/control
++++ debian/control
+@@ -29,6 +29,7 @@ Package: slapd
+ Build-Profiles: <!stage1>
+ Pre-Depends: debconf (>= 0.5) | debconf-2.0, ${misc:Pre-Depends}
+ Depends: ${shlibs:Depends}, libldap-2.4-2 (= ${binary:Version}),
++ univention-config,
+  coreutils (>= 4.5.1-1), psmisc, perl (>> 5.8.0) | libmime-base64-perl,
+  adduser, lsb-base (>= 3.2-13), ${misc:Depends}
+ Recommends: libsasl2-modules

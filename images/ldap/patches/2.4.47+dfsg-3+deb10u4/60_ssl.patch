@@ -1,0 +1,28 @@
+Bug #1878: (2004-10-25) At that time GNUTLS caused issues
+Bug #45709: configure says: "LAN Manager passwords require OpenSSL"
+            so 32_lmpasswd.patch requires this patch.
+See also: http://www.openldap.org/its/index.cgi/Software%20Enhancements?id=7978;selectid=7978;usearchives=1
+
+diff -Nur openldap-2.4.41+dfsg.o/debian/configure.options openldap-2.4.41+dfsg/debian/configure.options
+--- openldap-2.4.41+dfsg.o/debian/configure.options	2015-08-10 16:33:31.000000000 +0200
++++ openldap-2.4.41+dfsg/debian/configure.options	2015-08-10 16:33:52.000000000 +0200
+@@ -178,7 +178,7 @@
+ #  --with-threads	  with threads [auto]
+ --with-threads
+ #  --with-tls		  with TLS/SSL support auto|openssl|gnutls|moznss [auto]
+---with-tls=gnutls
++--with-tls=openssl
+ #  --with-yielding-select  with implicitly yielding select [auto]
+ #  --with-mp               with multiple precision statistics auto|longlong|long|bignum|gmp [auto]
+ #  --with-odbc             with specific ODBC support iodbc|unixodbc|odbc32|auto [auto]
+--- openldap-2.4.42+dfsg.o/debian/control	2015-09-16 15:22:01.364500362 +0200
++++ openldap-2.4.42+dfsg/debian/control	2015-09-16 15:20:13.459716889 +0200
+@@ -11,7 +11,7 @@ Build-Depends: debhelper (>= 10),
+                heimdal-multidev (>= 7.4.0.dfsg.1-1~) <!stage1>,
+                libdb5.3-dev <!stage1>,
+                libgcrypt-dev,
+-               libgnutls28-dev,
++               libssl-dev,
+                libltdl-dev <!stage1>,
+                libperl-dev (>= 5.8.0) <!stage1>,
+                libsasl2-dev,

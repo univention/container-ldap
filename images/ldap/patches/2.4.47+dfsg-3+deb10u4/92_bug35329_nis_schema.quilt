@@ -1,0 +1,26 @@
+Patch by schwardt@univention.de (Tue Jun 10 17:09:29 2014 +0200):
+
+Bug #35088/#35329: added ORDERING for shadowExpire to nis.schema
+
+--- openldap-2.4.35.ORIG/servers/slapd/schema/nis.ldif
++++ openldap-2.4.35/servers/slapd/schema/nis.ldif
+@@ -44,7 +44,8 @@ olcAttributeTypes: ( 1.3.6.1.1.1.1.8 NAME 'shadowWarning' EQUALITY integerM
+ olcAttributeTypes: ( 1.3.6.1.1.1.1.9 NAME 'shadowInactive' EQUALITY integer
+  Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+ olcAttributeTypes: ( 1.3.6.1.1.1.1.10 NAME 'shadowExpire' EQUALITY integerM
+- atch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
++ atch ORDERING integerOrderingMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SI
++ NGLE-VALUE )
+ olcAttributeTypes: ( 1.3.6.1.1.1.1.11 NAME 'shadowFlag' EQUALITY integerMat
+  ch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+ olcAttributeTypes: ( 1.3.6.1.1.1.1.12 NAME 'memberUid' EQUALITY caseExactI
+--- openldap-2.4.35.ORIG/servers/slapd/schema/nis.schema
++++ openldap-2.4.35/servers/slapd/schema/nis.schema
+@@ -84,6 +84,7 @@ attributetype ( 1.3.6.1.1.1.1.9 NAME 'shadowInactive'
+ 
+ attributetype ( 1.3.6.1.1.1.1.10 NAME 'shadowExpire'
+ 	EQUALITY integerMatch
++	ORDERING integerOrderingMatch
+ 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+ 
+ attributetype ( 1.3.6.1.1.1.1.11 NAME 'shadowFlag'

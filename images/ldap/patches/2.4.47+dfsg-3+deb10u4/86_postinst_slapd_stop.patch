@@ -1,0 +1,19 @@
+Ensure the slapd is stopped, it might be possible that the slapd was
+started between the preinst and the postinst (Bug #39683)
+https://forge.univention.org/bugzilla/show_bug.cgi?id=39683
+
+diff -Nur openldap-2.4.42+dfsg.orig/debian/slapd.postinst openldap-2.4.42+dfsg/debian/slapd.postinst
+--- openldap-2.4.42+dfsg.orig/debian/slapd.postinst	2015-10-31 11:42:51.002437758 +0100
++++ openldap-2.4.42+dfsg/debian/slapd.postinst	2015-10-31 11:46:48.978444714 +0100
+@@ -318,6 +318,11 @@ fi
+ 
+ db_stop || true
+ 
++# Ensure the slapd is stopped, it might be possible
++# that the slapd was started between the preinst and
++# the postinst.
++/etc/init.d/slapd stop
++
+ #DEBHELPER#
+ 
+ exit 0

@@ -1,0 +1,15 @@
+diff -Nuarp a/debian/rules b/debian/rules
+--- a/debian/rules	2017-12-18 18:38:16.062830046 +0100
++++ b/debian/rules	2017-12-18 18:39:16.942267966 +0100
+@@ -178,9 +178,9 @@ override_dh_fixperms-arch:
+ endif
+ 
+ override_dh_strip:
+-	dh_strip -plibldap-2.4-2 --dbgsym-migration='libldap-2.4-2-dbg (<< 2.4.45+dfsg-1~)'
++	dh_strip -plibldap-2.4-2 --dbgsym-migration='libldap-2.4-2-dbg (<< 2.4.42+dfsg-2.A)'
+ ifeq ($(filter stage1,$(DEB_BUILD_PROFILES)),)
+-	dh_strip -pslapd --dbgsym-migration='slapd-dbg (<< 2.4.45+dfsg-1~)'
++	dh_strip -pslapd --dbgsym-migration='slapd-dbg (<< 2.4.42+dfsg-2.A)'
+ endif
+ 	dh_strip --remaining-packages
+ ifeq ($(filter stage1,$(DEB_BUILD_PROFILES)),)

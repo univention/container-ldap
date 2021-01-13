@@ -1,0 +1,16 @@
+Start slapd before starting bind9
+
+Bug #24080
+diff --git debian/rules debian/rules
+index 1c83680..ad12934 100755
+--- debian/rules
++++ debian/rules
+@@ -161,7 +161,7 @@ endif
+ 		| xargs perl -pi -e 's#(\.TH \w+ 8)C#$$1#'
+ 
+ override_dh_installinit:
+-	dh_installinit -- "defaults 19 80"
++	dh_installinit -- "defaults 14 80"
+ 
+ ifeq ($(filter stage1,$(DEB_BUILD_PROFILES)),)
+ override_dh_installman:

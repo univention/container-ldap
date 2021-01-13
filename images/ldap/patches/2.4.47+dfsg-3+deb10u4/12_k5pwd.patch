@@ -1,0 +1,25 @@
+Added this overlay module based on smbk5pwd which allows to set
+{K5KEY} to userPassword flag. As opposed to smbk5pwd this module
+doesn't change the passwords.
+
+UCS Bug #15062
+https://forge.univention.org/bugzilla/show_bug.cgi?id=15062
+
+diff --git debian/rules debian/rules
+--- debian/rules
++++ debian/rules
+@@ -23,7 +23,7 @@ ifneq ($(filter stage1,$(DEB_BUILD_PROFILES)),)
+ 	CONFIG += --disable-slapd
+ endif
+ 
+-CONTRIB_MODULES = autogroup lastbind passwd passwd/pbkdf2 passwd/sha2 smbk5pwd
++CONTRIB_MODULES = autogroup lastbind passwd passwd/pbkdf2 passwd/sha2 smbk5pwd k5pwd
+ 
+ # Ensure CC is set correctly for cross builds, unless it has already 
+ # been set explicitly.
+diff --git debian/slapd.install debian/slapd.install
+--- debian/slapd.install
++++ debian/slapd.install
+@@ -10000,0 +10000,2 @@
++usr/lib/ldap/k5pwd.so*
++usr/lib/ldap/k5pwd.la
