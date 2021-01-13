@@ -16,6 +16,14 @@ services:
     - cert_pem
     volumes:
     - listener-data:/var/lib/univention-ldap/listener/:ro
+  notifier:
+    build:
+      context: ./images/notifier
+      args:
+        DEBIAN_BASE_IMAGE_TAG: buster-slim
+    volumes:
+    - notify-transaction-data:/var/lib/univention-ldap/notify/:rw
+    - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
     build:
       context: ./images/ldap
