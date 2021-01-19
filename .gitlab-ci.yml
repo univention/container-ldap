@@ -30,6 +30,6 @@ pre-commit-job:
   # Compose lint would fail without the referenced env files
   - cp .env.listener.example .env.listener
   - cp .env.univention-openldap.example .env.univention-openldap
-  - pre-commit run --all-files
+  - SKIP=gitlab-ci-linter pre-commit run --all-files
 
 ...
