@@ -16,14 +16,14 @@ Alternatively you open /etc/docker/daemon.json and add/edit the line
     "insecure-registries" : [ "docker-registry.knut.univention.de" ],
 
 
-#### Diffie-Hellman Parameters
+### Diffie-Hellman Parameters
 
 Generate your own DH-Parameters with:
 
    openssl dhparam -out "dh_2048.pem" -2 2048
 
 
-#### pre-commit container
+### pre-commit container
 
 Build the container with:
 
