@@ -30,7 +30,8 @@ in the [.pre-commit-config.yaml](.pre-commit-config.yaml) file.
 It is recommended, that you [install the tool](
 https://pre-commit.com/#installation) in your environment so it's execution
 is automatically triggered when you invoke `git commit`.
-Alternatively you can use the pre-commit container iamge
+Alternatively you can use the [pre-commit container image](
+#pre-commit-container).
 
 #### Dependencies
 
