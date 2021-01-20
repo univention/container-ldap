@@ -23,16 +23,40 @@ Generate your own DH-Parameters with:
    openssl dhparam -out "dh_2048.pem" -2 2048
 
 
-### pre-commit container
+### pre-commit hook
 
-Build the container with:
+The pre-commit hook work with the `pre-commit` tool, which is configured
+in the [.pre-commit-config.yaml](.pre-commit-config.yaml) file.
+It is recommended, that you [install the tool](
+https://pre-commit.com/#installation) in your environment so it's execution
+is automatically triggered when you invoke `git commit`.
+Alternatively you can use the pre-commit container iamge
+
+#### Dependencies
+
+##### GitLab CI linter
+
+Currently the configuration contains the [GitLab CI linter](
+https://gitlab.com/devopshq/gitlab-ci-linter)
+so it is recommended that you `export GITLAB_PRIVATE_TOKEN=<YOUR_TOKEN_HERE>`
+after you create your [personal access token](
+https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#personal-access-tokens)
+. If you can't do that right now, and you would rather run the rest of the
+linters, then you can skip that linter by setting the `SKIP` variable like
+`SKIP=gitlab-ci-linter pre-commit run --all-files`.
+
+
+#### pre-commit container
+
+Build the container image with:
 
     docker build --tag pre-commit:container-ldap images/pre-commit/
 
-Run pre-commit:
+Run pre-commit in the container:
 
     sudo mkdir --parents /root/.cache/pre-commit
     docker run \
+      --env GITLAB_PRIVATE_TOKEN \
       --mount type=bind,source=${PWD},target=/code \
       --mount type=bind,source=/root/.cache/pre-commit,target=/root/.cache/pre-commit \
       pre-commit:container-ldap
