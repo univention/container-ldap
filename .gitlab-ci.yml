@@ -22,6 +22,6 @@ pre-commit-job:
   # Compose lint would fail without the referenced env files
   - cp .env.listener.example .env.listener
   - cp .env.univention-openldap.example .env.univention-openldap
-  - /venv/bin/pre-commit run --all-files
+  - pre-commit run --all-files
 
 ...
