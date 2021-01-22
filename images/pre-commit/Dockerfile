@@ -24,6 +24,10 @@ COPY --from=venv \
 RUN \
   apk add --no-cache bash docker-compose gcc git musl-dev shellcheck && \
   rm -rf /var/cache/apk/* && \
+  wget --no-check-certificate \
+    --output-document=/usr/local/share/ca-certificates/git.knut.univention.de.crt \
+    https://billy.knut.univention.de/ucs-root-ca.crt && \
+  update-ca-certificates && \
   /venv/bin/pip install pre-commit && \
   rm -rf /root/.cache/pip/ && \
   mkdir /code
