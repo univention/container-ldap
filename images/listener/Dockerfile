@@ -41,7 +41,7 @@ RUN \
   echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
   printf -v URL '%s' \
     'https://updates.software-univention.de/' \
-    'univention-archive-key-ucs-4x.gpg' && \
+    'univention-archive-key-ucs-5x.gpg' && \
   curl -fsSL "${URL}" | apt-key add - && \
   apt-get update && \
   apt-get --assume-yes --verbose-versions --no-install-recommends install \
