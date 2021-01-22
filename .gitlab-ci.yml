@@ -3,7 +3,7 @@
 stages:
 - test-stage
 
-image: python:3.7-alpine
+image: docker-registry.knut.univention.de/pre-commit:container-ldap
 
 variables:
   PIP_CACHE_DIR: ${CI_PROJECT_DIR}/.cache/pip
@@ -15,21 +15,13 @@ cache:
   - .cache/pre-commit
   - venv/
 
-before_script:
-- apk add gcc musl-dev libffi-dev make openssl-dev bash git shellcheck
-- pip install virtualenv docker-compose
-- if [ ! -f venv/bin/activate ]; then virtualenv venv; fi
-- source venv/bin/activate
-- pip install --upgrade pip
-
 pre-commit-job:
   stage: test-stage
   when: manual
   script:
-  - pip install pre-commit
   # Compose lint would fail without the referenced env files
   - cp .env.listener.example .env.listener
   - cp .env.univention-openldap.example .env.univention-openldap
-  - SKIP=gitlab-ci-linter pre-commit run --all-files
+  - /venv/bin/pre-commit run --all-files
 
 ...
