@@ -1,0 +1,112 @@
+###############################################################################
+# Builder image for OpenLDAP currently in deb package
+###############################################################################
+ARG DEBIAN_BASE_IMAGE_TAG
+FROM debian:${DEBIAN_BASE_IMAGE_TAG}
+
+RUN echo 'deb-src http://deb.debian.org/debian buster main' \
+      >> /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get install --assume-yes --no-install-recommends \
+      devscripts \
+      # apt-utils is installed to avoid some warnings by `apt-get build-dep`
+      apt-utils \
+      # `apt-get build-dep` doesn't retrieve these two slapd dependencies:
+      # libgcrypt-dev libssl-dev
+      # Because these dependencies are added by Univention patches
+      # so apt-get build-dep has no chance of knowing about them.
+      libgcrypt-dev libssl-dev && \
+    mkdir -p ~/src/debian/ && cd ~/src/debian && chown _apt . && \
+    apt-get build-dep --assume-yes libldap-2.4-2 && \
+    apt-get source libldap-2.4-2 && \
+    rm -rf /var/lib/apt/lists/* && \
+    cd openldap-2.4.47+dfsg && \
+    # Disabling dh_auto_test is need here as the patch that is meant to disable
+    # it is apparently broken
+    sed -i 's/\tdh_auto_test/\t# dh_auto_test/' debian/rules
+
+COPY patches/2.4.47+dfsg-3+deb10u4/ /tmp/2.4.47+dfsg-3+deb10u4/
+
+###############################################################################
+# Patches for the Debian packaging spripts (not for slapd) that are unwanted:
+###############################################################################
+# This is explicitly unwanted as we don't want to depend on UDM:
+#
+#   patch -p0 < 70_ppolicy_udm_lock.patch
+#
+# This is also unwanted as this causes a dependency on univention-config:
+#
+#   patch -p0 < 35_commit_slapd_init_script.patch
+#
+# This one doesn't seem to be relevant considering
+# that in a container we won't use init scripts anyway:
+#
+#   patch -p0 < 80_slapd_init_start.patch
+#
+# In a container image after installation every process will be stopped,
+# so we don't need an extra patch to stop slapd:
+#
+#   patch -p1 < 86_postinst_slapd_stop.patch
+#
+# We don't need to restart in postinstall during docker build either:
+#
+#   patch -p0 < 87_postinst_slapd_restart.patch
+#
+# The "not yet understood reasons" that are mentioned in this patch
+# doesn't seem to happen or matter during docker build:
+#
+#   patch -p1 < 93-exclude-ldap-utils-from-shlibs.patch
+#
+
+###############################################################################
+# Patches for slapd that are unwanted:
+###############################################################################
+# These two patches:
+#
+#   99_ITS-9370-check-for-equality-rule-on-old_rdn.quilt
+#   99_ITS-9384-remove-assert-in-obsolete-csnNormalize23.quilt
+#
+# seem to be the same as what is already in debian as these two:
+#
+#   debian/patches/ITS-9370-check-for-equality-rule-on-old_rdn.patch
+#   debian/patches/ITS-9384-remove-assert-in-obsolete-csnNormalize23.patch
+#
+# and it's an error if we try to apply them twice.
+#
+# The following patch is unwanted as it depends on UDM and also depends
+# on python2.7/Python.h what we really shouldn't do in 2021:
+#
+#   70_ppolicy_udm_lock.quilt
+#
+# The following patch is essentially a patch of the above patch
+# so that is not needed either and doesn't work without the previous anyway:
+#
+#   99_Bug37915_avoid_deadlock_and_race_condition.quilt
+#
+RUN cd ~/src/debian/openldap-2.4.47+dfsg/ && \
+    PATCH_DIR='/tmp/2.4.47+dfsg-3+deb10u4' && \
+    patch -p1 < ${PATCH_DIR}/03_dbgsym-migration.patch && \
+    patch -p1 < ${PATCH_DIR}/10_translog_overlay.patch && \
+    patch -p0 < ${PATCH_DIR}/12_k5pwd.patch && \
+    patch -p0 < ${PATCH_DIR}/15_pwd_scheme_kinit.patch && \
+    patch -p1 < ${PATCH_DIR}/20_core_schema.patch && \
+    patch -p0 < ${PATCH_DIR}/23_cosine_schema.patch && \
+    patch -p1 < ${PATCH_DIR}/30_postinst.patch && \
+    patch -p1 < ${PATCH_DIR}/53_dellog-2.3.30.patch && \
+    patch -p1 < ${PATCH_DIR}/55_libgcrypt.patch && \
+    patch -p1 < ${PATCH_DIR}/60_ssl.patch && \
+    patch -p0 < ${PATCH_DIR}/62_disable_tests.patch && \
+    patch -p0 < ${PATCH_DIR}/63_disable_migrate_to_slapd_d_style.patch && \
+    patch -p1 < ${PATCH_DIR}/85_disable_move_and_dump.patch && \
+    patch -p0 < ${PATCH_DIR}/97_shadowbind_overlay_rules.patch && \
+    patch -p1 < ${PATCH_DIR}/98_database_upgrade_version.patch && \
+    rm ${PATCH_DIR}/70_ppolicy_udm_lock.quilt && \
+    rm ${PATCH_DIR}/99_Bug37915_avoid_deadlock_and_race_condition.quilt && \
+    rm ${PATCH_DIR}/99_ITS-9370-check-for-equality-rule-on-old_rdn.quilt && \
+    rm ${PATCH_DIR}/99_ITS-9384-remove-assert-in-obsolete-csnNormalize23.quilt && \
+    cp ${PATCH_DIR}/*.quilt debian/patches/ && \
+    ls ${PATCH_DIR}/*.quilt | tr ' ' '\n' |cut -d '/' -f 4 >>  debian/patches/series && \
+    dpkg-buildpackage -uc -us -b
+    # fakeroot debian/rules binary
+
+RUN ls -lah ~/src/debian/slapd*.deb
