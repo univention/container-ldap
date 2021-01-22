@@ -2,6 +2,9 @@
 # Builder image for collecting Univention LDAP schema templates and base LDIFs
 ###############################################################################
 ARG DEBIAN_BASE_IMAGE_TAG
+ARG DEB_BUILDER_REGISTRY
+ARG DEB_BUILDER_IMAGE
+ARG DEB_BUILDER_TAG
 FROM debian:${DEBIAN_BASE_IMAGE_TAG} as cfg_builder
 
 COPY sources.list /etc/apt/sources.list
@@ -22,90 +25,8 @@ RUN echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
 ###############################################################################
 # Builder image for OpenLDAP currently in deb package
 ###############################################################################
-FROM debian:${DEBIAN_BASE_IMAGE_TAG} as deb_builder
-
-RUN echo 'deb-src http://deb.debian.org/debian buster main' \
-      >> /etc/apt/sources.list && \
-    apt update && \
-    apt install -y devscripts
- #&&
-#    apt-get source --download-only  libldap-2.4-2
-#
-# apt-get build-dep doesn't get these two slapd dependencies:
-# libgcrypt-dev libssl-dev
-# Because these dependencies are added by Univention patches
-# so apt-get build-dep has no chance of knowing about them.
-# apt-utils is installed to avoid some warnings by build-dep
-RUN mkdir -p ~/src/debian/ && cd ~/src/debian && chown _apt . && \
-    apt-get install --assume-yes --no-install-recommends \
-                    apt-utils libgcrypt-dev libssl-dev && \
-    apt-get build-dep --assume-yes libldap-2.4-2 && \
-    apt-get source libldap-2.4-2 && \
-    cd openldap-2.4.47+dfsg && \
-# Disabling dh_auto_test is need here as the patch for that is apparently broken
-    sed -i 's/\tdh_auto_test/\t# dh_auto_test/' debian/rules
-
-COPY patches/2.4.47+dfsg-3+deb10u4/ /tmp/2.4.47+dfsg-3+deb10u4/
-
-
-# This is explicitly not wanted
-#     patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/70_ppolicy_udm_lock.patch
-# This is also explicitly not wanted as this causes debian dependency on univention-config
-#    patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/35_commit_slapd_init_script.patch && \
-# This one doesn't seem to be relevant considering that in a container we won't use init scripts anyway
-#     patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/80_slapd_init_start.patch
-#
-#
-# I am pretty sure in a container image, after installation the process will be stopped...
-#     patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/86_postinst_slapd_stop.patch
-#
-# We don't need to restart in postinstall during docker build.
-# patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/87_postinst_slapd_restart.patch
-#
-# The "not yet understood reasons" that are mentioned in this patch
-# doesn't seem to happen during docker build
-# patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/93-exclude-ldap-utils-from-shlibs.patch
-#
-# 99_ITS-9370-check-for-equality-rule-on-old_rdn.quilt
-# and
-# 99_ITS-9384-remove-assert-in-obsolete-csnNormalize23.quilt
-# seems to be the same as what is already in debian as
-# debian/patches/ITS-9370-check-for-equality-rule-on-old_rdn.patch
-# and
-# debian/patches/ITS-9384-remove-assert-in-obsolete-csnNormalize23.patch
-# and causing errors if applied twice
-#
-# 70_ppolicy_udm_lock.quilt is unwanted and depends on python2.7/Python.h
-# what we really shouldn't do in 2021
-# 99_Bug37915_avoid_deadlock_and_race_condition.quilt
-# is essentailly a patch of the above patch so that is not needed either
-# and doesn't work without the previous
-RUN cd ~/src/debian/openldap-2.4.47+dfsg/ && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/03_dbgsym-migration.patch && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/10_translog_overlay.patch && \
-    patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/12_k5pwd.patch && \
-    patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/15_pwd_scheme_kinit.patch && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/20_core_schema.patch && \
-    patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/23_cosine_schema.patch && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/30_postinst.patch && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/53_dellog-2.3.30.patch && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/55_libgcrypt.patch && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/60_ssl.patch && \
-    patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/62_disable_tests.patch && \
-    patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/63_disable_migrate_to_slapd_d_style.patch && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/85_disable_move_and_dump.patch && \
-    patch -p0 < /tmp/2.4.47+dfsg-3+deb10u4/97_shadowbind_overlay_rules.patch && \
-    patch -p1 < /tmp/2.4.47+dfsg-3+deb10u4/98_database_upgrade_version.patch && \
-    rm /tmp/2.4.47+dfsg-3+deb10u4/70_ppolicy_udm_lock.quilt && \
-    rm /tmp/2.4.47+dfsg-3+deb10u4/99_Bug37915_avoid_deadlock_and_race_condition.quilt && \
-    rm /tmp/2.4.47+dfsg-3+deb10u4/99_ITS-9370-check-for-equality-rule-on-old_rdn.quilt && \
-    rm /tmp/2.4.47+dfsg-3+deb10u4/99_ITS-9384-remove-assert-in-obsolete-csnNormalize23.quilt && \
-    cp /tmp/2.4.47+dfsg-3+deb10u4/*.quilt debian/patches/ && \
-    ls /tmp/2.4.47+dfsg-3+deb10u4/*.quilt | tr ' ' '\n' |cut -d '/' -f 4 >>  debian/patches/series && \
-    dpkg-buildpackage -uc -us -b
-    # fakeroot debian/rules binary
-
-RUN ls -lah ~/src/debian/slapd*.deb
+FROM ${DEB_BUILDER_REGISTRY}/${DEB_BUILDER_IMAGE}:${DEB_BUILDER_TAG} \
+  AS deb_builder
 
 ###############################################################################
 # Final image

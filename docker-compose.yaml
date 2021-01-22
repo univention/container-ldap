@@ -29,6 +29,9 @@ services:
       context: ./images/ldap
       args:
         DEBIAN_BASE_IMAGE_TAG: buster-slim
+        DEB_BUILDER_REGISTRY: docker-registry.knut.univention.de
+        DEB_BUILDER_IMAGE: univention-openldap_deb_builder
+        DEB_BUILDER_TAG: latest
     #image: docker-registry.knut.univention.de/univention-openldap:latest
     env_file: .env.univention-openldap
     ports:
