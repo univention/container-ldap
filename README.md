@@ -38,13 +38,13 @@ Alternatively you can use the [pre-commit container image](
 ##### GitLab CI linter
 
 Currently the configuration contains the [GitLab CI linter](
-https://gitlab.com/devopshq/gitlab-ci-linter)
-so it is recommended that you `export GITLAB_PRIVATE_TOKEN=<YOUR_TOKEN_HERE>`
-after you create your [personal access token](
-https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#personal-access-tokens)
-. If you can't do that right now, and you would rather run the rest of the
-linters, then you can skip that linter by setting the `SKIP` variable like
-`SKIP=gitlab-ci-linter pre-commit run --all-files`.
+https://gitlab.com/devopshq/gitlab-ci-linter) which needs access
+to the [Univention GitLab instance](https://git.knut.univention.de/)
+for linting the [CI configuration](.gitlab-ci.yml) itself.
+Make sure that the environment in which you are running `pre-commit`, has the
+certificate for `git.knut.univention.de` or consider using the
+[pre-commit container image](#pre-commit-container),
+which has the certificate built into it.
 
 
 #### pre-commit container
@@ -57,7 +57,6 @@ Run pre-commit in the container:
 
     sudo mkdir --parents /root/.cache/pre-commit
     docker run \
-      --env GITLAB_PRIVATE_TOKEN \
       --mount type=bind,source=${PWD},target=/code \
       --mount type=bind,source=/root/.cache/pre-commit,target=/root/.cache/pre-commit \
       pre-commit:container-ldap
