@@ -27,6 +27,7 @@ services:
     - 6669:6669
     volumes:
     - notify-transaction-data:/var/lib/univention-ldap/notify/:rw
+    - ldap-run:/var/run/slapd/:ro
     - listener-data:/var/lib/univention-ldap/listener/:ro
   openldap:
     build:
@@ -50,6 +51,7 @@ services:
     - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
     - db-data:/var/lib/univention-ldap/ldap/:rw
     - last-id-data:/var/lib/univention-ldap/last-id-data/:rw
+    - ldap-run:/var/run/slapd/:rw
     - translog-data:/var/lib/univention-ldap/translog/:rw
     - listener-data:/var/lib/univention-ldap/listener/:rw
 
