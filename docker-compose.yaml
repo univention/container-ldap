@@ -23,6 +23,10 @@ services:
       args:
         DEBIAN_BASE_IMAGE_TAG: buster-slim
     image: docker-registry.knut.univention.de/upx/container-ldap/notifier:${CI_PIPELINE_TAG}test
+    depends_on:
+    - openldap
+    ports:
+    - 6669:6669
     volumes:
     - notify-transaction-data:/var/lib/univention-ldap/notify/:rw
     - listener-data:/var/lib/univention-ldap/listener/:ro
