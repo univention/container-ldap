@@ -15,8 +15,6 @@ services:
     secrets:
     - ca_cert
     - cert_pem
-    volumes:
-    - listener-data:/var/lib/univention-ldap/listener/:ro
   notifier:
     build:
       context: ./images/notifier
