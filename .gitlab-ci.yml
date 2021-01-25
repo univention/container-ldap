@@ -3,9 +3,10 @@
 stages:
 - lint-stage
 - build-stage
-- deploy-stage
 - test-stage
-- undeploy-stage
+#- deploy-stage
+#- test-stage
+#- undeploy-stage
 
 variables:
   UNIV_DOCKERHUB_MIRROR: docker-registry.knut.univention.de
@@ -45,6 +46,8 @@ build-job:
   # https://stackoverflow.com/a/42322893
   image: ${UNIV_DOCKERHUB_MIRROR}/docker/compose:debian-1.28.0
   stage: build-stage
+  tags:
+    - docker
   when: manual
   services:
     - name: ${UNIV_DOCKERHUB_MIRROR}/docker:20.10.2-dind
@@ -56,9 +59,27 @@ build-job:
     - docker-compose build
     - docker-compose push
 
-deploy-job:
+#deploy-job:
+#  image: ${UNIV_DOCKERHUB_MIRROR}/docker/compose:debian-1.28.0
+#  stage: deploy-stage
+#  tags:
+#    - docker
+#  when: manual
+#  services:
+#    - name: ${UNIV_DOCKERHUB_MIRROR}/docker:20.10.2-dind
+#      alias: docker
+#      command: ["--insecure-registry=docker-registry.knut.univention.de"]
+#  script:
+#    - cp .env.listener.example .env.listener
+#    - cp .env.univention-openldap.example .env.univention-openldap
+#    - docker-compose pull
+#    - docker-compose up --detach --no-build
+
+test-job:
   image: ${UNIV_DOCKERHUB_MIRROR}/docker/compose:debian-1.28.0
-  stage: deploy-stage
+  stage: test-stage
+  tags:
+    - docker
   when: manual
   services:
     - name: ${UNIV_DOCKERHUB_MIRROR}/docker:20.10.2-dind
@@ -71,23 +92,22 @@ deploy-job:
     - docker-compose up --detach --no-build
     - cd integration-test
     - docker-compose up
-    - docker-compose rm --force --stop
+    - docker-compose rm
     - cd -
     - docker-compose down
-    - docker-compose rm --force --stop
+    - docker-compose rm
 
-      #test-job:
-      #  stage: test-stage
-      #  when: manual
-      #  script:
-      #    - cd integration-test
-      #    - docker-compose up
-      #    - docker-compose rm
-      #
-      #undeploy-job:
-      #  stage: undeploy-stage
-      #  when: manual
-      #  script:
-      #    - docker-compose down
-      #    - docker-compose rm
+#undeploy-job:
+#  image: ${UNIV_DOCKERHUB_MIRROR}/docker/compose:debian-1.28.0
+#  stage: undeploy-stage
+#  tags:
+#    - docker
+#  when: manual
+#  services:
+#    - name: ${UNIV_DOCKERHUB_MIRROR}/docker:20.10.2-dind
+#      alias: docker
+#      command: ["--insecure-registry=docker-registry.knut.univention.de"]
+#  script:
+#    - docker-compose down
+#    - docker-compose rm
 ...
