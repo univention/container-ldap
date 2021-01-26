@@ -79,7 +79,7 @@ Empty.
 ### Processed notifier transactions (db)
 Location: /var/lib/univention-ldap/notify/transaction.index
 Written by the notfier.
-Binary date.
+Binary data.
 
 ### Notifier lock-file
 Location: /var/lib/univention-ldap/notify/transaction.lock
