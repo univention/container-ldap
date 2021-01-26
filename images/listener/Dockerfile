@@ -9,6 +9,7 @@ SHELL ["/bin/bash", "-c"]
 ###############################################################################
 # dependencies
 ###############################################################################
+
 RUN \
   set -euxo pipefail && \
   echo 'debconf debconf/frontend select readline' | debconf-set-selections && \
@@ -20,6 +21,7 @@ RUN \
 ###############################################################################
 # postfix
 ###############################################################################
+
 RUN \
   set -euxo pipefail && \
   echo "postfix postfix/main_mailer_type string 'Satellite system'" \
@@ -31,11 +33,12 @@ RUN \
     postfix && \
   rm -rf /var/lib/apt/lists/*
 
-COPY sources.list /etc/apt/sources.list.d/15_ucs-online-version.list
-
 ###############################################################################
 # listener
 ###############################################################################
+
+COPY sources.list /etc/apt/sources.list.d/15_ucs-online-version.list
+
 RUN \
   set -euxo pipefail && \
   echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
