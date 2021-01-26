@@ -11,7 +11,6 @@ services:
     #image: bash:latest
     image: docker-registry.knut.univention.de/upx/container-ldap/listener:${CI_PIPELINE_TAG}test
     env_file: .env.listener
-    #entrypoint: ["bash", "-c", "sleep 10; tail -f /var/lib/univention-ldap/listener/listener"]
     secrets:
     - ca_cert
     - cert_pem
