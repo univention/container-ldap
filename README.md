@@ -66,8 +66,8 @@ Run pre-commit in the container:
 ### OpenLDAP translog output file
 Location: /var/lib/univention-ldap/listener/listener
 Needs to be shared between ldap and notifier container.
-Written by the translog-slapd-overlay on LDAP-Object change.
-Read by the notifier.
+Lines get added by the translog-slapd-overlay on LDAP-Object change.
+The notifier removes lines after processing them.
 
 ### Translog lock-file
 Location: /var/lib/univention-ldap/listener/listener.lock
