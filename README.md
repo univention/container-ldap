@@ -60,3 +60,36 @@ Run pre-commit in the container:
       --mount type=bind,source=${PWD},target=/code \
       --mount type=bind,source=/root/.cache/pre-commit,target=/root/.cache/pre-commit \
       pre-commit:container-ldap
+
+## Notifier Data Files
+
+### OpenLDAP translog output file
+Location: /var/lib/univention-ldap/listener/listener
+Needs to be shared between ldap and notifier container.
+Written by the translog slapd overlay on LDAP-Object change.
+Read by the notifier.
+
+### Translog lock-file
+Location: /var/lib/univention-ldap/listener/listener.lock
+Created by slapd but needs to be writeable by the notifier.
+Empty.
+
+### Processed notifier transactions (db)
+Location: /var/lib/univention-ldap/notify/transaction.index
+Written by the notfier.
+Binary date.
+
+### Notifier lock-file
+Location: /var/lib/univention-ldap/notify/transaction.lock
+Written by the notfier.
+Empty.
+
+### Processed notifier transactions (flat file)
+Location: /var/lib/univention-ldap/notify/transaction
+Written by the notfier.
+Contains transaction lines.
+A line contains transaction-id, DN and change-type separated by space.
+
+### Notifier log-file
+Location: /var/log/univention/notifier.log
+Written by the notfier.
