@@ -27,7 +27,7 @@ services:
     volumes:
     - notify-transaction-data:/var/lib/univention-ldap/notify/:rw
     - ldap-run:/var/run/slapd/:ro
-    - listener-data:/var/lib/univention-ldap/listener/:ro
+    - listener-data:/var/lib/univention-ldap/listener/:rw
   openldap:
     build:
       context: ./images/ldap
