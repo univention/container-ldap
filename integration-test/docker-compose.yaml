@@ -7,12 +7,13 @@ services:
     build:
       context: ./
     image: compose_test:latest
-    entrypoint: 'bash -c "/ldap_test.sh"'
+    entrypoint: bash -c "/ldap_test.sh"
     networks:
-        - public_ldap
+    - public_ldap
 
 networks:
   public_ldap:
     external:
       name: container-ldap_default
+
 ...
