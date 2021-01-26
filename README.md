@@ -74,7 +74,6 @@ Location: /var/lib/univention-ldap/listener/listener.lock
 Needs to be shared between ldap and notifier container.
 Created by the entrypoint script of the ldap-container.
 Written by the translog-slapd-overlay and the notifier.
-Empty.
 
 ### Processed notifier transactions (db)
 Location: /var/lib/univention-ldap/notify/transaction.index
@@ -84,7 +83,6 @@ Binary data.
 ### Notifier lock-file
 Location: /var/lib/univention-ldap/notify/transaction.lock
 Written by the notfier.
-Empty.
 
 ### Processed notifier transactions (flat file)
 Location: /var/lib/univention-ldap/notify/transaction
