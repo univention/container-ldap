@@ -92,9 +92,12 @@ A line contains transaction-id, DN and change-type separated by space.
 
 ### Notifier log-file
 Location: /var/log/univention/notifier.log
-Written by the notfier.
+The log-path is hard-coded but should be configurable to use stdout instead.
+See
+`management/univention-directory-notifier/src/univention-directory-notifier.c`
+in the ucs-repository!
 
 ### LDAP-API
 Location: /var/run/slapd/ldapi
-The notifier is hardcoded to connect via "ldapapi:///".
+The notifier is hard-coded to connect via "ldapapi:///".
 Therefore the ldapi file needs to be shared from the OpenLDAP server container.
