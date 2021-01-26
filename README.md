@@ -93,3 +93,8 @@ A line contains transaction-id, DN and change-type separated by space.
 ### Notifier log-file
 Location: /var/log/univention/notifier.log
 Written by the notfier.
+
+### LDAP-API
+Location: /var/run/slapd/ldapi
+The notifier is hardcoded to connect via "ldapapi:///".
+Therefore the ldapi file needs to be shared from the OpenLDAP server container.
