@@ -67,6 +67,7 @@ volumes:
   # OpenLDAP only:
   db-data:
   last-id-data:
+  ldap-run:
   translog-data:
   # Notifier + OpenLDAP
   notify-transaction-data:
