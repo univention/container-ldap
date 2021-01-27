@@ -88,6 +88,9 @@ setup_initial_ldif() {
     "s|@@%%@@sid@@%%@@|$sid|;"\
     "s|@@%@@domain@@%@@|$domainname|"
 
+  # Remove cn=backup user as we don't need it
+  sed -i '/cn=backup/,+6d' /usr/share/univention-ldap/base.ldif
+
   cat /usr/share/univention-ldap/base.ldif \
       /usr/share/univention-ldap/core-edition.ldif \
     | ucr-light-filter --ldapbase "${ldap_base}" --domainname "${domainname}" \
