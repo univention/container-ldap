@@ -1,6 +1,20 @@
 #!/bin/bash
 set -euxo pipefail
 
+if [[ ! -d "/var/lib/univention-ldap/listener/" ]]; then
+  echo "The listener dir is missing!"
+  echo "It should be a shared volume with the OpenLDAP container."
+  exit 2
+fi
+
+if [[ ! -d "/var/run/slapd/" ]]; then
+  echo "The slapd run dir is missing!"
+  echo "It should be a shared volume with the OpenLDAP container."
+  exit 3
+fi
+
+# The notifier writes an error message to its log-file if this file is missing.
+# Because it lives in a volume, it can not be created during build.
 touch /var/lib/univention-ldap/notify/transaction
 touch /var/lib/univention-ldap/notify/transaction.lock
 
