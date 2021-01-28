@@ -22,7 +22,6 @@ variables:
 
 pre-commit-job:
   stage: lint-stage
-  when: manual
   image: ${UNIV_DOCKERHUB_MIRROR}/pre-commit:container-ldap
   variables:
     PIP_CACHE_DIR: ${CI_PROJECT_DIR}/.cache/pip
