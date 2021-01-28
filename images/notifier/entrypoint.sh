@@ -46,14 +46,20 @@ if [[ -s "${transaction_path}" ]]; then
   translog_result=$(/usr/share/univention-directory-notifier/univention-translog ldap "$last_id" >/dev/null)
   if [[ "${translog_result}" -gt "1" ]]; then
     echo "Bad translog result: ${translog_result}"
-    exit 2
+    exit 5
   elif [[ "${translog_result}" -eq "1" ]]; then
     echo "Importing from translog to LDAP"
     /usr/share/univention-directory-notifier/univention-translog --lenient import
   fi
 fi
 
+EXIT_CODE=0
 echo "Starting notifier daemon"
-exec "/usr/sbin/univention-directory-notifier" "$@"
+"/usr/sbin/univention-directory-notifier" "$@" || EXIT_CODE=$?
+
+echo "Notifier exited with ${EXIT_CODE}"
+cat /var/log/univention/notifier.log
+
+exit ${EXIT_CODE}
 
 # [EOF]
