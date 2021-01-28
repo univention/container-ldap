@@ -16,16 +16,28 @@ fi
 # The notifier writes an error message to its log-file if this file is missing.
 # Because it lives in a volume, it can not be created during build.
 touch /var/lib/univention-ldap/notify/transaction
-touch /var/lib/univention-ldap/notify/transaction.lock
 
-mkdir /var/log/univention/
+# Both notifier and slapd need to be able to write this lock-file.
+# The slapd writes to it on db-change, not on startup.
+# The notifier writes to it whenever data is found in the "listener"-file.
+touch /var/lib/univention-ldap/listener/listener.lock
 
-if [[ ! -e "/var/lib/univention-ldap/listener/listener" ]]; then
-  echo "The listener file is missing!"
-  echo "It should get created by the slapd translog overlay-module."
-  exit 1
-fi
+# Wait for the openldap container to create ldapi and translog file
+echo "Waiting for the listener and ldapi files:"
+waited_seconds=0
+while [[ ! -e "/var/lib/univention-ldap/listener/listener" ]] &&
+    [[ ! -e "/var/run/slapd/ldapi" ]]; do
+  if [[ waited_seconds -gt 10 ]]; then
+    echo "Waited for too long"
+    exit 4
+  fi
+  echo -n "."
+  sleep 1
+  (( waited_seconds++ )) || true
+done
+echo "Found the needed files after ${waited_seconds} seconds"
 
+# Check for pending transations
 transaction_path='/var/lib/univention-ldap/notify/transaction'
 if [[ -s "${transaction_path}" ]]; then
   echo "Found pending transactions"
