@@ -1,2 +1,6 @@
+# Docker Compose
 /.env.listener
 .env.univention-openldap
+
+# Python
+__pycache__
