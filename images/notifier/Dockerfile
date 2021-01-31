@@ -12,6 +12,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
+WORKDIR /apt
+
 ###############################################################################
 # Install Univention APT-Key
 
@@ -39,8 +41,6 @@ COPY fake.sh /usr/local/bin/univention-config-registry
 RUN \
   echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
   apt-get update && \
-  mkdir /apt && \
-  cd /apt && \
   apt-get download \
     libldap-2.4-2 \
     libsasl2-2 \
