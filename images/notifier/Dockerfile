@@ -20,7 +20,10 @@ WORKDIR /apt
 RUN \
   apt-get update && \
   apt-get --assume-yes --verbose-versions --no-install-recommends install \
-    ca-certificates curl gpg gpg-agent && \
+    ca-certificates=20200601~deb10u2 \
+    curl=7.64.0-4+deb10u1 \
+    gpg=2.2.12-1+deb10u1 \
+    gpg-agent=2.2.12-1+deb10u1 && \
   curl -fsSL "${APT_KEY_URL}" | apt-key add - && \
   rm -rf /var/lib/apt/lists/*
 
@@ -42,15 +45,15 @@ RUN \
   echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
   apt-get update && \
   apt-get download \
-    libldap-2.4-2 \
-    libsasl2-2 \
-    libssl1.1 \
-    libunivention-debug1 \
-    python-ldap \
-    python-univention-config-registry \
-    python-univention-debhelper \
-    python-six \
-    univention-directory-notifier && \
+    libldap-2.4-2=2.4.47+dfsg-3+deb10u4A~5.0.0.202012231957 \
+    libsasl2-2=2.1.27+dfsg-1+deb10u1 \
+    libssl1.1=1.1.1d-0+deb10u4 \
+    libunivention-debug1=12.0.0-1A~5.0.0.202009211929 \
+    python-ldap=3.1.0-2A~5.0.0.202011181801 \
+    python-univention-config-registry=15.0.6-2A~5.0.0.202101211116 \
+    python-univention-debhelper=2.0.0-3A~5.0.0.202010151132 \
+    python-six=1.12.0-1 \
+    univention-directory-notifier=14.0.4-4A~5.0.0.202012141233 && \
   mkdir /usr/share/univention-lib/ && \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
