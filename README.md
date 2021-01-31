@@ -25,13 +25,23 @@ Generate your own DH-Parameters with:
 
 ### pre-commit hook
 
-The pre-commit hook work with the `pre-commit` tool, which is configured
+The pre-commit hook works with the `pre-commit` tool, which is configured
 in the [.pre-commit-config.yaml](.pre-commit-config.yaml) file.
 It is recommended, that you [install the tool](
 https://pre-commit.com/#installation) in your environment so it's execution
 is automatically triggered when you invoke `git commit`.
 Alternatively you can use the [pre-commit container image](
 #pre-commit-container).
+
+#### run container
+
+Run pre-commit in the container:
+
+    sudo mkdir --parents /root/.cache/pre-commit
+    docker run \
+      --mount type=bind,source=${PWD},target=/code \
+      --mount type=bind,source=/root/.cache/pre-commit,target=/root/.cache/pre-commit \
+      uv-pre-commit:container-ldap
 
 #### Dependencies
 
@@ -46,20 +56,6 @@ certificate for `git.knut.univention.de` or consider using the
 [pre-commit container image](#pre-commit-container),
 which has the certificate built into it.
 
-
-#### pre-commit container
-
-Build the container image with:
-
-    docker build --tag pre-commit:container-ldap images/pre-commit/
-
-Run pre-commit in the container:
-
-    sudo mkdir --parents /root/.cache/pre-commit
-    docker run \
-      --mount type=bind,source=${PWD},target=/code \
-      --mount type=bind,source=/root/.cache/pre-commit,target=/root/.cache/pre-commit \
-      pre-commit:container-ldap
 
 ## Notifier Data Files
 
