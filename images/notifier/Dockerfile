@@ -10,13 +10,12 @@ ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-uc
 # Ignore questions from debconf
 ARG DEBIAN_FRONTEND=noninteractive
 
-SHELL ["/bin/bash", "-c"]
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 ###############################################################################
 # Install Univention APT-Key
 
 RUN \
-  set -euxo pipefail && \
   apt-get update && \
   apt-get --assume-yes --verbose-versions --no-install-recommends install \
     ca-certificates curl gpg gpg-agent && \
@@ -38,7 +37,6 @@ COPY fake.sh /usr/local/bin/univention-config-registry
 
 # TODO: remove nameserver after public release
 RUN \
-  set -euxo pipefail && \
   echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
   apt-get update && \
   mkdir /apt && \
@@ -118,7 +116,6 @@ COPY --from=build \
 # TODO: remove log-dir, when log-to-stdout has been released
 #   https://forge.univention.org/bugzilla/show_bug.cgi?id=52716
 RUN \
-  set -euxo pipefail && \
   # Needed to help Python find the config_registry module in there.
   touch /usr/lib/python2.7/dist-packages/univention/__init__.py && \
   # Needed because the notifier creates its log-file in there.
