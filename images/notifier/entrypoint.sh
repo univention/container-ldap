@@ -23,19 +23,20 @@ touch /var/lib/univention-ldap/notify/transaction
 touch /var/lib/univention-ldap/listener/listener.lock
 
 # Wait for the openldap container to create ldapi and translog file
-echo "Waiting for the listener and ldapi files:"
-waited_seconds=0
+echo "Check for the listener and ldapi files:"
+cur_backoff_seconds=1
+max_backoff_seconds=512
 while [[ ! -e "/var/lib/univention-ldap/listener/listener" ]] &&
     [[ ! -e "/var/run/slapd/ldapi" ]]; do
-  if [[ waited_seconds -gt 10 ]]; then
+  if [[ cur_backoff_seconds -ge max_backoff_seconds ]]; then
     echo "Waited for too long"
     exit 4
   fi
-  echo -n "."
-  sleep 1
-  (( waited_seconds++ )) || true
+  echo -n "Retrying in ${cur_backoff_seconds} seconds"
+  sleep "${cur_backoff_seconds}"
+  (( cur_backoff_seconds*=2 )) || true
 done
-echo "Found the needed files after ${waited_seconds} seconds"
+echo "Found the needed files"
 
 # Check for pending transations
 transaction_path='/var/lib/univention-ldap/notify/transaction'
