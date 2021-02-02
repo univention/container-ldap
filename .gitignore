@@ -4,3 +4,8 @@
 
 # Python
 __pycache__
+
+# Robot framework logs
+log.html
+report.html
+output.xml
