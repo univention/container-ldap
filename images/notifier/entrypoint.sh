@@ -1,33 +1,68 @@
 #!/bin/bash
 set -euxo pipefail
 
-touch /var/lib/univention-ldap/notify/transaction
-touch /var/lib/univention-ldap/notify/transaction.lock
+alias tsecho='echo "$(date --utc +%Y-%m-%dT%H:%M:%SZ)"'
 
-mkdir /var/log/univention/
-
-if [[ ! -e "/var/lib/univention-ldap/listener/listener" ]]; then
-  echo "The listener file is missing!"
-  echo "It should get created by the slapd translog overlay-module."
-  exit 1
+if [[ ! -d "/var/lib/univention-ldap/listener/" ]]; then
+  tsecho "The listener dir is missing!"
+  tsecho "It should be a shared volume with the OpenLDAP container."
+  exit 2
 fi
 
+if [[ ! -d "/var/run/slapd/" ]]; then
+  tsecho "The slapd run dir is missing!"
+  tsecho "It should be a shared volume with the OpenLDAP container."
+  exit 3
+fi
+
+# The notifier writes an error message to its log-file if this file is missing.
+# Because it lives in a volume, it can not be created during build.
+touch /var/lib/univention-ldap/notify/transaction
+
+# Both notifier and slapd need to be able to write this lock-file.
+# The slapd writes to it on db-change, not on startup.
+# The notifier writes to it whenever data is found in the "listener"-file.
+touch /var/lib/univention-ldap/listener/listener.lock
+
+# Wait for the openldap container to create ldapi and translog file
+tsecho "Check for the listener and ldapi files:"
+cur_backoff_seconds=1
+max_backoff_seconds=512
+while [[ ! -e "/var/lib/univention-ldap/listener/listener" ]] &&
+    [[ ! -e "/var/run/slapd/ldapi" ]]; do
+  if [[ cur_backoff_seconds -ge max_backoff_seconds ]]; then
+    tsecho "Waited for too long"
+    exit 4
+  fi
+  tsecho -n "Retrying in ${cur_backoff_seconds} seconds"
+  sleep "${cur_backoff_seconds}"
+  (( cur_backoff_seconds*=2 )) || true
+done
+tsecho "Found the needed files"
+
+# Check for pending transations
 transaction_path='/var/lib/univention-ldap/notify/transaction'
 if [[ -s "${transaction_path}" ]]; then
-  echo "Found pending transactions"
+  tsecho "Found pending transactions"
   last_id="$(awk 'END{print $1}' "${transaction_path}")"
-  echo "Last transaction: ${last_id}"
+  tsecho "Last transaction: ${last_id}"
   translog_result=$(/usr/share/univention-directory-notifier/univention-translog ldap "$last_id" >/dev/null)
   if [[ "${translog_result}" -gt "1" ]]; then
-    echo "Bad translog result: ${translog_result}"
-    exit 2
+    tsecho "Bad translog result: ${translog_result}"
+    exit 5
   elif [[ "${translog_result}" -eq "1" ]]; then
-    echo "Importing from translog to LDAP"
+    tsecho "Importing from translog to LDAP"
     /usr/share/univention-directory-notifier/univention-translog --lenient import
   fi
 fi
 
-echo "Starting notifier daemon"
-exec "/usr/sbin/univention-directory-notifier" "$@"
+EXIT_CODE=0
+tsecho "Starting notifier daemon"
+"/usr/sbin/univention-directory-notifier" "$@" || EXIT_CODE=$?
+
+tsecho "Notifier exited with ${EXIT_CODE}"
+cat /var/log/univention/notifier.log
+
+exit ${EXIT_CODE}
 
 # [EOF]
