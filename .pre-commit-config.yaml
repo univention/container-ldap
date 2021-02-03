@@ -8,28 +8,38 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.4.0
   hooks:
+  # "Check for added large files"
   - id: check-added-large-files
+  # "Check for merge conflicts"
   - id: check-merge-conflict
+  # "Check Yaml"
   - id: check-yaml
+  # "Fix End of Files"
   - id: end-of-file-fixer
+  # "Fix python encoding pragma"
   - id: fix-encoding-pragma
+  # "Trim Trailing Whitespace"
   - id: trailing-whitespace
 
+# "yapf"
 - repo: https://github.com/pre-commit/mirrors-yapf
   rev: v0.30.0
   hooks:
   - id: yapf
 
+# "flake8"
 - repo: https://gitlab.com/pycqa/flake8
   rev: 3.8.4
   hooks:
   - id: flake8
 
+# "pylint"
 - repo: https://github.com/PyCQA/pylint
   rev: pylint-2.6.0
   hooks:
   - id: pylint
 
+# "Shell Syntax Check"
 # This is a wrapper for shellcheck as long as
 # shellcheck doesn't have it's own .pre-commit-hooks.yaml
 # https://github.com/koalaman/shellcheck/pull/1032
@@ -38,16 +48,19 @@ repos:
   hooks:
   - id: shell-lint
 
+# "Dockerfile linter"
 - repo: https://github.com/pryorda/dockerfilelint-precommit-hooks
   rev: v0.1.0
   hooks:
   - id: dockerfilelint
 
+# ".gitlab-ci.yml linter"
 - repo: https://gitlab.com/devopshq/gitlab-ci-linter
   rev: v1.0.1
   hooks:
   - id: gitlab-ci-linter
     args:
-      - '--server'
-      - 'https://git.knut.univention.de'
+    - '--server'
+    - 'https://git.knut.univention.de'
+
 ...
