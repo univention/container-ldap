@@ -1,0 +1,27 @@
+---
+
+version: '3.8'
+
+services:
+  listener:
+    build:
+      context: ./images/listener
+      args:
+        DEBIAN_BASE_IMAGE_TAG: buster-slim
+
+  notifier:
+    build:
+      context: ./images/notifier
+      args:
+        DEBIAN_BASE_IMAGE_TAG: buster-slim
+
+  openldap:
+    build:
+      context: ./images/ldap
+      args:
+        DEBIAN_BASE_IMAGE_TAG: buster-slim
+        DEB_BUILDER_REGISTRY: docker-registry.knut.univention.de
+        DEB_BUILDER_IMAGE: univention-openldap_deb_builder
+        DEB_BUILDER_TAG: latest
+
+...
