@@ -54,7 +54,12 @@ repos:
   hooks:
   - id: dockerfilelint
 
-# ".gitlab-ci.yml linter"
+# "docker-compose.yaml linter"
+- repo: https://gitlab.com/univention/pre-commit/docker-compose-check
+  rev: 9b2c7f2
+  hooks:
+  - id: docker-compose-check
+
 - repo: https://gitlab.com/devopshq/gitlab-ci-linter
   rev: v1.0.1
   hooks:
