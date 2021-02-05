@@ -4,7 +4,9 @@
 ARG DEBIAN_BASE_IMAGE_TAG
 FROM debian:${DEBIAN_BASE_IMAGE_TAG}
 
-RUN echo 'deb-src http://deb.debian.org/debian buster main' \
+RUN printf '%s\n%s' \
+      'deb-src http://deb.debian.org/debian buster main' \
+      'deb-src http://security.debian.org/debian-security buster/updates main' \
       >> /etc/apt/sources.list && \
     apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
@@ -25,7 +27,7 @@ RUN echo 'deb-src http://deb.debian.org/debian buster main' \
     # it is apparently broken
     sed -i 's/\tdh_auto_test/\t# dh_auto_test/' debian/rules
 
-COPY patches/2.4.47+dfsg-3+deb10u4/ /tmp/2.4.47+dfsg-3+deb10u4/
+COPY patches/2.4.47+dfsg-3+deb10u5/ /tmp/2.4.47+dfsg-3+deb10u5/
 
 ###############################################################################
 # Patches for the Debian packaging spripts (not for slapd) that are unwanted:
@@ -84,7 +86,7 @@ COPY patches/2.4.47+dfsg-3+deb10u4/ /tmp/2.4.47+dfsg-3+deb10u4/
 #   99_Bug37915_avoid_deadlock_and_race_condition.quilt
 #
 RUN cd ~/src/debian/openldap-2.4.47+dfsg/ && \
-    PATCH_DIR='/tmp/2.4.47+dfsg-3+deb10u4' && \
+    PATCH_DIR='/tmp/2.4.47+dfsg-3+deb10u5' && \
     patch -p1 < ${PATCH_DIR}/03_dbgsym-migration.patch && \
     patch -p1 < ${PATCH_DIR}/10_translog_overlay.patch && \
     patch -p0 < ${PATCH_DIR}/12_k5pwd.patch && \
