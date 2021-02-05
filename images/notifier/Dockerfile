@@ -45,10 +45,10 @@ RUN \
   echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
   apt-get update && \
   apt-get download \
-    libldap-2.4-2=2.4.47+dfsg-3+deb10u4A~5.0.0.202012231957 \
+    libldap-2.4-2=2.4.47+dfsg-3+deb10u4A~5.0.0.202102022256 \
     libsasl2-2=2.1.27+dfsg-1+deb10u1 \
     libssl1.1=1.1.1d-0+deb10u4 \
-    libunivention-debug1=12.0.0-1A~5.0.0.202009211929 \
+    libunivention-debug1=12.0.1-1A~5.0.0.202102041003 \
     python-ldap=3.1.0-2A~5.0.0.202011181801 \
     python-univention-config-registry=15.0.6-2A~5.0.0.202101211116 \
     python-univention-debhelper=2.0.0-3A~5.0.0.202010151132 \
