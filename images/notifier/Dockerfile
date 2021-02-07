@@ -93,15 +93,15 @@ COPY --from=build \
   # from libssl1.1
   /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 \
   # from libldap-2.4-2
-  /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2.10.10 \
+  /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2.10.* \
   # from libldap-2.4-2
-  /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.10 \
+  /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.* \
   # from libsasl2-2
-  /usr/lib/x86_64-linux-gnu/libsasl2.so.2.0.25 \
+  /usr/lib/x86_64-linux-gnu/libsasl2.so.2.0.* \
   # from libssl1.1
   /usr/lib/x86_64-linux-gnu/libssl.so.1.1 \
   # from libunivention-debug1
-  /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1.0.0 \
+  /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1.0.* \
   /usr/lib/x86_64-linux-gnu/
 
 # Copy translog import script
@@ -123,17 +123,21 @@ RUN \
   touch /usr/lib/python2.7/dist-packages/univention/__init__.py && \
   # Needed because the notifier creates its log-file in there.
   mkdir /var/log/univention/ && \
+  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'liblber-2.4.so.2.*' -printf "%f") && \
   ln --symbolic \
-    liblber-2.4.so.2.10.10 \
+    "${SRC}" \
     /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2 && \
+  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libldap_r-2.4.so.2.*' -printf "%f") && \
   ln --symbolic \
-    libldap_r-2.4.so.2.10.10 \
+    "${SRC}" \
     /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2 && \
+  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libsasl2.so.2.*' -printf "%f") && \
   ln --symbolic \
-    libsasl2.so.2.0.25 \
+    "${SRC}" \
     /usr/lib/x86_64-linux-gnu/libsasl2.so.2 && \
+  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libuniventiondebug.so.1.*' -printf "%f") && \
   ln --symbolic \
-    libuniventiondebug.so.1.0.0 \
+    "${SRC}" \
     /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1
 
 COPY entrypoint.sh /
