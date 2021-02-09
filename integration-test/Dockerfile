@@ -1,5 +1,10 @@
-FROM python:3.7-alpine
+FROM docker-registry.knut.univention.de/python:3.9-alpine
 
-RUN apk update && apk --no-cache add bash openldap-clients && rm -rf /var/cache/apk/*
+RUN mkdir -p /tests
 
-COPY tests/ldap_test.sh /
+COPY tests /tests/tests
+COPY resources /tests/resources
+COPY libraries /tests/libraries
+COPY requirements.txt /tests/
+
+RUN pip3 install -r /tests/requirements.txt
