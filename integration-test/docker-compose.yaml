@@ -6,6 +6,8 @@ services:
   test:
     build:
       context: ./
+      args:
+        BASE_IMAGE_REGISTRY: docker-registry.knut.univention.de/
     image: docker-registry.knut.univention.de/acceptance_test:latest
     entrypoint: sh -c "cd /tests && robot --xunit xunit.xml --outputdir /test_output/robot_results tests"
     networks:

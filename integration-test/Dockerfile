@@ -1,4 +1,7 @@
-FROM docker-registry.knut.univention.de/python:3.9-alpine
+ARG BASE_IMAGE_REGISTRY=""
+ARG BASE_IMAGE_NAME=python
+ARG BASE_IMAGE_TAG=3.9-alpine
+FROM ${BASE_IMAGE_REGISTRY}${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
 
 RUN mkdir -p /tests
 

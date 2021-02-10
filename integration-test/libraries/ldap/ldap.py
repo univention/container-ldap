@@ -32,15 +32,15 @@
 
 import os
 import ldap3
-from ldap3 import MODIFY_REPLACE
 
 # If we are running as root then we assume
 # that we are running in the docker-compose deployment
-# on the same network as the LDAP server
+# on the same network as the LDAP server and it is accessible
+# by the service name provided by docker-compose
 # otherwise assume that ldap server is accessible locally
-LDAP_CONTAINER = 'container-ldap_openldap_1'
+LDAP_SERVICE_NAME = 'openldap'
 LOCAL_ADDRESS = '127.0.0.1'
-LDAP_SERVER = LOCAL_ADDRESS if os.getuid() else LDAP_CONTAINER
+LDAP_SERVER = LOCAL_ADDRESS if os.getuid() else LDAP_SERVICE_NAME
 LDAP_URI = f'ldap://{LDAP_SERVER}:389'
 
 LDAP_BASE_DN = 'dc=univention-organization,dc=intranet'
@@ -68,7 +68,7 @@ def ldap_search(user, password, search_base, search_filter='(objectClass=*)'):
             conn.search(search_base=search_base, search_filter=search_filter)
             return conn.entries
     except ldap3.core.exceptions.LDAPBindError:
-        return 'LDAPBindError'
+        return ['LDAPBindError']
 
 
 def ldap_add(user, password, ldap_dn, object_class=None, attributes=None):
@@ -85,9 +85,9 @@ def ldap_delete(user, password, ldap_dn):
         return True
 
 
-def ldap_modify(user, password, ldap_dn, changes):
+def ldap_modify(user, password, ldap_dn, updates):
     """Checks if LDAP Modiy works with the provided arguments"""
-    changes = {k: [(MODIFY_REPLACE, [v])] for k, v in changes.items()}
+    changes = {k: [(ldap3.MODIFY_REPLACE, [v])] for k, v in updates.items()}
     with ldap3.Connection(server=server, user=user, password=password) as conn:
         conn.modify(dn=ldap_dn, changes=changes)
         return True
@@ -105,4 +105,4 @@ def entry_to_ldif(entry):
 
 def entry_to_json(entry):
     """Converts ldap3.abstract.entry.Entry type to JSON (str) format"""
-    return entry.entry_to_ldif()
+    return entry.entry_to_json()

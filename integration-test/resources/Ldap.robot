@@ -92,7 +92,7 @@ Then consequent LDAP searches with the user fail
     ...  univention
     ...  cn=testuser1,cn=users,${BASE_DN}
     ...  (objectClass=*)
-    Should Be Equal  LDAPBindError  ${result}
+    Should Be Equal  LDAPBindError  ${result}[0]
     ...              Search result is not the expected
 
 

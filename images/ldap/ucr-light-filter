@@ -480,6 +480,7 @@ def main():
 
             else:
                 print(line, end='')
+    return
 
 
 if __name__ == '__main__':
