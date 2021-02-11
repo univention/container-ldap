@@ -6,10 +6,14 @@ services:
   test:
     build:
       context: ./
-    image: compose_test:latest
-    entrypoint: bash -c "/ldap_test.sh"
+      args:
+        BASE_IMAGE_REGISTRY: docker-registry.knut.univention.de/
+    image: docker-registry.knut.univention.de/acceptance_test:latest
+    entrypoint: sh -c "cd /tests && robot --xunit xunit.xml --outputdir /test_output/robot_results tests"
     networks:
     - public_ldap
+    volumes:
+    - ./:/test_output:rw
 
 networks:
   public_ldap:
