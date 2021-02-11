@@ -408,19 +408,9 @@ def warning_string():
 
 
 def resolve_variable(line):
-    """Replaces a UC-Template-variable with a value from UCR"""
-    # VARIABLE_PATTERN = re.compile('@%@([^@]+)@%@')
-    if '@%@ldap/debug/level@%@' in line:
-        line = re.sub(
-            '@%@ldap/debug/level@%@', config_registry['ldap/debug/level'], line
-        )
-    if '@%@hostname@%@' in line:
-        line = re.sub('@%@hostname@%@', config_registry['hostname'], line)
-    if '@%@domainname@%@' in line:
-        line = re.sub('@%@domainname@%@', config_registry['domainname'], line)
-    if '@%@ldap/base@%@' in line:
-        line = re.sub('@%@ldap/base@%@', config_registry['ldap/base'], line)
-    return line
+    """Replaces a UCR-Template-variable with a value from UCR"""
+    VARIABLE_PATTERN = re.compile('@%@([^@]+)@%@')
+    return VARIABLE_PATTERN.sub(lambda x: config_registry[x.group(1)], line)
 
 
 # TODO: Complete this
