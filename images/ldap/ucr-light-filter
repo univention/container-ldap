@@ -37,6 +37,7 @@
 import argparse
 import collections
 import os
+import io
 import sys
 import re
 
@@ -398,53 +399,45 @@ WARNING_TEXT = '''\
 # TODO: Check if full porting of warning_string() is needed
 def warning_string():
     """Print out a warning message and all filenames from the template-dir"""
-    print(WARNING_TEXT, end='')
+    string = WARNING_TEXT
     path = "/etc/univention/templates/files/etc/ldap/slapd.conf.d/"
     for file_name in sorted(os.listdir(path)):
         file_path = os.path.join(path, file_name)
-        print(f'# \t{file_path}')
+        string += f'# \t{file_path}\n'
+    return string
 
 
 def resolve_variable(line):
-    """Replaces a UC-Template-variable with a value from UCR"""
-    # VARIABLE_PATTERN = re.compile('@%@([^@]+)@%@')
-    if '@%@ldap/debug/level@%@' in line:
-        line = re.sub(
-            '@%@ldap/debug/level@%@', config_registry['ldap/debug/level'], line
-        )
-    if '@%@hostname@%@' in line:
-        line = re.sub('@%@hostname@%@', config_registry['hostname'], line)
-    if '@%@domainname@%@' in line:
-        line = re.sub('@%@domainname@%@', config_registry['domainname'], line)
-    if '@%@ldap/base@%@' in line:
-        line = re.sub('@%@ldap/base@%@', config_registry['ldap/base'], line)
-    return line
+    """Replaces a UCR-Template-variable with a value from UCR"""
+    VARIABLE_PATTERN = re.compile('@%@([^@]+)@%@')
+    return VARIABLE_PATTERN.sub(lambda x: config_registry[x.group(1)], line)
 
 
 # TODO: Complete this
 def custom_groupname(value):
-    """Stub function for UC-Ttemplates"""
+    """Stub function for UCR-Templates"""
     return value
 
 
 # TODO: Complete this
 def custom_username(value):
-    """Stub function for UC-Ttemplates"""
+    """Stub function for UCR-Templates"""
     return value
 
 
-def main():
-    """Parses UC-Templates from stdin and calls exec on embedded code"""
+def run_filter(template, directory):
+    """Parses UCR-Templates from stdin and calls exec on embedded code"""
     inside_section = False
-    initial_to_be_compiled = ('configRegistry = config_registry\n', )
-    to_be_compiled = list(initial_to_be_compiled)
+    to_be_compiled = []
 
-    for line in sys.stdin:
+    buf = io.StringIO()
+    for line in template.splitlines():
+        line += '\n'
         # The original implementation is in:
         # base/univention-config-registry/python/
         # univention/config_registry/handler.py
         if line == '@%@UCRWARNING=# @%@\n':
-            warning_string()
+            print(warning_string(), file=buf)
             continue
 
         if '@%@' in line:
@@ -455,32 +448,48 @@ def main():
                 inside_section = True
 
             else:
+
+                def print_wrapper(*_args, **kwargs):
+                    kwargs.setdefault('file', buf)
+                    print(*_args, **kwargs)
+
                 inside_section = False
                 exec(  # pylint: disable=exec-used
                     ''.join(to_be_compiled),
-                    globals(),
+                    dict(
+                        print=print_wrapper,
+                        custom_groupname=custom_groupname,
+                        custom_username=custom_username,
+                        configRegistry=directory,
+                        run_filter=run_filter
+                    ),
                 )
-                print('')
-                to_be_compiled = list(initial_to_be_compiled)
+                print('', file=buf)
+                to_be_compiled = []
+
+        elif inside_section:
+            # Workaround for some import that doesn't do much anyway
+            # TODO: Complete this, if needed
+            if line in (
+                'from univention.config_registry.handler import run_filter\n',
+                'from univention.lib.misc import custom_groupname\n',
+                (
+                    'from univention.lib.misc import '
+                    'custom_username, custom_groupname\n'
+                ),
+            ):
+                # line = 'custom_groupname = lambda x: x\n'
+                continue
+            to_be_compiled += line
 
         else:
-            if inside_section:
-                # Workaround for some import that doesn't do much anyway
-                # TODO: Complete this, if needed
-                if line in (
-                    'from univention.lib.misc import custom_groupname\n',
-                    (
-                        'from univention.lib.misc import '
-                        'custom_username, custom_groupname\n'
-                    ),
-                ):
-                    # line = 'custom_groupname = lambda x: x\n'
-                    continue
-                to_be_compiled += line
+            print(line, file=buf, end='')
+    return buf.getvalue().encode('UTF-8')
 
-            else:
-                print(line, end='')
-    return
+
+def main():
+    """main - what else, pylint?"""
+    print(run_filter(sys.stdin.read(), config_registry).decode('UTF-8'))
 
 
 if __name__ == '__main__':
