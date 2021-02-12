@@ -1,0 +1,45 @@
+FROM artifacts.knut.univention.de/upx/container-ldap/acceptance_test/simple_saml:base
+RUN \
+    # Enable LDAP module in SimpleSAMLphp
+    touch /var/simplesamlphp/modules/ldap/enable && \
+    \
+    # Enable SAML2.0 IdP
+    # Set correct baseurl, contact data, password and salt for SimpleSAMLphp
+    for substitution in \
+     "s|'enable.saml20-idp' => false,|'enable.saml20-idp' => true,|g" \
+     "s|'baseurlpath' => 'simplesaml/'|'baseurlpath' => 'https://idp-saml/simplesaml/'|g" \
+     "s|'technicalcontact_name' => 'Administrator'|'technicalcontact_name' => 'Univention Developer'|g" \
+     "s|'technicalcontact_email' => 'na@example.org'|'technicalcontact_email' => 'tech-intern@univention.de'|g" \
+     "s|'auth.adminpassword' => '123'|'auth.adminpassword' => 'Univention123'|g" \
+     "s|'secretsalt' => 'defaultsecretsalt'|'secretsalt' => 'd0d4s64m34kqe7gflzpp98fb1azkyp1m'|g" \
+     "s|'logging.level' => SimpleSAML\Logger::NOTICE,|'logging.level' => SimpleSAML\Logger::DEBUG,|g" \
+     "s|'logging.handler' => 'syslog',|'logging.handler' => 'file',|g"; \
+    do sed -i "${substitution}" /var/simplesamlphp/config/config.php; done && \
+    \
+    # Enable LDAP as Auth source
+    # Set dnpattern for LDAP users
+    # Turn off TLS for now (for LDAP)
+    # Remove the block comment open '/*' and close '*/' lines surrounding LDAP
+    for substitution in \
+     "s|'hostname' => 'ldap.example.org',|'hostname' => 'openldap',|g" \
+     "$(printf '%s%s%s%s%s' \
+       's|'\''dnpattern'\'' => ' \
+         ''\''uid=%username%,ou=people,dc=example,dc=org'\'',' \
+        '|'\''dnpattern'\'' => ' \
+         ''\''uid=%username%,cn=users,' \
+                'dc=univention-organization,dc=intranet'\'',|g')" \
+     "s|'enable_tls' => true,|'enable_tls' => false,|g" \
+     "188d;266d"; \
+    do sed -i "${substitution}" \
+        /var/simplesamlphp/config/authsources.php; done && \
+    \
+    # Use the LDAP auth in the IdP config
+    sed -i "s|'auth' => 'example-userpass',|'auth' => 'example-ldap',|g" \
+        /var/simplesamlphp/metadata/saml20-idp-hosted.php && \
+    \
+    # Configure the nginx server_name
+    sed -i 's|server_name example.com;|server_name idp-saml;|g' \
+      /etc/nginx/nginx.conf
+
+# Configure the remote SP
+COPY saml20-sp-remote.php /var/simplesamlphp/metadata/saml20-sp-remote.php

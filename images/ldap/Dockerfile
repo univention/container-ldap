@@ -1,20 +1,24 @@
 ###############################################################################
-# Builder image for collecting Univention LDAP schema templates and base LDIFs
+# Builder image for collecting Univention LDAP schema templates, base LDIFs
+# and certain debian packages that are maintained by Univention for UCS
+# like cy2-saml
 ###############################################################################
 ARG DOCKERHUB_CACHE
 ARG DEBIAN_BASE_IMAGE_TAG
 ARG DEB_BUILDER_REGISTRY
 ARG DEB_BUILDER_IMAGE
 ARG DEB_BUILDER_TAG
-FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} as cfg_builder
+FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} as ucs_builder
 
 COPY sources.list /etc/apt/sources.list
 
-WORKDIR /tmp/tmp_apt_workdir
+WORKDIR /home/deb_packages
 
 RUN chown _apt . && \
     echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
     apt-get update && \
+    # These packages are only partially needed, and their dependencies
+    # can and should not be met in Phoenix
     apt-get download \
         univention-ldap-config \
         univention-ldap-server \
@@ -22,6 +26,10 @@ RUN chown _apt . && \
         univention-ldap-overlay-memberof \
         univention-ldap-acl-master && \
     (dpkg --force-all -i ./*.deb || true) && \
+    # These packages are needed as is, in .deb format and they are installed
+    # without modification
+    apt-get download \
+        cy2-saml && \
     rm -rf /var/lib/apt/lists/*
 
 ###############################################################################
@@ -71,6 +79,9 @@ RUN apt-get update && \
         libkrb5-26-heimdal=7.5.* \
         libkadm5srv8-heimdal=7.5.* \
         openssl=1.1.* \
+        # cy2-saml dependencies
+        liblasso3=2.6.* \
+        libglib2.0-0=2.* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
         python3=3.7.* && \
@@ -80,24 +91,26 @@ RUN apt-get update && \
     echo "1" >/var/lib/univention-ldap/schema/id/id
 
 ###############################################################################
-# Copy from LDAP config builder image
+# Copy LDAP config and libs from UCS builder image
 ###############################################################################
 # slapd.conf templates:
-COPY --from=cfg_builder /usr/share/univention-ldap/schema \
+COPY --from=ucs_builder /usr/share/univention-ldap/schema \
                         /usr/share/univention-ldap/schema
-COPY --from=cfg_builder /etc/univention/templates/files/etc/ldap/slapd.conf.d \
+COPY --from=ucs_builder /etc/univention/templates/files/etc/ldap/slapd.conf.d \
                         /etc/univention/templates/files/etc/ldap/slapd.conf.d
 # This "info" file is also a dependency of the templates
-COPY --from=cfg_builder /etc/univention/templates/info/univention-ldap-server.info \
+COPY --from=ucs_builder /etc/univention/templates/info/univention-ldap-server.info \
                         /etc/univention/templates/info/univention-ldap-server.info
 
 # LDIF Files:
-COPY --from=cfg_builder /usr/share/univention-ldap/base.ldif \
+COPY --from=ucs_builder /usr/share/univention-ldap/base.ldif \
                         /usr/share/univention-ldap/base.ldif
-COPY --from=cfg_builder /usr/share/univention-ldap/core-edition.ldif \
+COPY --from=ucs_builder /usr/share/univention-ldap/core-edition.ldif \
                         /usr/share/univention-ldap/core-edition.ldif
-COPY --from=cfg_builder /usr/share/univention-ldap/translog.ldif \
+COPY --from=ucs_builder /usr/share/univention-ldap/translog.ldif \
                         /usr/share/univention-ldap/translog.ldif
+
+COPY --from=ucs_builder /home/deb_packages/cy2-saml*.deb /tmp/
 
 ###############################################################################
 # Copy from OpenLDAP binary builder image
@@ -108,8 +121,11 @@ COPY --from=deb_builder /root/src/debian/slapd_2.4.*_amd64.deb \
 COPY --from=deb_builder /root/src/debian/libldap-2.4-2_2.4.*_amd64.deb \
                         /tmp/
 
+###############################################################################
+# Install collected deb packages from both sources
+###############################################################################
 RUN apt-get install --assume-yes --no-install-recommends \
-        /tmp/slapd_*.deb /tmp/libldap-*.deb
+        /tmp/slapd_*.deb /tmp/libldap-*.deb /tmp/cy2-saml*.deb
 
 ###############################################################################
 # Copy from Docker build context
@@ -117,6 +133,7 @@ RUN apt-get install --assume-yes --no-install-recommends \
 COPY local-schema /var/lib/univention-ldap/local-schema
 COPY ucr /usr/sbin/
 COPY ucr-light-filter /usr/sbin/
+COPY ucs-sso.univention-organization.intranet.xml /usr/share/saml/idp/
 
 COPY container-entrypoint.sh /usr/local/bin
 

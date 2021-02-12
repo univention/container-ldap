@@ -1,0 +1,49 @@
+ARG BASE_IMAGE_REGISTRY="artifacts.knut.univention.de/dockerhub_proxy_cache/library/"
+ARG BASE_IMAGE_NAME=alpine
+ARG BASE_IMAGE_TAG=3.13
+FROM ${BASE_IMAGE_REGISTRY}${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
+
+SHELL ["/bin/ash", "-euxo", "pipefail", "-c"]
+
+WORKDIR /var
+RUN apk update && \
+    apk add --no-cache \
+            nginx=~1 \
+            php7-fpm=~7 php7-session=~7 php7-curl=~7 \
+            php7-dom=~7 php7-xml=~7 php7-openssl=~7 \
+            php7-json=~7 php7-mbstring=~7 \
+            php7-ldap=~7 && \
+    wget -c \
+        "$(printf '%s%s' 'https://github.com/simplesamlphp/simplesamlphp/' \
+           'releases/download/v1.19.0/simplesamlphp-1.19.0.tar.gz')" \
+         -O - | tar -xz && \
+    mv simplesamlphp-1.19.0 simplesamlphp && \
+    \
+    # Add basic phpinfo() for troubleshooting
+    echo '<?php phpinfo(); ?>' > /var/www/index.php && \
+    \
+    # Configure PHP for more verbose logging
+    sed -i "s|;log_level\s*=\s*notice|log_level = notice|g" \
+        /etc/php7/php-fpm.d/www.conf && \
+    sed -i "s|display_errors\s*=\s*Off|display_errors = On|i" \
+        /etc/php7/php.ini && \
+    sed -i "s|display_startup_errors\s*=\s*Off|display_startup_errors = On|i" \
+        /etc/php7/php.ini && \
+    \
+    # Make sure that the 'nobody' user owns the log directory
+    # otherwise the php-fpm process running as 'nobody' can't write the logs
+    # into files
+    chown -R nobody  /var/simplesamlphp/log && \
+    \
+    # Some nginx config
+    mkdir -p /run/nginx/ && \
+    touch /run/nginx/nginx.pid
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY server.crt /var/simplesamlphp/cert/
+COPY server.pem /var/simplesamlphp/cert/
+
+# Test the nginx config
+RUN nginx -t
+ENTRYPOINT ["sh", "-c", "nginx; php-fpm7 -F"]
+EXPOSE 80

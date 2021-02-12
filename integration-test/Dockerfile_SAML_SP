@@ -1,0 +1,37 @@
+FROM artifacts.knut.univention.de/upx/container-ldap/acceptance_test/simple_saml:base
+
+RUN \
+    # Set correct baseurl, contact data, password and salt for SimpleSAMLphp
+    # Also set logging to file instead of syslog as there is no syslog in the container
+    # Set the logging level to DEBUG otherwise it's hard to find out what SimpleSAMLphp
+    # was doing before throwing an exception.
+    for substitution in \
+     "s|'baseurlpath' => 'simplesaml/'|'baseurlpath' => 'https://sp-saml/simplesaml/'|g" \
+     "s|'technicalcontact_name' => 'Administrator'|'technicalcontact_name' => 'Univention Developer'|g" \
+     "s|'technicalcontact_email' => 'na@example.org'|'technicalcontact_email' => 'tech-intern@univention.de'|g" \
+     "s|'auth.adminpassword' => '123'|'auth.adminpassword' => 'Univention123'|g" \
+     "s|'secretsalt' => 'defaultsecretsalt'|'secretsalt' => 'd0d4s64m34kqe7gflzpp98fb1azkyp1m'|g" \
+     "s|'logging.level' => SimpleSAML\\\Logger::NOTICE,|'logging.level' => SimpleSAML\\\Logger::DEBUG,|g" \
+     "s|'logging.handler' => 'syslog',|'logging.handler' => 'file',|g"; \
+    do sed -i "${substitution}" /var/simplesamlphp/config/config.php; done && \
+    \
+    # Configure EntityID for the local SP
+    # Configure the EntityID of the remote IdP used by this SP
+     for substitution in \
+       "s|'entityID' => null,|'entityID' => 'univention-sp-entity-id-0',|g" \
+       "s|'idp' => null,|'idp' => 'univention-idp-entity-id-1',|g"; \
+     do sed -i "${substitution}" \
+     /var/simplesamlphp/config/authsources.php; done && \
+    \
+    # Configure the nginx server_name
+    sed -i 's|server_name example.com;|server_name sp-saml;|g' \
+      /etc/nginx/nginx.conf
+
+# Configure the remote IdP
+COPY  saml20-idp-remote.php /var/simplesamlphp/metadata/saml20-idp-remote.php
+
+RUN \
+    apk update && apk add --no-cache openssh-server=~8 && \
+    sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin yes|g' /etc/ssh/sshd_config && \
+    sed -i 's|AllowTcpForwarding no|AllowTcpForwarding yes|g' /etc/ssh/sshd_config && \
+    ssh-keygen -A

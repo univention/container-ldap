@@ -61,6 +61,25 @@ setup_slapd_conf() {
   sed -i 's/bind_v2 update_anon/bind_v2/'    /etc/ldap/slapd.conf
 }
 
+setup_sasl_saml_config() {
+
+  printf "%s\n%s\n%s%s\n%s%s\n" \
+   "saml_grace: 600" \
+   "saml_userid: urn:oid:0.9.2342.19200300.100.1.1" \
+   "saml_idp0: " \
+     "/usr/share/saml/idp/ucs-sso.univention-organization.intranet.xml" \
+   "saml_trusted_sp0: " \
+     "https://ucs-6045.univention-organization.intranet/univention/saml/metadata" \
+   > /etc/ldap/sasl2/slapd.conf
+}
+
+setup_sasl_mech_whitelist() {
+
+  printf "%s\n" "mech_list: GSSAPI SAML" \
+    >> /etc/ldap/sasl2/slapd.conf
+
+}
+
 setup_initial_ldif() {
   # Inspired by 01univention-ldap-server-init.inst
 
@@ -137,12 +156,11 @@ check_unset_variables
 setup_listener_path
 setup_last_id_path
 setup_slapd_conf
+setup_sasl_saml_config
+setup_sasl_mech_whitelist
 setup_initial_ldif
 setup_translog_ldif
 setup_ssl_certificates
-
-# TODO: Remove this
-#sed -i '/^rootdn\t\t.*/a rootpw\t\t"univention"' /etc/ldap/slapd.conf
 
 /usr/sbin/slapd -f /etc/ldap/slapd.conf \
                 -d acl -d trace -d config -d conns \
