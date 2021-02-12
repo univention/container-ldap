@@ -1,20 +1,24 @@
 ###############################################################################
-# Builder image for collecting Univention LDAP schema templates and base LDIFs
+# Builder image for collecting Univention LDAP schema templates, base LDIFs
+# and certain libraries that are maintained by Univention for UCS
+# like cy2-saml
 ###############################################################################
 ARG DOCKERHUB_CACHE
 ARG DEBIAN_BASE_IMAGE_TAG
 ARG DEB_BUILDER_REGISTRY
 ARG DEB_BUILDER_IMAGE
 ARG DEB_BUILDER_TAG
-FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} as cfg_builder
+FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} as ucs_builder
 
 COPY sources.list /etc/apt/sources.list
 
-WORKDIR /tmp/tmp_apt_workdir
+WORKDIR /home/deb_packages
 
 RUN chown _apt . && \
     echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
     apt-get update && \
+    # These packages are only partially needed, and their dependencies
+    # can and should not be met in Phoenix
     apt-get download \
         univention-appcenter \
         univention-self-service-passwordreset-umc \
@@ -23,7 +27,8 @@ RUN chown _apt . && \
         univention-saml-schema \
         univention-ldap-overlay-memberof \
         univention-ldap-acl-master \
-        univention-portal && \
+        univention-portal \
+        cy2-saml && \
     (dpkg --force-all -i ./*.deb || true) && \
     rm -rf /var/lib/apt/lists/*
 
@@ -74,6 +79,9 @@ RUN apt-get update && \
         libkrb5-26-heimdal=7.5.* \
         libkadm5srv8-heimdal=7.5.* \
         openssl=1.1.* \
+        # cy2-saml dependencies
+        liblasso3=2.6.* \
+        libglib2.0-0=2.* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
         python3=3.7.* && \
@@ -83,48 +91,53 @@ RUN apt-get update && \
     echo "1" >/var/lib/univention-ldap/schema/id/id
 
 ###############################################################################
-# Copy from LDAP config builder image
+# Copy LDAP config and libs from UCS builder image
 ###############################################################################
 # slapd.conf templates:
-COPY --from=cfg_builder /usr/share/univention-ldap/schema \
+COPY --from=ucs_builder /usr/share/univention-ldap/schema \
                         /usr/share/univention-ldap/schema
-COPY --from=cfg_builder /usr/lib/univention-portal/schema \
+COPY --from=ucs_builder /usr/lib/univention-portal/schema \
                         /usr/lib/univention-portal/schema
-COPY --from=cfg_builder /etc/univention/templates/files/etc/ldap/slapd.conf.d \
+COPY --from=ucs_builder /etc/univention/templates/files/etc/ldap/slapd.conf.d \
                         /etc/univention/templates/files/etc/ldap/slapd.conf.d
 # This "info" file is also a dependency of the templates
-COPY --from=cfg_builder /etc/univention/templates/info/univention-ldap-server.info \
+COPY --from=ucs_builder /etc/univention/templates/info/univention-ldap-server.info \
                         /etc/univention/templates/info/univention-ldap-server.info
 
 # LDIF Files:
-COPY --from=cfg_builder /usr/share/univention-ldap/base.ldif \
+COPY --from=ucs_builder /usr/share/univention-ldap/base.ldif \
                         /usr/share/univention-ldap/base.ldif
-COPY --from=cfg_builder /usr/share/univention-ldap/core-edition.ldif \
+COPY --from=ucs_builder /usr/share/univention-ldap/core-edition.ldif \
                         /usr/share/univention-ldap/core-edition.ldif
-COPY --from=cfg_builder /usr/share/univention-ldap/translog.ldif \
+COPY --from=ucs_builder /usr/share/univention-ldap/translog.ldif \
                         /usr/share/univention-ldap/translog.ldif
 
 # local-schema files:
-COPY --from=cfg_builder \
+COPY --from=ucs_builder \
      /usr/share/univention-appcenter/univention-app.schema \
      /var/lib/univention-ldap/local-schema/univention-app.schema
 
-COPY --from=cfg_builder \
+COPY --from=ucs_builder \
      /usr/share/univention-self-service/self-service-passwordreset.schema \
      /var/lib/univention-ldap/local-schema/self-service-passwordreset.schema
 
-COPY --from=cfg_builder \
+COPY --from=ucs_builder \
      /usr/lib/univention-portal/schema/univention-portal.schema \
      /var/lib/univention-ldap/local-schema/univention-portal.schema
 
 # ACLs:
-COPY --from=cfg_builder \
+COPY --from=ucs_builder \
      /usr/share/univention-appcenter/66univention-appcenter_app.acl \
      /etc/univention/templates/files/etc/ldap/slapd.conf.d/
 
-COPY --from=cfg_builder \
+COPY --from=ucs_builder \
      /usr/lib/univention-portal/acl/62univention-portal.acl \
      /etc/univention/templates/files/etc/ldap/slapd.conf.d/
+
+# UCS only libraries:
+COPY --from=ucs_builder \
+     /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+     /usr/lib/x86_64-linux-gnu/sasl2/
 
 ###############################################################################
 # Copy from OpenLDAP binary builder image
@@ -135,7 +148,13 @@ COPY --from=deb_builder /root/src/debian/slapd_2.4.*_amd64.deb \
 COPY --from=deb_builder /root/src/debian/libldap-2.4-2_2.4.*_amd64.deb \
                         /tmp/
 
-RUN apt-get install --assume-yes --no-install-recommends \
+RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+          /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 && \
+
+    ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+          /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so && \
+
+    apt-get install --assume-yes --no-install-recommends \
         /tmp/slapd_*.deb /tmp/libldap-*.deb
 
 ###############################################################################
