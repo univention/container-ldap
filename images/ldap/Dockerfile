@@ -99,10 +99,10 @@ COPY --from=cfg_builder /usr/share/univention-ldap/translog.ldif \
 ###############################################################################
 # Copy from OpenLDAP binary builder image
 ###############################################################################
-COPY --from=deb_builder /root/src/debian/slapd_2.4.47+dfsg-3+deb10u5_amd64.deb \
+COPY --from=deb_builder /root/src/debian/slapd_2.4.*_amd64.deb \
                         /tmp/
 
-COPY --from=deb_builder /root/src/debian/libldap-2.4-2_2.4.47+dfsg-3+deb10u5_amd64.deb \
+COPY --from=deb_builder /root/src/debian/libldap-2.4-2_2.4.*_amd64.deb \
                         /tmp/
 
 RUN apt-get install --assume-yes --no-install-recommends \
