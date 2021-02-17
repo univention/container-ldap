@@ -62,12 +62,12 @@ repos:
   - id: docker-compose-check
 
 # ".gitlab-ci.yml linter"
-- repo: https://gitlab.com/devopshq/gitlab-ci-linter
-  rev: v1.0.1
-  hooks:
-  - id: gitlab-ci-linter
-    args:
-    - '--server'
-    - 'https://git.knut.univention.de'
+# - repo: https://gitlab.com/devopshq/gitlab-ci-linter
+#   rev: v1.0.1
+#   hooks:
+#   - id: gitlab-ci-linter
+#     args:
+#     - '--server'
+#     - 'https://git.knut.univention.de'
 
 ...
