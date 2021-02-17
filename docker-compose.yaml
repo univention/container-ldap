@@ -3,11 +3,6 @@
 version: '3.8'
 
 services:
-  listener:
-    env_file: .env.listener
-    secrets:
-    - ca_cert
-    - cert_pem
   notifier:
     depends_on:
     - openldap
