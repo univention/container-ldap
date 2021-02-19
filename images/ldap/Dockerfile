@@ -18,7 +18,6 @@ RUN chown _apt . && \
         univention-ldap-config \
         univention-ldap-server \
         univention-saml-schema \
-        univention-virtual-machine-manager-schema \
         univention-ldap-overlay-memberof \
         univention-ldap-acl-master && \
     (dpkg --force-all -i ./*.deb || true) && \
