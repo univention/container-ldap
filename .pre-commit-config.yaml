@@ -61,6 +61,12 @@ repos:
   hooks:
   - id: docker-compose-check
 
+# "Runs hadolint installed on the local system"
+- repo: https://gitlab.com/univention/pre-commit-hooks/docker-pre-commit
+  rev: v2.0.0
+  hooks:
+  - id: hadolint-system
+
 # ".gitlab-ci.yml linter"
 # - repo: https://gitlab.com/univention/pre-commit-hooks/gitlab-ci-linter
 #   rev: v1.0.1

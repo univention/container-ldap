@@ -20,7 +20,7 @@ WORKDIR /apt
 RUN \
   apt-get update && \
   apt-get --assume-yes --verbose-versions --no-install-recommends install \
-    ca-certificates \
+    ca-certificates=20* \
     curl=7.64.* \
     gpg=2.2.* \
     gpg-agent=2.2.* && \
