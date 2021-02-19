@@ -10,4 +10,4 @@ COPY resources /tests/resources
 COPY libraries /tests/libraries
 COPY requirements.txt /tests/
 
-RUN pip3 install -r /tests/requirements.txt
+RUN pip3 install --no-cache-dir -r /tests/requirements.txt
