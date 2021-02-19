@@ -4,28 +4,30 @@
 ARG DEBIAN_BASE_IMAGE_TAG
 FROM debian:${DEBIAN_BASE_IMAGE_TAG}
 
-RUN printf '%s\n%s' \
+WORKDIR /root/src/debian/
+
+RUN chown _apt . && \
+    printf '%s\n%s' \
       'deb-src http://deb.debian.org/debian buster main' \
       'deb-src http://security.debian.org/debian-security buster/updates main' \
       > /etc/apt/sources.list.d/debian-src.list && \
     apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
-      devscripts \
+      devscripts=2.20.* \
       # apt-utils is installed to avoid some warnings by `apt-get build-dep`
-      apt-utils \
+      apt-utils=1.8.* \
       # `apt-get build-dep` doesn't retrieve these two slapd dependencies:
       # libgcrypt-dev libssl-dev
       # Because these dependencies are added by Univention patches
       # so apt-get build-dep has no chance of knowing about them.
-      libgcrypt-dev libssl-dev && \
-    mkdir -p ~/src/debian/ && cd ~/src/debian && chown _apt . && \
+      libgcrypt20-dev=1.8.* libssl-dev=1.1.* && \
     apt-get build-dep --assume-yes libldap-2.4-2 && \
     apt-get source libldap-2.4-2 && \
     rm -rf /var/lib/apt/lists/* && \
-    cd openldap-2.4.47+dfsg && \
     # Disabling dh_auto_test is need here as the patch that is meant to disable
     # it is apparently broken
-    sed -i 's/\tdh_auto_test/\t# dh_auto_test/' debian/rules
+    sed -i 's/\tdh_auto_test/\t# dh_auto_test/' \
+      openldap-2.4.47+dfsg/debian/rules
 
 COPY patches/2.4.47+dfsg-3+deb10u5/ /tmp/2.4.47+dfsg-3+deb10u5/
 
@@ -85,8 +87,10 @@ COPY patches/2.4.47+dfsg-3+deb10u5/ /tmp/2.4.47+dfsg-3+deb10u5/
 #
 #   99_Bug37915_avoid_deadlock_and_race_condition.quilt
 #
-RUN cd ~/src/debian/openldap-2.4.47+dfsg/ && \
-    PATCH_DIR='/tmp/2.4.47+dfsg-3+deb10u5' && \
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+WORKDIR /root/src/debian/openldap-2.4.47+dfsg/
+RUN PATCH_DIR='/tmp/2.4.47+dfsg-3+deb10u5' && \
     patch -p1 < ${PATCH_DIR}/03_dbgsym-migration.patch && \
     patch -p1 < ${PATCH_DIR}/10_translog_overlay.patch && \
     patch -p0 < ${PATCH_DIR}/12_k5pwd.patch && \
@@ -107,7 +111,8 @@ RUN cd ~/src/debian/openldap-2.4.47+dfsg/ && \
     rm ${PATCH_DIR}/99_ITS-9370-check-for-equality-rule-on-old_rdn.quilt && \
     rm ${PATCH_DIR}/99_ITS-9384-remove-assert-in-obsolete-csnNormalize23.quilt && \
     cp ${PATCH_DIR}/*.quilt debian/patches/ && \
-    ls ${PATCH_DIR}/*.quilt | tr ' ' '\n' |cut -d '/' -f 4 >>  debian/patches/series && \
+    find ${PATCH_DIR} -type f -name \*.quilt \
+      | cut -d '/' -f 4 >> debian/patches/series && \
     dpkg-buildpackage -uc -us -b
     # fakeroot debian/rules binary
 

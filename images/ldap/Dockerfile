@@ -9,8 +9,10 @@ FROM debian:${DEBIAN_BASE_IMAGE_TAG} as cfg_builder
 
 COPY sources.list /etc/apt/sources.list
 
-RUN echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
-    cd "$(mktemp --directory)" && chown _apt . && \
+WORKDIR /tmp/tmp_apt_workdir
+
+RUN chown _apt . && \
+    echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
     apt-get update && \
     apt-get download \
         univention-ldap-config \
@@ -33,10 +35,12 @@ FROM ${DEB_BUILDER_REGISTRY}/${DEB_BUILDER_IMAGE}:${DEB_BUILDER_TAG} \
 ###############################################################################
 FROM debian:${DEBIAN_BASE_IMAGE_TAG}
 
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
 RUN apt-get update && \
     # Install apt-utils otherwise we can't seem to
     # do non-interactive package configuration
-    apt-get install --no-install-recommends -y apt-utils && \
+    apt-get install --no-install-recommends -y apt-utils=1.8.* && \
     \
     # Do the non-interactive package configuration
     # of slapd otherwise the build process would
@@ -50,27 +54,26 @@ RUN apt-get update && \
     } | debconf-set-selections && \
     apt-get install --no-install-recommends -y \
         # Slapd Debian dependencies, some of them could be removed later
-        libltdl7 \
-        libodbc1 \
-        libperl5.28 \
-        libwrap0 \
-        psmisc \
-        perl \
-        libmime-base64-perl \
-        lsb-base \
+        libltdl7=2.4.* \
+        libodbc1=2.3.* \
+        libperl5.28=5.28.* \
+        libwrap0=7.6.* \
+        psmisc=23.* \
+        perl=5.28.* \
+        lsb-base=10.* \
         # Some definitely needed slapd dependencies
-        libsasl2-2 \
-        libsasl2-modules \
-        libsasl2-modules-db \
-        libsasl2-modules-gssapi-heimdal \
-        krb5-config \
-        libgssapi-krb5-2 \
-        libkrb5-26-heimdal \
-        libkadm5srv8-heimdal \
-        openssl \
+        libsasl2-2=2.1.* \
+        libsasl2-modules=2.1.* \
+        libsasl2-modules-db=2.1.* \
+        libsasl2-modules-gssapi-heimdal=2.1.* \
+        krb5-config=2.6 \
+        libgssapi-krb5-2=1.* \
+        libkrb5-26-heimdal=7.5.* \
+        libkadm5srv8-heimdal=7.5.* \
+        openssl=1.1.* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
-        python3 && \
+        python3=3.7.* && \
     rm -rf /var/lib/apt/lists/* && \
     # This file is a depencecy of the slapd.conf templates
     mkdir -p /var/lib/univention-ldap/schema/id/ && \
