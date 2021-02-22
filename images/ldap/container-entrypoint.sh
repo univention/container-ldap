@@ -61,6 +61,11 @@ setup_slapd_conf() {
   sed -i 's/bind_v2 update_anon/bind_v2/'    /etc/ldap/slapd.conf
 }
 
+setup_sasl_mech_whitelist() {
+  printf "%s\n" "mech_list: GSSAPI SAML" \
+    > /etc/ldap/sasl2/slapd.conf
+}
+
 setup_initial_ldif() {
   # Inspired by 01univention-ldap-server-init.inst
 
@@ -137,6 +142,7 @@ check_unset_variables
 setup_listener_path
 setup_last_id_path
 setup_slapd_conf
+setup_sasl_mech_whitelist
 setup_initial_ldif
 setup_translog_ldif
 setup_ssl_certificates
