@@ -9,11 +9,14 @@ services:
       args:
         BASE_IMAGE_REGISTRY: docker-registry.knut.univention.de/
     image: docker-registry.knut.univention.de/acceptance_test:latest
-    entrypoint: sh -c "cd /tests && robot --xunit xunit.xml --outputdir /test_output/robot_results tests"
+    entrypoint: robot --xunit xunit.xml --outputdir /tests/robot_results --consolecolors=on tests
+    environment:
+    - TERM=xterm
     networks:
     - public_ldap
     volumes:
-    - ./:/test_output:rw
+    - ./:/tests:rw
+    working_dir: /tests
 
 networks:
   public_ldap:

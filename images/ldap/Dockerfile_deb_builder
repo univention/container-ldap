@@ -13,7 +13,7 @@ RUN chown _apt . && \
       > /etc/apt/sources.list.d/debian-src.list && \
     apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
-      devscripts=2.20.* \
+      devscripts=2.* \
       # apt-utils is installed to avoid some warnings by `apt-get build-dep`
       apt-utils=1.8.* \
       # `apt-get build-dep` doesn't retrieve these two slapd dependencies:
