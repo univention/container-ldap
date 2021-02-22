@@ -478,12 +478,16 @@ def run_filter(template, directory):
                     'custom_username, custom_groupname\n'
                 ),
             ):
-                # line = 'custom_groupname = lambda x: x\n'
                 continue
             to_be_compiled += line
 
         else:
             print(line, file=buf, end='')
+
+    # This function must return a decodable byte array
+    # in order to maintain compatibilty with the
+    # 25univention-ldap-server_local-schema fragment
+    # which invokes this function and tries to decode the result
     return buf.getvalue().encode('UTF-8')
 
 
