@@ -1,7 +1,7 @@
-ARG BASE_IMAGE_REGISTRY=""
+ARG DOCKERHUB_CACHE=artifacts.knut.univention.de/dockerhub_proxy_cache/library/
 ARG BASE_IMAGE_NAME=python
 ARG BASE_IMAGE_TAG=3.9-alpine
-FROM ${BASE_IMAGE_REGISTRY}${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
+FROM ${DOCKERHUB_CACHE}${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
 
 COPY requirements.txt /tmp/
 

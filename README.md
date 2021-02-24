@@ -6,14 +6,14 @@ Containers for Univention LDAP
 
 #### Either Install the UCS-Root-Cert for docker-pull:
 
-    sudo mkdir --parents /etc/docker/certs.d/docker-registry.knut.univention.de
-    sudo wget --no-check-certificate --output-document=/etc/docker/certs.d/docker-registry.knut.univention.de/CA.crt https://billy.knut.univention.de/ucs-root-ca.crt
+    sudo mkdir --parents /etc/docker/certs.d/artifacts.knut.univention.de
+    sudo wget --no-check-certificate --output-document=/etc/docker/certs.d/artifacts.knut.univention.de/CA.crt https://billy.knut.univention.de/ucs-root-ca.crt
 
 
 #### Or configure docker client to skip SSL
 
 Alternatively you open /etc/docker/daemon.json and add/edit the line
-    "insecure-registries" : [ "docker-registry.knut.univention.de" ],
+    "insecure-registries" : [ "artifacts.knut.univention.de" ],
 
 
 ### Diffie-Hellman Parameters

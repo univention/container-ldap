@@ -9,7 +9,11 @@ stages:
 #- undeploy-stage
 
 variables:
-  UNIV_DOCKERHUB_MIRROR: docker-registry.knut.univention.de
+  UNIV_ARTIFACTS: artifacts.knut.univention.de
+  UNIV_DOCKERHUB_CACHE:
+    ${UNIV_ARTIFACTS}/dockerhub_proxy_cache/
+  UPX_IMAGE_REGISTRY:
+    ${UNIV_ARTIFACTS}/upx/
   # We need to turn off TLS or reconfigure GitLab, see:
   # https://about.gitlab.com/releases/
   # 2019/07/31/docker-in-docker-with-docker-19-dot-03/
@@ -28,9 +32,12 @@ variables:
     ${DOCKER_COMPOSE_PRODUCTION_FILES}
     --file docker-compose.override.yaml
 
+
 pre-commit-job:
+  tags:
+    - upx-docker
   stage: lint-stage
-  image: ${UNIV_DOCKERHUB_MIRROR}/pre-commit:container-ldap
+  image: ${UPX_IMAGE_REGISTRY}container-pre-commit/pre-commit:latest
   variables:
     PIP_CACHE_DIR: ${CI_PROJECT_DIR}/.cache/pip
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
@@ -46,19 +53,15 @@ pre-commit-job:
   - pre-commit run --all-files
 
 build-job:
+  tags:
+    - upx-docker
   # Only the debian flavor seems to be working with dind out of the box
   # the alpine as of 1.28.0 does not because of a mismatch issue
   # between "musl libc" vs glibc:
   # https://github.com/docker/compose/issues/3465
   # https://stackoverflow.com/a/42322893
-  image: ${UNIV_DOCKERHUB_MIRROR}/docker/compose:debian-1.28.0
+  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
   stage: build-stage
-  tags:
-    - docker
-  services:
-    - name: ${UNIV_DOCKERHUB_MIRROR}/docker:20.10.2-dind
-      alias: docker
-      command: ["--insecure-registry=docker-registry.knut.univention.de"]
   script:
     - cp .env.listener.example .env.listener
     - cp .env.univention-openldap.example .env.univention-openldap
@@ -66,15 +69,11 @@ build-job:
     - docker-compose ${DOCKER_COMPOSE_BUILD_FILES} push
 
 #deploy-job:
-#  image: ${UNIV_DOCKERHUB_MIRROR}/docker/compose:debian-1.28.0
+#  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
 #  stage: deploy-stage
 #  tags:
 #    - docker
 #  when: manual
-#  services:
-#    - name: ${UNIV_DOCKERHUB_MIRROR}/docker:20.10.2-dind
-#      alias: docker
-#      command: ["--insecure-registry=docker-registry.knut.univention.de"]
 #  script:
 #    - cp .env.listener.example .env.listener
 #    - cp .env.univention-openldap.example .env.univention-openldap
@@ -82,14 +81,10 @@ build-job:
 #    - docker-compose up --detach --no-build
 
 test-job:
-  image: ${UNIV_DOCKERHUB_MIRROR}/docker/compose:debian-1.28.0
-  stage: test-stage
   tags:
-    - docker
-  services:
-    - name: ${UNIV_DOCKERHUB_MIRROR}/docker:20.10.2-dind
-      alias: docker
-      command: ["--insecure-registry=docker-registry.knut.univention.de"]
+    - upx-docker
+  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
+  stage: test-stage
   script:
     - cp .env.listener.example .env.listener
     - cp .env.univention-openldap.example .env.univention-openldap
@@ -113,15 +108,11 @@ test-job:
 
 
 #undeploy-job:
-#  image: ${UNIV_DOCKERHUB_MIRROR}/docker/compose:debian-1.28.0
+#  image: ${UNIV_DOCKERHUB_CACHE}/docker/compose:debian-1.28.0
 #  stage: undeploy-stage
 #  tags:
 #    - docker
 #  when: manual
-#  services:
-#    - name: ${UNIV_DOCKERHUB_MIRROR}/docker:20.10.2-dind
-#      alias: docker
-#      command: ["--insecure-registry=docker-registry.knut.univention.de"]
 #  script:
 #    - docker-compose down
 #    - docker-compose rm
