@@ -53,6 +53,12 @@ setup_slapd_conf() {
     | ucr-light-filter --ldapbase "${LDAP_BASE_DN}" \
                        --domainname "${DOMAIN_NAME}" \
                        > /etc/ldap/slapd.conf
+
+  # Explicitly disallow anonym bind
+  sed -i '/^allow.*/a disallow    bind_anon' /etc/ldap/slapd.conf
+
+  # Only allow bind_v2 but not update_anon
+  sed -i 's/bind_v2 update_anon/bind_v2/'    /etc/ldap/slapd.conf
 }
 
 setup_initial_ldif() {
