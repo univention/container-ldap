@@ -93,6 +93,49 @@ def ldap_modify(user, password, ldap_dn, updates):
         return True
 
 
+def ldap_search_without_bind(search_base, search_filter='(objectClass=*)'):
+    """Checks whether LDAP Search works without authentication"""
+    return ldap_operation_without_bind(
+        lambda conn: conn.
+        search(search_base=search_base, search_filter=search_filter)
+    )
+
+
+def ldap_add_without_bind(ldap_dn, object_class=None, attributes=None):
+    """Checks whether LDAP Add works without authentication"""
+    return ldap_operation_without_bind(
+        lambda conn: conn.
+        add(dn=ldap_dn, object_class=object_class, attributes=attributes)
+    )
+
+
+def ldap_modify_without_bind(ldap_dn, changes):
+    """Checks whether LDAP Modify works without authentication"""
+    return ldap_operation_without_bind(
+        lambda conn: conn.modify(dn=ldap_dn, changes=changes)
+    )
+
+
+def ldap_operation_without_bind(operation):
+    """Checks whether LDAP Operation works without authentication"""
+    try:
+        with ldap3.Connection(
+            server=server,
+            auto_bind='NONE',
+            authentication='ANONYMOUS',
+            raise_exceptions=True
+        ) as conn:
+            conn.open()
+            operation(conn)
+            return conn.result
+    except ldap3.core.exceptions.LDAPStrongerAuthRequiredResult:
+        return ['LDAPStrongerAuthRequiredResult']
+    except ldap3.core.exceptions.LDAPChangeError:
+        return ['LDAPChangeError']
+    except ldap3.core.exceptions.LDAPInsufficientAccessRightsResult:
+        return ['LDAPInsufficientAccessRightsResult']
+
+
 def entry_to_dn(entry):
     """Returns the DN (str) of an ldap3.abstract.entry.Entry type of object"""
     return entry.entry_dn
