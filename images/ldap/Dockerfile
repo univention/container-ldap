@@ -1,11 +1,12 @@
 ###############################################################################
 # Builder image for collecting Univention LDAP schema templates and base LDIFs
 ###############################################################################
+ARG DOCKERHUB_CACHE
 ARG DEBIAN_BASE_IMAGE_TAG
 ARG DEB_BUILDER_REGISTRY
 ARG DEB_BUILDER_IMAGE
 ARG DEB_BUILDER_TAG
-FROM debian:${DEBIAN_BASE_IMAGE_TAG} as cfg_builder
+FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} as cfg_builder
 
 COPY sources.list /etc/apt/sources.list
 
@@ -32,7 +33,7 @@ FROM ${DEB_BUILDER_REGISTRY}/${DEB_BUILDER_IMAGE}:${DEB_BUILDER_TAG} \
 ###############################################################################
 # Final image
 ###############################################################################
-FROM debian:${DEBIAN_BASE_IMAGE_TAG}
+FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG}
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 

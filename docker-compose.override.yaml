@@ -7,15 +7,17 @@ services:
     build:
       context: ./images/notifier
       args:
+        DOCKERHUB_CACHE: artifacts.knut.univention.de/dockerhub_proxy_cache/library/
         DEBIAN_BASE_IMAGE_TAG: buster-slim
 
   openldap:
     build:
       context: ./images/ldap
       args:
+        DOCKERHUB_CACHE: artifacts.knut.univention.de/dockerhub_proxy_cache/library/
         DEBIAN_BASE_IMAGE_TAG: buster-slim
-        DEB_BUILDER_REGISTRY: docker-registry.knut.univention.de
-        DEB_BUILDER_IMAGE: univention-openldap_deb_builder
+        DEB_BUILDER_REGISTRY: artifacts.knut.univention.de
+        DEB_BUILDER_IMAGE: upx/container-ldap/openldap_deb_builder
         DEB_BUILDER_TAG: latest
 
 ...

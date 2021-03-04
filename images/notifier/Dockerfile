@@ -1,9 +1,10 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
+ARG DOCKERHUB_CACHE=artifacts.knut.univention.de/dockerhub_proxy_cache/library/
 ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
 
-FROM debian:${DEBIAN_BASE_IMAGE_TAG} AS build
+FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} AS build
 
 ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
 
@@ -63,7 +64,7 @@ RUN \
 ###############################################################################
 # Second stage image to get rid of unneeded files
 
-FROM debian:${DEBIAN_BASE_IMAGE_TAG} AS final
+FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} AS final
 
 SHELL ["/bin/bash", "-c"]
 
