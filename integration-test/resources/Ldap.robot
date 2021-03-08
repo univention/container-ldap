@@ -1,6 +1,7 @@
 *** Settings ***
 Library          ${CURDIR}/../libraries/ldap/ldap.py
 Library          Collections
+Library          String
 
 
 *** Variables ***
@@ -106,3 +107,38 @@ Then consequent LDAP searches with the user succeed
     Length Should Be  ${result}  1
     ${entry_dn} =  Entry To DN  ${result}[0]
     Should Match  cn=testuser1,cn=users,${BASE_DN}  ${entry_dn}
+
+
+Given a default configured LDAP server
+    No Operation
+
+
+When an anonymous LDAP search queries the
+    [Arguments]    ${DN}
+    ${results} =  ldap search without bind  ${DN}
+    Set Test Variable  ${OPERATION_RESULT}  ${results}
+
+
+When an anonymous user LDAP adds
+    [Arguments]    ${DN}
+    ${split_dn} =  Split String  ${DN}  ,
+    ${split_cn} =  Split String  ${split_dn}[0]  =
+    ${user} =  Set Variable  ${split_cn}[1]
+    ${object_class} =  Evaluate  ['posixAccount','organizationalRole']
+    ${attributes} =  Evaluate
+    ...  {'cn': '${user}', 'uid': '${user}', 'homeDirectory': '/home/${user}', 'uidNumber': '1', 'gidNumber': '1'}
+    ${results} =  ldap add without bind  ${DN}  ${object_class}  ${attributes}
+    Set Test Variable  ${OPERATION_RESULT}  ${results}
+
+
+When an anonymous user LDAP modifies
+    [Arguments]    ${DN}  ${change}
+    ${ldap_change} =  Evaluate  ${change}
+    ${results} =  ldap modify without bind  ${DN}  ${ldap_change}
+    Set Test Variable  ${OPERATION_RESULT}  ${results}
+
+
+Then the query result fails
+     @{FAILURE_RESULTS} =  Create List  LDAPInsufficientAccessRightsResult
+     ...  LDAPStrongerAuthRequiredResult  LDAPChangeError
+     Should Contain  ${FAILURE_RESULTS}  ${OPERATION_RESULT}[0]
