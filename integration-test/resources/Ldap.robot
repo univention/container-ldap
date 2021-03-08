@@ -138,6 +138,7 @@ When an anonymous user LDAP modifies
     Set Test Variable  ${OPERATION_RESULT}  ${results}
 
 
-Then the query result is
-     [Arguments]     @{EXPECTED_RESULTS}
-     Lists Should Be Equal  ${OPERATION_RESULT}  ${EXPECTED_RESULTS}
+Then the query result fails
+     @{FAILURE_RESULTS} =  Create List  LDAPInsufficientAccessRightsResult
+     ...  LDAPStrongerAuthRequiredResult  LDAPChangeError
+     Should Contain  ${FAILURE_RESULTS}  ${OPERATION_RESULT}[0]
