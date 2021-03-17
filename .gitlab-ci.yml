@@ -12,14 +12,8 @@ variables:
     ${UNIV_ARTIFACTS}/dockerhub_proxy_cache/
   UPX_IMAGE_REGISTRY:
     ${UNIV_ARTIFACTS}/upx/
-  # We need to turn off TLS or reconfigure GitLab, see:
-  # https://about.gitlab.com/releases/
-  # 2019/07/31/docker-in-docker-with-docker-19-dot-03/
-  DOCKER_TLS_CERTDIR: ""
-  # DOCKER_TLS_CERTDIR: "/certs"
-  # DOCKER_TLS_VERIFY: 1
-  # DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
   DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
 
   CI_PIPELINE_TAG: "${CI_PIPELINE_ID}-"
 
@@ -34,6 +28,8 @@ variables:
 
 default:
   before_script:
+  - docker info
+  - docker version
   - mkdir "$HOME/.docker/"
   - echo "$DOCKER_AUTH_CONFIG" > "$HOME/.docker/config.json"
 
@@ -68,9 +64,11 @@ build-job:
   image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
   stage: build-stage
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:18.09.7-dind
+    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.6-dind
       alias: docker
-      command: ["--insecure-registry=artifacts.knut.univention.de"]
+      command:
+        - "--insecure-registry=artifacts.knut.univention.de"
+        - "--tls=false"
   script:
     - cp .env.ldap-server.example .env.ldap-server
     - docker-compose ${DOCKER_COMPOSE_BUILD_FILES} build
@@ -82,9 +80,11 @@ test-job:
   image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
   stage: test-stage
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:18.09.7-dind
+    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.6-dind
       alias: docker
-      command: ["--insecure-registry=artifacts.knut.univention.de"]
+      command:
+        - "--insecure-registry=artifacts.knut.univention.de"
+        - "--tls=false"
   script:
     - cp .env.ldap-server.example .env.ldap-server
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
@@ -113,9 +113,11 @@ publish-job:
   only:
     - main
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:18.09.7-dind
+    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.6-dind
       alias: docker
-      command: ["--insecure-registry=artifacts.knut.univention.de"]
+      command:
+        - "--insecure-registry=artifacts.knut.univention.de"
+        - "--tls=false"
   script:
     - cp .env.ldap-server.example .env.ldap-server
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
