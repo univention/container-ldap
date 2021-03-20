@@ -104,6 +104,8 @@ publish-job:
       alias: docker
       command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
+    - cp .env.listener.example .env.listener
+    - cp .env.univention-openldap.example .env.univention-openldap
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
     - docker tag
       ${UPX_IMAGE_REGISTRY}container-ldap/openldap:${CI_PIPELINE_TAG}test
