@@ -4,12 +4,13 @@ version: '3.8'
 
 services:
   test:
-    build:
-      context: ./
-      args:
-        DOCKERHUB_CACHE: artifacts.knut.univention.de/dockerhub_proxy_cache/library/
-    image: artifacts.knut.univention.de/upx/container-ldap/acceptance_test/test:latest
-    entrypoint: robot --xunit xunit.xml --outputdir /tests/robot_results --consolecolors=on tests
+    image:
+     artifacts.knut.univention.de/upx/container-test-automation/integration-test
+    entrypoint: robot
+                  --xunit xunit.xml
+                  --outputdir /tests/robot_results
+                  --consolecolors=on
+                  tests
     environment:
     - TERM=xterm
     networks:
