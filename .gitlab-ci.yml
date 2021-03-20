@@ -30,10 +30,14 @@ variables:
     ${DOCKER_COMPOSE_PRODUCTION_FILES}
     --file docker-compose.override.yaml
 
+default:
+  before_script:
+  - mkdir "$HOME/.docker/"
+  - echo "$DOCKER_AUTH_CONFIG" > "$HOME/.docker/config.json"
 
 pre-commit-job:
   tags:
-    - upx-docker
+    - docker
   stage: lint-stage
   image: ${UPX_IMAGE_REGISTRY}container-pre-commit/pre-commit:latest
   variables:
@@ -44,6 +48,8 @@ pre-commit-job:
     - .cache/pip
     - .cache/pre-commit
     - venv/
+  before_script:
+  - echo "Explicitly skip the default action docker login"
   script:
   # Compose lint would fail without the referenced env files
   - cp .env.listener.example .env.listener
@@ -52,7 +58,7 @@ pre-commit-job:
 
 build-job:
   tags:
-    - upx-docker
+    - docker
   # Only the debian flavor seems to be working with dind out of the box
   # the alpine as of 1.28.0 does not because of a mismatch issue
   # between "musl libc" vs glibc:
@@ -60,6 +66,10 @@ build-job:
   # https://stackoverflow.com/a/42322893
   image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
   stage: build-stage
+  services:
+    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.2-dind
+      alias: docker
+      command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
     - cp .env.listener.example .env.listener
     - cp .env.univention-openldap.example .env.univention-openldap
@@ -68,9 +78,13 @@ build-job:
 
 test-job:
   tags:
-    - upx-docker
+    - docker
   image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
   stage: test-stage
+  services:
+    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.2-dind
+      alias: docker
+      command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
     - cp .env.listener.example .env.listener
     - cp .env.univention-openldap.example .env.univention-openldap
