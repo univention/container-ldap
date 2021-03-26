@@ -16,6 +16,8 @@ RUN chown _apt . && \
     echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
     apt-get update && \
     apt-get download \
+        univention-appcenter \
+        univention-self-service-passwordreset-umc \
         univention-ldap-config \
         univention-ldap-server \
         univention-saml-schema \
@@ -99,6 +101,20 @@ COPY --from=cfg_builder /usr/share/univention-ldap/core-edition.ldif \
 COPY --from=cfg_builder /usr/share/univention-ldap/translog.ldif \
                         /usr/share/univention-ldap/translog.ldif
 
+# local-schema files:
+COPY --from=cfg_builder \
+     /usr/share/univention-appcenter/univention-app.schema \
+     /var/lib/univention-ldap/local-schema/univention-app.schema
+
+COPY --from=cfg_builder \
+     /usr/share/univention-self-service/self-service-passwordreset.schema \
+     /var/lib/univention-ldap/local-schema/self-service-passwordreset.schema
+
+# ACLs:
+COPY --from=cfg_builder \
+     /usr/share/univention-appcenter/66univention-appcenter_app.acl \
+     /etc/univention/templates/files/etc/ldap/slapd.conf.d/
+
 ###############################################################################
 # Copy from OpenLDAP binary builder image
 ###############################################################################
@@ -114,7 +130,6 @@ RUN apt-get install --assume-yes --no-install-recommends \
 ###############################################################################
 # Copy from Docker build context
 ###############################################################################
-COPY local-schema /var/lib/univention-ldap/local-schema
 COPY ucr /usr/sbin/
 COPY ucr-light-filter /usr/sbin/
 
