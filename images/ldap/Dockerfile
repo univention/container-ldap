@@ -22,7 +22,8 @@ RUN chown _apt . && \
         univention-ldap-server \
         univention-saml-schema \
         univention-ldap-overlay-memberof \
-        univention-ldap-acl-master && \
+        univention-ldap-acl-master \
+        univention-portal && \
     (dpkg --force-all -i ./*.deb || true) && \
     rm -rf /var/lib/apt/lists/*
 
@@ -87,6 +88,8 @@ RUN apt-get update && \
 # slapd.conf templates:
 COPY --from=cfg_builder /usr/share/univention-ldap/schema \
                         /usr/share/univention-ldap/schema
+COPY --from=cfg_builder /usr/lib/univention-portal/schema \
+                        /usr/lib/univention-portal/schema
 COPY --from=cfg_builder /etc/univention/templates/files/etc/ldap/slapd.conf.d \
                         /etc/univention/templates/files/etc/ldap/slapd.conf.d
 # This "info" file is also a dependency of the templates
@@ -110,9 +113,17 @@ COPY --from=cfg_builder \
      /usr/share/univention-self-service/self-service-passwordreset.schema \
      /var/lib/univention-ldap/local-schema/self-service-passwordreset.schema
 
+COPY --from=cfg_builder \
+     /usr/lib/univention-portal/schema/univention-portal.schema \
+     /var/lib/univention-ldap/local-schema/univention-portal.schema
+
 # ACLs:
 COPY --from=cfg_builder \
      /usr/share/univention-appcenter/66univention-appcenter_app.acl \
+     /etc/univention/templates/files/etc/ldap/slapd.conf.d/
+
+COPY --from=cfg_builder \
+     /usr/lib/univention-portal/acl/62univention-portal.acl \
      /etc/univention/templates/files/etc/ldap/slapd.conf.d/
 
 ###############################################################################
