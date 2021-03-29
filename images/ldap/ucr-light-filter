@@ -120,7 +120,7 @@ config_registry = Registry(  # pylint: disable=invalid-name
         'ldap/database/mdb/envflags':
             '',
         'ldap/database/mdb/maxsize':
-            '2147483648',
+            '4295000000',
         'ldap/database/type':
             'mdb',
         'ldap/debug/level':
@@ -189,6 +189,7 @@ config_registry = Registry(  # pylint: disable=invalid-name
                     'univentionShareWriteable',
                     'univentionUDMOptionModule',
                     'univentionUDMPropertyCLIName',
+                    'univentionUDMPropertyCopyable',
                     'univentionUDMPropertyDefault',
                     'univentionUDMPropertyDeleteObjectClass',
                     'univentionUDMPropertyDoNotSearch',
