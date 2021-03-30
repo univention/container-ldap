@@ -57,6 +57,8 @@ Given an existing and previously working user
     ...  cn=testuser1,cn=users,${BASE_DN}
     ...  (objectClass=*)
 
+Given a default configured OpenLDAP container
+    No Operation
 
 When user expiry is set to a date in the past
     # https://linux.die.net/man/5/shadow
@@ -87,6 +89,11 @@ When user expiry is set to a date in the future
     ...  ${ldap_change}
 
 
+When the supportedsaslmechanisms are queried from the DSA
+    ${all_info} =  get all ldap server info  cn=admin,${BASE_DN}  univention
+    Set Test Variable  ${SUPPORTED_SASL_MECHANISMS}  ${all_info.supported_sasl_mechanisms}
+
+
 Then consequent LDAP searches with the user fail
     ${result} =  ldap search
     ...  cn=testuser1,cn=users,${BASE_DN}
@@ -103,7 +110,6 @@ Then consequent LDAP searches with the user succeed
     ...  univention
     ...  cn=testuser1,cn=users,${BASE_DN}
     ...  (objectClass=*)
-    Log Variables
     Length Should Be  ${result}  1
     ${entry_dn} =  Entry To DN  ${result}[0]
     Should Match  cn=testuser1,cn=users,${BASE_DN}  ${entry_dn}
@@ -142,3 +148,18 @@ Then the query result fails
      @{FAILURE_RESULTS} =  Create List  LDAPInsufficientAccessRightsResult
      ...  LDAPStrongerAuthRequiredResult  LDAPChangeError
      Should Contain  ${FAILURE_RESULTS}  ${OPERATION_RESULT}[0]
+
+
+Then the results include
+     [Arguments]     @{REQUIRED_SASL_MECHANISMS}
+     List Should Contain Sub List
+...  ${SUPPORTED_SASL_MECHANISMS}
+...  ${REQUIRED_SASL_MECHANISMS}
+
+
+And the results don't include any
+    [Arguments]     @{PROHIBITED_SASL_MECHANISMS}
+    Log Variables
+    FOR  ${FORBIDDEN_ITEM}  IN  @{PROHIBITED_SASL_MECHANISMS}
+        List Should Not Contain Value  ${SUPPORTED_SASL_MECHANISMS}  ${FORBIDDEN_ITEM}
+    END

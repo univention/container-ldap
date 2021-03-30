@@ -31,6 +31,7 @@
 """Robot framework library implementation for LDAP operations"""
 
 import os
+import ssl
 import ldap3
 
 # If we are running as root then we assume
@@ -44,6 +45,44 @@ LDAP_SERVER = LOCAL_ADDRESS if os.getuid() else LDAP_SERVICE_NAME
 LDAP_URI = f'ldap://{LDAP_SERVER}:389'
 
 LDAP_BASE_DN = 'dc=univention-organization,dc=intranet'
+EMPTY_DSA_INFO = '''{
+        "raw": {
+            "altServer": [],
+            "configContext": [
+                ""
+            ],
+            "entryDN": [
+                ""
+            ],
+            "namingContexts": [
+                "" ],
+            "objectClass": [
+                ""
+            ],
+            "structuralObjectClass": [
+                ""
+            ],
+            "subschemaSubentry": [
+                ""
+            ],
+            "supportedCapabilities": [],
+            "supportedControl": [
+                ""
+            ],
+            "supportedExtension": [
+            ],
+            "supportedFeatures": [
+            ],
+            "supportedLDAPVersion": [
+                "3"
+            ],
+            "supportedSASLMechanisms": [
+            ],
+            "vendorName": [],
+            "vendorVersion": []
+        },
+        "type": "DsaInfo"
+    }'''
 
 server = ldap3.Server(LDAP_URI)
 
@@ -134,6 +173,38 @@ def ldap_operation_without_bind(operation):
         return ['LDAPChangeError']
     except ldap3.core.exceptions.LDAPInsufficientAccessRightsResult:
         return ['LDAPInsufficientAccessRightsResult']
+
+
+def get_all_ldap_server_info(user, password):
+    """Returns the DSA info from the LDAP server via TLS if possible
+       it is important to use TLS, because for example the advertised
+       supportedsaslmechanisms are typically different depending on
+       whether TLS is in use or not (ldaps:// vs ldap://)
+    """
+    tls_protocol_version = ssl.PROTOCOL_TLSv1_2
+
+    tls = ldap3.Tls(
+        # local_private_key_file='../ssl/secret/private.key',
+        # local_certificate_file='../ssl/certs/CAcert.pem',
+        validate=ssl.CERT_NONE,
+        version=tls_protocol_version,
+        # ca_certs_file='../ssl/certs/CAcert.pem'
+    )
+    tmp_server = ldap3.Server(
+        LDAP_SERVER, use_ssl=True, tls=tls, get_info=ldap3.ALL
+    )
+
+    with ldap3.Connection(
+        server=tmp_server, user=user, password=password
+    ) as conn:
+        # TLS is a MUST for retrieving the correct DsaInfo
+        if not conn.server.ssl:
+            raise ValueError(
+                'Connection does not use the expected TLS '
+                f'version: {str(tls_protocol_version)}'
+            )
+        return tmp_server.info
+    return ldap3.DsaInfo.from_json(EMPTY_DSA_INFO)
 
 
 def entry_to_dn(entry):
