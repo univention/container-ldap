@@ -1,6 +1,7 @@
 # Docker Compose
 /.env.listener
-.env.univention-openldap
+/.env.univention-openldap
+/saml/idp/
 
 # Python
 __pycache__

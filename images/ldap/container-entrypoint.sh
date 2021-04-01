@@ -6,7 +6,8 @@ check_unset_variables() {
   # Also list here the variables needed by ucr-light-filter
   var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" \
               "LDAP_CN_ADMIN_PW_HASH" \
-              "CA_CERT_FILE" "CERT_PEM_FILE" "PRIVATE_KEY_FILE" )
+              "CA_CERT_FILE" "CERT_PEM_FILE" "PRIVATE_KEY_FILE" \
+              "SERVICE_PROVIDERS" )
   for var_name in "${var_names[@]}"; do
     if [[ -z "${!var_name:-}" ]]; then
       echo "ERROR: '${var_name}' is unset."
@@ -63,6 +64,29 @@ setup_slapd_conf() {
 setup_sasl_mech_whitelist() {
   printf "%s\n" "mech_list: GSSAPI SAML" \
     > /etc/ldap/sasl2/slapd.conf
+}
+
+setup_sasl_mech_saml() {
+ # We have to modify the template since the hardcoded univention/saml/metadata
+ # URL endpoint is not necessarily valid for future service providers.
+ # Therefore we expect comma a separated list of URLs in SERVICE_PROVIDERS.
+ # And since our Identitiy Providers are not UMC anymore but Keycloak or Gluu,
+ # we put the metadata XMLs into a vendor neutral location.
+ # The sp library is not quite usable nor desired in this context so that
+ # and it's dependency sys are removed.
+
+ printf -v filter_string '%s' \
+  's/#@%@UCRWARNING=# @%@//;' \
+  's/import sys/import os/;' \
+  '/sys.path.insert/,+1d;' \
+  's/univention-management-console//;' \
+  '/service_providers =/,+3d;' \
+  '/if identity_provider/i ' \
+  'service_providers = os.environ["SERVICE_PROVIDERS"].split(",")'
+
+ sed -e "${filter_string}" \
+   /etc/univention/templates/files/etc/ldap/sasl2/slapd.conf \
+   | ucr-light-filter >> /etc/ldap/sasl2/slapd.conf
 }
 
 setup_initial_ldif() {
@@ -140,6 +164,7 @@ setup_listener_path
 setup_last_id_path
 setup_slapd_conf
 setup_sasl_mech_whitelist
+setup_sasl_mech_saml
 setup_initial_ldif
 setup_translog_ldif
 setup_ssl_certificates
