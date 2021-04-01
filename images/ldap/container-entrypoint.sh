@@ -3,6 +3,7 @@
 set -euxo pipefail
 
 check_unset_variables() {
+  # Also list here the variables needed by ucr-light-filter
   var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" \
               "LDAP_CN_ADMIN_PW_HASH" \
               "CA_CERT_FILE" "CERT_PEM_FILE" "PRIVATE_KEY_FILE" )
@@ -50,9 +51,7 @@ setup_last_id_path() {
 setup_slapd_conf() {
 
   cat /etc/univention/templates/files/etc/ldap/slapd.conf.d/* \
-    | ucr-light-filter --ldapbase "${LDAP_BASE_DN}" \
-                       --domainname "${DOMAIN_NAME}" \
-                       > /etc/ldap/slapd.conf
+    | ucr-light-filter > /etc/ldap/slapd.conf
 
   # Explicitly disallow anonym bind
   sed -i '/^allow.*/a disallow    bind_anon' /etc/ldap/slapd.conf
@@ -102,10 +101,8 @@ setup_initial_ldif() {
   # Remove cn=backup user as we don't need it
   sed -i '/cn=backup/,+6d' /usr/share/univention-ldap/base.ldif
 
-  cat /usr/share/univention-ldap/base.ldif \
-      /usr/share/univention-ldap/core-edition.ldif \
-    | ucr-light-filter --ldapbase "${ldap_base}" --domainname "${domainname}" \
-    | sed -e "${filter_string}" \
+  cat /usr/share/univention-ldap/{base.ldif,core-edition.ldif} \
+    | ucr-light-filter | sed -e "${filter_string}" \
     | slapadd -f /etc/ldap/slapd.conf
 }
 
