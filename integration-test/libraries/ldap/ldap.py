@@ -45,44 +45,23 @@ LDAP_SERVER = LOCAL_ADDRESS if os.getuid() else LDAP_SERVICE_NAME
 LDAP_URI = f'ldap://{LDAP_SERVER}:389'
 
 LDAP_BASE_DN = 'dc=univention-organization,dc=intranet'
-EMPTY_DSA_INFO = '''{
-        "raw": {
-            "altServer": [],
-            "configContext": [
-                ""
-            ],
-            "entryDN": [
-                ""
-            ],
-            "namingContexts": [
-                "" ],
-            "objectClass": [
-                ""
-            ],
-            "structuralObjectClass": [
-                ""
-            ],
-            "subschemaSubentry": [
-                ""
-            ],
-            "supportedCapabilities": [],
-            "supportedControl": [
-                ""
-            ],
-            "supportedExtension": [
-            ],
-            "supportedFeatures": [
-            ],
-            "supportedLDAPVersion": [
-                "3"
-            ],
-            "supportedSASLMechanisms": [
-            ],
-            "vendorName": [],
-            "vendorVersion": []
-        },
-        "type": "DsaInfo"
-    }'''
+EMPTY_DSA_INFO_ATTRIBUTES = {
+    "altServer": [],
+    "configContext": [""],
+    "entryDN": [""],
+    "namingContexts": [""],
+    "objectClass": [""],
+    "structuralObjectClass": [""],
+    "subschemaSubentry": [""],
+    "supportedCapabilities": [],
+    "supportedControl": [""],
+    "supportedExtension": [],
+    "supportedFeatures": [],
+    "supportedLDAPVersion": ["3"],
+    "supportedSASLMechanisms": [],
+    "vendorName": [],
+    "vendorVersion": []
+}
 
 server = ldap3.Server(LDAP_URI)
 
@@ -204,7 +183,7 @@ def get_all_ldap_server_info(user, password):
                 f'version: {str(tls_protocol_version)}'
             )
         return tmp_server.info
-    return ldap3.DsaInfo.from_json(EMPTY_DSA_INFO)
+    return ldap3.DsaInfo(EMPTY_DSA_INFO_ATTRIBUTES, None)
 
 
 def entry_to_dn(entry):
