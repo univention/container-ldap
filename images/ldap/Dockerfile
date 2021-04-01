@@ -28,6 +28,7 @@ RUN chown _apt . && \
         univention-ldap-overlay-memberof \
         univention-ldap-acl-master \
         univention-portal \
+        liblasso3 \
         cy2-saml && \
     (dpkg --force-all -i ./*.deb || true) && \
     rm -rf /var/lib/apt/lists/*
@@ -80,8 +81,8 @@ RUN apt-get update && \
         libkadm5srv8-heimdal=7.5.* \
         openssl=1.1.* \
         # cy2-saml dependencies
-        liblasso3=2.6.* \
         libglib2.0-0=2.* \
+        libxmlsec1-openssl=1.2.* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
         python3=3.7.* && \
@@ -139,6 +140,10 @@ COPY --from=ucs_builder \
      /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
      /usr/lib/x86_64-linux-gnu/sasl2/
 
+# Only the UCS version of this library fits as libsaml linked against this
+# and otherwise dlopen(,) complains about 'undefined symbol'
+COPY --from=ucs_builder /usr/lib/liblasso.so.3.13.0  /usr/lib/
+
 ###############################################################################
 # Copy from OpenLDAP binary builder image
 ###############################################################################
@@ -148,7 +153,10 @@ COPY --from=deb_builder /root/src/debian/slapd_2.4.*_amd64.deb \
 COPY --from=deb_builder /root/src/debian/libldap-2.4-2_2.4.*_amd64.deb \
                         /tmp/
 
-RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+RUN \
+    # ldconfig doesn't create this links as this directory
+    # is not in any config under /etc/ld.so.conf.d/
+    ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 && \
 
     ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
