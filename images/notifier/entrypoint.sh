@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
+shopt -s expand_aliases
 
 alias tsecho='echo "$(date --utc +%Y-%m-%dT%H:%M:%SZ)"'
 
