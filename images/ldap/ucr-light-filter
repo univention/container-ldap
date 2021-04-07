@@ -34,20 +34,11 @@
 """Replacement for "univention-config-registry" get and filter"""
 
 # included
-import argparse
 import collections
 import os
 import io
 import sys
 import re
-
-parser = argparse.ArgumentParser()  # pylint: disable=invalid-name
-
-parser.add_argument('--ldapbase', type=str, required=True)
-
-parser.add_argument('--domainname', type=str, required=True)
-
-args = parser.parse_args()  # pylint: disable=invalid-name
 
 
 class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
@@ -88,7 +79,7 @@ class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
 config_registry = Registry(  # pylint: disable=invalid-name
     {
         'domainname':
-            args.domainname,  # 'fg-organization.intranet'
+            os.environ['DOMAIN_NAME'],  # 'fg-organization.intranet'
         'hostname':
             'ucs-6045',
         'ldap/acl/nestedgroups':
@@ -104,7 +95,7 @@ config_registry = Registry(  # pylint: disable=invalid-name
         'ldap/autostart':
             'yes',
         'ldap/base':
-            args.ldapbase,  # 'dc=fg-organization,dc=intranet'
+            os.environ['LDAP_BASE_DN'],  # 'dc=fg-organization,dc=intranet'
         'ldap/binaryattributes':
             '',
         'ldap/cachesize':
@@ -126,7 +117,7 @@ config_registry = Registry(  # pylint: disable=invalid-name
         'ldap/debug/level':
             'none',
         'ldap/hostdn':
-            'cn=ucs-6045,cn=dc,cn=computers,' + args.ldapbase,
+            'cn=ucs-6045,cn=dc,cn=computers,' + os.environ['LDAP_BASE_DN'],
         'ldap/idlcachesize':
             '20000',
         'ldap/idletimeout':
@@ -322,7 +313,7 @@ config_registry = Registry(  # pylint: disable=invalid-name
         'ldap/master/port':
             '7389',
         'ldap/master':
-            'ucs-6045.' + args.domainname,
+            'ucs-6045.' + os.environ['DOMAIN_NAME'],
         'ldap/maxopenfiles':
             '8192',
         'ldap/overlay/lastbind':
@@ -356,7 +347,7 @@ config_registry = Registry(  # pylint: disable=invalid-name
         'ldap/server/ip':
             '127.0.0.1',
         'ldap/server/name':
-            'ucs-6045.' + args.domainname,
+            'ucs-6045.' + os.environ['DOMAIN_NAME'],
         'ldap/server/port':
             '389',
         'ldap/server/type':

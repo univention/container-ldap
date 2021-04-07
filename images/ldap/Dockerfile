@@ -20,16 +20,17 @@ RUN chown _apt . && \
     # These packages are only partially needed, and their dependencies
     # can and should not be met in Phoenix
     apt-get download \
-        univention-appcenter \
-        univention-self-service-passwordreset-umc \
-        univention-ldap-config \
-        univention-ldap-server \
-        univention-saml-schema \
-        univention-ldap-overlay-memberof \
-        univention-ldap-acl-master \
-        univention-portal \
-        liblasso3 \
-        cy2-saml && \
+        univention-appcenter=9.0.* \
+        univention-self-service-passwordreset-umc=5.0.* \
+        univention-ldap-config=16.0.* \
+        univention-ldap-server=16.0.* \
+        univention-saml-schema=7.0.* \
+        univention-ldap-overlay-memberof=12.0.* \
+        univention-ldap-acl-master=16.0.* \
+        univention-portal=4.0.* \
+        univention-management-console-server=12.0.* \
+        liblasso3=2.6.* \
+        cy2-saml=1.9.* && \
     (dpkg --force-all -i ./*.deb || true) && \
     rm -rf /var/lib/apt/lists/*
 
@@ -135,6 +136,12 @@ COPY --from=ucs_builder \
      /usr/lib/univention-portal/acl/62univention-portal.acl \
      /etc/univention/templates/files/etc/ldap/slapd.conf.d/
 
+# Configuration of the Crude SAML plugin for Cyrus SASL2:
+# This template is contained by univention-management-console-server
+COPY --from=ucs_builder \
+    /etc/univention/templates/files/etc/ldap/sasl2/slapd.conf \
+    /etc/univention/templates/files/etc/ldap/sasl2/slapd.conf
+
 # UCS only libraries:
 COPY --from=ucs_builder \
      /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
@@ -158,10 +165,10 @@ RUN \
     # is not in any config under /etc/ld.so.conf.d/
     ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 && \
-
+    \
     ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so && \
-
+    \
     apt-get install --assume-yes --no-install-recommends \
         /tmp/slapd_*.deb /tmp/libldap-*.deb
 

@@ -23,6 +23,7 @@ services:
     - private_key
     volumes:
     - ./ssl/dh_2048.pem:/etc/ldap/dh_2048.pem:ro
+    - ./saml/idp/:/usr/share/saml/idp/:ro
     - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
     - db-data:/var/lib/univention-ldap/ldap/:rw
     - last-id-data:/var/lib/univention-ldap/last-id-data/:rw
