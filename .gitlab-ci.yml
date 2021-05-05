@@ -125,10 +125,15 @@ publish-job:
       ${UPX_IMAGE_REGISTRY}container-ldap/openldap:${CI_PIPELINE_TAG}test
       ${UPX_IMAGE_REGISTRY}container-ldap/openldap:latest
     - docker tag
+      ${UPX_IMAGE_REGISTRY}container-ldap/openldap:latest
+      quay.io/univention/univention-upx-container-ldap-openldap:experimental
+    - docker tag
       ${UPX_IMAGE_REGISTRY}container-ldap/notifier:${CI_PIPELINE_TAG}test
       ${UPX_IMAGE_REGISTRY}container-ldap/notifier:latest
     - docker push
       ${UPX_IMAGE_REGISTRY}container-ldap/openldap:latest
+    - docker push
+      quay.io/univention/univention-upx-container-ldap-openldap:experimental
     - docker push
       ${UPX_IMAGE_REGISTRY}container-ldap/notifier:latest
 ...
