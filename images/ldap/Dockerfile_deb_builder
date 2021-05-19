@@ -13,15 +13,16 @@ RUN chown _apt . && \
       'deb-src http://security.debian.org/debian-security buster/updates main' \
       > /etc/apt/sources.list.d/debian-src.list && \
     apt-get update && \
-    apt-get install --assume-yes --no-install-recommends \
-      devscripts=2.* \
-      # apt-utils is installed to avoid some warnings by `apt-get build-dep`
-      apt-utils=1.8.* \
-      # `apt-get build-dep` doesn't retrieve these two slapd dependencies:
-      # libgcrypt-dev libssl-dev
-      # Because these dependencies are added by Univention patches
-      # so apt-get build-dep has no chance of knowing about them.
-      libgcrypt20-dev=1.8.* libssl-dev=1.1.* && \
+    DEBIAN_FRONTEND=noninteractive \
+      apt-get --assume-yes --verbose-versions --no-install-recommends install \
+        devscripts=2.* \
+        # apt-utils is installed to avoid some warnings by `apt-get build-dep`
+        apt-utils=1.8.* \
+        # `apt-get build-dep` doesn't retrieve these two slapd dependencies:
+        # libgcrypt-dev libssl-dev
+        # Because these dependencies are added by Univention patches
+        # so apt-get build-dep has no chance of knowing about them.
+        libgcrypt20-dev=1.8.* libssl-dev=1.1.* && \
     apt-get build-dep --assume-yes libldap-2.4-2 && \
     apt-get source libldap-2.4-2 && \
     rm -rf /var/lib/apt/lists/* && \

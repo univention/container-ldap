@@ -8,9 +8,6 @@ FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} AS build
 
 ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
 
-# Ignore questions from debconf
-ARG DEBIAN_FRONTEND=noninteractive
-
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 WORKDIR /apt
@@ -20,13 +17,15 @@ WORKDIR /apt
 
 RUN \
   apt-get update && \
-  apt-get --assume-yes --verbose-versions --no-install-recommends install \
-    ca-certificates=20* \
-    curl=7.64.* \
-    gpg=2.2.* \
-    gpg-agent=2.2.* && \
+  DEBIAN_FRONTEND=noninteractive \
+    apt-get --assume-yes --verbose-versions --no-install-recommends install \
+      ca-certificates=20* \
+      curl=7.64.* \
+      gpg=2.2.* \
+      gpg-agent=2.2.* && \
   curl -fsSL "${APT_KEY_URL}" | apt-key add - && \
   rm -rf /var/lib/apt/lists/*
+
 
 ###############################################################################
 # Install univention-directory-notifier

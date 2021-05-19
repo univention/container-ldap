@@ -48,10 +48,6 @@ FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG}
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 RUN apt-get update && \
-    # Install apt-utils otherwise we can't seem to
-    # do non-interactive package configuration
-    apt-get install --no-install-recommends -y apt-utils=1.8.* && \
-    \
     # Do the non-interactive package configuration
     # of slapd otherwise the build process would
     # stall when debconf asks for input interactively
@@ -62,7 +58,8 @@ RUN apt-get update && \
         # Confirm password:
         echo slapd slapd/password2 password 'temppwd'; \
     } | debconf-set-selections && \
-    apt-get install --no-install-recommends -y \
+    DEBIAN_FRONTEND=noninteractive \
+      apt-get --assume-yes --verbose-versions --no-install-recommends install \
         # Slapd Debian dependencies, some of them could be removed later
         libltdl7=2.4.* \
         libodbc1=2.3.* \
@@ -169,7 +166,8 @@ RUN \
     ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so && \
     \
-    apt-get install --assume-yes --no-install-recommends \
+    DEBIAN_FRONTEND=noninteractive \
+      apt-get --assume-yes --verbose-versions --no-install-recommends install \
         /tmp/slapd_*.deb /tmp/libldap-*.deb && \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
