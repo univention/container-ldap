@@ -53,7 +53,6 @@ pre-commit-job:
   - echo "Explicitly skip the default action docker login"
   script:
   # Compose lint would fail without the referenced env files
-  - cp .env.listener.example .env.listener
   - cp .env.univention-openldap.example .env.univention-openldap
   - pre-commit run --all-files
 
@@ -72,7 +71,6 @@ build-job:
       alias: docker
       command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
-    - cp .env.listener.example .env.listener
     - cp .env.univention-openldap.example .env.univention-openldap
     - docker-compose ${DOCKER_COMPOSE_BUILD_FILES} build
     - docker-compose ${DOCKER_COMPOSE_BUILD_FILES} push
@@ -87,7 +85,6 @@ test-job:
       alias: docker
       command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
-    - cp .env.listener.example .env.listener
     - cp .env.univention-openldap.example .env.univention-openldap
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} up --detach --no-build
@@ -119,7 +116,6 @@ publish-job:
       alias: docker
       command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
-    - cp .env.listener.example .env.listener
     - cp .env.univention-openldap.example .env.univention-openldap
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
     - docker tag

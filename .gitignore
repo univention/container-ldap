@@ -1,5 +1,4 @@
 # Docker Compose
-/.env.listener
 /.env.univention-openldap
 /saml/idp/
 
