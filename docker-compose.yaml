@@ -4,6 +4,7 @@ version: '3.8'
 
 services:
   notifier:
+    container_name: ldap-notifier
     depends_on:
     - openldap
     ports:
@@ -13,6 +14,7 @@ services:
     - ldap-run:/var/run/slapd/:ro
     - listener-data:/var/lib/univention-ldap/listener/:rw
   openldap:
+    container_name: ldap-server
     env_file: .env.univention-openldap
     ports:
     - 389:389
