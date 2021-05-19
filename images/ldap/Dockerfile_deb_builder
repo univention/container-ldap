@@ -1,9 +1,18 @@
+
+###############################################################################
+# Global variables
+###############################################################################
+
+ARG DEBIAN_BASE_IMAGE_TAG
+ARG DOCKERHUB_CACHE
+
 ###############################################################################
 # Builder image for OpenLDAP currently in deb package
 ###############################################################################
-ARG DEBIAN_BASE_IMAGE_TAG
-ARG DOCKERHUB_CACHE
+
 FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG}
+
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 WORKDIR /root/src/debian/
 

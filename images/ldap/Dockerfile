@@ -20,6 +20,8 @@ FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} as ucs_builder
 
 ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
 
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
 
 ###############################################################################
 # Install Univention APT-Key

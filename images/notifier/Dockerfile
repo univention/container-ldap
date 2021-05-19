@@ -65,7 +65,7 @@ RUN \
 
 FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} AS final
 
-SHELL ["/bin/bash", "-c"]
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 # Copy python-ldap and python-six dependencies for univention-translog
 COPY --from=build \
