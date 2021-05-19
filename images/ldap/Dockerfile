@@ -1,14 +1,45 @@
+
 ###############################################################################
-# Builder image for collecting Univention LDAP schema templates, base LDIFs
-# and certain libraries that are maintained by Univention for UCS
-# like cy2-saml
+# Global variables
 ###############################################################################
+
 ARG DOCKERHUB_CACHE
 ARG DEBIAN_BASE_IMAGE_TAG
 ARG DEB_BUILDER_REGISTRY
 ARG DEB_BUILDER_IMAGE
 ARG DEB_BUILDER_TAG
+
+
+###############################################################################
+# Builder image for collecting Univention LDAP schema templates, base LDIFs
+# and certain libraries that are maintained by Univention for UCS
+# like cy2-saml
+###############################################################################
+
 FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} as ucs_builder
+
+ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
+
+
+###############################################################################
+# Install Univention APT-Key
+###############################################################################
+
+RUN \
+  apt-get update && \
+  DEBIAN_FRONTEND=noninteractive \
+    apt-get --assume-yes --verbose-versions --no-install-recommends install \
+      ca-certificates=20* \
+      curl=7.64.* \
+      gpg=2.2.* \
+      gpg-agent=2.2.* && \
+  curl -fsSL "${APT_KEY_URL}" | apt-key add - && \
+  rm -rf /var/lib/apt/lists/*
+
+
+###############################################################################
+# Install univention-ldap-server
+###############################################################################
 
 COPY sources.list /etc/apt/sources.list
 
