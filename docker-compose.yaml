@@ -3,19 +3,20 @@
 version: '3.8'
 
 services:
-  notifier:
-    container_name: ldap-notifier
+  ldap-notifier:
+    container_name: ldap-notifier_1
     depends_on:
-    - openldap
+    - ldap-server
     ports:
     - 6669:6669
     volumes:
-    - notify-transaction-data:/var/lib/univention-ldap/notify/:rw
-    - ldap-run:/var/run/slapd/:ro
-    - listener-data:/var/lib/univention-ldap/listener/:rw
-  openldap:
-    container_name: ldap-server
-    env_file: .env.univention-openldap
+    - ldap-shared-listener-data:/var/lib/univention-ldap/listener/:rw
+    - ldap-shared-notify-data:/var/lib/univention-ldap/notify/:rw
+    - ldap-shared-run:/var/run/slapd/:ro
+
+  ldap-server:
+    container_name: ldap-server_1
+    env_file: .env.ldap-server
     ports:
     - 389:389
     - 636:636
@@ -26,12 +27,12 @@ services:
     volumes:
     - ./ssl/dh_2048.pem:/etc/ldap/dh_2048.pem:ro
     - ./saml/idp/:/usr/share/saml/idp/:ro
-    - notify-transaction-data:/var/lib/univention-ldap/notify/:ro
-    - db-data:/var/lib/univention-ldap/ldap/:rw
-    - last-id-data:/var/lib/univention-ldap/last-id-data/:rw
-    - ldap-run:/var/run/slapd/:rw
-    - translog-data:/var/lib/univention-ldap/translog/:rw
-    - listener-data:/var/lib/univention-ldap/listener/:rw
+    - ldap-server-db-data:/var/lib/univention-ldap/ldap/:rw
+    - ldap-server-last-id-data:/var/lib/univention-ldap/last-id-data/:rw
+    - ldap-server-translog-data:/var/lib/univention-ldap/translog/:rw
+    - ldap-shared-listener-data:/var/lib/univention-ldap/listener/:rw
+    - ldap-shared-notify-data:/var/lib/univention-ldap/notify/:ro
+    - ldap-shared-run:/var/run/slapd/:rw
 
 secrets:
   ca_cert:
@@ -42,17 +43,17 @@ secrets:
     file: ssl/secret/private.key
 
 volumes:
-  # OpenLDAP only:
-  db-data:
-  last-id-data:
-  ldap-run:
-  translog-data:
+  # OpenLDAP only
+  ldap-server-db-data:
+  ldap-server-last-id-data:
+  ldap-server-translog-data:
+
   # Notifier + OpenLDAP
-  notify-transaction-data:
-  # Listener + OpenLDAP
-  listener-data:
+  ldap-shared-listener-data:
     driver_opts:
       type: tmpfs
       device: tmpfs
+  ldap-shared-notify-data:
+  ldap-shared-run:
 
 ...

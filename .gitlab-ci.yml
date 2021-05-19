@@ -28,8 +28,9 @@ variables:
     --file docker-compose.prod.yaml
 
   DOCKER_COMPOSE_BUILD_FILES:
-    ${DOCKER_COMPOSE_PRODUCTION_FILES}
+    --file docker-compose.yaml
     --file docker-compose.override.yaml
+    --file docker-compose.prod.yaml
 
 default:
   before_script:
@@ -53,7 +54,7 @@ pre-commit-job:
   - echo "Explicitly skip the default action docker login"
   script:
   # Compose lint would fail without the referenced env files
-  - cp .env.univention-openldap.example .env.univention-openldap
+  - cp .env.ldap-server.example .env.ldap-server
   - pre-commit run --all-files
 
 build-job:
@@ -71,7 +72,7 @@ build-job:
       alias: docker
       command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
-    - cp .env.univention-openldap.example .env.univention-openldap
+    - cp .env.ldap-server.example .env.ldap-server
     - docker-compose ${DOCKER_COMPOSE_BUILD_FILES} build
     - docker-compose ${DOCKER_COMPOSE_BUILD_FILES} push
 
@@ -85,7 +86,7 @@ test-job:
       alias: docker
       command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
-    - cp .env.univention-openldap.example .env.univention-openldap
+    - cp .env.ldap-server.example .env.ldap-server
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} up --detach --no-build
     - cd integration-test
@@ -116,21 +117,21 @@ publish-job:
       alias: docker
       command: ["--insecure-registry=artifacts.knut.univention.de"]
   script:
-    - cp .env.univention-openldap.example .env.univention-openldap
+    - cp .env.ldap-server.example .env.ldap-server
     - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
     - docker tag
-      ${UPX_IMAGE_REGISTRY}container-ldap/openldap:${CI_PIPELINE_TAG}test
-      ${UPX_IMAGE_REGISTRY}container-ldap/openldap:latest
+      ${UPX_IMAGE_REGISTRY}ldap/server:${CI_PIPELINE_TAG}test
+      ${UPX_IMAGE_REGISTRY}ldap/server:latest
     - docker tag
-      ${UPX_IMAGE_REGISTRY}container-ldap/openldap:latest
+      ${UPX_IMAGE_REGISTRY}ldap/server:latest
       quay.io/univention/univention-upx-container-ldap-openldap:experimental
     - docker tag
-      ${UPX_IMAGE_REGISTRY}container-ldap/notifier:${CI_PIPELINE_TAG}test
-      ${UPX_IMAGE_REGISTRY}container-ldap/notifier:latest
+      ${UPX_IMAGE_REGISTRY}ldap/notifier:${CI_PIPELINE_TAG}test
+      ${UPX_IMAGE_REGISTRY}ldap/notifier:latest
     - docker push
-      ${UPX_IMAGE_REGISTRY}container-ldap/openldap:latest
+      ${UPX_IMAGE_REGISTRY}ldap/server:latest
     - docker push
       quay.io/univention/univention-upx-container-ldap-openldap:experimental
     - docker push
-      ${UPX_IMAGE_REGISTRY}container-ldap/notifier:latest
+      ${UPX_IMAGE_REGISTRY}ldap/notifier:latest
 ...

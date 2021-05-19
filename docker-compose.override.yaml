@@ -3,14 +3,16 @@
 version: '3.8'
 
 services:
-  notifier:
+  ldap-notifier:
+    image: ldap-notifier
     build:
       context: ./images/notifier
       args:
         DOCKERHUB_CACHE: artifacts.knut.univention.de/dockerhub_proxy_cache/library/
         DEBIAN_BASE_IMAGE_TAG: buster-slim
 
-  openldap:
+  ldap-server:
+    image: ldap-server
     build:
       context: ./images/ldap
       args:

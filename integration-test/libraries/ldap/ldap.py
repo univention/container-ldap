@@ -39,7 +39,7 @@ import ldap3
 # on the same network as the LDAP server and it is accessible
 # by the service name provided by docker-compose
 # otherwise assume that ldap server is accessible locally
-LDAP_SERVICE_NAME = 'openldap'
+LDAP_SERVICE_NAME = 'ldap-server'
 LOCAL_ADDRESS = '127.0.0.1'
 LDAP_SERVER = LOCAL_ADDRESS if os.getuid() else LDAP_SERVICE_NAME
 LDAP_URI = f'ldap://{LDAP_SERVER}:389'

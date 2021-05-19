@@ -3,9 +3,9 @@
 version: '3.8'
 
 services:
-  notifier:
-    image: artifacts.knut.univention.de/upx/container-ldap/notifier:${CI_PIPELINE_TAG}test
-  openldap:
-    image: artifacts.knut.univention.de/upx/container-ldap/openldap:${CI_PIPELINE_TAG}test
+  ldap-notifier:
+    image: artifacts.knut.univention.de/upx/ldap/notifier:${CI_PIPELINE_TAG}test
+  ldap-server:
+    image: artifacts.knut.univention.de/upx/ldap/server:${CI_PIPELINE_TAG}test
 
 ...

@@ -1,5 +1,5 @@
 # Docker Compose
-/.env.univention-openldap
+/.env.ldap-server
 /saml/idp/
 
 # Python
