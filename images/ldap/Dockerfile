@@ -170,7 +170,13 @@ RUN \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so && \
     \
     apt-get install --assume-yes --no-install-recommends \
-        /tmp/slapd_*.deb /tmp/libldap-*.deb
+        /tmp/slapd_*.deb /tmp/libldap-*.deb && \
+    # Explicitly disable cn=config, so
+    # slapcat defaults to reading the config from
+    # /etc/ldap/slapd.conf
+    # this is the current behavior in UCS 5
+    mv "/etc/ldap/slapd.d/cn=config.ldif" \
+       "/etc/ldap/slapd.d/cn=config.ldif.DISABLED"
 
 ###############################################################################
 # Copy from Docker build context
