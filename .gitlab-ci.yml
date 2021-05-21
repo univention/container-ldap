@@ -17,6 +17,10 @@ include:
 variables:
   SOUVAP_REGISTRY_PATH: souvap/tooling/images/univention-ldap
   SOUVAP_HELM_PROJECT_ID: "126"
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  DOCKER_HOST: tcp://docker:2376
 
 
 lint-pre-commit:
