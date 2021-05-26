@@ -57,11 +57,11 @@ build-job:
   tags:
     - docker
   # Only the debian flavor seems to be working with dind out of the box
-  # the alpine as of 1.28.0 does not because of a mismatch issue
+  # the alpine as of 1.29.2 does not because of a mismatch issue
   # between "musl libc" vs glibc:
   # https://github.com/docker/compose/issues/3465
   # https://stackoverflow.com/a/42322893
-  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
+  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.29.2
   stage: build-stage
   services:
     - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.6-dind
@@ -77,7 +77,7 @@ build-job:
 test-job:
   tags:
     - docker
-  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
+  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.29.2
   stage: test-stage
   services:
     - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.6-dind
@@ -106,7 +106,7 @@ test-job:
     - integration-test/robot_results
 
 publish-job:
-  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.28.0
+  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.29.2
   stage: publish-stage
   tags:
     - docker
