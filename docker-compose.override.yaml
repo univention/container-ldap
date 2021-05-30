@@ -10,6 +10,10 @@ services:
       args:
         DOCKERHUB_CACHE: artifacts.knut.univention.de/dockerhub_proxy_cache/library/
         DEBIAN_BASE_IMAGE_TAG: buster-slim
+        LABEL_CREATED: "${CI_JOB_STARTED_AT}"
+        LABEL_REVISION: "${CI_COMMIT_SHA}"
+        LABEL_SOURCE: "${CI_PROJECT_URL}"
+        LABEL_VERSION: "${CI_BUILD_ID}"
 
   ldap-server:
     image: ldap-server
@@ -21,5 +25,9 @@ services:
         DEB_BUILDER_REGISTRY: artifacts.knut.univention.de
         DEB_BUILDER_IMAGE: upx/container-ldap/openldap_deb_builder
         DEB_BUILDER_TAG: latest
+        LABEL_CREATED: "${CI_JOB_STARTED_AT}"
+        LABEL_REVISION: "${CI_COMMIT_SHA}"
+        LABEL_SOURCE: "${CI_PROJECT_URL}"
+        LABEL_VERSION: "${CI_BUILD_ID}"
 
 ...

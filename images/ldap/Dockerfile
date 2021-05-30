@@ -78,6 +78,11 @@ FROM ${DEB_BUILDER_REGISTRY}/${DEB_BUILDER_IMAGE}:${DEB_BUILDER_TAG} \
 ###############################################################################
 FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG}
 
+ARG LABEL_CREATED=undefined
+ARG LABEL_REVISION=undefined
+ARG LABEL_SOURCE=undefined
+ARG LABEL_VERSION=undefined
+
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 RUN apt-get update && \
@@ -207,7 +212,10 @@ RUN \
     # /etc/ldap/slapd.conf
     # this is the current behavior in UCS 5
     mv "/etc/ldap/slapd.d/cn=config.ldif" \
-       "/etc/ldap/slapd.d/cn=config.ldif.DISABLED"
+       "/etc/ldap/slapd.d/cn=config.ldif.DISABLED" && \
+  awk \
+    '/^Package: slapd$/{ while(!/^Version: /){getline} print $2 }' \
+    /var/lib/dpkg/status > /version
 
 ###############################################################################
 # Copy from Docker build context
@@ -223,3 +231,15 @@ ENTRYPOINT ["container-entrypoint.sh"]
 # for avoiding conflict with Samba domain controller service
 # they are not needed in this image
 EXPOSE 389 636
+
+LABEL org.opencontainers.image.created="${LABEL_CREATED}"
+LABEL org.opencontainers.image.description="Univention OpenLDAP Server"
+LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.revision="${LABEL_REVISION}"
+LABEL org.opencontainers.image.source="${LABEL_SOURCE}"
+LABEL org.opencontainers.image.title="ldap/server"
+LABEL org.opencontainers.image.url="https://docs.software-univention.de/manual-5.0.html#introduction:LDAP_directory_service"
+LABEL org.opencontainers.image.vendor="Univention GmbH"
+LABEL org.opencontainers.image.version="${LABEL_VERSION}"
+
+# [EOF]

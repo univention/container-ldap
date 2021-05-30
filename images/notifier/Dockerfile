@@ -58,12 +58,21 @@ RUN \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
   dpkg --install --force-depends /apt/* && \
-  rm -rf /apt /var/lib/apt/lists/*
+  rm -rf /apt /var/lib/apt/lists/* && \
+  awk \
+    '/^Package: univention-directory-notifier$/{ while(!/^Version: /){getline} print $2 }' \
+    /var/lib/dpkg/status > /version
+
 
 ###############################################################################
 # Second stage image to get rid of unneeded files
 
 FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} AS final
+
+ARG LABEL_CREATED=undefined
+ARG LABEL_REVISION=undefined
+ARG LABEL_SOURCE=undefined
+ARG LABEL_VERSION=undefined
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -116,6 +125,10 @@ COPY --from=build \
   /usr/sbin/univention-directory-notifier \
   /usr/sbin/univention-directory-notifier
 
+COPY --from=build \
+  /version \
+  /version
+
 # TODO: remove log-dir, when log-to-stdout has been released
 #   https://forge.univention.org/bugzilla/show_bug.cgi?id=52716
 RUN \
@@ -150,5 +163,15 @@ CMD [ \
   "-v 3", \
   "-F" \
 ]
+
+LABEL org.opencontainers.image.created="${LABEL_CREATED}"
+LABEL org.opencontainers.image.description="Univention LDAP Notifier"
+LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.revision="${LABEL_REVISION}"
+LABEL org.opencontainers.image.source="${LABEL_SOURCE}"
+LABEL org.opencontainers.image.title="ldap/notifier"
+LABEL org.opencontainers.image.url="https://docs.software-univention.de/manual-5.0.html#introduction:Listener_notifier_replication"
+LABEL org.opencontainers.image.vendor="Univention GmbH"
+LABEL org.opencontainers.image.version="${LABEL_VERSION}"
 
 # [EOF]

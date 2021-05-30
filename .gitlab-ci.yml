@@ -72,9 +72,9 @@ build-job:
         - "--insecure-registry=artifacts.knut.univention.de"
         - "--tls=false"
   script:
-    - cp .env.ldap-server.example .env.ldap-server
-    - docker-compose ${DOCKER_COMPOSE_BUILD_FILES} build
-    - docker-compose ${DOCKER_COMPOSE_BUILD_FILES} push
+  - apt-get update
+  - apt-get --assume-yes --verbose-versions --no-install-recommends install python3-sh
+  - python3 ci-build-script.py
 
 test-job:
   tags:
