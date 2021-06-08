@@ -6,7 +6,8 @@ services:
   ldap-notifier:
     container_name: ldap-notifier-container
     depends_on:
-    - ldap-server
+      ldap-server:
+        condition: service_healthy
     ports:
     - 6669:6669
     volumes:
@@ -17,6 +18,12 @@ services:
   ldap-server:
     container_name: ldap-server-container
     env_file: .env.ldap-server
+    healthcheck:
+      test: bash -c 'echo > /dev/tcp/localhost/389'
+      interval: 2s
+      timeout: 1s
+      retries: 10
+      start_period: 5s
     ports:
     - 389:389
     - 636:636
