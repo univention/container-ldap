@@ -5,8 +5,8 @@ Resource         ${CURDIR}/../../resources/Ldap.robot
 Test Template    Is LDAP Bind Operation With Username And Password Allowed
 
 *** Test Cases ***                      USERNAME                 PASSWORD            ALLOWED
-Anonymous User                          ${EMPTY}                 ${EMPTY}            No
-Anonymous User with random password     ${EMPTY}                 xXpwd123            No
+Anonymous User                          ${EMPTY}                 ${EMPTY}            Yes
+Anonymous User with random password     ${EMPTY}                 xXpwd123            Yes
 Random User with random password        qU27xpvi                 4xb_a-rt            No
 Random User without password            D7v87bnr                 ${EMPTY}            No
 cn=admin with valid password            cn=admin,${BASE_DN}      univention          Yes

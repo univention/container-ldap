@@ -53,12 +53,6 @@ setup_slapd_conf() {
 
   cat /etc/univention/templates/files/etc/ldap/slapd.conf.d/* \
     | ucr-light-filter > /etc/ldap/slapd.conf
-
-  # Explicitly disallow anonym bind
-  sed -i '/^allow.*/a disallow    bind_anon' /etc/ldap/slapd.conf
-
-  # Only allow bind_v2 but not update_anon
-  sed -i 's/bind_v2 update_anon/bind_v2/'    /etc/ldap/slapd.conf
 }
 
 setup_sasl_mech_whitelist() {
