@@ -62,7 +62,7 @@ setup_slapd_conf() {
 }
 
 setup_sasl_mech_whitelist() {
-  printf "%s\n" "mech_list: GSSAPI SAML" \
+  printf "%s\n" "mech_list: GSSAPI SAML EXTERNAL" \
     > /etc/ldap/sasl2/slapd.conf
 }
 
