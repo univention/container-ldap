@@ -22,7 +22,9 @@ RUN \
       ca-certificates=20* \
       curl=7.64.* \
       gpg=2.2.* \
-      gpg-agent=2.2.* && \
+      gpg-agent=2.2.* \
+      patch=2.7.* \
+  && \
   curl -fsSL "${APT_KEY_URL}" | apt-key add - && \
   rm -rf /var/lib/apt/lists/*
 
@@ -39,6 +41,8 @@ COPY fake.sh /usr/local/bin/create_logfile
 COPY fake.sh /usr/local/bin/ucr
 COPY fake.sh /usr/local/bin/systemctl
 COPY fake.sh /usr/local/bin/univention-config-registry
+
+COPY patches/ /patches/
 
 # TODO: remove nameserver after public release
 RUN \
@@ -58,7 +62,8 @@ RUN \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
   dpkg --install --force-depends /apt/* && \
-  rm -rf /apt /var/lib/apt/lists/* && \
+  patch --directory=/ --strip=0 < /patches/translog-py3.patch && \
+  rm -rf /apt /patches /var/lib/apt/lists/* && \
   awk \
     '/^Package: univention-directory-notifier$/{ while(!/^Version: /){getline} print $2 }' \
     /var/lib/dpkg/status > /version
