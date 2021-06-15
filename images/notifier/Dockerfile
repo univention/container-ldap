@@ -162,7 +162,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 # Parameters for univention-directory-notifier
 CMD [ \
-  "-d 1", \
+  "-d 4", \
   "-v 3", \
   "-F" \
 ]
