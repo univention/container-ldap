@@ -62,7 +62,6 @@ tsecho "Starting notifier daemon"
 "/usr/sbin/univention-directory-notifier" "$@" || EXIT_CODE=$?
 
 tsecho "Notifier exited with ${EXIT_CODE}"
-cat /var/log/univention/notifier.log
 
 exit ${EXIT_CODE}
 

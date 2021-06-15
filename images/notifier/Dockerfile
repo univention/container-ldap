@@ -151,7 +151,10 @@ RUN \
   SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libuniventiondebug.so.1.*' -printf "%f") && \
   ln --symbolic \
     "${SRC}" \
-    /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1
+    /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1 && \
+  ln --symbolic \
+    /dev/stdout \
+    /var/log/univention/notifier.log
 
 COPY entrypoint.sh /
 
