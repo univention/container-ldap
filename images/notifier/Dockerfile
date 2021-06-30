@@ -49,14 +49,9 @@ RUN \
   echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
   apt-get update && \
   apt-get download \
-    libldap-2.4-2=2.4.* \
-    libsasl2-2=2.1.* \
-    libssl1.1=1.1.* \
     libunivention-debug1=12.0.* \
-    python-ldap=3.1.* \
-    python-univention-config-registry=15.0.* \
-    python-univention-debhelper=2.0.* \
-    python-six=1.12.* \
+    python3-univention-config-registry=15.0.* \
+    python3-univention-debhelper=2.0.* \
     univention-directory-notifier=14.0.* && \
   mkdir /usr/share/univention-lib/ && \
   # The original file would source many bash-helper-functions not required here.
@@ -80,40 +75,39 @@ ARG LABEL_SOURCE=undefined
 ARG LABEL_VERSION=undefined
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-
-# Copy python-ldap and python-six dependencies for univention-translog
-COPY --from=build \
-  /usr/lib/python2.7/dist-packages/_ldap.x86_64-linux-gnu.so \
-  /usr/lib/python2.7/dist-packages/ldap/ \
-  /usr/lib/python2.7/dist-packages/six.py \
-  /usr/lib/python2.7/dist-packages/
+RUN \
+  apt-get update && \
+  DEBIAN_FRONTEND=noninteractive \
+    apt-get --assume-yes --verbose-versions --no-install-recommends install \
+      python3=3.* \
+      python3-ldap=3.* \
+      python3-lazy-object-proxy=1.* \
+      python3-six=1.* \
+  && \
+  rm -rf /var/lib/apt/lists/*
 
 # Copy python-univention-config-registry dependency for univention-translog
 COPY --from=build \
-  /usr/lib/python2.7/dist-packages/univention/config_registry/ \
-  /usr/lib/python2.7/dist-packages/univention/config_registry/
+  /usr/lib/python3/dist-packages/univention/config_registry/ \
+  /usr/lib/python3/dist-packages/univention/config_registry/
 
+COPY --from=build \
+  /usr/lib/python3/dist-packages/univention/config_registry_info.py \
+  /usr/lib/python3/dist-packages/univention/config_registry_info.py
+
+COPY --from=build \
+  /usr/lib/python3/dist-packages/univention/info_tools.py \
+  /usr/lib/python3/dist-packages/univention/info_tools.py
+
+# Why do we need this again?
 # Copy debhelper dependency for univention-translog
 COPY --from=build \
-  /usr/lib/python2.7/dist-packages/univention/debhelper.py \
-  /usr/lib/python2.7/dist-packages/univention/debhelper.py
+  /usr/lib/python3/dist-packages/univention/debhelper.py \
+  /usr/lib/python3/dist-packages/univention/debhelper.py
 
 # Copy dependencies for univention-directory-notifier
-# libldap-2.4-2: liblber-2.4.so.2.10.10 libldap_r-2.4.so.2.10.10
-# libsasl2-2: libsasl2.so.2.0.25
-# libcrypto.so.1.1 and libssl.so.1.1 from libssl1.1
 # libuniventiondebug.so.1.0.0 from libunivention-debug1
 COPY --from=build \
-  # from libssl1.1
-  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 \
-  # from libldap-2.4-2
-  /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2.10.* \
-  # from libldap-2.4-2
-  /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2.10.* \
-  # from libsasl2-2
-  /usr/lib/x86_64-linux-gnu/libsasl2.so.2.0.* \
-  # from libssl1.1
-  /usr/lib/x86_64-linux-gnu/libssl.so.1.1 \
   # from libunivention-debug1
   /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1.0.* \
   /usr/lib/x86_64-linux-gnu/
@@ -138,28 +132,22 @@ COPY --from=build \
 #   https://forge.univention.org/bugzilla/show_bug.cgi?id=52716
 RUN \
   # Needed to help Python find the config_registry module in there.
-  touch /usr/lib/python2.7/dist-packages/univention/__init__.py && \
+  touch /usr/lib/python3/dist-packages/univention/__init__.py && \
   # Needed because the notifier creates its log-file in there.
   mkdir /var/log/univention/ && \
-  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'liblber-2.4.so.2.*' -printf "%f") && \
-  ln --symbolic \
-    "${SRC}" \
-    /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2 && \
-  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libldap_r-2.4.so.2.*' -printf "%f") && \
-  ln --symbolic \
-    "${SRC}" \
-    /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2 && \
-  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libsasl2.so.2.*' -printf "%f") && \
-  ln --symbolic \
-    "${SRC}" \
-    /usr/lib/x86_64-linux-gnu/libsasl2.so.2 && \
   SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libuniventiondebug.so.1.*' -printf "%f") && \
   ln --symbolic \
     "${SRC}" \
     /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1 && \
   ln --symbolic \
     /dev/stdout \
-    /var/log/univention/notifier.log
+    /var/log/univention/notifier.log && \
+  # univention-translog tries to create /etc/univention/base-forced.conf
+  mkdir -p /etc/univention/ && \
+  # univention-translong tries to open this file somewhere
+  # TRANSFILE ( ALL ) : E: failed to open /var/lib/univention-ldap/schema/id
+  mkdir -p /var/lib/univention-ldap/schema/id/ && \
+  echo '1' > /var/lib/univention-ldap/schema/id/id
 
 COPY entrypoint.sh /
 

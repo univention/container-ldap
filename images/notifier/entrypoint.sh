@@ -47,7 +47,9 @@ if [[ -s "${transaction_path}" ]]; then
   tsecho "Found pending transactions"
   last_id="$(awk 'END{print $1}' "${transaction_path}")"
   tsecho "Last transaction: ${last_id}"
-  translog_result=$(/usr/share/univention-directory-notifier/univention-translog ldap "$last_id" >/dev/null)
+  translog_result=0
+  /usr/share/univention-directory-notifier/univention-translog ldap "$last_id" \
+    || translog_result="$?"
   if [[ "${translog_result}" -gt "1" ]]; then
     tsecho "Bad translog result: ${translog_result}"
     exit 5
