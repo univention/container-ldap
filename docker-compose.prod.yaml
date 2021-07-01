@@ -4,8 +4,8 @@ version: '3.8'
 
 services:
   ldap-notifier:
-    image: artifacts.knut.univention.de/upx/ldap/notifier:${CI_PIPELINE_TAG}test
+    image: artifacts.knut.univention.de/upx/ldap/notifier:build-${CI_PIPELINE_ID}
   ldap-server:
-    image: artifacts.knut.univention.de/upx/ldap/server:${CI_PIPELINE_TAG}test
+    image: artifacts.knut.univention.de/upx/ldap/server:build-${CI_PIPELINE_ID}
 
 ...

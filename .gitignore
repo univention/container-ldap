@@ -4,6 +4,7 @@
 
 # Python
 __pycache__
+/.venv/
 
 # Robot framework logs
 log.html
