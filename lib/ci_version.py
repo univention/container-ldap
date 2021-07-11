@@ -13,7 +13,7 @@ import sh  # pylint: disable=import-error
 from ci_log import log
 
 # Characters which are not allowed in docker tags and their substitution
-DOCKE_TAG_TRANSLATION = {
+DOCKER_TAG_TRANSLATION = {
     '~': '-',
     '+': 'x',
     ':': '.',
@@ -48,7 +48,7 @@ def get_app_version(image_name, docker_env):
 
 def cleanup_for_docker_tag(app_version):
     """Cleanup version for docker tags"""
-    return app_version.translate(str.maketrans(DOCKE_TAG_TRANSLATION))
+    return app_version.translate(str.maketrans(DOCKER_TAG_TRANSLATION))
 
 
 # [EOF]

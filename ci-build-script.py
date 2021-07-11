@@ -31,37 +31,7 @@ sh_noout = sh(_cwd=BASE_DIR)
 sh_out = sh(_out='/dev/stdout', _err='/dev/stderr', _cwd=BASE_DIR)
 
 
-def add_version_label(app_version, image_name, docker_env):
-    """Adds a version label to an image"""
-    log.info('Adding version label {}', app_version)
-    sh_out.docker.build(
-        '--label',
-        'org.opencontainers.app.version={}'.format(app_version),
-        '--tag',
-        image_name,
-        '-',
-        _env=docker_env,
-        _in='FROM {}'.format(image_name),
-    )
-    log.info('Done with labeling')
-
-
-def add_and_push_version_label_and_tag(
-    image_path, ci_pipeline_id, docker_env, pull_push_env
-):
-    """Get the version, add it as a label and push it as a tag with build-id"""
-    build_path = '{}:build-{}'.format(image_path, ci_pipeline_id)
-    app_version = ci_version.get_app_version(build_path, docker_env)
-
-    add_version_label(app_version, build_path, docker_env)
-
-    clean_version = ci_version.cleanup_for_docker_tag(app_version)
-    tag = '{}:{}-{}'.format(image_path, clean_version, ci_pipeline_id)
-    # push tag "<version>-<ci-pipeline-id>"
-    ci_docker.add_and_push_tag(build_path, tag, docker_env, pull_push_env)
-
-
-def main():
+def main(service):  # pylint: disable=too-many-locals
     """The main script builds, labels and pushes"""
 
     docker_env = ci_vars.get_env_vars(ci_vars.MINIMAL_DOCKER_VARS)
@@ -106,32 +76,55 @@ def main():
     sh_out.docker_compose(
         docker_compose_build_files.split(),
         'build',
-        '--parallel',
+        service if service else '--parallel',
         _env=compose_env,
     )
 
-    image_path = '{}ldap/notifier'.format(upx_image_registry)
-    try:
-        add_and_push_version_label_and_tag(
-            image_path, ci_pipeline_id, docker_env, pull_push_env
-        )
-    except ci_version.AppVersionNotFound:
-        log.error('app version not found')
-        return 2
+    services = ('notifier', 'server')
+    if service:
+        services = (service, )
+    for cur_service in services:
+        image_path = '{}ldap/{}'.format(upx_image_registry, cur_service)
 
-    image_path = '{}ldap/server'.format(upx_image_registry)
-    try:
-        add_and_push_version_label_and_tag(
-            image_path, ci_pipeline_id, docker_env, pull_push_env
-        )
-    except ci_version.AppVersionNotFound:
-        log.error('app version not found')
-        return 2
+        try:
+            ci_docker.add_and_push_build_version_label_and_tag(
+                image_path,
+                ci_pipeline_id,
+                docker_env,
+                pull_push_env,
+            )
+        except ci_version.AppVersionNotFound:
+            log.error('app version not found')
+            return 2
+
+        if cur_service == 'server':
+            quay_image_registry = os.environ.get(
+                'QUAY_IMAGE_REGISTRY',
+                ci_vars.DEFAULT_QUAY_IMAGE_REGISTRY,
+            )
+            quay_image_name = 'univention-upx-container-ldap-openldap'
+            quay_server_path = '{}{}'.format(
+                quay_image_registry, quay_image_name
+            )
+            build_path = '{}:build-{}'.format(image_path, ci_pipeline_id)
+            app_version = ci_version.get_app_version(build_path, docker_env)
+            clean_version = ci_version.cleanup_for_docker_tag(app_version)
+            tag = '{}:{}-{}'.format(
+                quay_server_path, clean_version, ci_pipeline_id
+            )
+            ci_docker.add_and_push_tag(
+                build_path, tag, docker_env, pull_push_env
+            )
 
     # push tag "build-<ci-pipeline-id>"
-    sh_out.docker_compose(
+    args = [
         docker_compose_build_files.split(),
         'push',
+    ]
+    if service:
+        args.append(service)
+    sh_out.docker_compose(
+        *args,
         _env=compose_env,
     )
 
@@ -139,6 +132,9 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    SERVICE = ''
+    if len(sys.argv) > 1:
+        SERVICE = sys.argv[1]
+    sys.exit(main(SERVICE))
 
 # [EOF]

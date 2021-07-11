@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Lib for gitlab-ci"""
+"""Log init lib for gitlab-ci"""
 
 import logging
 import time
