@@ -195,6 +195,9 @@ COPY --from=deb_builder /root/src/debian/slapd_2.4.*_amd64.deb \
 COPY --from=deb_builder /root/src/debian/libldap-2.4-2_2.4.*_amd64.deb \
                         /tmp/
 
+COPY --from=deb_builder /root/src/debian/ldap-utils_2.4.*_amd64.deb \
+                        /tmp/
+
 RUN \
     # ldconfig doesn't create this links as this directory
     # is not in any config under /etc/ld.so.conf.d/
@@ -206,7 +209,7 @@ RUN \
     \
     DEBIAN_FRONTEND=noninteractive \
       apt-get --assume-yes --verbose-versions --no-install-recommends install \
-        /tmp/slapd_*.deb /tmp/libldap-*.deb && \
+        /tmp/slapd_*.deb /tmp/libldap-*.deb /tmp/ldap-utils_*.deb && \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
     # /etc/ldap/slapd.conf
