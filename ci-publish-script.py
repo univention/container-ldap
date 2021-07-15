@@ -76,7 +76,7 @@ def main(service):
                 log.error('dock pull failed')
                 return 1
             except ci_docker.DockerPushFailed:
-                log.error('dock push failed')
+                log.error('docker push failed')
                 return 3
 
     return 0
