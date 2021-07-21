@@ -29,6 +29,9 @@ default:
   - docker info
   - docker version
   - mkdir "$HOME/.docker/"
+  # DOCKER_AUTH_CONFIG contains credenials for
+  # https://artifacts.knut.univention.de/ and
+  # https://quay.io/ (univention+git_knut_for_quay_io)
   - echo "$DOCKER_AUTH_CONFIG" > "$HOME/.docker/config.json"
 
 pre-commit-job:
