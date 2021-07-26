@@ -67,32 +67,28 @@ pre-commit-job:
 
 build-job:
   tags:
-    - docker
-  # Only the debian flavor seems to be working with dind out of the box
-  # the alpine as of 1.29.2 does not because of a mismatch issue
-  # between "musl libc" vs glibc:
-  # https://github.com/docker/compose/issues/3465
-  # https://stackoverflow.com/a/42322893
-  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.29.2
+  - docker
+  image:
+    ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
   stage: build-stage
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.6-dind
+    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
       alias: docker
       command:
         - "--insecure-registry=artifacts.knut.univention.de"
         - "--tls=false"
   script:
-  - apt-get update
-  - apt-get --assume-yes --verbose-versions --no-install-recommends install python3-sh
   - python3 ci-build-script.py
+
 
 test-job:
   tags:
     - docker
-  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.29.2
+  image:
+    ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
   stage: test-stage
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.6-dind
+    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
       alias: docker
       command:
         - "--insecure-registry=artifacts.knut.univention.de"
@@ -118,21 +114,20 @@ test-job:
     - integration-test/robot_results
 
 publish-job:
-  image: ${UNIV_DOCKERHUB_CACHE}docker/compose:debian-1.29.2
+  image:
+    ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
   stage: publish-stage
   tags:
     - docker
   only:
     - main
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.6-dind
+    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
       alias: docker
       command:
         - "--insecure-registry=artifacts.knut.univention.de"
         - "--tls=false"
   script:
-  - apt-get update
-  - apt-get --assume-yes --verbose-versions --no-install-recommends install python3-sh
   - python3 ci-publish-script.py
 
 ...
