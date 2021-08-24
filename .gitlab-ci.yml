@@ -8,12 +8,10 @@ stages:
 
 variables:
   UNIV_ARTIFACTS: artifacts.knut.univention.de
-  UNIV_DOCKERHUB_CACHE:
-    ${UNIV_ARTIFACTS}/dockerhub_proxy_cache/
-  UPX_IMAGE_REGISTRY:
-    ${UNIV_ARTIFACTS}/upx/
+  UNIV_DOCKERHUB_CACHE: ${UNIV_ARTIFACTS}/dockerhub_proxy_cache/
+  UPX_IMAGE_REGISTRY: ${UNIV_ARTIFACTS}/upx/
   DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""
+  DOCKER_TLS_CERTDIR: ''
 
   DOCKER_COMPOSE_PRODUCTION_FILES:
     --file docker-compose.yaml
@@ -35,12 +33,12 @@ default:
   - echo "$DOCKER_AUTH_CONFIG" > "$HOME/.docker/config.json"
 
 pre-commit-job:
-  tags:
-    - docker
   stage: lint-stage
+  tags:
+  - docker
   image:
     name: ${UPX_IMAGE_REGISTRY}upx-pre-commit:latest
-    entrypoint: ["/bin/bash", "-c"]
+    entrypoint: [/bin/bash, -c]
   variables:
     PIP_CACHE_DIR: ${CI_PROJECT_DIR}/.cache/pip
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
@@ -66,45 +64,43 @@ pre-commit-job:
   - pre-commit run --all-files
 
 build-job:
+  stage: build-stage
   tags:
   - docker
-  image:
-    ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
-  stage: build-stage
+  image: ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
-      alias: docker
-      command:
-        - "--insecure-registry=artifacts.knut.univention.de"
-        - "--tls=false"
+  - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
+    alias: docker
+    command:
+    - --insecure-registry=artifacts.knut.univention.de
+    - --tls=false
   script:
   - python3 ci-build-script.py
 
 
 test-job:
-  tags:
-    - docker
-  image:
-    ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
   stage: test-stage
+  tags:
+  - docker
+  image: ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
-      alias: docker
-      command:
-        - "--insecure-registry=artifacts.knut.univention.de"
-        - "--tls=false"
+  - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
+    alias: docker
+    command:
+    - --insecure-registry=artifacts.knut.univention.de
+    - --tls=false
   script:
-    - cp .env.ldap-server.example .env.ldap-server
-    - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
-    - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} up --detach --no-build
-    - cd integration-test
-    - docker-compose pull
-    - docker-compose up --no-build --exit-code-from test
-    - docker-compose rm
-    - ls -lah robot_results
-    - cd -
-    - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} down
-    - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} rm
+  - cp .env.ldap-server.example .env.ldap-server
+  - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
+  - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} up --detach --no-build
+  - cd integration-test
+  - docker-compose pull
+  - docker-compose up --no-build --exit-code-from test
+  - docker-compose rm
+  - ls -lah robot_results
+  - cd -
+  - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} down
+  - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} rm
   artifacts:
     when: always
     expire_in: 4 weeks
@@ -114,19 +110,18 @@ test-job:
     - integration-test/robot_results
 
 publish-job:
-  image:
-    ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
   stage: publish-stage
-  tags:
-    - docker
   only:
-    - main
+  - main
+  tags:
+  - docker
+  image: ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
   services:
-    - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
-      alias: docker
-      command:
-        - "--insecure-registry=artifacts.knut.univention.de"
-        - "--tls=false"
+  - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
+    alias: docker
+    command:
+    - --insecure-registry=artifacts.knut.univention.de
+    - --tls=false
   script:
   - python3 ci-publish-script.py
 
