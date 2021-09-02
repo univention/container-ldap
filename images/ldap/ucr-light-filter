@@ -116,6 +116,8 @@ config_registry = Registry(  # pylint: disable=invalid-name
             'mdb',
         'ldap/debug/level':
             'none',
+        'ldap/federation/adhoc/enabled':
+            os.environ.get('ADHOC_FEDERATION_ENABLED'),
         'ldap/hostdn':
             'cn=ucs-6045,cn=dc,cn=computers,' + os.environ['LDAP_BASE_DN'],
         'ldap/idlcachesize':

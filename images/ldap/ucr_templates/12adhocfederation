@@ -1,0 +1,8 @@
+@!@
+import os.path
+schema = '/usr/share/univention-ldap/schema/adhocfederation.schema'
+if (configRegistry.get('ldap/federation/adhoc/enabled') and
+    configRegistry.get('ldap/server/type') == 'master' and
+    os.path.exists(schema)):
+        print('include         %s' % schema)
+@!@
