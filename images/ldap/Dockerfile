@@ -225,12 +225,7 @@ RUN \
 ###############################################################################
 COPY ucr /usr/sbin/
 COPY ucr-light-filter /usr/sbin/
-COPY \
-    schema_extensions/adhocfederation.schema  \
-    /usr/share/univention-ldap/schema/adhocfederation.schema
-COPY \
-    ucr_templates/12adhocfederation \
-    /etc/univention/templates/files/etc/ldap/slapd.conf.d/12adhocfederation.schema
+
 COPY container-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT ["container-entrypoint.sh"]
