@@ -49,9 +49,7 @@ COPY sources.list /etc/apt/sources.list
 
 WORKDIR /home/deb_packages
 
-RUN chown _apt . && \
-    echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
-    apt-get update && \
+RUN apt-get update && \
     # These packages are only partially needed, and their dependencies
     # can and should not be met in Phoenix
     apt-get download \
