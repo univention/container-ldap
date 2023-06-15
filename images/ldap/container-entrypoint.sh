@@ -167,6 +167,4 @@ setup_ssl_certificates
 # TODO: Remove this
 #sed -i '/^rootdn\t\t.*/a rootpw\t\t"univention"' /etc/ldap/slapd.conf
 
-/usr/sbin/slapd -f /etc/ldap/slapd.conf \
-                -d acl -d trace -d config -d conns \
-                -h "ldapi:/// ldap://:389/ ldaps://:636/"
+exec "$@"
