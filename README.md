@@ -14,6 +14,27 @@ ldapwhoami -H ldap://localhost:389 -x -D cn=admin,dc=univention-organization,dc=
 ldapsearch -H ldap://localhost:389 -x -D cn=admin,dc=univention-organization,dc=intranet -w univention -b dc=univention-organization,dc=intranet
 ```
 
+## Interacting with the `ldap-notifier`
+
+One option is to connect the base listener to the running notifier, this does
+involve manual tweaking at the moment though. The process is roughly as follows:
+
+- Have the `container-listener-base` repository available and be able to run it
+  via `docker compose`. Set the `.env.listener` according to your local
+  containers.
+
+- Open a shell in the base listener:
+
+  ```
+  docker compose -f docker-compose.yaml run --rm -if /bin/bash
+  ```
+
+- Tweak the file `/etc/ldap/ldap.conf`, set `TLSREQCERT` to `never`. This should
+  allow to connect without SSL.
+
+- Start the listener process without the `-ZZ` parameter, inspect `/command.sh`
+  to find out the parameters.
+
 ## Preparation
 
 ### Diffie-Hellman Parameters
