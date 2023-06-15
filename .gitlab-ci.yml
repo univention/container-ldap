@@ -47,83 +47,6 @@ build-notifier-image:
 
 
 # TODO: pending work below
-
-# stages:
-# - lint-stage
-# - build-stage
-# - test-stage
-# - publish-stage
-
-# variables:
-#   UNIV_ARTIFACTS: artifacts.knut.univention.de
-#   UNIV_DOCKERHUB_CACHE: ${UNIV_ARTIFACTS}/dockerhub_proxy_cache/
-#   UPX_IMAGE_REGISTRY: ${UNIV_ARTIFACTS}/upx/
-#   DOCKER_HOST: tcp://docker:2375
-#   DOCKER_TLS_CERTDIR: ''
-
-#   DOCKER_COMPOSE_PRODUCTION_FILES:
-#     --file docker-compose.yaml
-#     --file docker-compose.prod.yaml
-
-#   DOCKER_COMPOSE_BUILD_FILES:
-#     --file docker-compose.yaml
-#     --file docker-compose.override.yaml
-#     --file docker-compose.prod.yaml
-
-# default:
-#   before_script:
-#   - docker info
-#   - docker version
-#   - mkdir "$HOME/.docker/"
-#   # DOCKER_AUTH_CONFIG contains credenials for
-#   # https://artifacts.knut.univention.de/ and
-#   # https://quay.io/ (univention+git_knut_for_quay_io)
-#   - echo "$DOCKER_AUTH_CONFIG" > "$HOME/.docker/config.json"
-
-# pre-commit-job:
-#   stage: lint-stage
-#   tags:
-#   - docker
-#   image:
-#     name: ${UPX_IMAGE_REGISTRY}upx-pre-commit:latest
-#     entrypoint: [/bin/bash, -c]
-#   variables:
-#     PIP_CACHE_DIR: ${CI_PROJECT_DIR}/.cache/pip
-#     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
-#   cache:
-#     paths:
-#     - .cache/pip
-#     - .cache/pre-commit
-#     - venv/
-#   before_script:
-#   - echo "Explicitly skip the default action docker login"
-#   script:
-#   # pip/ruamel.yaml.clib depends on
-#   #   gcc to compile test_ruamel_yaml.c
-#   #   Scrt1.o and crti.o from musl-dev
-#   #   Python.h from python3-dev
-#   - apk add --no-cache gcc musl-dev python3-dev
-#   # Compose lint would fail without the referenced env files
-#   - cp .env.ldap-server.example .env.ldap-server
-#   - pip install pipenv==2021.11.5.post0
-#   - pipenv check
-#   - pre-commit run --all-files
-
-# build-job:
-#   stage: build-stage
-#   tags:
-#   - docker
-#   image: ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
-#   services:
-#   - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
-#     alias: docker
-#     command:
-#     - --insecure-registry=artifacts.knut.univention.de
-#     - --tls=false
-#   script:
-#   - python3 ci-build-script.py
-
-
 # test-job:
 #   stage: test-stage
 #   tags:
@@ -154,21 +77,3 @@ build-notifier-image:
 #       junit: integration-test/robot_results/xunit.xml
 #     paths:
 #     - integration-test/robot_results
-
-# publish-job:
-#   stage: publish-stage
-#   only:
-#   - main
-#   tags:
-#   - docker
-#   image: ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
-#   services:
-#   - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
-#     alias: docker
-#     command:
-#     - --insecure-registry=artifacts.knut.univention.de
-#     - --tls=false
-#   script:
-#   - python3 ci-publish-script.py
-
-# ...
