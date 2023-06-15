@@ -1,9 +1,10 @@
 ---
 
-version: '3.8'
-
 services:
   ldap-notifier:
+    image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/notifier-server:latest
+    build:
+      context: ./images/notifier
     container_name: ldap-notifier-container
     depends_on:
       ldap-server:
@@ -16,6 +17,9 @@ services:
     - ldap-shared-run:/var/run/slapd/:ro
 
   ldap-server:
+    image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-server:latest
+    build:
+      context: ./images/ldap
     container_name: ldap-server-container
     env_file: .env.ldap-server
     healthcheck:
