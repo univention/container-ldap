@@ -448,13 +448,13 @@ def run_filter(template, directory):
                 inside_section = False
                 exec(  # pylint: disable=exec-used
                     ''.join(to_be_compiled),
-                    dict(
-                        print=print_wrapper,
-                        custom_groupname=custom_groupname,
-                        custom_username=custom_username,
-                        configRegistry=directory,
-                        run_filter=run_filter
-                    ),
+                    {
+                        "print": print_wrapper,
+                        "custom_groupname": custom_groupname,
+                        "custom_username": custom_username,
+                        "configRegistry": directory,
+                        "run_filter": run_filter,
+                    },
                 )
                 print('', file=buf)
                 to_be_compiled = []
