@@ -1,4 +1,18 @@
-Containers for Univention LDAP
+# Containers for Univention LDAP
+
+The repository does contain the following two containers:
+
+- `ldap-server` runs OpenLDAP.
+- `notifier-server` does run the Univention Directory Notifier.
+
+
+## Interacting with `ldap-server`
+
+```
+ldapwhoami -H ldap://localhost:389 -x -D cn=admin,dc=univention-organization,dc=intranet -w univention
+
+ldapsearch -H ldap://localhost:389 -x -D cn=admin,dc=univention-organization,dc=intranet -w univention -b dc=univention-organization,dc=intranet
+```
 
 ## Preparation
 
