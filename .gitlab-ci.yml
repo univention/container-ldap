@@ -25,6 +25,18 @@ deb-builder-image:
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/container-ldap-deb-builder"
 
 
+build-ldap-image:
+  stage: build
+  extends: .kaniko
+  needs:
+    - deb-builder-image
+  variables:
+    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-server"
+    KANIKO_BUILD_CONTEXT: "images/ldap"
+    KANIKO_ARGS: >-
+      --build-arg DEB_BUILDER_TAG=$BUILD_VERSION
+
+
 # TODO: pending work below
 
 # stages:

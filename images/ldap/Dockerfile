@@ -3,11 +3,13 @@
 # Global variables
 ###############################################################################
 
-ARG DOCKERHUB_CACHE
-ARG DEBIAN_BASE_IMAGE_TAG
-ARG DEB_BUILDER_REGISTRY
-ARG DEB_BUILDER_IMAGE
-ARG DEB_BUILDER_TAG
+ARG DOCKER_PROXY
+ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
+
+# TODO: fix up those
+ARG DEB_BUILDER_REGISTRY=gitregistry.knut.univention.de
+ARG DEB_BUILDER_IMAGE=univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
+ARG DEB_BUILDER_TAG=latest
 
 
 ###############################################################################
@@ -16,7 +18,7 @@ ARG DEB_BUILDER_TAG
 # like cy2-saml
 ###############################################################################
 
-FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} as ucs_builder
+FROM ${DOCKER_PROXY}debian:${DEBIAN_BASE_IMAGE_TAG} as ucs_builder
 
 ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
 
