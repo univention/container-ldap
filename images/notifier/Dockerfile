@@ -148,11 +148,12 @@ RUN \
   echo '1' > /var/lib/univention-ldap/schema/id/id
 
 COPY entrypoint.sh /
+COPY run-notifier.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-# Parameters for univention-directory-notifier
 CMD [ \
+  "/run-notifier.sh", \
   "-d 4", \
   "-v 3", \
   "-F" \

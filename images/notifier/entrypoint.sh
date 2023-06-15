@@ -59,12 +59,6 @@ if [[ -s "${transaction_path}" ]]; then
   fi
 fi
 
-EXIT_CODE=0
-tsecho "Starting notifier daemon"
-"/usr/sbin/univention-directory-notifier" "$@" || EXIT_CODE=$?
-
-tsecho "Notifier exited with ${EXIT_CODE}"
-
-exit ${EXIT_CODE}
+exec "$@"
 
 # [EOF]
