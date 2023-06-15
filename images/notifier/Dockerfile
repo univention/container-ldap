@@ -1,10 +1,10 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
-ARG DOCKERHUB_CACHE=artifacts.knut.univention.de/dockerhub_proxy_cache/library/
+ARG DOCKER_PROXY
 ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
 
-FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} AS build
+FROM ${DOCKER_PROXY}debian:${DEBIAN_BASE_IMAGE_TAG} AS build
 
 ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
 

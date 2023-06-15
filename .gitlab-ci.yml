@@ -37,6 +37,15 @@ build-ldap-image:
       --build-arg DEB_BUILDER_TAG=$BUILD_VERSION
 
 
+build-notifier-image:
+  stage: build
+  extends: .kaniko
+  needs: []
+  variables:
+    KANIKO_BUILD_CONTEXT: "images/notifier"
+    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/notifier-server"
+
+
 # TODO: pending work below
 
 # stages:
