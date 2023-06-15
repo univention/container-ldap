@@ -15,6 +15,16 @@ lint-pre-commit:
     - cp .env.ldap-server.example .env.ldap-server
 
 
+deb-builder-image:
+  stage: build
+  extends: .kaniko
+  needs: []
+  variables:
+    KANIKO_BUILD_CONTEXT: "images/ldap"
+    DOCKERFILE_PATH: "images/ldap/Dockerfile_deb_builder"
+    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/container-ldap-deb-builder"
+
+
 # TODO: pending work below
 
 # stages:
