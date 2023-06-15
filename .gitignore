@@ -11,3 +11,4 @@ log.html
 report.html
 output.xml
 xunit.xml
+/docker-compose.override.yaml
