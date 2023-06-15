@@ -2,6 +2,7 @@
 
 services:
   ldap-notifier:
+    platform: linux/amd64
     image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/notifier-server:latest
     build:
       context: ./images/notifier
@@ -17,6 +18,7 @@ services:
     - ldap-shared-run:/var/run/slapd/:ro
 
   ldap-server:
+    platform: linux/amd64
     image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-server:latest
     build:
       context: ./images/ldap
