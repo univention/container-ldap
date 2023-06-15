@@ -44,9 +44,7 @@ COPY fake.sh /usr/local/bin/univention-config-registry
 
 COPY patches/ /patches/
 
-# TODO: remove nameserver after public release
 RUN \
-  echo 'nameserver 192.168.0.97' > /etc/resolv.conf && \
   apt-get update && \
   apt-get download \
     libunivention-debug1=12.0.* \
