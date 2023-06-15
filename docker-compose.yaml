@@ -6,7 +6,6 @@ services:
     image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/notifier-server:latest
     build:
       context: ./images/notifier
-    container_name: ldap-notifier-container
     depends_on:
       ldap-server:
         condition: service_healthy
@@ -22,7 +21,6 @@ services:
     image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-server:latest
     build:
       context: ./images/ldap
-    container_name: ldap-server-container
     env_file: .env.ldap-server
     healthcheck:
       test: bash -c 'echo > /dev/tcp/localhost/389'
