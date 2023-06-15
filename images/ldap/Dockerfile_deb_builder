@@ -123,7 +123,7 @@ RUN PATCH_DIR='/tmp/2.4.47+dfsg-3+deb10u5' && \
     rm ${PATCH_DIR}/99_ITS-9384-remove-assert-in-obsolete-csnNormalize23.quilt && \
     cp ${PATCH_DIR}/*.quilt debian/patches/ && \
     find ${PATCH_DIR} -type f -name \*.quilt \
-      | cut -d '/' -f 4 >> debian/patches/series && \
+      | sort | cut -d '/' -f 4 >> debian/patches/series && \
     dpkg-buildpackage -uc -us -b
     # fakeroot debian/rules binary
 
