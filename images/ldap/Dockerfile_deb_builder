@@ -3,14 +3,14 @@
 # Global variables
 ###############################################################################
 
-ARG DEBIAN_BASE_IMAGE_TAG
-ARG DOCKERHUB_CACHE
+ARG DOCKER_PROXY
+ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
 
 ###############################################################################
 # Builder image for OpenLDAP currently in deb package
 ###############################################################################
 
-FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG}
+FROM ${DOCKER_PROXY}debian:${DEBIAN_BASE_IMAGE_TAG}
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
