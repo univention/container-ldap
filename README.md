@@ -3,16 +3,46 @@
 The repository does contain the following two containers:
 
 - `ldap-server` runs OpenLDAP.
-- `notifier-server` does run the Univention Directory Notifier.
+- `ldap-notifier` does run the Univention Directory Notifier.
+
+
+## Start based on `docker compose`
+
+The repository does include a compose file to start things up quickly. It will
+start three services:
+
+- `ldap-server` - The OpenLDAP server.
+- `ldap-notifier` - The Univention Directory Notifier.
+- `ldap-admin` - An instance of phpldapadmin as a web ui to access
+  `ldap-server`.
+
+
+To set it up:
+
+1. Copy the env file `.env.ldap-server.example` to `.env.ldap-server` and adjust
+   as needed.
+
+2. Bring up the services by running:
+
+   ```
+   docker compose up
+   ```
+
+The web ui is by default available at <http://localhost:8001>.
+
 
 
 ## Interacting with `ldap-server`
+
+
+From the command line if you have the required tools available:
 
 ```
 ldapwhoami -H ldap://localhost:389 -x -D cn=admin,dc=univention-organization,dc=intranet -w univention
 
 ldapsearch -H ldap://localhost:389 -x -D cn=admin,dc=univention-organization,dc=intranet -w univention -b dc=univention-organization,dc=intranet
 ```
+
 
 ## Interacting with the `ldap-notifier`
 
@@ -23,17 +53,30 @@ involve manual tweaking at the moment though. The process is roughly as follows:
   via `docker compose`. Set the `.env.listener` according to your local
   containers.
 
-- Open a shell in the base listener:
 
-  ```
-  docker compose -f docker-compose.yaml run --rm -if /bin/bash
-  ```
+## Testing a full round trip
 
-- Tweak the file `/etc/ldap/ldap.conf`, set `TLSREQCERT` to `never`. This should
-  allow to connect without SSL.
+The easiest way is to open phpldapadmin and change the description of the admin
+user.
 
-- Start the listener process without the `-ZZ` parameter, inspect `/command.sh`
-  to find out the parameters.
+Have the `container-listener-base` and the services from this repository running.
+
+
+1. Open the web ui, by default <http://localhost:8001>.
+
+2. Log in, typically using `cn=admin,dc=univention-organization,dc=intranet` and
+   the password matching your hash from the file `.env.ldap-server`.
+
+3. Find the object `cn=admin,dc=univention=organization,dc=intranet`.
+
+4. Add or change the attribute "description" and save the new value.
+
+5. Don't forget to confirm that you want to change the value. ;-)
+
+6. Observe that the `base-listener` logs details about the change. This means
+   the change went into `ldap-server` and arrived in `ldap-notifier` and finally
+   made its way to `base-listener`.
+
 
 ## Preparation
 
