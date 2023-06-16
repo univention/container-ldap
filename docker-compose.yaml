@@ -45,6 +45,16 @@ services:
     - ldap-shared-notify-data:/var/lib/univention-ldap/notify/:ro
     - ldap-shared-run:/var/run/slapd/:rw
 
+  ldap-admin:
+    image: osixia/phpldapadmin:0.9.0
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'ldap-server':{'login':{'bind_id':'cn=admin,dc=univention-organization,dc=intranet'}}}]"
+      PHPLDAPADMIN_HTTPS: "false"
+    links:
+      - ldap-server
+    ports:
+      - 8001:80
+
 secrets:
   ca_cert:
     file: ssl/certs/CAcert.pem
