@@ -12,8 +12,7 @@ services:
     ports:
     - 6669:6669
     volumes:
-    - ldap-shared-listener-data:/var/lib/univention-ldap/listener/:rw
-    - ldap-shared-notify-data:/var/lib/univention-ldap/notify/:rw
+    - ldap-shared-data:/var/lib/univention-ldap/:rw
     - ldap-shared-run:/var/run/slapd/:ro
 
   ldap-server:
@@ -22,12 +21,6 @@ services:
     build:
       context: ./images/ldap
     env_file: .env.ldap-server
-    healthcheck:
-      test: bash -c 'echo > /dev/tcp/localhost/389'
-      interval: 2s
-      timeout: 1s
-      retries: 10
-      start_period: 5s
     ports:
     - 389:389
     - 636:636
@@ -38,11 +31,7 @@ services:
     volumes:
     - ./ssl/dh_2048.pem:/etc/ldap/dh_2048.pem:ro
     - ./saml/idp/:/usr/share/saml/idp/:ro
-    - ldap-server-db-data:/var/lib/univention-ldap/ldap/:rw
-    - ldap-server-last-id-data:/var/lib/univention-ldap/last-id-data/:rw
-    - ldap-server-translog-data:/var/lib/univention-ldap/translog/:rw
-    - ldap-shared-listener-data:/var/lib/univention-ldap/listener/:rw
-    - ldap-shared-notify-data:/var/lib/univention-ldap/notify/:ro
+    - ldap-shared-data:/var/lib/univention-ldap/:rw
     - ldap-shared-run:/var/run/slapd/:rw
 
   ldap-admin:
@@ -64,17 +53,7 @@ secrets:
     file: ssl/secret/private.key
 
 volumes:
-  # OpenLDAP only
-  ldap-server-db-data:
-  ldap-server-last-id-data:
-  ldap-server-translog-data:
-
-  # Notifier + OpenLDAP
-  ldap-shared-listener-data:
-    driver_opts:
-      type: tmpfs
-      device: tmpfs
-  ldap-shared-notify-data:
+  ldap-shared-data:
   ldap-shared-run:
 
 ...

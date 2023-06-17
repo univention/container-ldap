@@ -144,8 +144,8 @@ RUN \
   mkdir -p /etc/univention/ && \
   # univention-translong tries to open this file somewhere
   # TRANSFILE ( ALL ) : E: failed to open /var/lib/univention-ldap/schema/id
-  mkdir -p /var/lib/univention-ldap/schema/id/ && \
-  echo '1' > /var/lib/univention-ldap/schema/id/id
+  mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
+  echo '1' > /var/lib/univention-ldap-local/schema/id/id
 
 COPY entrypoint.sh /
 COPY run-notifier.sh /

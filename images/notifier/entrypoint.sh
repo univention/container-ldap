@@ -16,6 +16,8 @@ if [[ ! -d "/var/run/slapd/" ]]; then
   exit 3
 fi
 
+mkdir --parents /var/lib/univention-ldap/notify
+
 # The notifier writes an error message to its log-file if this file is missing.
 # Because it lives in a volume, it can not be created during build.
 touch /var/lib/univention-ldap/notify/transaction

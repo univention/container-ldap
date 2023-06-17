@@ -6,7 +6,6 @@
 ARG DOCKER_PROXY
 ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
 
-# TODO: fix up those
 ARG DEB_BUILDER_REGISTRY=gitregistry.knut.univention.de
 ARG DEB_BUILDER_IMAGE=univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
 ARG DEB_BUILDER_TAG=latest
@@ -124,8 +123,8 @@ RUN apt-get update && \
         python3=3.7.* && \
     rm -rf /var/lib/apt/lists/* && \
     # This file is a depencecy of the slapd.conf templates
-    mkdir -p /var/lib/univention-ldap/schema/id/ && \
-    echo "1" >/var/lib/univention-ldap/schema/id/id
+    mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
+    echo "1" >/var/lib/univention-ldap-local/schema/id/id
 
 ###############################################################################
 # Copy LDAP config and libs from UCS builder image
@@ -152,15 +151,15 @@ COPY --from=ucs_builder /usr/share/univention-ldap/translog.ldif \
 # local-schema files:
 COPY --from=ucs_builder \
      /usr/share/univention-appcenter/univention-app.schema \
-     /var/lib/univention-ldap/local-schema/univention-app.schema
+     /var/lib/univention-ldap-local/local-schema/univention-app.schema
 
 COPY --from=ucs_builder \
      /usr/share/univention-self-service/self-service-passwordreset.schema \
-     /var/lib/univention-ldap/local-schema/self-service-passwordreset.schema
+     /var/lib/univention-ldap-local/local-schema/self-service-passwordreset.schema
 
 COPY --from=ucs_builder \
      /usr/lib/univention-portal/schema/univention-portal.schema \
-     /var/lib/univention-ldap/local-schema/univention-portal.schema
+     /var/lib/univention-ldap-local/local-schema/univention-portal.schema
 
 # ACLs:
 COPY --from=ucs_builder \
@@ -230,7 +229,7 @@ COPY container-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT ["container-entrypoint.sh"]
 CMD ["/usr/sbin/slapd", "-f", "/etc/ldap/slapd.conf", \
-    "-d", "acl", "-d", "trace", "-d", "config", "-d", "conns", \
+    "-d", "stats", \
     "-h", "ldapi:/// ldap://:389/ ldaps://:636/"]
 
 # Since in the classic UCS the ports 7636 and 7389 were only needed

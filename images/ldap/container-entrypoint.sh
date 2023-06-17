@@ -19,6 +19,24 @@ check_unset_variables() {
   fi
 }
 
+setup_paths() {
+  mkdir --parents /var/lib/univention-ldap/ldap
+  mkdir --parents /var/lib/univention-ldap/translog
+}
+
+setup_symlinks() {
+  # Some files from the local image are expected under
+  # /var/lib/univention-ldap, using symlinks to make them available.
+  if [ ! -L /var/lib/univention-ldap/local-schema ]
+  then
+    ln --symbolic /var/lib/univention-ldap-local/local-schema /var/lib/univention-ldap/
+  fi
+  if [ ! -L /var/lib/univention-ldap/schema ]
+  then
+    ln --symbolic /var/lib/univention-ldap-local/schema /var/lib/univention-ldap/
+  fi
+}
+
 setup_listener_path() {
   # TODO: Shouldn't the translog overlay be able to do this?
   mkdir --parents /var/lib/univention-ldap/listener/
@@ -26,30 +44,16 @@ setup_listener_path() {
 }
 
 setup_last_id_path() {
-  # Docker persistent named volumes can only be mapped to directories
-  # and since certain directories under /var/lib/univention-ldap/
-  # have to be taken from the image we can't map a volume to
-  # /var/lib/univention-ldap/ directly.
-  # The last_id path is hardcoded in translog overlay and can't be changed.
-  # So in order to keep the last_id file on a separate volum
-  # we mount a volume under /var/lib/univention-ldap/last-id-data/
-  # and create a symbolic link in runtime.
-  if [[ ! -L /var/lib/univention-ldap/last_id ]]; then
-    mkdir --parents /var/lib/univention-ldap/last-id-data/
-    touch /var/lib/univention-ldap/last-id-data/last_id
-    ln --symbolic /var/lib/univention-ldap/last-id-data/last_id \
-                  /var/lib/univention-ldap/last_id
-  fi
-
   # If the last_id file exists, then it should never be empty
   # otherwise the translog overlay gets stuck at ID -1
+  touch /var/lib/univention-ldap/last_id
   if [[ ! -s /var/lib/univention-ldap/last_id ]]; then
+    echo "Setting 'last_id' to '0' because it is empty"
     echo -n '0' > /var/lib/univention-ldap/last_id
   fi
 }
 
 setup_slapd_conf() {
-
   cat /etc/univention/templates/files/etc/ldap/slapd.conf.d/* \
     | ucr-light-filter > /etc/ldap/slapd.conf
 }
@@ -123,6 +127,7 @@ setup_initial_ldif() {
   cat /usr/share/univention-ldap/{base.ldif,core-edition.ldif} \
     | ucr-light-filter | sed -e "${filter_string}" \
     | slapadd -f /etc/ldap/slapd.conf
+
 }
 
 setup_translog_ldif() {
@@ -153,8 +158,9 @@ setup_ssl_certificates() {
 
 }
 
-
 check_unset_variables
+setup_symlinks
+setup_paths
 setup_listener_path
 setup_last_id_path
 setup_slapd_conf
@@ -163,8 +169,5 @@ setup_sasl_mech_saml
 setup_initial_ldif
 setup_translog_ldif
 setup_ssl_certificates
-
-# TODO: Remove this
-#sed -i '/^rootdn\t\t.*/a rootpw\t\t"univention"' /etc/ldap/slapd.conf
 
 exec "$@"
