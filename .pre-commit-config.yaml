@@ -17,6 +17,7 @@ repos:
     exclude: ^helm/.+/templates/
   # "Fix End of Files"
   - id: end-of-file-fixer
+    exclude: ^helm/.+/README.md
   # "Fix python encoding pragma"
   - id: fix-encoding-pragma
   # "Trim Trailing Whitespace"
