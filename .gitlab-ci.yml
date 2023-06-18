@@ -8,6 +8,7 @@ include:
       - templates/kaniko.yaml
       - jobs/lint-commit-messages.yaml
       - jobs/lint-pre-commit.yaml
+      - jobs/package-and-publish-helm-charts.yaml
 
 
 lint-pre-commit:
@@ -44,6 +45,12 @@ build-notifier-image:
   variables:
     KANIKO_BUILD_CONTEXT: "images/notifier"
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/notifier-server"
+
+
+# TODO: Remove once it's removed from common-ci
+publish-helm-charts:
+  rules:
+    - when: never
 
 
 # TODO: pending work below
