@@ -14,6 +14,7 @@ repos:
   - id: check-merge-conflict
   # "Check Yaml"
   - id: check-yaml
+    exclude: ^helm/.+/templates/
   # "Fix End of Files"
   - id: end-of-file-fixer
   # "Fix python encoding pragma"
