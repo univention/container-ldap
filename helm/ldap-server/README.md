@@ -287,15 +287,6 @@ true
 			<td></td>
 		</tr>
 		<tr>
-			<td>service.ports.ldap.containerPort</td>
-			<td>int</td>
-			<td><pre lang="json">
-389
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
 			<td>service.ports.ldap.port</td>
 			<td>int</td>
 			<td><pre lang="json">
