@@ -1,0 +1,77 @@
+---
+
+## Global values
+affinity: {}
+environment: {}
+fullnameOverride: ""
+nameOverride: ""
+nodeSelector: {}
+podAnnotations: {}
+podSecurityContext: {}
+replicaCount: 1
+securityContext: {}
+tolerations: []
+
+# -- Application configuration of the OpenLDAP server
+ldap_server:
+  # -- Internal domain name of the UCS machine
+  domain_name: "univention-organization.intranet"
+  # -- TODO: Clarify usage of this parameter
+  environment: "production"
+  # -- Base DN of the LDAP directory
+  ldap_base_dn: "dc=univention-organization,dc=intranet"
+  # -- Hashed password to use for "cn=admin", must be "{CRYPT}".
+  # Example is generated via `slappasswd -h "{CRYPT}" -s univention`.
+  ldap_admin_pw_hash: "8kDIgI15Xa3PU"
+
+  # -- Path to the CA certificate of the UCS machine.
+  ca_cert_file: "/var/secrets/ca_cert"
+  ca_cert: null
+  # -- Path to the certificate of the LDAP server
+  cert_pem_file: "/var/secrets/cert_pem"
+  cert_pem: null
+  # -- Path to the private key file of the LDAP server
+  private_key_file: "/var/secrets/private_key"
+  private_key: null
+
+  # -- A comma separated list of SAML2 Service Provider URLs
+  saml_service_providers: null
+
+
+## Docker image
+image:
+  registry: "gitregistry.knut.univention.de"
+  repository: "univention/customers/dataport/upx/container-ldap/ldap-server"
+  pullPolicy: "Always"
+  tag: "latest"
+  ## Define image sha256 as an alternative to `tag`
+  # sha256:
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  ports:
+    ldap:
+      containerPort: 389
+      port: 389
+      protocol: "TCP"
+  sessionAffinity:
+    enabled: false
+    timeoutSeconds: 10800
+
+
+## Deployment resources
+resources:
+  # requests:
+  #   memory: "512Mi"
+  #   cpu: "250m"
+  # limits:
+  #   memory: "4Gi"
+  #   cpu: "4"
+
+
+autoscaling:
+  enabled: false
+
+...
