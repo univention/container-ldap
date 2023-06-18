@@ -1,0 +1,7 @@
+
+
+image:
+  pullPolicy: "IfNotPresent"
+  # tag: "latest"
+  ## Define image sha256 as an alternative to `tag`
+  # sha256:

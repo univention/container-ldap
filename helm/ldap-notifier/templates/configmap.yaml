@@ -1,0 +1,9 @@
+---
+{{ include "common.configMap" (dict "top" . "overrides" "ldap-notifier.configMap") }}
+
+{{- define "ldap-notifier.configMap" }}
+{{- with .top }}
+data:
+  ENVIRONMENT: "{{ .Values.ldap_notifier.environment }}"
+{{- end }}
+{{- end }}

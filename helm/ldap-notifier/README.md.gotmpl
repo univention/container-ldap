@@ -1,0 +1,47 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.description" . }}
+
+- **Version**: {{ template "chart.version" . }}
+- **Type**: {{ template "chart.type" . }}
+- **AppVersion**: {{ template "chart.appVersion" . }}
+- {{ template "chart.homepageLine" . }}
+
+## TL;DR
+
+```console
+helm upgrade --install ldap-notifier oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/helm/ldap-notifier
+```
+
+
+## Introduction
+
+This chart does install the Univention Directory Notifier.
+
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+
+## Installing
+
+To install the chart with the release name `ldap-notifier`:
+
+```console
+helm upgrade --install ldap-notifier oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/helm/ldap-notifier
+```
+
+
+## Uninstalling
+
+To uninstall the chart with the release name `ldap-notifier`:
+
+```console
+helm uninstall ldap-notifier
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSectionHtml" . }}
