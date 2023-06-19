@@ -134,6 +134,7 @@ false
   "environment": "production",
   "ldap_admin_pw_hash": "8kDIgI15Xa3PU",
   "ldap_base_dn": "dc=univention-organization,dc=intranet",
+  "ldap_tls_ciphersuite": null,
   "private_key": null,
   "private_key_file": "/var/secrets/private_key",
   "saml_service_providers": null
@@ -195,6 +196,15 @@ false
 </pre>
 </td>
 			<td>Base DN of the LDAP directory</td>
+		</tr>
+		<tr>
+			<td>ldap_server.ldap_tls_ciphersuite</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td>Set a custom ciphersuite. May be needed if gnutls instead of openssl is in use. Example `"NORMAL"`.</td>
 		</tr>
 		<tr>
 			<td>ldap_server.private_key_file</td>

@@ -12,5 +12,8 @@ data:
   PRIVATE_KEY_FILE: "{{ .Values.ldap_server.private_key_file }}"
   SERVICE_PROVIDERS: "{{ .Values.ldap_server.service_providers }}"
   LDAP_CN_ADMIN_PW_HASH: "{{ .Values.ldap_server.ldap_admin_pw_hash }}"
+  {{- if .Values.ldap_server.ldap_tls_ciphersuite }}
+  LDAP_TLS_CIPHERSUITE: "{{ .Values.ldap_server.ldap_tls_ciphersuite }}"
+  {{- end }}
 {{- end }}
 {{- end }}

@@ -23,6 +23,9 @@ ldap_server:
   # -- Hashed password to use for "cn=admin", must be "{CRYPT}".
   # Example is generated via `slappasswd -h "{CRYPT}" -s univention`.
   ldap_admin_pw_hash: "8kDIgI15Xa3PU"
+  # -- Set a custom ciphersuite. May be needed if gnutls instead of openssl is in use.
+  # Example `"NORMAL"`.
+  ldap_tls_ciphersuite: null
 
   # -- Path to the CA certificate of the UCS machine.
   ca_cert_file: "/var/secrets/ca_cert"

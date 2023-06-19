@@ -360,8 +360,8 @@ config_registry = Registry(  # pylint: disable=invalid-name
             '(|(objectClass=univentionDomainController)(userPassword={KINIT}))',
         'ldap/threads':
             '16',
-        'ldap/tls/ciphersuite':
-            'HIGH:MEDIUM:!aNULL:!MD5:!RC4',
+        'ldap/tls/ciphersuite': os.environ.get(
+            'LDAP_TLS_CIPHERSUITE', 'HIGH:MEDIUM:!aNULL:!MD5:!RC4'),
         'ldap/tls/minprotocol':
             '3.1',
         'ldap/tls/dh/paramfile':
