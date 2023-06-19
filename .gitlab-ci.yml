@@ -6,9 +6,14 @@ include:
       - defaults/stages.yaml
       - defaults/souvap-workflow.yaml
       - templates/kaniko.yaml
+      - templates/souvap.yaml
       - jobs/lint-commit-messages.yaml
       - jobs/lint-pre-commit.yaml
       - jobs/package-and-publish-helm-charts.yaml
+
+variables:
+  SOUVAP_REGISTRY_PATH: souvap/tooling/images/univention-ldap
+  SOUVAP_HELM_PROJECT_ID: "126"
 
 
 lint-pre-commit:
@@ -47,10 +52,30 @@ build-notifier-image:
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-notifier"
 
 
+push-image-souvap-ldap-server:
+  needs:
+    - job: build-ldap-image
+  extends: .push-image-souvap
+  variables:
+    SOUVAP_IMAGE_NAME: "ldap-server"
+
+
+push-image-souvap-ldap-notifier:
+  needs:
+    - job: build-notifier-image
+  extends: .push-image-souvap
+  variables:
+    SOUVAP_IMAGE_NAME: "ldap-notifier"
+
+
 # TODO: Remove once it's removed from common-ci
 publish-helm-charts:
   rules:
     - when: never
+
+
+publish-helm-charts-souvap:
+  extends: .publish-helm-charts-souvap
 
 
 # TODO: pending work below
