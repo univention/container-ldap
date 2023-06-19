@@ -1,7 +1,17 @@
 ---
 
 ## Global values
-affinity: {}
+affinity:
+  podAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - ldap-server
+        topologyKey: kubernetes.io/hostname
+
 environment: {}
 fullnameOverride: ""
 nameOverride: ""
