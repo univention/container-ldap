@@ -44,6 +44,14 @@ services:
     ports:
       - 8001:80
 
+  docs:
+    image: docker-registry.knut.univention.de/sphinx:latest
+    working_dir: /docs/docs
+    volumes:
+      - ".:/docs"
+    profiles:
+      - docs
+
 secrets:
   ca_cert:
     file: ssl/certs/CAcert.pem

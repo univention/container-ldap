@@ -13,13 +13,13 @@ start three services:
 
 - `ldap-server` - The OpenLDAP server.
 - `ldap-notifier` - The Univention Directory Notifier.
-- `ldap-admin` - An instance of phpldapadmin as a web ui to access
+- `ldap-admin` - An instance of phpLDAPadmin as a web UI to access
   `ldap-server`.
 
 
 To set it up:
 
-1. Copy the env file `.env.ldap-server.example` to `.env.ldap-server` and adjust
+1. Copy the `.env` file `.env.ldap-server.example` to `.env.ldap-server` and adjust
    as needed.
 
 2. Bring up the services by running:
@@ -28,7 +28,7 @@ To set it up:
    docker compose up
    ```
 
-The web ui is by default available at <http://localhost:8001>.
+The web UI is by default available at <http://localhost:8001>.
 
 
 
@@ -56,13 +56,13 @@ involve manual tweaking at the moment though. The process is roughly as follows:
 
 ## Testing a full round trip
 
-The easiest way is to open phpldapadmin and change the description of the admin
+The easiest way is to open phpLDAPadmin and change the description of the admin
 user.
 
 Have the `container-listener-base` and the services from this repository running.
 
 
-1. Open the web ui, by default <http://localhost:8001>.
+1. Open the web UI, by default <http://localhost:8001>.
 
 2. Log in, typically using `cn=admin,dc=univention-organization,dc=intranet` and
    the password matching your hash from the file `.env.ldap-server`.
@@ -84,60 +84,62 @@ Have the `container-listener-base` and the services from this repository running
 
 Generate your own DH-Parameters with:
 
-   openssl dhparam -out "dh_2048.pem" -2 2048
+```
+openssl dhparam -out "dh_2048.pem" -2 2048
+```
 
 
 ## Notifier Data Files
 
 ### OpenLDAP translog output file
 
-Location: /var/lib/univention-ldap/listener/listener
+Location: `/var/lib/univention-ldap/listener/listener`
 
-Needs to be shared between ldap and notifier container.
-Lines get added by the translog-slapd-overlay on LDAP-Object change.
+Needs to be shared between `ldap-server` and `ldap-notifier` container.
+Lines get added by the `translog-slapd-overlay` on LDAP-Object change.
 The notifier removes lines after processing them.
 
 ### Translog lock-file
 
-Location: /var/lib/univention-ldap/listener/listener.lock
+Location: `/var/lib/univention-ldap/listener/listener.lock`
 
-Needs to be shared between ldap and notifier container.
-Created by the entrypoint script of the ldap-container.
-Written by the translog-slapd-overlay and the notifier.
+Needs to be shared between `ldap-server` and `ldap-notifier` container.
+Created by the `entrypoint` script of the `ldap-server` container.
+Written by the `translog-slapd-overlay` and the notifier.
 
 ### Processed notifier transactions (db)
 
-Location: /var/lib/univention-ldap/notify/transaction.index
+Location: `/var/lib/univention-ldap/notify/transaction.index`
 
-Written by the notfier.
+Written by the notifier.
 Binary data.
 
 ### Notifier lock-file
 
-Location: /var/lib/univention-ldap/notify/transaction.lock
+Location: `/var/lib/univention-ldap/notify/transaction.lock`
 
-Written by the notfier.
+Written by the notifier.
 
 ### Processed notifier transactions (flat file)
 
-Location: /var/lib/univention-ldap/notify/transaction
+Location: `/var/lib/univention-ldap/notify/transaction`
 
-Written by the notfier.
+Written by the notifier.
 Contains transaction lines.
 A line contains transaction-id, DN and change-type separated by space.
 
 ### Notifier log-file
 
-Location: /var/log/univention/notifier.log
+Location: `/var/log/univention/notifier.log`
 
-The log-path is hard-coded but should be configurable to use stdout instead.
+The log-path is hard-coded but should be configurable to use `stdout` instead.
 See
 `management/univention-directory-notifier/src/univention-directory-notifier.c`
 in the ucs-repository!
 
 ### LDAP-API
 
-Location: /var/run/slapd/ldapi
+Location: `/var/run/slapd/ldapi`
 
-The notifier is hard-coded to connect via "ldapapi:///".
-Therefore the ldapi file needs to be shared from the OpenLDAP server container.
+The notifier is hard-coded to connect via `ldapapi:///`.
+Therefore the `ldapi` file needs to be shared from the OpenLDAP server container.
