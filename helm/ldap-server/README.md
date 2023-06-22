@@ -132,7 +132,7 @@ false
   "cert_pem_file": "/var/secrets/cert_pem",
   "domain_name": "univention-organization.intranet",
   "environment": "production",
-  "ldap_admin_pw_hash": null,
+  "ldap_admin_pw": null,
   "ldap_base_dn": "dc=univention-organization,dc=intranet",
   "ldap_tls_ciphersuite": null,
   "private_key": null,
@@ -180,13 +180,13 @@ false
 			<td>TODO: Clarify usage of this parameter</td>
 		</tr>
 		<tr>
-			<td>ldap_server.ldap_admin_pw_hash</td>
+			<td>ldap_server.ldap_admin_pw</td>
 			<td>string</td>
 			<td><pre lang="json">
 null
 </pre>
 </td>
-			<td>Hashed password to use for "cn=admin", must be "{CRYPT}". Example is generated via `slappasswd -h "{CRYPT}" -s univention`.</td>
+			<td>Initial password to set for "cn=admin"</td>
 		</tr>
 		<tr>
 			<td>ldap_server.ldap_base_dn</td>

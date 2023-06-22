@@ -28,6 +28,9 @@ Added
 Changed
 -------
 
+- Configure the initial admin password in plain text instead of having to
+  provide a hashed value.
+
 - Update the Dockerfile per container and the Gitlab CI configuration, so that
   the images can be built again both locally and in the CI/CD pipeline.
 

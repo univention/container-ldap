@@ -65,7 +65,7 @@ Have the `container-listener-base` and the services from this repository running
 1. Open the web UI, by default <http://localhost:8001>.
 
 2. Log in, typically using `cn=admin,dc=univention-organization,dc=intranet` and
-   the password matching your hash from the file `.env.ldap-server`.
+   the password matching your setting from the file `.env.ldap-server`.
 
 3. Find the object `cn=admin,dc=univention=organization,dc=intranet`.
 

@@ -5,7 +5,7 @@ set -euxo pipefail
 check_unset_variables() {
   # Also list here the variables needed by ucr-light-filter
   var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" \
-              "LDAP_CN_ADMIN_PW_HASH" \
+              "LDAP_CN_ADMIN_PW" \
               "CA_CERT_FILE" "CERT_PEM_FILE" "PRIVATE_KEY_FILE" )
   for var_name in "${var_names[@]}"; do
     if [[ -z "${!var_name:-}" ]]; then
@@ -102,7 +102,8 @@ setup_initial_ldif() {
     return 0
   fi
 
-  pw_crypt="${LDAP_CN_ADMIN_PW_HASH}"
+  pw_crypt="$(slappasswd -h "{CRYPT}" -s "${LDAP_CN_ADMIN_PW}")"
+  pw_crypt="${pw_crypt#'{CRYPT}'}"
   ldap_base="${LDAP_BASE_DN}"
   domainname="${DOMAIN_NAME}"
   sambadomain="${domainname%%.*}"
