@@ -7,6 +7,6 @@
 # """W0511: fixme"""
 # Don't let the pre-commit hook fail because of a TODO note
 
-disable=R0801,W0511
+disable=C0114,C0116,R0801,W0511
 
 # [EOF]

@@ -47,8 +47,10 @@ repos:
   rev: v2.17.4
   hooks:
   - id: pylint
-    additional_dependencies: ['ldap3']
-    exclude: ^docs/conf.py
+    additional_dependencies:
+      - pytest
+      - ldap3
+    exclude: ^docs/conf\.py$
 
 # "Shell Syntax Check"
 # This is a wrapper for shellcheck as long as

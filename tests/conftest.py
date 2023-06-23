@@ -1,3 +1,5 @@
+# pylint: disable=redefined-outer-name
+
 import pytest
 from ldap3 import ALL, Connection, ObjectDef, Server, Writer
 from ldap3.utils.dn import safe_dn
@@ -5,17 +7,29 @@ from ldap3.utils.dn import safe_dn
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--ldap-server", action="store", default="localhost",
-        help="LDAP server hostname to run tests against.")
+        "--ldap-server",
+        action="store",
+        default="localhost",
+        help="LDAP server hostname to run tests against.",
+    )
     parser.addoption(
-        "--ldap-admin-dn", action="store", default="cn=admin,dc=univention-organization,dc=intranet",
-        help="DN of the admin account to use to bind to the LDAP server.")
+        "--ldap-admin-dn",
+        action="store",
+        default="cn=admin,dc=univention-organization,dc=intranet",
+        help="DN of the admin account to use to bind to the LDAP server.",
+    )
     parser.addoption(
-        "--ldap-admin-password", action="store", default="univention",
-        help="Password to use to bind to the LDAP server.")
+        "--ldap-admin-password",
+        action="store",
+        default="univention",
+        help="Password to use to bind to the LDAP server.",
+    )
     parser.addoption(
-        "--ldap-base-dn", action="store", default="dc=univention-organization,dc=intranet",
-        help="Base DN of the LDAP directory.")
+        "--ldap-base-dn",
+        action="store",
+        default="dc=univention-organization,dc=intranet",
+        help="Base DN of the LDAP directory.",
+    )
 
 
 @pytest.fixture(scope="session")
@@ -49,13 +63,14 @@ def test_dn(base_dn):
 
 @pytest.fixture(scope="session")
 def container(connection, test_dn):
-    organizationalUnit = ObjectDef(["organizationalUnit"], connection)
-    writer = Writer(connection, organizationalUnit)
+    organizational_unit = ObjectDef(["organizationalUnit"], connection)
+    writer = Writer(connection, organizational_unit)
     testrunner_container = writer.new(test_dn)
     writer.commit()
     if writer.failed:
         print(writer.errors)
-    assert not writer.failed, "Creating the container in LDAP failed, manual cleanup required."
+    assert not writer.failed, \
+        "Creating the container in LDAP failed, manual cleanup required."
 
     yield testrunner_container
 
@@ -65,4 +80,5 @@ def container(connection, test_dn):
 
     if writer.failed:
         print(writer.errors)
-    assert not writer.failed, "Cleanup from LDAP failed, tests are leaking. Manual cleanup required."
+    assert not writer.failed, \
+        "Cleanup from LDAP failed, tests are leaking. Manual cleanup required."
