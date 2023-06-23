@@ -201,23 +201,24 @@ RUN \
     # ldconfig doesn't create this links as this directory
     # is not in any config under /etc/ld.so.conf.d/
     ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
-          /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 && \
+          /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 \
     \
-    ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
-          /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so && \
+    && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+          /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
-    DEBIAN_FRONTEND=noninteractive \
+    && DEBIAN_FRONTEND=noninteractive \
       apt-get --assume-yes --verbose-versions --no-install-recommends install \
-        /tmp/slapd_*.deb /tmp/libldap-*.deb /tmp/ldap-utils_*.deb && \
+        /tmp/slapd_*.deb /tmp/libldap-*.deb /tmp/ldap-utils_*.deb \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
     # /etc/ldap/slapd.conf
     # this is the current behavior in UCS 5
-    mv "/etc/ldap/slapd.d/cn=config.ldif" \
-       "/etc/ldap/slapd.d/cn=config.ldif.DISABLED" && \
-  awk \
-    '/^Package: slapd$/{ while(!/^Version: /){getline} print $2 }' \
-    /var/lib/dpkg/status > /version
+    && mv "/etc/ldap/slapd.d/cn=config.ldif" \
+       "/etc/ldap/slapd.d/cn=config.ldif.DISABLED" \
+    && awk \
+      '/^Package: slapd$/{ while(!/^Version: /){getline} print $2 }' \
+      /var/lib/dpkg/status > /version \
+    && mkdir /var/lib/univention-ldap
 
 ###############################################################################
 # Copy from Docker build context
