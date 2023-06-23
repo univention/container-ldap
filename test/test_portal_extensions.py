@@ -28,3 +28,16 @@ def test_create_portal_entry(connection, container):
 
     entry.entry_delete()
     assert writer.commit()
+
+
+@pytest.mark.xfail(
+    reason="TODO: Add recent portal schema extensions with announcements")
+def test_create_portal_announcement(connection, container):
+    portalAnnouncement = ObjectDef(["univentionNewPortalAnnouncement"], connection)
+    writer = Writer(connection, portalAnnouncement)
+
+    announcement = writer.new("cn=test-portal-announcement," + container.entry_dn)
+    assert writer.commit()
+
+    announcement.entry_delete()
+    assert writer.commit()
