@@ -22,6 +22,11 @@ check_unset_variables() {
 setup_paths() {
   mkdir --parents /var/lib/univention-ldap/ldap
   mkdir --parents /var/lib/univention-ldap/translog
+  if [ ! -e /var/run/slapd ]
+  then
+    mkdir /var/run/slapd
+    chown openldap:openldap /var/run/slapd
+  fi
 }
 
 setup_symlinks() {
