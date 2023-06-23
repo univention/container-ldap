@@ -71,12 +71,6 @@ push-image-souvap-ldap-notifier:
     SOUVAP_IMAGE_NAME: "ldap-notifier"
 
 
-# TODO: Remove once it's removed from common-ci
-publish-helm-charts:
-  rules:
-    - when: never
-
-
 publish-helm-charts-souvap:
   extends: .publish-helm-charts-souvap
 
