@@ -55,6 +55,35 @@ build-notifier-image:
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-notifier"
 
 
+test-ldap-unit:
+  stage: test
+  needs:
+    - job: build-ldap-image
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11
+  services:
+    - name: ${BUILD_IMAGE_TAG}
+      alias: ldap-server
+  variables:
+    PIP_CACHE_DIR: "${CI_PROJECT_DIR}/.cache/pip"
+    PIPENV_CACHE_DIR: "${CI_PROJECT_DIR}/.cache/pipenv"
+    DOMAIN_NAME: univention-organization.intranet
+    LDAP_BASE_DN: dc=univention-organization,dc=intranet
+    LDAP_CN_ADMIN_PW: univention
+    PRIVATE_KEY_FILE: ${CI_PROJECT_DIR}/ssl/secret/private.key
+    CA_CERT_FILE: ${CI_PROJECT_DIR}/ssl/certs/CAcert.pem
+    CERT_PEM_FILE: ${CI_PROJECT_DIR}/ssl/certs/cert.pem
+  cache:
+    key:
+      files:
+        - Pipfile.lock
+    paths:
+      - ".cache"
+  script:
+    - pip install pipenv
+    - pipenv sync -d
+    - pipenv run pytest
+
+
 push-image-souvap-ldap-server:
   needs:
     - job: build-ldap-image

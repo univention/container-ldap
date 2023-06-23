@@ -101,7 +101,12 @@ numfig_format = {
     "section": _("Section %s:"),
 }
 
-suppress_warnings = ['git.too_shallow']
+suppress_warnings = [
+    'git.too_shallow',
+    # Using this to overwrite references from the root README.md file.
+    # See "about.md".
+    'myst.duplicate_def',
+]
 
 if "spelling" in sys.argv:
     extensions.append("univention_sphinx_extension")

@@ -81,7 +81,9 @@ Have the `container-listener-base` and the services from this repository running
 ## Testing
 
 The tests are grouped in the folder `./tests`. Details are described in the file
-[`./tests/README.md`](./tests/README.md).
+[`./tests/README.md`][tests_readme_md].
+
+[tests_readme_md]: ./tests/README.md
 
 
 ## TLS / SSL related details
