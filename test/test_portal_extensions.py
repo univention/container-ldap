@@ -17,3 +17,14 @@ def test_create_entry_in_testrunner_container(connection, container):
 
     child.entry_delete()
     assert writer.commit()
+
+
+def test_create_portal_entry(connection, container):
+    portalEntry = ObjectDef(["univentionNewPortalEntry"], connection)
+    writer = Writer(connection, portalEntry)
+
+    entry = writer.new("cn=test-portal-entry," + container.entry_dn)
+    assert writer.commit()
+
+    entry.entry_delete()
+    assert writer.commit()
