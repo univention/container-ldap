@@ -54,7 +54,7 @@ involve manual tweaking at the moment though. The process is roughly as follows:
   containers.
 
 
-## Testing a full round trip
+## Manually testing a full round trip
 
 The easiest way is to open phpLDAPadmin and change the description of the admin
 user.
@@ -76,6 +76,12 @@ Have the `container-listener-base` and the services from this repository running
 6. Observe that the `base-listener` logs details about the change. This means
    the change went into `ldap-server` and arrived in `ldap-notifier` and finally
    made its way to `base-listener`.
+
+
+## Testing
+
+The tests are grouped in the folder `./tests`. Details are described in the file
+[`./tests/README.md`](./tests/README.md).
 
 
 ## TLS / SSL related details
