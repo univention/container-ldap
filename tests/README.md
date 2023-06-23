@@ -1,6 +1,18 @@
 # Test Organization
 
 
+## TL;DR run the tests
+
+```
+# Use "pipenv" to have the right environment
+pipenv sync -d
+pipenv run pytest
+
+# Get a shell
+pipenv shell
+```
+
+
 ## Target structure
 
 The target structure for testing shall eventually follow this pattern:

@@ -4,10 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pytest = "*"
+ldap3 = "*"
 
 [packages]
-sh = "*"
-docker-compose = "*"
-
-[requires]
-python_version = "3.9"
