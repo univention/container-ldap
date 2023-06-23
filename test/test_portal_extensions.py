@@ -1,4 +1,5 @@
 import pytest
+from ldap3 import ObjectDef, Writer
 
 
 def test_ldap_server_can_be_reached(connection, admin_dn):
@@ -7,10 +8,12 @@ def test_ldap_server_can_be_reached(connection, admin_dn):
     assert len(connection.entries) >= 1
 
 
-def test_create_testrunner_container_low_level(connection, test_dn):
-    connection.add(test_dn, "organizationalUnit")
-    connection.search(test_dn, "(objectClass=organizationalUnit)")
-    assert len(connection.entries) == 1
-    connection.delete(test_dn)
-    connection.search(test_dn, "(objectClass=organizationalUnit)")
-    assert len(connection.entries) == 0
+def test_create_entry_in_testrunner_container(connection, container):
+    organizationalUnit = ObjectDef(["organizationalUnit"], connection)
+    writer = Writer(connection, organizationalUnit)
+
+    child = writer.new("ou=child," + container.entry_dn)
+    assert writer.commit()
+
+    child.entry_delete()
+    assert writer.commit()
