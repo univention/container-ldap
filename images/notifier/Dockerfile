@@ -42,8 +42,6 @@ COPY fake.sh /usr/local/bin/ucr
 COPY fake.sh /usr/local/bin/systemctl
 COPY fake.sh /usr/local/bin/univention-config-registry
 
-COPY patches/ /patches/
-
 RUN \
   apt-get update && \
   apt-get download \
@@ -55,8 +53,7 @@ RUN \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
   dpkg --install --force-depends /apt/* && \
-  patch --directory=/ --strip=0 < /patches/translog-py3.patch && \
-  rm -rf /apt /patches /var/lib/apt/lists/* && \
+  rm -rf /apt /var/lib/apt/lists/* && \
   awk \
     '/^Package: univention-directory-notifier$/{ while(!/^Version: /){getline} print $2 }' \
     /var/lib/dpkg/status > /version
