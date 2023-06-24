@@ -52,6 +52,16 @@ services:
     profiles:
       - docs
 
+  test:
+    build:
+      context: ./images/testrunner/
+    environment:
+      PYTEST_ADDOPTS: --ldap-server=ldap-server
+    profiles:
+      - test
+    volumes:
+      - ".:/app"
+
 secrets:
   ca_cert:
     file: ssl/certs/CAcert.pem

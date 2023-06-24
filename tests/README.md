@@ -3,7 +3,15 @@
 
 ## TL;DR run the tests
 
+In a container:
+
+```shell
+dockere compose run --build test
 ```
+
+Locally:
+
+```shell
 # Use "pipenv" to have the right environment
 pipenv sync -d
 pipenv run pytest
