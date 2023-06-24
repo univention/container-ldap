@@ -15,6 +15,10 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 Added
 -----
 
+- Add the Univention Portal related schema extensions from the release artifact
+  `portal-udm-extensions` to ensure that the latest adjustments are included.
+  This is an interim solution which will evolve in the future.
+
 - Add documentation based on Sphinx docs with the default Univention templates.
 
 - Add Helm charts to allow the installation of the `ldap-server` and the
@@ -47,6 +51,8 @@ Removed
 - Removed the Python based implementation of the CI/CD pipeline jobs. The
   configuration is now relying on plain features of Gitlab's CI. It is also
   leveraging `common-ci`.
+
+
 
 
 

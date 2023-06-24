@@ -1,4 +1,3 @@
-import pytest
 from ldap3 import ObjectDef, Writer
 
 
@@ -33,9 +32,6 @@ def test_create_portal_entry(connection, container):
     assert writer.commit()
 
 
-@pytest.mark.xfail(
-    reason="TODO: Add recent portal schema extensions with announcements",
-)
 def test_create_portal_announcement(connection, container):
     portal_announcement = ObjectDef(
         ["univentionNewPortalAnnouncement"], connection

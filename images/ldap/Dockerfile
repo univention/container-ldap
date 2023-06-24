@@ -6,9 +6,11 @@
 ARG DOCKER_PROXY
 ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
 
-ARG DEB_BUILDER_REGISTRY=gitregistry.knut.univention.de
-ARG DEB_BUILDER_IMAGE=univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
+ARG DEB_BUILDER_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
 ARG DEB_BUILDER_TAG=latest
+
+ARG PORTAL_UDM_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/components/univention-portal/portal-udm-extensions
+ARG PORTAL_UDM_EXTENSIONS_TAG=latest
 
 
 ###############################################################################
@@ -69,8 +71,10 @@ RUN apt-get update && \
 ###############################################################################
 # Builder image for OpenLDAP currently in deb package
 ###############################################################################
-FROM ${DEB_BUILDER_REGISTRY}/${DEB_BUILDER_IMAGE}:${DEB_BUILDER_TAG} \
-  AS deb_builder
+FROM ${DEB_BUILDER_IMAGE}:${DEB_BUILDER_TAG} AS deb_builder
+
+
+FROM ${PORTAL_UDM_EXTENSIONS_IMAGE}:${PORTAL_UDM_EXTENSIONS_TAG} AS portal-udm-extensions
 
 ###############################################################################
 # Final image
@@ -132,8 +136,8 @@ RUN apt-get update && \
 # slapd.conf templates:
 COPY --from=ucs_builder /usr/share/univention-ldap/schema \
                         /usr/share/univention-ldap/schema
-COPY --from=ucs_builder /usr/lib/univention-portal/schema \
-                        /usr/lib/univention-portal/schema
+COPY --from=portal-udm-extensions /udm/schema \
+                                  /usr/lib/univention-portal/schema
 COPY --from=ucs_builder /etc/univention/templates/files/etc/ldap/slapd.conf.d \
                         /etc/univention/templates/files/etc/ldap/slapd.conf.d
 # This "info" file is also a dependency of the templates
@@ -157,8 +161,8 @@ COPY --from=ucs_builder \
      /usr/share/univention-self-service/self-service-passwordreset.schema \
      /var/lib/univention-ldap-local/local-schema/self-service-passwordreset.schema
 
-COPY --from=ucs_builder \
-     /usr/lib/univention-portal/schema/univention-portal.schema \
+COPY --from=portal-udm-extensions \
+     /udm/schema/univention-portal.schema \
      /var/lib/univention-ldap-local/local-schema/univention-portal.schema
 
 # ACLs:
@@ -166,8 +170,8 @@ COPY --from=ucs_builder \
      /usr/share/univention-appcenter/66univention-appcenter_app.acl \
      /etc/univention/templates/files/etc/ldap/slapd.conf.d/
 
-COPY --from=ucs_builder \
-     /usr/lib/univention-portal/acl/62univention-portal.acl \
+COPY --from=portal-udm-extensions \
+     /udm/acls/62univention-portal.acl \
      /etc/univention/templates/files/etc/ldap/slapd.conf.d/
 
 # Configuration of the Crude SAML plugin for Cyrus SASL2:
