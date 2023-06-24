@@ -41,9 +41,10 @@ extensions = [
     "sphinxcontrib.spelling",
     "sphinxcontrib.video",
     "univention_sphinx_extension",
-    'myst_parser',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.todo',
+    "myst_parser",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.todo",
 ]
 
 intersphinx_mapping = {
@@ -52,6 +53,13 @@ intersphinx_mapping = {
     #     "https://univention.gitpages.knut.univention.de/internal/team-souvap-docs", None),
     # "uv-quickstart": ("https://docs.software-univention.de/quickstart/5.0/en/", None),
     # "uv-manual": ("https://docs.software-univention.de/manual/5.0/en/", None),
+}
+
+extlinks = {
+    "repo-file": (
+        "https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/blob/main/%s",
+        "%s",
+    ),
 }
 
 copybutton_prompt_text = r"\$ |> |.+# "
