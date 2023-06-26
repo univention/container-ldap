@@ -7,6 +7,7 @@ Containers for Univention LDAP
    :maxdepth: 2
 
    about
+   initial-content
    extensions
    changelog
    genindex
