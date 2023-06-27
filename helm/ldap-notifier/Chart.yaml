@@ -10,7 +10,7 @@ home: "https://www.univention.de/"
 # Apply Semantic Versioning (https://semver.org/)
 version: "0.1.0"
 
-# Application Version, compare "images/notifier/Dockerfile"
+# Application Version, compare "docker/notifier/Dockerfile"
 appVersion: "14.0.4"
 
 dependencies:

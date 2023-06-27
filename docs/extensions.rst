@@ -19,7 +19,7 @@ artifact, the concept of plugging in extensions at runtime does not fit
 directly.
 
 The currently included extensions can be inspected in the file
-:repo-file:`images/ldap/Dockerfile`.
+:repo-file:`docker/ldap/Dockerfile`.
 
 Further details regarding the UDM are available at the following URL:
 https://docs.software-univention.de/developer-reference/5.0/en/udm/index.html

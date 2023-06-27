@@ -29,8 +29,8 @@ deb-builder-image:
   extends: .kaniko
   needs: []
   variables:
-    KANIKO_BUILD_CONTEXT: "images/ldap"
-    DOCKERFILE_PATH: "images/ldap/Dockerfile_deb_builder"
+    KANIKO_BUILD_CONTEXT: "docker/ldap"
+    DOCKERFILE_PATH: "docker/ldap/Dockerfile_deb_builder"
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/container-ldap-deb-builder"
 
 
@@ -41,7 +41,7 @@ build-ldap-image:
     - deb-builder-image
   variables:
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-server"
-    KANIKO_BUILD_CONTEXT: "images/ldap"
+    KANIKO_BUILD_CONTEXT: "docker/ldap"
     KANIKO_ARGS: >-
       --build-arg DEB_BUILDER_TAG=$BUILD_VERSION
 
@@ -51,7 +51,7 @@ build-notifier-image:
   extends: .kaniko
   needs: []
   variables:
-    KANIKO_BUILD_CONTEXT: "images/notifier"
+    KANIKO_BUILD_CONTEXT: "docker/notifier"
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-notifier"
 
 
@@ -60,7 +60,7 @@ build-testrunner-image:
   extends: .kaniko
   needs: []
   variables:
-    KANIKO_BUILD_CONTEXT: "images/testrunner"
+    KANIKO_BUILD_CONTEXT: "docker/testrunner"
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/testrunner"
 
 
