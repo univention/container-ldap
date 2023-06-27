@@ -1,5 +1,7 @@
 ---
 
+name: "dev-local"
+
 services:
   ldap-notifier:
     platform: linux/amd64
@@ -28,8 +30,8 @@ services:
     - ca_cert
     - cert_pem
     - private_key
+    - dh_param
     volumes:
-    - ./ssl/dh_2048.pem:/etc/ldap/dh_2048.pem:ro
     - ./saml/idp/:/usr/share/saml/idp/:ro
     - ldap-shared-data:/var/lib/univention-ldap/:rw
     - ldap-shared-run:/var/run/slapd/:rw
@@ -64,11 +66,13 @@ services:
 
 secrets:
   ca_cert:
-    file: ssl/certs/CAcert.pem
+    file: ssl/CAcert.pem
   cert_pem:
-    file: ssl/certs/cert.pem
+    file: ssl/cert.pem
   private_key:
-    file: ssl/secret/private.key
+    file: ssl/cert.key
+  dh_param:
+    file: ssl/dh_2048.pem
 
 volumes:
   ldap-shared-data:

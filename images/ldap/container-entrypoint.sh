@@ -5,8 +5,7 @@ set -euxo pipefail
 check_unset_variables() {
   # Also list here the variables needed by ucr-light-filter
   var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" \
-              "LDAP_CN_ADMIN_PW" \
-              "CA_CERT_FILE" "CERT_PEM_FILE" "PRIVATE_KEY_FILE" )
+              "LDAP_CN_ADMIN_PW" )
   for var_name in "${var_names[@]}"; do
     if [[ -z "${!var_name:-}" ]]; then
       echo "ERROR: '${var_name}' is unset."
@@ -72,11 +71,11 @@ setup_sasl_mech_saml() {
   if [[ -n "${SERVICE_PROVIDERS:-}" ]]; then
     # We have to modify the template since the hardcoded univention/saml/metadata
     # URL endpoint is not necessarily valid for future service providers.
-    # Therefore we expect comma a separated list of URLs in SERVICE_PROVIDERS.
+    # Therefore we expect a comma-separated list of URLs in SERVICE_PROVIDERS.
     # And since our Identitiy Providers are not UMC anymore but Keycloak or Gluu,
     # we put the metadata XMLs into a vendor neutral location.
     # The sp library is not quite usable nor desired in this context so that
-    # and it's dependency sys are removed.
+    # and its dependency sys are removed.
 
     printf -v filter_string '%s' \
      's/#@%@UCRWARNING=# @%@//;' \
@@ -158,9 +157,21 @@ setup_ssl_certificates() {
   target_dir="/etc/univention/ssl/ucs-6045.${DOMAIN_NAME}"
   mkdir --parents "${target_dir}" /etc/univention/ssl/ucsCA/
 
-  ln --symbolic --force "${CA_CERT_FILE}" "/etc/univention/ssl/ucsCA/CAcert.pem"
-  ln --symbolic --force "${CERT_PEM_FILE}" "${target_dir}/cert.pem"
-  ln --symbolic --force "${PRIVATE_KEY_FILE}" "${target_dir}/private.key"
+  if [ -f "${CA_CERT_FILE:-}" ] && [ -f "${CERT_PEM_FILE:-}" ] && [ -f "${PRIVATE_KEY_FILE:-}" ] \
+        && [ -f "${DH_PARAM_FILE:-}" ]; then
+    echo "Linking TLS certificates"
+    ln --symbolic --force "${CA_CERT_FILE}" "/etc/univention/ssl/ucsCA/CAcert.pem"
+    ln --symbolic --force "${CERT_PEM_FILE}" "${target_dir}/cert.pem"
+    ln --symbolic --force "${PRIVATE_KEY_FILE}" "${target_dir}/private.key"
+    ln --symbolic --force "${DH_PARAM_FILE}" "/etc/ldap/dh_2048.pem"
+  elif [ ! -f "${CA_CERT_FILE:-}" ] && [ ! -f "${CERT_PEM_FILE:-}" ] && [ ! -f "${PRIVATE_KEY_FILE:-}" ] \
+        && [ ! -f "${DH_PARAM_FILE:-}" ]; then
+    echo "No TLS certificates configured!"
+    sed --in-place --expression '/^TLS/d' /etc/ldap/slapd.conf
+  else
+    echo "Must configure either all or none of \$CA_CERT_FILE, \$CERT_PEM_FILE, \$PRIVATE_KEY_FILE, \$DH_PARAM_FILE"
+    echo 1
+  fi
 
 }
 

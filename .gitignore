@@ -1,3 +1,6 @@
+# Secrets
+/ssl/
+
 # Docker Compose
 /.env.ldap-server
 /docker-compose.override.yaml
