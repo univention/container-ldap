@@ -35,6 +35,9 @@ ldap_server:
   # -- Path to the private key file of the LDAP server
   private_key_file: "/var/secrets/private_key"
   private_key: null
+  # -- Path to the DH parameters
+  dh_param_file: "/var/secrets/dh_param"
+  dh_param: null
 
   # -- A comma separated list of SAML2 Service Provider URLs
   saml_service_providers: null

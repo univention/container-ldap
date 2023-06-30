@@ -130,6 +130,8 @@ false
   "ca_cert_file": "/var/secrets/ca_cert",
   "cert_pem": null,
   "cert_pem_file": "/var/secrets/cert_pem",
+  "dh_param": null,
+  "dh_param_file": "/var/secrets/dh_param",
   "domain_name": "univention-organization.intranet",
   "environment": "production",
   "ldap_admin_pw": null,
@@ -160,6 +162,15 @@ false
 </pre>
 </td>
 			<td>Path to the certificate of the LDAP server</td>
+		</tr>
+		<tr>
+			<td>ldap_server.dh_param_file</td>
+			<td>string</td>
+			<td><pre lang="json">
+"/var/secrets/dh_param"
+</pre>
+</td>
+			<td>Path to the DH parameters</td>
 		</tr>
 		<tr>
 			<td>ldap_server.domain_name</td>

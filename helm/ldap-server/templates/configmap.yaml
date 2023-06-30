@@ -9,6 +9,7 @@ data:
   LDAP_BASE_DN: "{{ .Values.ldap_server.ldap_base_dn }}"
   CA_CERT_FILE: "{{ .Values.ldap_server.ca_cert_file }}"
   CERT_PEM_FILE: "{{ .Values.ldap_server.cert_pem_file }}"
+  DH_PARAM_FILE: "{{ .Values.ldap_server.dh_param_file }}"
   PRIVATE_KEY_FILE: "{{ .Values.ldap_server.private_key_file }}"
   SERVICE_PROVIDERS: "{{ .Values.ldap_server.service_providers }}"
   LDAP_CN_ADMIN_PW: '{{ required "ldap_admin_pw is required" .Values.ldap_server.ldap_admin_pw }}'
