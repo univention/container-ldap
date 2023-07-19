@@ -67,6 +67,45 @@ setup_sasl_mech_whitelist() {
     > /etc/ldap/sasl2/slapd.conf
 }
 
+fetch_saml_metadata() {
+  mkdir -p /usr/share/saml/idp
+
+  if [[ -n "${SAML_METADATA_URL:-}" ]]; then
+    DOWNLOAD_URL=${SAML_METADATA_URL_INTERNAL:-${SAML_METADATA_URL}}
+    SAML_HOST=$(echo "${SAML_METADATA_URL}" | awk -F/ '{print $3}')
+
+    SAML_METADATA_BASE=/usr/share/saml/idp
+    SAML_METADATA_PATH="${SAML_METADATA_BASE}/${SAML_HOST}.xml"
+
+    echo "Trying to fetch SAML metadata from ${DOWNLOAD_URL}"
+    result=1
+    counter=3
+    # 'Connection refused' is not retried by `wget --tries=X` hence the loop
+    while [[ ${result} -gt 0 && ${counter} -gt 0 ]]; do
+      {
+          wget \
+            --quiet \
+            --timeout=3 \
+            --tries=2 \
+            --header="Host: ${SAML_HOST}" \
+            --output-document="${SAML_METADATA_PATH}" \
+            "${DOWNLOAD_URL}" \
+          && result=0
+      } || true
+
+      counter=$((counter-1))
+      sleep 3
+    done
+
+    if [[ ${result} -gt 0 ]]; then
+      echo "Error: Failed to fetch SAML metadata from ${DOWNLOAD_URL}" >&2
+      exit 255
+    fi
+
+    echo "Successfully set SAML metadata in ${SAML_METADATA_PATH}"
+  fi
+}
+
 setup_sasl_mech_saml() {
   if [[ -n "${SERVICE_PROVIDERS:-}" ]]; then
     # We have to modify the template since the hardcoded univention/saml/metadata
@@ -81,7 +120,7 @@ setup_sasl_mech_saml() {
      's/#@%@UCRWARNING=# @%@//;' \
      's/import sys/import os/;' \
      '/sys.path.insert/,+1d;' \
-     's/univention-management-console//;' \
+     's#univention-management-console/##;' \
      '/service_providers =/,+3d;' \
      '/if identity_provider/i ' \
      'service_providers = os.environ["SERVICE_PROVIDERS"].split(",")'
@@ -181,6 +220,7 @@ setup_paths
 setup_listener_path
 setup_last_id_path
 setup_slapd_conf
+fetch_saml_metadata
 setup_sasl_mech_whitelist
 setup_sasl_mech_saml
 setup_initial_ldif

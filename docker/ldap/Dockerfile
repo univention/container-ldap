@@ -122,6 +122,8 @@ RUN apt-get update && \
         # cy2-saml dependencies
         libglib2.0-0=2.* \
         libxmlsec1-openssl=1.2.* \
+        # for downloading SAML metadata on startup
+        wget=1.20.* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
         python3=3.7.* && \
