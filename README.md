@@ -78,6 +78,14 @@ Have the `container-listener-base` and the services from this repository running
    made its way to `base-listener`.
 
 
+## Linting
+
+You may run the pre-commit linter as follows:
+
+```
+docker compose run pre-commit
+```
+
 ## Testing
 
 The tests are grouped in the folder `./tests`. Details are described in the file
