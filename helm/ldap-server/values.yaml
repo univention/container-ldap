@@ -22,17 +22,24 @@ ldap_server:
   ldap_base_dn: "dc=univention-organization,dc=intranet"
   # -- Initial password to set for "cn=admin"
   ldap_admin_pw: null
-  # -- Set a custom ciphersuite. May be needed if gnutls instead of openssl is in use.
-  # Example `"NORMAL"`.
-  ldap_tls_ciphersuite: null
+  # -- Log level for slapd.
+  #    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.
+  #    Example: `"conn,stats"`.
+  log_level: "stats"
 
-  # -- Path to the CA certificate of the UCS machine.
+  # -- TLS enabled/disabled.
+  #    Options: `"secure"`, `"off"`.
+  tls_mode: "secure"
+  # -- Set a custom ciphersuite. May be needed if gnutls instead of openssl is in use.
+  #    Example `"NORMAL"`.
+  ldap_tls_ciphersuite: null
+  # -- Path to the CA certificate.
   ca_cert_file: "/var/secrets/ca_cert"
   ca_cert: null
-  # -- Path to the certificate of the LDAP server
+  # -- Path to the server certificate's public key in PEM format.
   cert_pem_file: "/var/secrets/cert_pem"
   cert_pem: null
-  # -- Path to the private key file of the LDAP server
+  # -- Path to the server certificate's private key.
   private_key_file: "/var/secrets/private_key"
   private_key: null
   # -- Path to the DH parameters
@@ -41,6 +48,11 @@ ldap_server:
 
   # -- A comma separated list of SAML2 Service Provider URLs
   saml_service_providers: null
+  # -- URL of the IdP that contains the SAML metadata.
+  saml_metadata_url: null
+  # -- Internal URL of the IdP to download SAML metadata from,
+  #    in the case that `saml_metadata_url` is not visible to the container.
+  saml_metadata_url_internal: null
 
 
 ## Docker image

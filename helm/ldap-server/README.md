@@ -137,9 +137,13 @@ false
   "ldap_admin_pw": null,
   "ldap_base_dn": "dc=univention-organization,dc=intranet",
   "ldap_tls_ciphersuite": null,
+  "log_level": "stats",
   "private_key": null,
   "private_key_file": "/var/secrets/private_key",
-  "saml_service_providers": null
+  "saml_metadata_url": null,
+  "saml_metadata_url_internal": null,
+  "saml_service_providers": null,
+  "tls_mode": "secure"
 }
 </pre>
 </td>
@@ -152,7 +156,7 @@ false
 "/var/secrets/ca_cert"
 </pre>
 </td>
-			<td>Path to the CA certificate of the UCS machine.</td>
+			<td>Path to the CA certificate.</td>
 		</tr>
 		<tr>
 			<td>ldap_server.cert_pem_file</td>
@@ -161,7 +165,7 @@ false
 "/var/secrets/cert_pem"
 </pre>
 </td>
-			<td>Path to the certificate of the LDAP server</td>
+			<td>Path to the server certificate's public key in PEM format.</td>
 		</tr>
 		<tr>
 			<td>ldap_server.dh_param_file</td>
@@ -215,7 +219,16 @@ null
 null
 </pre>
 </td>
-			<td>Set a custom ciphersuite. May be needed if gnutls instead of openssl is in use. Example `"NORMAL"`.</td>
+			<td>Set a custom ciphersuite. May be needed if gnutls instead of openssl is in use.    Example `"NORMAL"`.</td>
+		</tr>
+		<tr>
+			<td>ldap_server.log_level</td>
+			<td>string</td>
+			<td><pre lang="json">
+"stats"
+</pre>
+</td>
+			<td>Log level for slapd.    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.    Example: `"conn,stats"`.</td>
 		</tr>
 		<tr>
 			<td>ldap_server.private_key_file</td>
@@ -224,7 +237,25 @@ null
 "/var/secrets/private_key"
 </pre>
 </td>
-			<td>Path to the private key file of the LDAP server</td>
+			<td>Path to the server certificate's private key.</td>
+		</tr>
+		<tr>
+			<td>ldap_server.saml_metadata_url</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td>URL of the IdP that contains the SAML metadata.</td>
+		</tr>
+		<tr>
+			<td>ldap_server.saml_metadata_url_internal</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td>Internal URL of the IdP to download SAML metadata from,    in the case that `saml_metadata_url` is not visible to the container.</td>
 		</tr>
 		<tr>
 			<td>ldap_server.saml_service_providers</td>
@@ -234,6 +265,15 @@ null
 </pre>
 </td>
 			<td>A comma separated list of SAML2 Service Provider URLs</td>
+		</tr>
+		<tr>
+			<td>ldap_server.tls_mode</td>
+			<td>string</td>
+			<td><pre lang="json">
+"secure"
+</pre>
+</td>
+			<td>TLS enabled/disabled.    Options: `"secure"`, `"off"`.</td>
 		</tr>
 		<tr>
 			<td>nameOverride</td>
