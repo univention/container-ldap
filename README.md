@@ -89,7 +89,8 @@ The tests are grouped in the folder `./tests`. Details are described in the file
 ## TLS
 
 If TLS termination by the LDAP server is required,
-you need to provide the following secrets:
+you need to set `TLS_MODE=secure`
+and provide the following secrets:
 - `CA_CERT_FILE`: The CA certificate in PEM format.
 - `CERT_PEM_FILE`: The server's (public) certificate in PEM format.
 - `PRIVATE_KEY_FILE`: The private key to the server's certificate.
@@ -102,6 +103,9 @@ In order for clients to connect properly
 - the CA certificate must also be known and trusted by the client,
 - the LDAP server must be reachable by the hostname listed in its certificate.
   (Maybe Subject Alternative Names can be useful here.)
+
+Setting `TLS_MODE` to `off` disables TLS support.
+In this case, no certificate files need to be provided.
 
 ## Notifier Data Files
 

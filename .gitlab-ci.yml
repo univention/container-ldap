@@ -77,6 +77,7 @@ test-ldap-unit:
     DOMAIN_NAME: univention-organization.intranet
     LDAP_BASE_DN: dc=univention-organization,dc=intranet
     LDAP_CN_ADMIN_PW: univention
+    TLS_MODE: "off"
     # CI_DEBUG_SERVICES: "true"
   before_script:
     # Working around setup issue with the Gitlab in knut

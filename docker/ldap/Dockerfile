@@ -235,9 +235,6 @@ COPY ucr-light-filter /usr/sbin/
 COPY container-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT ["container-entrypoint.sh"]
-CMD ["/usr/sbin/slapd", "-f", "/etc/ldap/slapd.conf", \
-    "-d", "stats", \
-    "-h", "ldapi:/// ldap://:389/ ldaps://:636/"]
 
 # Since in the classic UCS the ports 7636 and 7389 were only needed
 # for avoiding conflict with Samba domain controller service

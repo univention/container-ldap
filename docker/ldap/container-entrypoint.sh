@@ -189,29 +189,38 @@ setup_translog_ldif() {
           -l /usr/share/univention-ldap/translog.ldif
 }
 
-setup_ssl_certificates() {
+setup_tls() {
   # TODO: Fix this in Config Adapter
   # Check univention-ssl/debian/univention-ssl.postinst
   # and make-certificates.sh
   target_dir="/etc/univention/ssl/ucs-6045.${DOMAIN_NAME}"
   mkdir --parents "${target_dir}" /etc/univention/ssl/ucsCA/
 
-  if [ -f "${CA_CERT_FILE:-}" ] && [ -f "${CERT_PEM_FILE:-}" ] && [ -f "${PRIVATE_KEY_FILE:-}" ] \
-        && [ -f "${DH_PARAM_FILE:-}" ]; then
-    echo "Linking TLS certificates"
-    ln --symbolic --force "${CA_CERT_FILE}" "/etc/univention/ssl/ucsCA/CAcert.pem"
-    ln --symbolic --force "${CERT_PEM_FILE}" "${target_dir}/cert.pem"
-    ln --symbolic --force "${PRIVATE_KEY_FILE}" "${target_dir}/private.key"
-    ln --symbolic --force "${DH_PARAM_FILE}" "/etc/ldap/dh_2048.pem"
-  elif [ ! -f "${CA_CERT_FILE:-}" ] && [ ! -f "${CERT_PEM_FILE:-}" ] && [ ! -f "${PRIVATE_KEY_FILE:-}" ] \
-        && [ ! -f "${DH_PARAM_FILE:-}" ]; then
-    echo "No TLS certificates configured!"
-    sed --in-place --expression '/^TLS/d' /etc/ldap/slapd.conf
-  else
-    echo "Must configure either all or none of \$CA_CERT_FILE, \$CERT_PEM_FILE, \$PRIVATE_KEY_FILE, \$DH_PARAM_FILE"
-    echo 1
-  fi
-
+  case "${TLS_MODE:-}" in
+    "secure")
+      echo "Linking TLS certificates"
+      if [ ! -f "${CA_CERT_FILE:-}" ] || [ ! -f "${CERT_PEM_FILE:-}" ] || [ ! -f "${PRIVATE_KEY_FILE:-}" ] \
+        || [ ! -f "${DH_PARAM_FILE:-}" ]; then
+        echo "All of \$CA_CERT_FILE, \$CERT_PEM_FILE, \$PRIVATE_KEY_FILE, \$DH_PARAM_FILE must be present!"
+        exit 1
+      fi
+      ln --symbolic --force "${CA_CERT_FILE}" "/etc/univention/ssl/ucsCA/CAcert.pem"
+      ln --symbolic --force "${CERT_PEM_FILE}" "${target_dir}/cert.pem"
+      ln --symbolic --force "${PRIVATE_KEY_FILE}" "${target_dir}/private.key"
+      ln --symbolic --force "${DH_PARAM_FILE}" "/etc/ldap/dh_2048.pem"
+      export LDAP_LISTEN="ldapi:/// ldap://:389/ ldaps://:636/"
+      ;;
+    "off")
+      echo "No TLS certificates configured!"
+      sed --in-place --expression '/^TLS/d' /etc/ldap/slapd.conf
+      echo 'sasl-secprops none,minssf=0' >> /etc/ldap/slapd.conf
+      export LDAP_LISTEN="ldapi:/// ldap://:389/"
+      ;;
+    *)
+      echo "TLS_MODE must be set to 'off' or 'secure'."
+      exit 1
+      ;;
+  esac
 }
 
 check_unset_variables
@@ -225,6 +234,10 @@ setup_sasl_mech_whitelist
 setup_sasl_mech_saml
 setup_initial_ldif
 setup_translog_ldif
-setup_ssl_certificates
+setup_tls
 
-exec "$@"
+exec /usr/sbin/slapd \
+      -f /etc/ldap/slapd.conf \
+      -d stats \
+      -h "${LDAP_LISTEN}" \
+      $@
