@@ -223,6 +223,22 @@ setup_tls() {
   esac
 }
 
+prepare_slapd_run() {
+  # Adding `-d LOG_LEVEL` here overrides earlier settings in /etc/ldap/slapd.conf,
+  # but without `-d` slapd would detach and the container would exit.
+
+  {
+    echo '#!/usr/bin/env bash'
+    echo "/usr/sbin/slapd \\"
+    echo "   -f /etc/ldap/slapd.conf \\"
+    echo "   -d \"${LOG_LEVEL:-stats}\" \\"
+    echo "   -h \"${LDAP_LISTEN}\" \\"
+    echo '   "$@"'
+  } > /run-slapd.sh
+
+  chmod +x /run-slapd.sh
+}
+
 check_unset_variables
 setup_symlinks
 setup_paths
@@ -235,9 +251,6 @@ setup_sasl_mech_saml
 setup_initial_ldif
 setup_translog_ldif
 setup_tls
+prepare_slapd_run
 
-exec /usr/sbin/slapd \
-      -f /etc/ldap/slapd.conf \
-      -d stats \
-      -h "${LDAP_LISTEN}" \
-      $@
+exec "$@"
