@@ -98,7 +98,7 @@ false
 			<td>image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
-"gitregistry.knut.univention.de"
+"registry.souvap-univention.de"
 </pre>
 </td>
 			<td></td>
@@ -107,7 +107,7 @@ false
 			<td>image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
-"univention/customers/dataport/upx/container-ldap/ldap-server"
+"souvap/tooling/images/univention-ldap/ldap-server"
 </pre>
 </td>
 			<td></td>

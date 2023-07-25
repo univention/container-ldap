@@ -30,8 +30,8 @@ ldap_notifier:
 
 ## Docker image
 image:
-  registry: "gitregistry.knut.univention.de"
-  repository: "univention/customers/dataport/upx/container-ldap/ldap-notifier"
+  registry: "registry.souvap-univention.de"
+  repository: "souvap/tooling/images/univention-ldap/ldap-notifier"
   pullPolicy: "Always"
   tag: "latest"
   ## Define image sha256 as an alternative to `tag`
