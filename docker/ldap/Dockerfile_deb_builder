@@ -124,7 +124,10 @@ RUN PATCH_DIR='/tmp/2.4.47+dfsg-3+deb10u5' && \
     cp ${PATCH_DIR}/*.quilt debian/patches/ && \
     find ${PATCH_DIR} -type f -name \*.quilt \
       | sort | cut -d '/' -f 4 >> debian/patches/series && \
+    # attach `+swp1` version suffix to our custom-built packages
+    debchange --local=+swp "SouvAP build" && \
+    \
     dpkg-buildpackage -uc -us -b
     # fakeroot debian/rules binary
 
-RUN ls -lah ~/src/debian/slapd*.deb
+RUN ls -lah ~/src/debian/slapd*.deb ~/src/debian/libldap*.deb

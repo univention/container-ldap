@@ -221,10 +221,15 @@ RUN \
     # this is the current behavior in UCS 5
     && mv "/etc/ldap/slapd.d/cn=config.ldif" \
        "/etc/ldap/slapd.d/cn=config.ldif.DISABLED" \
+    # extract the version of the custom-built univention ldap packages
     && awk \
-      '/^Package: slapd$/{ while(!/^Version: /){getline} print $2 }' \
-      /var/lib/dpkg/status > /version \
+      '/^Package: (slapd|libldap-2.4|ldap-utils)$/{ while(!/^Version: /){getline} print $2 }' \
+      /var/lib/dpkg/status | uniq > /version \
     && mkdir /var/lib/univention-ldap
+
+# assertion: check ldap packages version suffix
+#            to prevent accidental installation of Debian upstream packages
+RUN test -z "$(grep -v '+swp[0-9]\+$' /version)"
 
 ###############################################################################
 # Copy from Docker build context

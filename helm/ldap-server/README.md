@@ -219,7 +219,7 @@ null
 null
 </pre>
 </td>
-			<td>Set a custom ciphersuite. May be needed if gnutls instead of openssl is in use.    Example `"NORMAL"`.</td>
+			<td>Set a custom OpenSSL ciphersuite (use `openssl ciphers -v $CIPHERSUITE` to test possible choices).    Default: `"HIGH:MEDIUM:!aNULL:!MD5:!RC4"`.</td>
 		</tr>
 		<tr>
 			<td>ldap_server.log_level</td>
