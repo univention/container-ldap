@@ -22,7 +22,8 @@ spec:
       labels:
         {{- include "common.labels.matchLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      # TODO: Remove `Values.imagePullSecrets` once it has been replaced by `image.pullSecrets` everywhere.
+      {{- with (coalesce .Values.image.pullSecrets .Values.imagePullSecrets ) }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
