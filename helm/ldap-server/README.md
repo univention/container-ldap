@@ -95,6 +95,15 @@ false
 			<td></td>
 		</tr>
 		<tr>
+			<td>image.pullSecrets</td>
+			<td>list</td>
+			<td><pre lang="json">
+[]
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -122,35 +131,35 @@ false
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldap_server</td>
+			<td>ldapServer</td>
 			<td>object</td>
 			<td><pre lang="json">
 {
-  "ca_cert": null,
-  "ca_cert_file": "/var/secrets/ca_cert",
-  "cert_pem": null,
-  "cert_pem_file": "/var/secrets/cert_pem",
-  "dh_param": null,
-  "dh_param_file": "/var/secrets/dh_param",
-  "domain_name": "univention-organization.intranet",
+  "caCert": null,
+  "caCertFile": "/var/secrets/ca_cert",
+  "certPem": null,
+  "certPemFile": "/var/secrets/cert_pem",
+  "dhParam": null,
+  "dhParamFile": "/var/secrets/dh_param",
+  "domainname": "univention-organization.intranet",
   "environment": "production",
-  "ldap_admin_pw": null,
-  "ldap_base_dn": "dc=univention-organization,dc=intranet",
-  "ldap_tls_ciphersuite": null,
-  "log_level": "stats",
-  "private_key": null,
-  "private_key_file": "/var/secrets/private_key",
-  "saml_metadata_url": null,
-  "saml_metadata_url_internal": null,
-  "saml_service_providers": null,
-  "tls_mode": "secure"
+  "ldapBaseDn": "dc=univention-organization,dc=intranet",
+  "ldapSecret": null,
+  "ldapTlsCiphersuite": null,
+  "logLevel": "stats",
+  "privateKey": null,
+  "privateKeyFile": "/var/secrets/private_key",
+  "samlMetadataUrl": null,
+  "samlMetadataUrlInternal": null,
+  "samlServiceProviders": null,
+  "tlsMode": "secure"
 }
 </pre>
 </td>
 			<td>Application configuration of the OpenLDAP server</td>
 		</tr>
 		<tr>
-			<td>ldap_server.ca_cert_file</td>
+			<td>ldapServer.caCertFile</td>
 			<td>string</td>
 			<td><pre lang="json">
 "/var/secrets/ca_cert"
@@ -159,7 +168,7 @@ false
 			<td>Path to the CA certificate.</td>
 		</tr>
 		<tr>
-			<td>ldap_server.cert_pem_file</td>
+			<td>ldapServer.certPemFile</td>
 			<td>string</td>
 			<td><pre lang="json">
 "/var/secrets/cert_pem"
@@ -168,7 +177,7 @@ false
 			<td>Path to the server certificate's public key in PEM format.</td>
 		</tr>
 		<tr>
-			<td>ldap_server.dh_param_file</td>
+			<td>ldapServer.dhParamFile</td>
 			<td>string</td>
 			<td><pre lang="json">
 "/var/secrets/dh_param"
@@ -177,7 +186,7 @@ false
 			<td>Path to the DH parameters</td>
 		</tr>
 		<tr>
-			<td>ldap_server.domain_name</td>
+			<td>ldapServer.domainname</td>
 			<td>string</td>
 			<td><pre lang="json">
 "univention-organization.intranet"
@@ -186,7 +195,7 @@ false
 			<td>Internal domain name of the UCS machine</td>
 		</tr>
 		<tr>
-			<td>ldap_server.environment</td>
+			<td>ldapServer.environment</td>
 			<td>string</td>
 			<td><pre lang="json">
 "production"
@@ -195,16 +204,7 @@ false
 			<td>TODO: Clarify usage of this parameter</td>
 		</tr>
 		<tr>
-			<td>ldap_server.ldap_admin_pw</td>
-			<td>string</td>
-			<td><pre lang="json">
-null
-</pre>
-</td>
-			<td>Initial password to set for "cn=admin"</td>
-		</tr>
-		<tr>
-			<td>ldap_server.ldap_base_dn</td>
+			<td>ldapServer.ldapBaseDn</td>
 			<td>string</td>
 			<td><pre lang="json">
 "dc=univention-organization,dc=intranet"
@@ -213,7 +213,16 @@ null
 			<td>Base DN of the LDAP directory</td>
 		</tr>
 		<tr>
-			<td>ldap_server.ldap_tls_ciphersuite</td>
+			<td>ldapServer.ldapSecret</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td>Initial password to set for "cn=admin"</td>
+		</tr>
+		<tr>
+			<td>ldapServer.ldapTlsCiphersuite</td>
 			<td>string</td>
 			<td><pre lang="json">
 null
@@ -222,7 +231,7 @@ null
 			<td>Set a custom OpenSSL ciphersuite (use `openssl ciphers -v $CIPHERSUITE` to test possible choices).    Default: `"HIGH:MEDIUM:!aNULL:!MD5:!RC4"`.</td>
 		</tr>
 		<tr>
-			<td>ldap_server.log_level</td>
+			<td>ldapServer.logLevel</td>
 			<td>string</td>
 			<td><pre lang="json">
 "stats"
@@ -231,7 +240,7 @@ null
 			<td>Log level for slapd.    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.    Example: `"conn,stats"`.</td>
 		</tr>
 		<tr>
-			<td>ldap_server.private_key_file</td>
+			<td>ldapServer.privateKeyFile</td>
 			<td>string</td>
 			<td><pre lang="json">
 "/var/secrets/private_key"
@@ -240,7 +249,7 @@ null
 			<td>Path to the server certificate's private key.</td>
 		</tr>
 		<tr>
-			<td>ldap_server.saml_metadata_url</td>
+			<td>ldapServer.samlMetadataUrl</td>
 			<td>string</td>
 			<td><pre lang="json">
 null
@@ -249,7 +258,7 @@ null
 			<td>URL of the IdP that contains the SAML metadata.</td>
 		</tr>
 		<tr>
-			<td>ldap_server.saml_metadata_url_internal</td>
+			<td>ldapServer.samlMetadataUrlInternal</td>
 			<td>string</td>
 			<td><pre lang="json">
 null
@@ -258,7 +267,7 @@ null
 			<td>Internal URL of the IdP to download SAML metadata from,    in the case that `saml_metadata_url` is not visible to the container.</td>
 		</tr>
 		<tr>
-			<td>ldap_server.saml_service_providers</td>
+			<td>ldapServer.samlServiceProviders</td>
 			<td>string</td>
 			<td><pre lang="json">
 null
@@ -267,7 +276,7 @@ null
 			<td>A comma separated list of SAML2 Service Provider URLs</td>
 		</tr>
 		<tr>
-			<td>ldap_server.tls_mode</td>
+			<td>ldapServer.tlsMode</td>
 			<td>string</td>
 			<td><pre lang="json">
 "secure"

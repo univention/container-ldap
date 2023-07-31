@@ -122,6 +122,15 @@ false
 			<td></td>
 		</tr>
 		<tr>
+			<td>image.pullSecrets</td>
+			<td>list</td>
+			<td><pre lang="json">
+[]
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -149,7 +158,7 @@ false
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldap_notifier</td>
+			<td>ldapNotifier</td>
 			<td>object</td>
 			<td><pre lang="json">
 {
@@ -160,7 +169,7 @@ false
 			<td>Application configuration for the Univention Directory Notifier</td>
 		</tr>
 		<tr>
-			<td>ldap_notifier.environment</td>
+			<td>ldapNotifier.environment</td>
 			<td>string</td>
 			<td><pre lang="json">
 "production"

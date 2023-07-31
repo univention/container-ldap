@@ -4,6 +4,6 @@
 {{- define "ldap-notifier.configMap" }}
 {{- with .top }}
 data:
-  ENVIRONMENT: "{{ .Values.ldap_notifier.environment }}"
+  ENVIRONMENT: "{{ .Values.ldapNotifier.environment }}"
 {{- end }}
 {{- end }}

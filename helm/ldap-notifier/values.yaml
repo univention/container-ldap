@@ -23,16 +23,17 @@ securityContext: {}
 tolerations: []
 
 # -- Application configuration for the Univention Directory Notifier
-ldap_notifier:
+ldapNotifier:
   # -- TODO: Clarify usage of this parameter
   environment: "production"
 
 
 ## Docker image
 image:
+  pullPolicy: "Always"
+  pullSecrets: []
   registry: "registry.souvap-univention.de"
   repository: "souvap/tooling/images/univention-ldap/ldap-notifier"
-  pullPolicy: "Always"
   tag: "latest"
   ## Define image sha256 as an alternative to `tag`
   # sha256:
