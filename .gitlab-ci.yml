@@ -15,8 +15,8 @@ include:
       - jobs/package-and-publish-helm-charts.yaml
 
 variables:
-  SOUVAP_REGISTRY_PATH: souvap/tooling/images/univention-ldap
-  SOUVAP_HELM_PROJECT_ID: "126"
+  SOUVAP_HELM_PROJECT_ID: 155
+  SOUVAP_REGISTRY_PATH: souvap/tooling/images/univention
 
 
 lint-pre-commit:
