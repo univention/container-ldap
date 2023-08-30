@@ -1,18 +1,19 @@
 ---
 
 include:
-  - project: univention/customers/dataport/upx/common-ci
+  - project: "univention/customers/dataport/upx/common-ci"
+    ref: "v0.0.1"
     file:
       # TODO: Sphinx docs inherits a stage definition from upstream,
       # has to be included before our default stages to avoid trouble.
-      - jobs/sphinx-docs.yaml
-      - defaults/stages.yaml
-      - defaults/souvap-workflow.yaml
-      - templates/kaniko.yaml
-      - templates/souvap.yaml
-      - jobs/lint-commit-messages.yaml
-      - jobs/lint-pre-commit.yaml
-      - jobs/package-and-publish-helm-charts.yaml
+      - "jobs/sphinx-docs.yaml"
+      - "defaults/stages.yaml"
+      - "defaults/souvap-workflow.yaml"
+      - "templates/kaniko.yaml"
+      - "templates/souvap.yaml"
+      - "jobs/lint-commit-messages.yaml"
+      - "jobs/lint-pre-commit.yaml"
+      - "jobs/package-and-publish-helm-charts.yaml"
 
 variables:
   SOUVAP_HELM_PROJECT_ID: 155
@@ -138,3 +139,5 @@ publish-helm-charts-souvap:
 #       junit: integration-test/robot_results/xunit.xml
 #     paths:
 #     - integration-test/robot_results
+
+...
