@@ -54,6 +54,7 @@ RUN apt-get update && \
     # These packages are only partially needed, and their dependencies
     # can and should not be met in Phoenix
     apt-get download \
+        python3-univention-lib=9.* \
         univention-appcenter=9.0.* \
         univention-self-service-passwordreset-umc=5.0.* \
         univention-ldap-config=16.0.* \
@@ -85,6 +86,8 @@ ARG LABEL_CREATED=undefined
 ARG LABEL_REVISION=undefined
 ARG LABEL_SOURCE=undefined
 ARG LABEL_VERSION=undefined
+ARG SRC_PY_LIBS="/usr/lib/python3/dist-packages"
+ARG DST_PY_LIBS="/usr/lib/python3/dist-packages"
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -126,7 +129,10 @@ RUN apt-get update && \
         wget=1.20.* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
-        python3=3.7.* && \
+        python3=3.7.* \
+        python3-apt \
+        python3-ldap=3.1.* \
+        python3-six=1.* && \
     rm -rf /var/lib/apt/lists/* && \
     # This file is a depencecy of the slapd.conf templates
     mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
@@ -202,6 +208,10 @@ COPY --from=deb_builder /root/src/debian/libldap-2.4-2_2.4.*_amd64.deb \
 
 COPY --from=deb_builder /root/src/debian/ldap-utils_2.4.*_amd64.deb \
                         /tmp/
+
+COPY --from=ucs_builder \
+  ${SRC_PY_LIBS}/univention/lib/*.py \
+  ${DST_PY_LIBS}/univention/lib/
 
 RUN \
     # ldconfig doesn't create this links as this directory
