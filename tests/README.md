@@ -6,7 +6,7 @@
 In a container:
 
 ```shell
-dockere compose run --build test
+docker compose up --build test
 ```
 
 Locally:
