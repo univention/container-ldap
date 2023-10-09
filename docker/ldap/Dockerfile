@@ -4,7 +4,8 @@
 ###############################################################################
 
 ARG DOCKER_PROXY
-ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
+ARG UCS_BASE_IMAGE_TAG=v0.6.0
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ucs-base/ucs-base-505
 
 ARG DEB_BUILDER_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
 ARG DEB_BUILDER_TAG=latest
@@ -19,7 +20,7 @@ ARG PORTAL_UDM_EXTENSIONS_TAG=latest
 # like cy2-saml
 ###############################################################################
 
-FROM ${DOCKER_PROXY}debian:${DEBIAN_BASE_IMAGE_TAG} as ucs_builder
+FROM ${DOCKER_PROXY}${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} as ucs_builder
 
 ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
 
@@ -45,8 +46,6 @@ RUN \
 ###############################################################################
 # Install univention-ldap-server
 ###############################################################################
-
-COPY sources.list /etc/apt/sources.list
 
 WORKDIR /home/deb_packages
 
@@ -79,7 +78,7 @@ FROM ${PORTAL_UDM_EXTENSIONS_IMAGE}:${PORTAL_UDM_EXTENSIONS_TAG} AS portal-udm-e
 ###############################################################################
 # Final image
 ###############################################################################
-FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG}
+FROM ${DOCKER_PROXY}${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG}
 
 ARG LABEL_CREATED=undefined
 ARG LABEL_REVISION=undefined
