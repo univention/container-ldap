@@ -1,12 +1,10 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
-ARG DOCKER_PROXY
-ARG DEBIAN_BASE_IMAGE_TAG=buster-slim
+ARG UCS_BASE_IMAGE_TAG=v0.7.0
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-505
 
-FROM ${DOCKER_PROXY}debian:${DEBIAN_BASE_IMAGE_TAG} AS build
-
-ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
+FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -25,14 +23,11 @@ RUN \
       gpg-agent=2.2.* \
       patch=2.7.* \
   && \
-  curl -fsSL "${APT_KEY_URL}" | apt-key add - && \
   rm -rf /var/lib/apt/lists/*
 
 
 ###############################################################################
 # Install univention-directory-notifier
-
-COPY sources.list /etc/apt/sources.list.d/15_ucs-online-version.list
 
 # The following scripts get called during dpkg-install but are not required
 # in a container environment
@@ -62,7 +57,7 @@ RUN \
 ###############################################################################
 # Second stage image to get rid of unneeded files
 
-FROM ${DOCKERHUB_CACHE}debian:${DEBIAN_BASE_IMAGE_TAG} AS final
+FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS final
 
 ARG LABEL_CREATED=undefined
 ARG LABEL_REVISION=undefined
