@@ -4,7 +4,7 @@
 ###############################################################################
 
 ARG DOCKER_PROXY
-ARG UCS_BASE_IMAGE_TAG=v0.6.0
+ARG UCS_BASE_IMAGE_TAG=v0.6.1
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ucs-base/ucs-base-505
 
 ARG DEB_BUILDER_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
@@ -20,9 +20,7 @@ ARG PORTAL_UDM_EXTENSIONS_TAG=latest
 # like cy2-saml
 ###############################################################################
 
-FROM ${DOCKER_PROXY}${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} as ucs_builder
-
-ARG APT_KEY_URL=https://updates.software-univention.de/univention-archive-key-ucs-5x.gpg
+FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} as ucs_builder
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -39,7 +37,6 @@ RUN \
       curl=7.64.* \
       gpg=2.2.* \
       gpg-agent=2.2.* && \
-  curl -fsSL "${APT_KEY_URL}" | apt-key add - && \
   rm -rf /var/lib/apt/lists/*
 
 
@@ -78,7 +75,7 @@ FROM ${PORTAL_UDM_EXTENSIONS_IMAGE}:${PORTAL_UDM_EXTENSIONS_TAG} AS portal-udm-e
 ###############################################################################
 # Final image
 ###############################################################################
-FROM ${DOCKER_PROXY}${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG}
+FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG}
 
 ARG LABEL_CREATED=undefined
 ARG LABEL_REVISION=undefined
