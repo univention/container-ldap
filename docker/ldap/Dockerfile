@@ -4,7 +4,7 @@
 ###############################################################################
 
 ARG UCS_BASE_IMAGE_TAG=v0.9.0
-ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-505
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520
 
 ARG PORTAL_UDM_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/components/univention-portal/portal-udm-extensions
 ARG PORTAL_UDM_EXTENSIONS_TAG=0.4.3
@@ -31,18 +31,19 @@ WORKDIR /home/deb_packages
 
 RUN apt-get update && \
     # These packages are only partially needed, and their dependencies
-    # can and should not be met in Phoenix
+    # can and should not be met in openDesk
     apt-get download \
-        univention-appcenter=9.0.* \
-        univention-self-service-passwordreset-umc=5.0.* \
-        univention-ldap-config=16.0.* \
-        univention-ldap-server=16.0.* \
-        univention-saml-schema=7.0.* \
-        univention-ldap-overlay-memberof=12.0.* \
-        univention-ldap-acl-master=16.0.* \
-        univention-management-console-server=12.0.* \
-        liblasso3=2.6.* \
-        cy2-saml=1.9.* && \
+        univention-appcenter=9.100.* \
+        univention-self-service-passwordreset-umc=5.100.* \
+        univention-ldap-config=16.100.* \
+        univention-ldap-server=16.100.* \
+        univention-saml-schema=7.100.* \
+        univention-ldap-overlay-memberof=12.100.* \
+        univention-ldap-acl-master=16.100.* \
+        univention-portal=4.100.* \
+        univention-management-console-server=12.100.* \
+        liblasso3=2.8.* \
+        cy2-saml=1.100.* && \
     (dpkg --force-all -i ./*.deb || true) && \
     rm -rf /var/lib/apt/lists/*
 
@@ -62,6 +63,7 @@ ARG LABEL_VERSION=undefined
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
+# hadolint ignore=DL3008
 RUN apt-get update && \
     # Do the non-interactive package configuration
     # of slapd otherwise the build process would
@@ -78,30 +80,35 @@ RUN apt-get update && \
         # Slapd Debian dependencies, some of them could be removed later
         libltdl7=2.4.* \
         libodbc1=2.3.* \
-        libperl5.28=5.28.* \
+        libperl5.36=5.36.* \
         libwrap0=7.6.* \
         psmisc=23.* \
-        perl=5.28.* \
-        lsb-base=10.* \
+        perl=5.36.* \
+        lsb-base=11.* \
         # Some definitely needed slapd dependencies
         libsasl2-2=2.1.* \
         libsasl2-modules=2.1.* \
         libsasl2-modules-db=2.1.* \
         libsasl2-modules-gssapi-heimdal=2.1.* \
-        krb5-config=2.6 \
+        krb5-config=2.* \
         libgssapi-krb5-2=1.* \
-        libkrb5-26-heimdal=7.5.* \
-        libkadm5srv8-heimdal=7.5.* \
-        openssl=1.1.* \
+        libkrb5-26-heimdal=7.8.* \
+        libkadm5srv8-heimdal=7.8.* \
+        openssl=3.0.* \
         # cy2-saml dependencies
         libglib2.0-0=2.* \
         libxmlsec1-openssl=1.2.* \
+        python3-univention-directory-manager \
+        libargon2-1 \
+        libpython3.11 \
+        univention-config \
+        adduser \
         # for downloading SAML metadata on startup
-        wget=1.20.* \
-        ca-certificates=* \
+        wget=1.21.* \
+        ca-certificates=* && \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
-        python3=3.7.* && \
+        # python3=3.7.* && \
     rm -rf /var/lib/apt/lists/* && \
     # This file is a depencecy of the slapd.conf templates
     mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
@@ -172,7 +179,7 @@ COPY --from=ucs_builder \
 
 # Only the UCS version of this library fits as libsaml linked against this
 # and otherwise dlopen(,) complains about 'undefined symbol'
-COPY --from=ucs_builder /usr/lib/liblasso.so.3.13.0  /usr/lib/
+COPY --from=ucs_builder /usr/lib/liblasso.so.3.15.1  /usr/lib/
 
 RUN \
     # ldconfig doesn't create this links as this directory
