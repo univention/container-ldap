@@ -4,8 +4,8 @@
 ###############################################################################
 
 ARG DOCKER_PROXY
-ARG UCS_BASE_IMAGE_TAG=v0.6.1
-ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ucs-base/ucs-base-505
+ARG UCS_BASE_IMAGE_TAG=v0.7.2
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-505
 
 ARG DEB_BUILDER_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
 ARG DEB_BUILDER_TAG=latest
@@ -23,22 +23,6 @@ ARG PORTAL_UDM_EXTENSIONS_TAG=latest
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} as ucs_builder
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-
-
-###############################################################################
-# Install Univention APT-Key
-###############################################################################
-
-RUN \
-  apt-get update && \
-  DEBIAN_FRONTEND=noninteractive \
-    apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      ca-certificates=20* \
-      curl=7.64.* \
-      gpg=2.2.* \
-      gpg-agent=2.2.* && \
-  rm -rf /var/lib/apt/lists/*
-
 
 ###############################################################################
 # Install univention-ldap-server
@@ -233,9 +217,8 @@ RUN test -z "$(grep -v '+swp[0-9]\+$' /version)"
 COPY ucr /usr/sbin/
 COPY ucr-light-filter /usr/sbin/
 
-COPY container-entrypoint.sh /usr/local/bin
+COPY container-entrypoint.sh /entrypoint.d/50-entrypoint.sh
 
-ENTRYPOINT ["container-entrypoint.sh"]
 CMD ["/run-slapd.sh"]
 
 # Since in the classic UCS the ports 7636 and 7389 were only needed

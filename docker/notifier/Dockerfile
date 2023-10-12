@@ -1,7 +1,7 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
-ARG UCS_BASE_IMAGE_TAG=v0.7.0
+ARG UCS_BASE_IMAGE_TAG=v0.7.2
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-505
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
@@ -9,22 +9,6 @@ FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 WORKDIR /apt
-
-###############################################################################
-# Install Univention APT-Key
-
-RUN \
-  apt-get update && \
-  DEBIAN_FRONTEND=noninteractive \
-    apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      ca-certificates=20* \
-      curl=7.64.* \
-      gpg=2.2.* \
-      gpg-agent=2.2.* \
-      patch=2.7.* \
-  && \
-  rm -rf /var/lib/apt/lists/*
-
 
 ###############################################################################
 # Install univention-directory-notifier
@@ -139,10 +123,8 @@ RUN \
   mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
   echo '1' > /var/lib/univention-ldap-local/schema/id/id
 
-COPY entrypoint.sh /
+COPY entrypoint.sh /entrypoint.d/50-entrypoint.sh
 COPY run-notifier.sh /
-
-ENTRYPOINT ["/entrypoint.sh"]
 
 CMD [ \
   "/run-notifier.sh", \
