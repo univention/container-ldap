@@ -8,6 +8,11 @@ FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
+# TODO: Find out why this is required to make "docker build" work
+RUN mkdir -p /var/cache/apt/archives \
+    && mkdir -p /var/cache/debconf \
+    && touch /var/cache/debconf/config.dat-old
+
 WORKDIR /apt
 
 ###############################################################################
