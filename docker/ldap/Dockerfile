@@ -192,6 +192,7 @@ RUN \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
+    && mkdir -p /var/run \
     && DEBIAN_FRONTEND=noninteractive \
       apt-get --assume-yes --verbose-versions --no-install-recommends install \
         /tmp/slapd_*.deb /tmp/libldap-*.deb /tmp/ldap-utils_*.deb \
