@@ -41,7 +41,6 @@ RUN apt-get update && \
         univention-saml-schema=7.0.* \
         univention-ldap-overlay-memberof=12.0.* \
         univention-ldap-acl-master=16.0.* \
-        univention-portal=4.0.* \
         univention-management-console-server=12.0.* \
         liblasso3=2.6.* \
         cy2-saml=1.9.* && \
