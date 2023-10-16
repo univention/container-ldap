@@ -3,8 +3,7 @@
 # Global variables
 ###############################################################################
 
-ARG DOCKER_PROXY
-ARG UCS_BASE_IMAGE_TAG=v0.7.2
+ARG UCS_BASE_IMAGE_TAG=v0.7.4
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-505
 
 ARG DEB_BUILDER_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
