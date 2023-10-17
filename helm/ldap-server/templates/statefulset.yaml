@@ -74,13 +74,19 @@ spec:
       name: shared-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
+      {{- if .Values.persistence.sharedData.storageClass }}
+      storageClassName: {{ .Values.persistence.sharedData.storageClass | quote }}
+      {{- end }}
       resources:
         requests:
-          storage: 1Gi
+          storage: {{ .Values.persistence.sharedData.size | required ".Values.persistence.sharedData.size is required" | quote }}
   - metadata:
       name: shared-run
     spec:
       accessModes: [ "ReadWriteOnce" ]
+      {{- if .Values.persistence.sharedRun.storageClass }}
+      storageClassName: {{ .Values.persistence.sharedRun.storageClass | quote }}
+      {{- end }}
       resources:
         requests:
-          storage: 1Gi
+          storage: {{ .Values.persistence.sharedRun.size | required ".Values.persistence.sharedRun.size is required" | quote }}

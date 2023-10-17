@@ -303,6 +303,42 @@ null
 			<td></td>
 		</tr>
 		<tr>
+			<td>persistence.sharedData.size</td>
+			<td>string</td>
+			<td><pre lang="json">
+"1Gi"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>persistence.sharedData.storageClass</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>persistence.sharedRun.size</td>
+			<td>string</td>
+			<td><pre lang="json">
+"1Gi"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>persistence.sharedRun.storageClass</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>podAnnotations</td>
 			<td>object</td>
 			<td><pre lang="json">

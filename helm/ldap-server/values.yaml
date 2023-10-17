@@ -91,4 +91,14 @@ resources:
 autoscaling:
   enabled: false
 
+
+## Persistence storage configuration
+persistence:
+  sharedData:
+    storageClass: ""
+    size: "1Gi"
+  sharedRun:
+    storageClass: ""
+    size: "1Gi"
+
 ...
