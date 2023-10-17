@@ -3,7 +3,7 @@
 # Global variables
 ###############################################################################
 
-ARG UCS_BASE_IMAGE_TAG=v0.7.4
+ARG UCS_BASE_IMAGE_TAG=v0.7.5
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-505
 
 ARG DEB_BUILDER_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
@@ -190,7 +190,6 @@ RUN \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
-    && mkdir -p /var/run \
     && DEBIAN_FRONTEND=noninteractive \
       apt-get --assume-yes --verbose-versions --no-install-recommends install \
         /tmp/slapd_*.deb /tmp/libldap-*.deb /tmp/ldap-utils_*.deb \
