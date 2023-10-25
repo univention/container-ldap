@@ -1,0 +1,6 @@
+dependencies:
+- name: common
+  repository: oci://registry.souvap-univention.de/souvap/tooling/charts/bitnami-charts
+  version: 2.13.0
+digest: sha256:86a42a46699b65344099adcbdcf42b30c62a7596a7a5732bb80e773f67831328
+generated: "2023-10-23T16:17:28.454474+02:00"
