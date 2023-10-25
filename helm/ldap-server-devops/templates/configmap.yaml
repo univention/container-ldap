@@ -1,0 +1,39 @@
+{{/*
+SPDX-FileCopyrightText: 2023 Bundesministerium des Innern und für Heimat, PG ZenDiS "Projektgruppe für Aufbau ZenDiS"
+SPDX-License-Identifier: Apache-2.0
+*/}}
+---
+kind: "ConfigMap"
+apiVersion: "v1"
+metadata:
+  name: "{{ include "common.names.fullname" . }}"
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.additionalLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.additionalAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+data:
+  DOMAIN_NAME: {{ .Values.ldapServer.config.domainname | required ".Values.ldapServer.config.domainname is required" | quote }}
+  ENVIRONMENT: {{ .Values.ldapServer.config.environment | required ".Values.ldapServer.config.environment is required" | quote }}
+  LDAP_BASE_DN: {{ .Values.ldapServer.config.ldapBaseDn | required ".Values.ldapServer.config.ldapBaseDn is required" | quote }}
+  LOG_LEVEL: {{ .Values.ldapServer.config.logLevel | required ".Values.ldapServer.config.logLevel is required" | quote }}
+  SAML_METADATA_URL: {{ .Values.ldapServer.config.samlMetadataUrl | required ".Values.ldapServer.config.samlMetadataUrl is required" | quote }}
+  SAML_METADATA_URL_INTERNAL: {{ .Values.ldapServer.config.samlMetadataUrlInternal | required ".Values.ldapServer.config.samlMetadataUrlInternal is required" | quote }}
+  SERVICE_PROVIDERS: {{ .Values.ldapServer.config.samlServiceProviders | required ".Values.ldapServer.config.samlServiceProviders is required" | quote }}
+  {{- if .Values.ldapServer.tls.enabled }}
+  TLS_MODE: "secure"
+  CA_CERT_FILE: "{{ .Values.ldapServer.tls.caCertificateFile }}"
+  CERT_PEM_FILE: "{{ .Values.ldapServer.tls.certificateFile }}"
+  PRIVATE_KEY_FILE: "{{ .Values.ldapServer.tls.certificateKeyFile }}"
+  DH_PARAM_FILE: "/dhparam/dhparam.pem"
+  {{- if .Values.ldapServer.tls.TLSCipherSuite }}
+  LDAP_TLS_CIPHERSUITE: {{ .Values.ldapServer.tls.TLSCipherSuite | quote }}
+  {{- end }}
+  {{- else }}
+  TLS_MODE: "off"
+  {{- end }}
+...

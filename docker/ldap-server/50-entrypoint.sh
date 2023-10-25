@@ -237,9 +237,9 @@ prepare_slapd_run() {
     echo "   -d \"${LOG_LEVEL:-stats}\" \\"
     echo "   -h \"${LDAP_LISTEN}\" \\"
     echo '   "$@"'
-  } > /run-slapd.sh
+  } > /etc/univention/run-slapd.sh
 
-  chmod +x /run-slapd.sh
+  chmod +x /etc/univention/run-slapd.sh
 }
 
 setup_symlinks

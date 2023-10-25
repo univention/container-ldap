@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2023 Bundesministerium des Innern und für Heimat, PG ZenDiS "Projektgruppe für Aufbau ZenDiS"
+# SPDX-License-Identifier: Apache-2.0
+---
+annotations:
+  category: "Security"
+  licenses: "Apache-2.0"
+apiVersion: "v2"
+dependencies:
+  - name: "common"
+    version: "^2.x.x"
+    repository: "oci://registry.souvap-univention.de/souvap/tooling/charts/bitnami-charts"
+description: "A Helm Chart that deploys a standalone OpenLDAP server"
+home: "https://zendis.de"
+keywords:
+  - "openldap"
+  - "ldap"
+name: "ldap-server"
+sources:
+  - "https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/tree/main/helm/ldap-server?ref_type=heads"
+type: "application"
+version: "0.0.1"
+...
