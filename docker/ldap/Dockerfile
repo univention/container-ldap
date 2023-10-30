@@ -102,6 +102,7 @@ RUN apt-get update && \
         libxmlsec1-openssl=1.2.* \
         # for downloading SAML metadata on startup
         wget=1.20.* \
+        ca-certificates=202* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
         python3=3.7.* && \
