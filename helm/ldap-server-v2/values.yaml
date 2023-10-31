@@ -11,8 +11,19 @@ global:
   #
   # imagePullSecrets:
   #   - "docker-registry"
-  #
   imagePullSecrets: []
+
+  # -- Define an ImagePullPolicy.
+  #
+  # Ref.: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+  #
+  # "IfNotPresent" => The image is pulled only if it is not already present locally.
+  # "Always" => Every time the kubelet launches a container, the kubelet queries the container image registry to
+  #             resolve the name to an image digest. If the kubelet has a container image with that exact digest cached
+  #             locally, the kubelet uses its cached image; otherwise, the kubelet pulls the image with the resolved
+  #             digest, and uses that image to launch the container.
+  # "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the
+  #            kubelet attempts to start the container; otherwise, startup fails.
   imagePullPolicy: "IfNotPresent"
 
 # -- Additional custom annotations to add to all deployed objects.
@@ -21,6 +32,13 @@ additionalAnnotations: {}
 # -- Additional custom labels to add to all deployed objects.
 additionalLabels: {}
 
+# -- Affinity for pod assignment.
+# Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+# Note: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set.
+affinity: {}
+
+# Security Context.
+# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 containerSecurityContext:
   # -- Enable container privileged escalation.
   allowPrivilegeEscalation: false
@@ -43,15 +61,21 @@ containerSecurityContext:
   # -- Run container as a user.
   runAsNonRoot: true
 
+# -- Array with extra environment variables to add to containers.
+#
+# extraEnvVars:
+#   - name: FOO
+#     value: "bar"
+extraEnvVars: []
+
+# -- Optionally specify a secret to create (primarily intended to be used in development environments to provide custom certificates)
+extraSecrets: []
+
 # -- Optionally specify an extra list of additional volumes.
 extraVolumes: []
 
+# -- Optionally specify an extra list of additional volumeMounts.
 extraVolumeMounts: []
-
-# -- Affinity for pod assignment.
-# Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-# Note: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set.
-affinity: {}
 
 # -- Provide a name to substitute for the full names of resources.
 fullnameOverride: ""
@@ -61,14 +85,15 @@ fullnameOverride: ""
 #
 # imagePullSecrets:
 #   - "docker-registry"
-#
 imagePullSecrets: []
+
 # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
 imagePullPolicy: "IfNotPresent"
 
+# Container image section.
 images:
+  # OpenLDAP container image section.
   ldapServer:
-    # OpenLDAP container image section.
     # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
     imagePullPolicy: "IfNotPresent"
     imagePullSecrets: []
@@ -76,6 +101,7 @@ images:
     #registry: ""
     repository: "souvap/tooling/images/univention-ldap/ldap-server"
     tag: "latest"
+  # OpenSSL container image section (used for DH parameter generation)
   dhInitContainer:
     imagePullPolicy: "IfNotPresent"
     registry: "docker.io"
@@ -126,6 +152,24 @@ ingress:
     # Hint: This secret is not created by this chart and must be provided.
     secretName: ""
 
+# -- Lifecycle to automate configuration before or after startup.
+lifecycleHooks: {}
+
+#  Configure extra options for containers probes.
+livenessProbe:
+  # -- Enables kubernetes LivenessProbe.
+  enabled: true
+  # -- Number of failed executions until container is terminated.
+  failureThreshold: 10
+  # -- Delay after container start until LivenessProbe is executed.
+  initialDelaySeconds: 15
+  # -- Time between probe executions.
+  periodSeconds: 20
+  # -- Number of successful executions after failed ones until container is marked healthy.
+  successThreshold: 1
+  # -- Timeout for command return.
+  timeoutSeconds: 5
+
 # -- String to partially override release name.
 nameOverride: ""
 
@@ -163,7 +207,7 @@ persistence:
   labels: {}
 
   # -- The volume size with unit.
-  size: "5Gi"
+  size: "10Gi"
 
   # -- The (storage) class of PV.
   storageClass: ""
@@ -195,52 +239,6 @@ podSecurityContext:
 
   # -- Change ownership and permission of the volume before being exposed inside a Pod.
   fsGroupChangePolicy: "Always"
-
-#  Configure extra options for containers probes.
-livenessProbe:
-  # -- Enables kubernetes LivenessProbe.
-  enabled: true
-  # -- Number of failed executions until container is terminated.
-  failureThreshold: 10
-  # -- Delay after container start until LivenessProbe is executed.
-  initialDelaySeconds: 15
-  # -- Time between probe executions.
-  periodSeconds: 20
-  # -- Number of successful executions after failed ones until container is marked healthy.
-  successThreshold: 1
-  # -- Timeout for command return.
-  timeoutSeconds: 5
-
-#  Configure extra options for containers probes.
-readinessProbe:
-  # -- Enables kubernetes ReadinessProbe.
-  enabled: true
-  # -- Delay after container start until ReadinessProbe is executed.
-  initialDelaySeconds: 15
-  # -- Number of failed executions until container is terminated.
-  failureThreshold: 10
-  # -- Time between probe executions.
-  periodSeconds: 20
-  # -- Number of successful executions after failed ones until container is marked healthy.
-  successThreshold: 1
-  # -- Timeout for command return.
-  timeoutSeconds: 5
-
-#  Configure extra options for containers probes.
-startupProbe:
-  # -- Enables kubernetes StartupProbe.
-  enabled: true
-  # -- Delay after container start until StartupProbe is executed.
-  initialDelaySeconds: 15
-  # -- Number of failed executions until container is terminated.
-  failureThreshold: 10
-  # -- Time between probe executions.
-  periodSeconds: 20
-  # -- Number of successful executions after failed ones until container is marked healthy.
-  successThreshold: 1
-  # -- Timeout for command return.
-  timeoutSeconds: 5
-
 
 # Prometheus related monitoring settings.
 prometheus:
@@ -291,8 +289,38 @@ prometheus:
     # -- Groups, containing the alert rules.
     groups: []
 
+#  Configure extra options for containers probes.
+readinessProbe:
+  # -- Enables kubernetes ReadinessProbe.
+  enabled: true
+  # -- Delay after container start until ReadinessProbe is executed.
+  initialDelaySeconds: 15
+  # -- Number of failed executions until container is terminated.
+  failureThreshold: 10
+  # -- Time between probe executions.
+  periodSeconds: 20
+  # -- Number of successful executions after failed ones until container is marked healthy.
+  successThreshold: 1
+  # -- Timeout for command return.
+  timeoutSeconds: 5
+
 # -- Set the amount of replicas of deployment.
 replicaCount: 1
+
+# Configure resource requests and limits.
+#
+# Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+resources:
+  limits:
+    # -- The max number of CPUs to consume.
+    cpu: 1
+    # -- The max number of RAM to consume.
+    memory: "1Gi"
+  requests:
+    # -- The number of CPUs which has to be available on the scheduled node.
+    cpu: "100m"
+    # -- The number of RAM which has to be available on the scheduled node.
+    memory: "512Mi"
 
 # Define and create Kubernetes Service.
 #
@@ -313,15 +341,23 @@ service:
   # Ref.: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   # -- Choose the kind of Service, one of "ClusterIP", "NodePort" or "LoadBalancer".
   type: "ClusterIP"
+
   # Define the ports of Service.
   # You can set the port value to an arbitrary value, it will map the container port by name.
   #
   ports:
-    http:
+    ldap:
       # -- Accessible port.
-      port: 80
+      port: 389
       # -- Internal port.
-      containerPort: 80
+      containerPort: 389
+      # -- service protocol.
+      protocol: "TCP"
+    ldaps:
+      # -- Accessible port.
+      port: 636
+      # -- Internal port.
+      containerPort: 636
       # -- service protocol.
       protocol: "TCP"
 
@@ -344,6 +380,21 @@ serviceAccount:
 
   # -- Additional custom labels for the ServiceAccount.
   labels: {}
+
+#  Configure extra options for containers probes.
+startupProbe:
+  # -- Enables kubernetes StartupProbe.
+  enabled: true
+  # -- Delay after container start until StartupProbe is executed.
+  initialDelaySeconds: 15
+  # -- Number of failed executions until container is terminated.
+  failureThreshold: 10
+  # -- Time between probe executions.
+  periodSeconds: 20
+  # -- Number of successful executions after failed ones until container is marked healthy.
+  successThreshold: 1
+  # -- Timeout for command return.
+  timeoutSeconds: 5
 
 # -- In seconds, time the given to the pod needs to terminate gracefully.
 # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
@@ -377,95 +428,73 @@ updateStrategy:
   # are destroyed first.
   type: "RollingUpdate"
 
-# Optionally specify a secret to create (primarily intended to be used in development environments to provide custom certificates)
-extraSecrets: []
-#extraSecrets:
-#  - name:  openldap-tls
-#    data:
-#      tls.crt: 
-#      tls.key: 
-#      ca.crt:
-#  - name:  openldap-dh
-#    data:
-#      dhparam.pem: 
-
-volumeClaimTemplates:
-  - metadata:
-      name: shared-data
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      #storageClassName: "local-path"
-      resources:
-        requests:
-          storage: "1Gi"
-
 # Definitions regarding to OpenLDAP deployment/configuration
 ldapServer:
-  # Security Context.
-  # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  # -- Array with extra environment variables to add to containers.
-  #
-  # extraEnvVars:
-  #   - name: FOO
-  #     value: "bar"
-  #
-  extraEnvVars: []
 
-  # Enable to generate DH parameters on startup
-  generateDHparam: true
+  # Configuration regarding OpenLDAP
+  config:
+    # -- Internal domain name of the UCS machine
+    domainname: "univention-organization.intranet"
 
-  resources:
-    limits:
-      # -- The max number of CPUs to consume.
-      cpu: 1
-      # -- The max number of RAM to consume.
-      memory: "1Gi"
-    requests:
-      # -- The number of CPUs which has to be available on the scheduled node.
-      cpu: "100m"
-      # -- The number of RAM which has to be available on the scheduled node.
-      memory: "512Mi"
-  # -- Lifecycle to automate configuration before or after startup.
-  lifecycleHooks: {}
-  
+    # -- TODO: Clarify usage of this parameter
+    environment: "production"
+
+    # -- Base DN of the LDAP directory
+    ldapBaseDn: "dc=univention-organization,dc=intranet"
+
+    # -- Log level for slapd.
+    #    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.
+    #    Example: `"conn,stats"`.
+    logLevel: "stats"
+
+    # -- A comma separated list of SAML2 Service Provider URLs (must be defined)
+    #samlServiceProviders: "http://myportal.local:8000/univention/saml/metadata,http://myportal.local:8000/auth/realms/ucs"
+    samlServiceProviders: ""
+
+    # -- URL of the IdP that contains the SAML metadata.
+    #samlMetadataUrl: "http://myportal.local:8097/realms/ucs/protocol/saml/descriptor"
+    samlMetadataUrl: ""
+
+    # -- Internal URL of the IdP to download SAML metadata from,
+    #    in the case that `saml_metadata_url` is not visible to the container.
+    #samlMetadataUrlInternal: "http://keycloak.myportal.local/realms/ucs/protocol/saml/descriptor"
+    samlMetadataUrlInternal: ""
+
   # -- Optional reference to a different secret for credentials
   #credentialSecret:
   #  name: "custom-credentials"
   #  adminPasswordKey: "adminPassword"
   credentialSecret: {}
 
+  # Enable to generate DH parameters on startup
+  generateDHparam: true
+
+  # Legacy configuration
+  legacy:
+    sharedRunSize: "1Gi"
+
+  # TLS configuration for the OpenLDAP server
   tls:
     enabled: true
-    # 
+    # -- Optional reference to the secret to use for reading certificates
     #certificateSecret:
     #  name: "custom-tls"
     certificateSecret: {}
+
+    # -- Optional reference to the secret to use for reading Diffie-Hellman parameters
     #dhparamSecret:
     #  name: "custom-dhparam"
     dhparamSecret: {}
-    
-    caCertificateFile: "/certificates/ca.crt"
-    certificateFile: "/certificates/tls.crt"
-    certificateKeyFile: "/certificates/tls.key"
-    # -- Set a custom OpenSSL ciphersuite (use `openssl ciphers -v $CIPHERSUITE` to test possible choices).
-    #TLSCipherSuite: "HIGH:MEDIUM:!aNULL:!MD5:!RC4"
-  config:
-    # -- Internal domain name of the UCS machine
-    domainname: "univention-organization.intranet"
-    # -- TODO: Clarify usage of this parameter
-    environment: "production"
-    # -- Base DN of the LDAP directory
-    ldapBaseDn: "dc=univention-organization,dc=intranet"
-    # -- Log level for slapd.
-    #    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.
-    #    Example: `"conn,stats"`.
-    logLevel: "stats"
-    # -- A comma separated list of SAML2 Service Provider URLs
-    samlServiceProviders: null
-    # -- URL of the IdP that contains the SAML metadata.
-    samlMetadataUrl: null
-    # -- Internal URL of the IdP to download SAML metadata from,
-    #    in the case that `saml_metadata_url` is not visible to the container.
-    samlMetadataUrlInternal: null
-...
 
+    # Path the CA certificate file (TLSCACertPath (slapd), CA_CERT_FILE(entrypoint))
+    caCertificateFile: "/certificates/ca.crt"
+
+    # Path the servers certificate file
+    certificateFile: "/certificates/tls.crt"
+
+    # Path the servers private-key file
+    certificateKeyFile: "/certificates/tls.key"
+
+    # -- Optionally set a custom OpenSSL ciphersuite (use `openssl ciphers -v $CIPHERSUITE` to test possible choices).
+    #TLSCipherSuite: "HIGH:MEDIUM:!aNULL:!MD5:!RC4"
+...
