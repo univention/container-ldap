@@ -2,101 +2,394 @@
 # SPDX-FileCopyrightText: 2023 Univention GmbH
 
 ---
-
-## Global values
-affinity: {}
-environment: {}
-fullnameOverride: ""
-nameOverride: ""
-nodeSelector: {}
-podAnnotations: {}
-podSecurityContext: {}
-replicaCount: 1
-securityContext: {}
-tolerations: []
-
+# The global properties are used to configure multiple charts at once.
 global:
+  # -- Container registry address.
+  imageRegistry: ""
+
+  # -- Credentials to fetch images from private registry.
+  # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  #
+  # imagePullSecrets:
+  #   - "docker-registry"
+  imagePullSecrets: []
+
+  # -- Define an ImagePullPolicy.
+  #
+  # Ref.: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+  #
+  # "IfNotPresent" => The image is pulled only if it is not already present locally.
+  # "Always" => Every time the kubelet launches a container, the kubelet queries the container image registry to
+  #             resolve the name to an image digest. If the kubelet has a container image with that exact digest cached
+  #             locally, the kubelet uses its cached image; otherwise, the kubelet pulls the image with the resolved
+  #             digest, and uses that image to launch the container.
+  # "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the
+  #            kubelet attempts to start the container; otherwise, startup fails.
+  imagePullPolicy: "IfNotPresent"
+
   configMapUcrDefaults: "stack-data-ums-ucr"
   configMapUcr: "stack-data-swp-ucr"
   configMapUcrForced: null
 
-# -- Application configuration of the OpenLDAP server
-ldapServer:
-  # -- TODO: Clarify usage of this parameter
-  environment: "production"
-  # -- Initial password to set for "cn=admin"
-  ldapSecret: null
+# -- Additional custom annotations to add to all deployed objects.
+additionalAnnotations: {}
 
-  # -- Whether to run an init container that waits for the IdP to be ready.
-  waitForSamlMetadata: false
+# -- Additional custom labels to add to all deployed objects.
+additionalLabels: {}
 
-  # -- Path to the CA certificate.
-  caCertFile: "/var/secrets/ca_cert"
-  caCert: null
-  # -- Path to the server certificate's public key in PEM format.
-  certPemFile: "/var/secrets/cert_pem"
-  certPem: null
-  # -- Path to the server certificate's private key.
-  privateKeyFile: "/var/secrets/private_key"
-  privateKey: null
-  # -- Path to the DH parameters
-  dhParamFile: "/var/secrets/dh_param"
-  dhParam: null
+# -- Affinity for pod assignment.
+# Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+# Note: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set.
+affinity: {}
 
-
-## Docker image
-image:
-  pullPolicy: "Always"
-  pullSecrets: []
-  registry: "gitregistry.knut.univention.de"
-  repository: "univention/customers/dataport/upx/container-ldap/ldap-server"
-  tag: "latest"
-  # --  Define image sha256 as an alternative to `tag`
-  sha256: ""
-
-  # -- Image to use for the dependency waiter
-  waitForDependency:
-    registry: "gitregistry.knut.univention.de"
-    repository: "univention/components/univention-portal/wait-for-dependency"
-    imagePullPolicy: "Always"
-    tag: "latest"
-    # -- Define image sha256 as an alternative to `tag`
-    sha256: ""
-
-
-service:
+# Security Context.
+# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+containerSecurityContext:
+  # -- Enable container privileged escalation.
+  allowPrivilegeEscalation: false
+  # -- Security capabilities for container.
+  capabilities:
+    drop:
+      - "ALL"
+  # -- Enable security context.
   enabled: true
-  type: ClusterIP
+  # -- Process user id.
+  runAsUser: 101
+  # -- Process group id.
+  runAsGroup: 102
+  # Set Seccomp profile.
+  seccompProfile:
+    # -- Disallow custom Seccomp profile by setting it to RuntimeDefault.
+    type: "RuntimeDefault"
+  # -- Mounts the container's root filesystem as read-only.
+  readOnlyRootFilesystem: true
+  # -- Run container as a user.
+  runAsNonRoot: true
+
+# -- Array with extra environment variables to add to containers.
+#
+# extraEnvVars:
+#   - name: FOO
+#     value: "bar"
+extraEnvVars: []
+
+# -- Optionally specify a secret to create (primarily intended to be used in development environments to provide custom certificates)
+extraSecrets: []
+
+# -- Optionally specify an extra list of additional volumes.
+extraVolumes: []
+
+# -- Optionally specify an extra list of additional volumeMounts.
+extraVolumeMounts: []
+
+# -- Provide a name to substitute for the full names of resources.
+fullnameOverride: ""
+
+# -- Credentials to fetch images from private registry.
+# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+#
+# imagePullSecrets:
+#   - "docker-registry"
+imagePullSecrets: []
+
+# -- Lifecycle to automate configuration before or after startup.
+lifecycleHooks: {}
+
+#  Configure extra options for containers probes.
+livenessProbe:
+  # -- Number of failed executions until container is terminated.
+  failureThreshold: 10
+  # -- Delay after container start until LivenessProbe is executed.
+  initialDelaySeconds: 15
+  # -- Time between probe executions.
+  periodSeconds: 20
+  # -- Number of successful executions after failed ones until container is marked healthy.
+  successThreshold: 1
+  # -- Timeout for command return.
+  timeoutSeconds: 5
+  tcpSocket:
+    port: 389
+
+# -- String to partially override release name.
+nameOverride: ""
+
+# -- Node labels for pod assignment.
+# Ref: https://kubernetes.io/docs/user-guide/node-selection/
+nodeSelector: {}
+
+# Database persistence settings.
+persistence:
+  # -- The volume access modes, some of "ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany", "ReadWriteOncePod".
+  #
+  # "ReadWriteOnce" => The volume can be mounted as read-write by a single node. ReadWriteOnce access mode still can
+  #                    allow multiple pods to access the volume when the pods are running on the same node.
+  # "ReadOnlyMany" => The volume can be mounted as read-only by many nodes.
+  # "ReadWriteMany" => The volume can be mounted as read-write by many nodes.
+  # "ReadWriteOncePod" => The volume can be mounted as read-write by a single Pod. Use ReadWriteOncePod access mode if
+  #                       you want to ensure that only one pod across whole cluster can read that PVC or write to it.
+  #
+  accessModes:
+    - "ReadWriteOnce"
+
+  # -- Annotations for the PVC.
+  annotations: {}
+
+  # -- Custom PVC data source.
+  dataSource: {}
+
+  # -- Enable data persistence (true) or use temporary storage (false).
+  enabled: true
+
+  # -- Use an already existing claim.
+  existingClaim: ""
+
+  # -- Labels for the PVC.
+  labels: {}
+
+  # -- The volume size with unit.
+  size: "10Gi"
+
+  # -- The (storage) class of PV.
+  storageClass: ""
+
+  # -- Selector to match an existing Persistent Volume (this value is evaluated as a template).
+  #
+  # selector:
+  #   matchLabels:
+  #     app: my-app
+  #
+  selector: {}
+
+# -- Pod Annotations.
+# Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+
+# -- Pod Labels.
+# Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+# Pod Security Context.
+# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+podSecurityContext:
+  # -- Enable security context.
+  enabled: true
+
+  # -- If specified, all processes of the container are also part of the supplementary group.
+  fsGroup: 102
+
+  # -- Change ownership and permission of the volume before being exposed inside a Pod.
+  fsGroupChangePolicy: "Always"
+
+  # -- Allow binding to ports below 1024 without root access.
+  sysctls:
+    - name: "net.ipv4.ip_unprivileged_port_start"
+      value: "1"
+
+#  Configure extra options for containers probes.
+readinessProbe:
+  # -- Delay after container start until ReadinessProbe is executed.
+  initialDelaySeconds: 15
+  # -- Number of failed executions until container is terminated.
+  failureThreshold: 10
+  # -- Time between probe executions.
+  periodSeconds: 20
+  # -- Number of successful executions after failed ones until container is marked healthy.
+  successThreshold: 1
+  # -- Timeout for command return.
+  timeoutSeconds: 5
+  tcpSocket:
+    port: 389
+
+# -- Set the amount of replicas of deployment.
+replicaCount: 1
+
+# Configure resource requests and limits.
+#
+# Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+resources: {}
+
+# Define and create Kubernetes Service.
+#
+# Ref.: https://kubernetes.io/docs/concepts/services-networking/service
+service:
+  # -- Additional custom annotations.
+  annotations: {}
+  # -- Enable kubernetes service creation.
+  enabled: true
+  # "ClusterIP" => Exposes the Service on a cluster-internal IP. Choosing this value makes the Service only reachable
+  #                from within the cluster. This is the default that is used if you don't explicitly specify a type for
+  #                a Service.
+  # "NodePort" => Exposes the Service on each Node's IP at a static port (the NodePort). To make the node port
+  #               available, Kubernetes sets up a cluster IP address, the same as if you had requested a Service of
+  #               type: ClusterIP.
+  # "LoadBalancer" => Exposes the Service externally using a cloud provider's load balancer.
+  #
+  # Ref.: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  # -- Choose the kind of Service, one of "ClusterIP", "NodePort" or "LoadBalancer".
+  type: "ClusterIP"
+
+  # Define the ports of Service.
+  # You can set the port value to an arbitrary value, it will map the container port by name.
+  #
   ports:
     ldap:
+      # -- Accessible port.
       port: 389
+      # -- Internal port.
+      containerPort: 389
+      # -- service protocol.
       protocol: "TCP"
-  sessionAffinity:
+    ldaps:
+      # -- Accessible port.
+      port: 636
+      # -- Internal port.
+      containerPort: 636
+      # -- service protocol.
+      protocol: "TCP"
+
+# Configure resource requests and limits.
+#
+# Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+
+# Service account to use.
+# Ref.: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  ## @param serviceAccount.automountServiceAccountToken Allows auto mount of ServiceAccountToken on the serviceAccount created
+  ## Can be set to false if pods using this serviceAccount do not need to use K8s API
+  ##
+  automountServiceAccountToken: false
+  # -- Additional custom labels for the ServiceAccount.
+  labels: {}
+
+#  Configure extra options for containers probes.
+startupProbe:
+  # -- Delay after container start until StartupProbe is executed.
+  initialDelaySeconds: 15
+  # -- Number of failed executions until container is terminated.
+  failureThreshold: 10
+  # -- Time between probe executions.
+  periodSeconds: 20
+  # -- Number of successful executions after failed ones until container is marked healthy.
+  successThreshold: 1
+  # -- Timeout for command return.
+  timeoutSeconds: 5
+  tcpSocket:
+    port: 389
+
+# -- In seconds, time the given to the pod needs to terminate gracefully.
+# Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
+terminationGracePeriodSeconds: ""
+
+# -- Tolerations for pod assignment.
+# Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+tolerations: []
+
+# -- Topology spread constraints rely on node labels to identify the topology domain(s) that each Node is in.
+# Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
+#
+# topologySpreadConstraints:
+#   - maxSkew: 1
+#     topologyKey: failure-domain.beta.kubernetes.io/zone
+#     whenUnsatisfiable: DoNotSchedule
+topologySpreadConstraints: []
+
+# Set up update strategy.
+#
+# Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+#
+# Example:
+# updateStrategy:
+#  type: RollingUpdate
+#  rollingUpdate:
+#    maxSurge: 25%
+#    maxUnavailable: 25%
+updateStrategy:
+  # -- Set to Recreate if you use persistent volume that cannot be mounted by more than one pods to make sure the pods
+  # are destroyed first.
+  type: "RollingUpdate"
+
+# OpenSSL container image section (used for DH parameter generation)
+dhInitContainer:
+  image:
+    imagePullPolicy: "IfNotPresent"
+    registry: "docker.io"
+    repository: "alpine/openssl"
+    tag: "3.1.4@sha256:974b4593b02447256622dce7b930b98764441dab39c5ca729381aa35332d6778"
+
+# Definitions regarding to OpenLDAP deployment/configuration
+ldapServer:
+  image:
+    # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
+    imagePullPolicy: "IfNotPresent"
+    # -- Container registry address. This setting has higher precedence than global.registry.
+    registry: "gitregistry.knut.univention.de"
+    repository: "univention/customers/dataport/upx/container-ldap/ldap-server"
+    tag: "0.9.0@sha256:2dda2136973398fdf6ecb7aa38b2da015557d890d91ed44e8162aa9bc981394a"
+  # Configuration regarding OpenLDAP
+  config:
+    # -- Internal domain name of the UCS machine
+    # domainName: "univention-organization.intranet"
+    domainName: ""
+
+    # -- Base DN of the LDAP directory
+    #ldapBaseDn: "dc=univention-organization,dc=intranet"
+    ldapBaseDn: ""
+
+    # -- Log level for slapd.
+    #    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.
+    #    Example: `"conn,stats"`.
+    logLevel: "stats"
+
+    # -- A comma separated list of SAML2 Service Provider URLs (must be defined)
+    #samlServiceProviders: "http://myportal.local:8000/univention/saml/metadata,http://myportal.local:8000/auth/realms/ucs"
+    samlServiceProviders: ""
+
+    # -- URL of the IdP that contains the SAML metadata.
+    #samlMetadataUrl: "http://myportal.local:8097/realms/ucs/protocol/saml/descriptor"
+    samlMetadataUrl: ""
+
+    # -- Internal URL of the IdP to download SAML metadata from,
+    #    in the case that `saml_metadata_url` is not visible to the container.
+    #samlMetadataUrlInternal: "http://keycloak.myportal.local/realms/ucs/protocol/saml/descriptor"
+    samlMetadataUrlInternal: ""
+
+  # -- Optional reference to a different secret for credentials
+  #credentialSecret:
+  #  name: "custom-credentials"
+  #  adminPasswordKey: "adminPassword"
+  credentialSecret: {}
+
+  # Enable to generate DH parameters on startup
+  generateDHparam: true
+
+  # Legacy configuration
+  legacy:
+    sharedRunSize: "1Gi"
+
+  # TLS configuration for the OpenLDAP server
+  tls:
     enabled: false
-    timeoutSeconds: 10800
+    # -- Optional reference to the secret to use for reading certificates
+    # certificateSecret: "custom-tls"
 
+    # -- Optional reference to the secret to use for reading Diffie-Hellman parameters
+    # dhparamSecret: "custom-dhparam"
 
-## Deployment resources
-resources:
-  # requests:
-  #   memory: "512Mi"
-  #   cpu: "250m"
-  # limits:
-  #   memory: "4Gi"
-  #   cpu: "4"
+    # Path the CA certificate file (TLSCACertPath (slapd), CA_CERT_FILE(entrypoint))
+    caCertificateFile: "/certificates/ca.crt"
 
+    # Path the servers certificate file
+    certificateFile: "/certificates/tls.crt"
 
-autoscaling:
-  enabled: false
+    # Path the servers private-key file
+    certificateKeyFile: "/certificates/tls.key"
 
-
-## Persistence storage configuration
-persistence:
-  sharedData:
-    storageClass: ""
-    size: "1Gi"
-  sharedRun:
-    storageClass: ""
-    size: "1Gi"
-
-...
+    # -- Optionally set a custom OpenSSL ciphersuite (use `openssl ciphers -v $CIPHERSUITE` to test possible choices).
+    #TLSCipherSuite: "HIGH:MEDIUM:!aNULL:!MD5:!RC4"

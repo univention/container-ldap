@@ -218,7 +218,7 @@ COPY 40-self-service-acl.sh \
      50-entrypoint.sh \
      /entrypoint.d/
 
-CMD ["/run-slapd.sh"]
+CMD ["/etc/univention/run-slapd.sh"]
 
 # Since in the classic UCS the ports 7636 and 7389 were only needed
 # for avoiding conflict with Samba domain controller service

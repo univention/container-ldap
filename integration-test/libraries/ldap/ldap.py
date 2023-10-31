@@ -60,7 +60,7 @@ EMPTY_DSA_INFO_ATTRIBUTES = {
     "supportedLDAPVersion": ["3"],
     "supportedSASLMechanisms": [],
     "vendorName": [],
-    "vendorVersion": []
+    "vendorVersion": [],
 }
 
 server = ldap3.Server(LDAP_URI)
@@ -70,7 +70,10 @@ def is_ldap_bind_successful(user, password):
     """Checks whether LDAP Bind works with the provided credentials"""
     try:
         conn = ldap3.Connection(
-            server=server, user=user, password=password, auto_bind=False
+            server=server,
+            user=user,
+            password=password,
+            auto_bind=False,
         )
         return conn.bind()
     except ldap3.core.exceptions.LDAPPasswordIsMandatoryError:
@@ -81,7 +84,9 @@ def ldap_search(user, password, search_base, search_filter='(objectClass=*)'):
     """Checks whether LDAP Search works with the provided arguments"""
     try:
         with ldap3.Connection(
-            server=server, user=user, password=password
+            server=server,
+            user=user,
+            password=password,
         ) as conn:
             conn.search(search_base=search_base, search_filter=search_filter)
             return conn.entries
@@ -115,7 +120,7 @@ def ldap_search_without_bind(search_base, search_filter='(objectClass=*)'):
     """Checks whether LDAP Search works without authentication"""
     return ldap_operation_without_bind(
         lambda conn: conn.
-        search(search_base=search_base, search_filter=search_filter)
+        search(search_base=search_base, search_filter=search_filter),
     )
 
 
@@ -123,14 +128,14 @@ def ldap_add_without_bind(ldap_dn, object_class=None, attributes=None):
     """Checks whether LDAP Add works without authentication"""
     return ldap_operation_without_bind(
         lambda conn: conn.
-        add(dn=ldap_dn, object_class=object_class, attributes=attributes)
+        add(dn=ldap_dn, object_class=object_class, attributes=attributes),
     )
 
 
 def ldap_modify_without_bind(ldap_dn, changes):
     """Checks whether LDAP Modify works without authentication"""
     return ldap_operation_without_bind(
-        lambda conn: conn.modify(dn=ldap_dn, changes=changes)
+        lambda conn: conn.modify(dn=ldap_dn, changes=changes),
     )
 
 
@@ -141,7 +146,7 @@ def ldap_operation_without_bind(operation):
             server=server,
             auto_bind='NONE',
             authentication='ANONYMOUS',
-            raise_exceptions=True
+            raise_exceptions=True,
         ) as conn:
             conn.open()
             operation(conn)
@@ -170,17 +175,22 @@ def get_all_ldap_server_info(user, password):
         # ca_certs_file='../ssl/certs/CAcert.pem'
     )
     tmp_server = ldap3.Server(
-        LDAP_SERVER, use_ssl=True, tls=tls, get_info=ldap3.ALL
+        LDAP_SERVER,
+        use_ssl=True,
+        tls=tls,
+        get_info=ldap3.ALL,
     )
 
     with ldap3.Connection(
-        server=tmp_server, user=user, password=password
+        server=tmp_server,
+        user=user,
+        password=password,
     ) as conn:
         # TLS is a MUST for retrieving the correct DsaInfo
         if not conn.server.ssl:
             raise ValueError(
                 'Connection does not use the expected TLS '
-                f'version: {str(tls_protocol_version)}'
+                f'version: {str(tls_protocol_version)}',
             )
         return tmp_server.info
     return ldap3.DsaInfo(EMPTY_DSA_INFO_ATTRIBUTES, None)

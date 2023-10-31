@@ -37,12 +37,13 @@ def test_create_portal_entry(connection, container):
 
 def test_create_portal_announcement(connection, container):
     portal_announcement = ObjectDef(
-        ["univentionNewPortalAnnouncement"], connection
+        ["univentionNewPortalAnnouncement"],
+        connection,
     )
     writer = Writer(connection, portal_announcement)
 
     announcement = writer.new(
-        "cn=test-portal-announcement," + container.entry_dn
+        "cn=test-portal-announcement," + container.entry_dn,
     )
     assert writer.commit()
 

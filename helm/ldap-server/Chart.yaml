@@ -2,20 +2,21 @@
 # SPDX-FileCopyrightText: 2023 Univention GmbH
 
 ---
-
+annotations:
+  category: "Security"
+  licenses: "AGPL-3.0-only"
 apiVersion: "v2"
-type: "application"
-name: "ldap-server"
-description: "A Helm chart for the ldap-server"
-home: "https://www.univention.de/"
-
-# Chart version
-# Apply Semantic Versioning (https://semver.org/)
-version: "0.1.0"
-
 dependencies:
   - name: "common"
-    repository: "oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/common-helm/helm"
-    version: "^0.2.0"
-
+    version: "^2.x.x"
+    repository: "oci://registry.souvap-univention.de/souvap/tooling/charts/bitnami-charts"
+description: "A Helm Chart that deploys a standalone OpenLDAP server"
+keywords:
+  - "openldap"
+  - "ldap"
+name: "ldap-server"
+sources:
+  - "https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/tree/main/helm/ldap-server?ref_type=heads"
+type: "application"
+version: "0.0.1"
 ...
