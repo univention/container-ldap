@@ -107,37 +107,4 @@ push-image-souvap-ldap-notifier:
 publish-helm-charts-souvap:
   extends: .publish-helm-charts-souvap
 
-
-# TODO: pending work below
-# test-job:
-#   stage: test-stage
-#   tags:
-#   - docker
-#   image: ${UPX_IMAGE_REGISTRY}docker/compose:1.30-debian-buster-python-3.7.3
-#   services:
-#   - name: ${UNIV_DOCKERHUB_CACHE}library/docker:20.10.7-dind
-#     alias: docker
-#     command:
-#     - --insecure-registry=artifacts.knut.univention.de
-#     - --tls=false
-#   script:
-#   - cp .env.ldap-server.example .env.ldap-server
-#   - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} pull
-#   - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} up --detach --no-build
-#   - cd integration-test
-#   - docker-compose pull
-#   - docker-compose up --no-build --exit-code-from test
-#   - docker-compose rm
-#   - ls -lah robot_results
-#   - cd -
-#   - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} down
-#   - docker-compose ${DOCKER_COMPOSE_PRODUCTION_FILES} rm
-#   artifacts:
-#     when: always
-#     expire_in: 4 weeks
-#     reports:
-#       junit: integration-test/robot_results/xunit.xml
-#     paths:
-#     - integration-test/robot_results
-
 ...
