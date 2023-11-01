@@ -10,7 +10,7 @@ include:
       - "defaults/stages.yaml"
       - "defaults/souvap-workflow.yaml"
       - "templates/kaniko.yaml"
-      - "templates/souvap.yaml"
+      # - "templates/souvap.yaml"
       - "jobs/lint-commit-messages.yaml"
       - "jobs/lint-pre-commit.yaml"
       - "jobs/package-and-publish-helm-charts.yaml"
@@ -89,23 +89,24 @@ test-ldap-unit:
     - pytest
 
 
-push-image-souvap-ldap-server:
-  needs:
-    - job: build-ldap-image
-  extends: .push-image-souvap
-  variables:
-    SOUVAP_IMAGE_NAME: "ldap-server"
+# XXX: Disabled in test repository
+# push-image-souvap-ldap-server:
+#   needs:
+#     - job: build-ldap-image
+#   extends: .push-image-souvap
+#   variables:
+#     SOUVAP_IMAGE_NAME: "ldap-server"
 
 
-push-image-souvap-ldap-notifier:
-  needs:
-    - job: build-notifier-image
-  extends: .push-image-souvap
-  variables:
-    SOUVAP_IMAGE_NAME: "ldap-notifier"
+# push-image-souvap-ldap-notifier:
+#   needs:
+#     - job: build-notifier-image
+#   extends: .push-image-souvap
+#   variables:
+#     SOUVAP_IMAGE_NAME: "ldap-notifier"
 
 
-publish-helm-charts-souvap:
-  extends: .publish-helm-charts-souvap
+# publish-helm-charts-souvap:
+#   extends: .publish-helm-charts-souvap
 
 ...
