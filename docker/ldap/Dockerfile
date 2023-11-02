@@ -12,6 +12,9 @@ ARG DEB_BUILDER_TAG=latest
 ARG PORTAL_UDM_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/components/univention-portal/portal-udm-extensions
 ARG PORTAL_UDM_EXTENSIONS_TAG=latest
 
+ARG OX_CONNECTOR_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/open-xchange/provisioning/ox-connector-dependencies
+ARG OX_CONNECTOR_EXTENSIONS_TAG=0.3.0
+
 
 ###############################################################################
 # Builder image for collecting Univention LDAP schema templates, base LDIFs
@@ -53,6 +56,7 @@ FROM ${DEB_BUILDER_IMAGE}:${DEB_BUILDER_TAG} AS deb_builder
 
 
 FROM ${PORTAL_UDM_EXTENSIONS_IMAGE}:${PORTAL_UDM_EXTENSIONS_TAG} AS portal-udm-extensions
+FROM ${OX_CONNECTOR_EXTENSIONS_IMAGE}:${OX_CONNECTOR_EXTENSIONS_TAG} AS ox-connector-extensions
 
 ###############################################################################
 # Final image
@@ -145,6 +149,14 @@ COPY --from=ucs_builder \
 COPY --from=portal-udm-extensions \
      /udm/schema/univention-portal.schema \
      /var/lib/univention-ldap-local/local-schema/univention-portal.schema
+
+COPY --from=ox-connector-extensions \
+     /dependencies/oxforucs.schema \
+     /var/lib/univention-ldap-local/local-schema/oxforucs.schema
+
+COPY --from=ox-connector-extensions \
+     /dependencies/oxforucs-extra.schema \
+     /var/lib/univention-ldap-local/local-schema/oxforucs-extra.schema
 
 # ACLs:
 COPY --from=ucs_builder \
