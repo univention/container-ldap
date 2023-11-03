@@ -122,6 +122,15 @@ false
 			<td></td>
 		</tr>
 		<tr>
+			<td>image.sha256</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td>Define image sha256 as an alternative to `tag`</td>
+		</tr>
+		<tr>
 			<td>image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -129,6 +138,30 @@ false
 </pre>
 </td>
 			<td></td>
+		</tr>
+		<tr>
+			<td>image.waitForDependency</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "imagePullPolicy": "Always",
+  "registry": "gitregistry.knut.univention.de",
+  "repository": "univention/components/univention-portal/wait-for-dependency",
+  "sha256": "",
+  "tag": "latest"
+}
+</pre>
+</td>
+			<td>Image to use for the dependency waiter</td>
+		</tr>
+		<tr>
+			<td>image.waitForDependency.sha256</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td>Define image sha256 as an alternative to `tag`</td>
 		</tr>
 		<tr>
 			<td>ldapServer</td>
