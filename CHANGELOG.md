@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.3.1...v0.4.0) (2023-11-03)
+
+
+### Features
+
+* **helm:** The Pod "ldap-server" waits until the SAML metadata is available ([eb3f6c9](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/eb3f6c9f7736ff1b136b538e081acc144661c00f))
+
 ## [0.3.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.3.0...v0.3.1) (2023-11-03)
 
 
