@@ -1,0 +1,32 @@
+---
+{{ include "common.configMap" (dict "top" . "overrides" "ldap-server.configMapScripts") }}
+
+{{- define "ldap-server.configMapScripts" }}
+{{- with .top }}
+metadata:
+  name: "{{ include "common.names.fullname" . }}-scripts"
+data:
+  wait-for-saml-metadata.sh: |
+    #!/bin/bash
+
+    set -euxo pipefail
+
+    DOWNLOAD_URL=${SAML_METADATA_URL_INTERNAL:-${SAML_METADATA_URL}}
+    echo "Checking endpoint ${DOWNLOAD_URL}."
+
+    SECONDS=0
+    TIMEOUT=120
+
+    while ! curl -o /dev/null -sf "${DOWNLOAD_URL}"; do
+      echo "Checking if the SAML Metadata can be downloaded ..."
+      sleep 2
+
+      if (($SECONDS > $TIMEOUT)); then
+        echo "Giving up after $TIMEOUT seconds"
+        exit 1
+      fi
+    done
+
+    echo "Success, the SAML Metadata is available."
+{{- end }}
+{{- end }}

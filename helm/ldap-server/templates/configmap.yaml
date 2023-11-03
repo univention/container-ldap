@@ -20,27 +20,5 @@ data:
   SAML_METADATA_URL_INTERNAL: "{{ .Values.ldapServer.samlMetadataUrlInternal }}"
   SERVICE_PROVIDERS: "{{ .Values.ldapServer.serviceProviders }}"
   TLS_MODE: '{{ required "tlsMode is required" .Values.ldapServer.tlsMode }}'
-  wait-for-saml-metadata.sh: |
-    #!/bin/bash
-
-    set -euxo pipefail
-
-    DOWNLOAD_URL=${SAML_METADATA_URL_INTERNAL:-${SAML_METADATA_URL}}
-    echo "Checking endpoint ${DOWNLOAD_URL}."
-
-    SECONDS=0
-    TIMEOUT=120
-
-    while ! curl -o /dev/null -sf "${DOWNLOAD_URL}"; do
-      echo "Checking if the SAML Metadata can be downloaded ..."
-      sleep 2
-
-      if (($SECONDS > $TIMEOUT)); then
-        echo "Giving up after $TIMEOUT seconds"
-        exit 1
-      fi
-    done
-
-    echo "Success, the SAML Metadata is available."
 {{- end }}
 {{- end }}

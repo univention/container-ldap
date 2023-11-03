@@ -42,7 +42,7 @@ spec:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
           volumeMounts:
-            - name: wait-for-saml-metadata
+            - name: scripts
               mountPath: /scripts
           resources:
             {{- toYaml .Values.resourcesWaitForDependency | nindent 12 }}
@@ -74,9 +74,9 @@ spec:
       - name: secrets
         secret:
           secretName: {{ include "common.names.fullname" . | quote }}
-      - name: wait-for-saml-metadata
+      - name: scripts
         configMap:
-          name: {{ include "common.names.fullname" . }}
+          name: "{{ include "common.names.fullname" . }}-scripts"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
