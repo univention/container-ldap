@@ -2,7 +2,7 @@
 
 include:
   - project: "univention/customers/dataport/upx/common-ci"
-    ref: "v0.4.0"
+    ref: "v0.5.0"
     file:
       # TODO: Sphinx docs inherits a stage definition from upstream,
       # has to be included before our default stages to avoid trouble.
@@ -10,11 +10,11 @@ include:
       - "defaults/stages.yaml"
       - "defaults/souvap-workflow.yaml"
       - "templates/kaniko.yaml"
+      - "templates/semantic-release-env.yaml"
       - "templates/souvap.yaml"
       - "jobs/lint-commit-messages.yaml"
       - "jobs/lint-pre-commit.yaml"
       - "jobs/package-and-publish-helm-charts.yaml"
-      - "jobs/semantic-release.yaml"
 
 variables:
   SOUVAP_HELM_PROJECT_ID: 155
@@ -24,6 +24,10 @@ variables:
 lint-pre-commit:
   before_script:
     - cp .env.ldap-server.example .env.ldap-server
+
+
+pre-semantic-release:
+  extends: ".pre-semantic-release"
 
 
 deb-builder-image:
@@ -40,30 +44,40 @@ build-ldap-image:
   stage: build
   extends: .kaniko
   needs:
-    - deb-builder-image
+    - job: "deb-builder-image"
+      artifacts: true
+    - job: "pre-semantic-release"
+      artifacts: true
   variables:
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-server"
     KANIKO_BUILD_CONTEXT: "docker/ldap"
     KANIKO_ARGS: >-
       --build-arg DEB_BUILDER_TAG=$BUILD_VERSION
+    VERSION: "${RELEASE_VERSION}"
 
 
 build-notifier-image:
   stage: build
   extends: .kaniko
-  needs: []
+  needs:
+    - job: "pre-semantic-release"
+      artifacts: true
   variables:
     KANIKO_BUILD_CONTEXT: "docker/notifier"
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-notifier"
+    VERSION: "${RELEASE_VERSION}"
 
 
 build-testrunner-image:
   stage: build
   extends: .kaniko
-  needs: []
+  needs:
+    - job: "pre-semantic-release"
+      artifacts: true
   variables:
     KANIKO_BUILD_CONTEXT: "docker/testrunner"
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/testrunner"
+    VERSION: "${RELEASE_VERSION}"
 
 
 test-ldap-unit:
@@ -103,6 +117,12 @@ push-image-souvap-ldap-notifier:
   extends: .push-image-souvap
   variables:
     SOUVAP_IMAGE_NAME: "ldap-notifier"
+
+
+package-helm-charts:
+  needs:
+    - job: "pre-semantic-release"
+      artifacts: true
 
 
 publish-helm-charts-souvap:
