@@ -2,22 +2,6 @@
 
 set -euxo pipefail
 
-check_unset_variables() {
-  # Also list here the variables needed by ucr-light-filter
-  var_names=( "DOMAIN_NAME" "LDAP_BASE_DN" \
-              "LDAP_CN_ADMIN_PW" )
-  for var_name in "${var_names[@]}"; do
-    if [[ -z "${!var_name:-}" ]]; then
-      echo "ERROR: '${var_name}' is unset."
-      var_unset=true
-    fi
-  done
-
-  if [[ -n "${var_unset:-}" ]]; then
-    exit 1
-  fi
-}
-
 setup_paths() {
   mkdir --parents /var/lib/univention-ldap/ldap
   mkdir --parents /var/lib/univention-ldap/translog
@@ -70,6 +54,9 @@ setup_sasl_mech_whitelist() {
 fetch_saml_metadata() {
   mkdir -p /usr/share/saml/idp
 
+  SAML_METADATA_URL=$(echo -n -e '@%@umc/saml/idp-server@%@' | ucr-light-filter || true)
+  SAML_METADATA_URL_INTERNAL=$(echo -n -e '@%@umc/saml/idp-server-internal@%@' | ucr-light-filter || true)
+
   if [[ -n "${SAML_METADATA_URL:-}" ]]; then
     DOWNLOAD_URL=${SAML_METADATA_URL_INTERNAL:-${SAML_METADATA_URL}}
     SAML_HOST=$(echo "${SAML_METADATA_URL}" | awk -F/ '{print $3}')
@@ -107,6 +94,8 @@ fetch_saml_metadata() {
 }
 
 setup_sasl_mech_saml() {
+  SERVICE_PROVIDERS=$(echo -n -e '@%@ldap/saml/service-providers@%@' | ucr-light-filter || true)
+
   if [[ -n "${SERVICE_PROVIDERS:-}" ]]; then
     # We have to modify the template since the hardcoded univention/saml/metadata
     # URL endpoint is not necessarily valid for future service providers.
@@ -123,7 +112,7 @@ setup_sasl_mech_saml() {
      's#univention-management-console/##;' \
      '/service_providers =/,+3d;' \
      '/if identity_provider/i ' \
-     'service_providers = os.environ["SERVICE_PROVIDERS"].split(",")'
+     'service_providers = configRegistry.get("ldap/saml/service-providers", "").split(",")'
 
     sed -e "${filter_string}" \
       /etc/univention/templates/files/etc/ldap/sasl2/slapd.conf \
@@ -147,8 +136,8 @@ setup_initial_ldif() {
 
   pw_crypt="$(slappasswd -h "{CRYPT}" -s "${LDAP_CN_ADMIN_PW}")"
   pw_crypt="${pw_crypt#'{CRYPT}'}"
-  ldap_base="${LDAP_BASE_DN}"
-  domainname="${DOMAIN_NAME}"
+  ldap_base="$(echo -n -e '@%@ldap/base@%@' | ucr-light-filter)"
+  domainname="$(echo -n -e '@%@domainname@%@' | ucr-light-filter)"
   sambadomain="${domainname%%.*}"
   realm="$(echo "$domainname" | sed -e 's/dc=//g;s/,/./g;s/[a-z]/\u&/g')"
   firstdc="$(echo "$ldap_base" | sed -e 's|,.*||g;s|.*=||')"
@@ -193,31 +182,37 @@ setup_tls() {
   # TODO: Fix this in Config Adapter
   # Check univention-ssl/debian/univention-ssl.postinst
   # and make-certificates.sh
-  target_dir="/etc/univention/ssl/ucs-6045.${DOMAIN_NAME}"
+  HOSTNAME=$(echo -n -e '@%@hostname@%@' | ucr-light-filter)
+  DOMAIN_NAME=$(echo -n -e '@%@domainname@%@' | ucr-light-filter)
+  target_dir="/etc/univention/ssl/${HOSTNAME}.${DOMAIN_NAME}"
+  link_dir="/etc/univention/ssl/${HOSTNAME}"
   mkdir --parents "${target_dir}" /etc/univention/ssl/ucsCA/
+  ln --symbolic --no-dereference --force "${target_dir}" "${link_dir}"
 
+  TLS_MODE=$(echo -n -e '@%@uldap/start-tls@%@' | ucr-light-filter)
   case "${TLS_MODE:-}" in
-    "secure")
+    "2" | "1")
       echo "Linking TLS certificates"
       if [ ! -f "${CA_CERT_FILE:-}" ] || [ ! -f "${CERT_PEM_FILE:-}" ] || [ ! -f "${PRIVATE_KEY_FILE:-}" ] \
         || [ ! -f "${DH_PARAM_FILE:-}" ]; then
         echo "All of \$CA_CERT_FILE, \$CERT_PEM_FILE, \$PRIVATE_KEY_FILE, \$DH_PARAM_FILE must be present!"
         exit 1
       fi
+      DH_PARAM_TARGET=$(echo -n -e '@%@ldap/tls/dh/paramfile@%@' | ucr-light-filter)
       ln --symbolic --force "${CA_CERT_FILE}" "/etc/univention/ssl/ucsCA/CAcert.pem"
       ln --symbolic --force "${CERT_PEM_FILE}" "${target_dir}/cert.pem"
       ln --symbolic --force "${PRIVATE_KEY_FILE}" "${target_dir}/private.key"
-      ln --symbolic --force "${DH_PARAM_FILE}" "/etc/ldap/dh_2048.pem"
+      ln --symbolic --force "${DH_PARAM_FILE}" "${DH_PARAM_TARGET}"
       export LDAP_LISTEN="ldapi:/// ldap://:389/ ldaps://:636/"
       ;;
-    "off")
+    "0")
       echo "No TLS certificates configured!"
       sed --in-place --expression '/^TLS/d' /etc/ldap/slapd.conf
       echo 'sasl-secprops none,minssf=0' >> /etc/ldap/slapd.conf
       export LDAP_LISTEN="ldapi:/// ldap://:389/"
       ;;
     *)
-      echo "TLS_MODE must be set to 'off' or 'secure'."
+      echo "TLS_MODE must be set to '2', '1' or '0'."
       exit 1
       ;;
   esac
@@ -226,6 +221,8 @@ setup_tls() {
 prepare_slapd_run() {
   # Adding `-d LOG_LEVEL` here overrides earlier settings in /etc/ldap/slapd.conf,
   # but without `-d` slapd would detach and the container would exit.
+
+  LOG_LEVEL=$(echo -n -e '@%@ldap/debug/level@%@' | ucr-light-filter || true)
 
   {
     echo '#!/usr/bin/env bash'
@@ -239,7 +236,6 @@ prepare_slapd_run() {
   chmod +x /run-slapd.sh
 }
 
-check_unset_variables
 setup_symlinks
 setup_paths
 setup_listener_path

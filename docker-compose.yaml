@@ -32,7 +32,7 @@ services:
     - private_key
     - dh_param
     volumes:
-    - ./saml/idp/:/usr/share/saml/idp/:ro
+    - ./tests/base.conf:/etc/univention/base-defaults.conf:ro
     - ldap-shared-data:/var/lib/univention-ldap/:rw
     - ldap-shared-run:/var/run/slapd/:rw
 

@@ -12,27 +12,18 @@ replicaCount: 1
 securityContext: {}
 tolerations: []
 
+global:
+  configMapUcrDefaults: "stack-data-ums-ucr"
+  configMapUcr: "stack-data-swp-ucr"
+  configMapUcrForced: null
+
 # -- Application configuration of the OpenLDAP server
 ldapServer:
-  # -- Internal domain name of the UCS machine
-  domainname: "univention-organization.intranet"
   # -- TODO: Clarify usage of this parameter
   environment: "production"
-  # -- Base DN of the LDAP directory
-  ldapBaseDn: "dc=univention-organization,dc=intranet"
   # -- Initial password to set for "cn=admin"
   ldapSecret: null
-  # -- Log level for slapd.
-  #    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.
-  #    Example: `"conn,stats"`.
-  logLevel: "stats"
 
-  # -- TLS enabled/disabled.
-  #    Options: `"secure"`, `"off"`.
-  tlsMode: "secure"
-  # -- Set a custom OpenSSL ciphersuite (use `openssl ciphers -v $CIPHERSUITE` to test possible choices).
-  #    Default: `"HIGH:MEDIUM:!aNULL:!MD5:!RC4"`.
-  ldapTlsCiphersuite: null
   # -- Path to the CA certificate.
   caCertFile: "/var/secrets/ca_cert"
   caCert: null
@@ -45,14 +36,6 @@ ldapServer:
   # -- Path to the DH parameters
   dhParamFile: "/var/secrets/dh_param"
   dhParam: null
-
-  # -- A comma separated list of SAML2 Service Provider URLs
-  samlServiceProviders: null
-  # -- URL of the IdP that contains the SAML metadata.
-  samlMetadataUrl: null
-  # -- Internal URL of the IdP to download SAML metadata from,
-  #    in the case that `saml_metadata_url` is not visible to the container.
-  samlMetadataUrlInternal: null
 
 
 ## Docker image
