@@ -4,21 +4,11 @@
 {{- define "ldap-server.configMap" }}
 {{- with .top }}
 data:
-  DOMAIN_NAME: "{{ .Values.ldapServer.domainname }}"
   ENVIRONMENT: "{{ .Values.ldapServer.environment }}"
-  LDAP_BASE_DN: "{{ .Values.ldapServer.ldapBaseDn }}"
   LDAP_CN_ADMIN_PW: '{{ required "ldapSecret is required" .Values.ldapServer.ldapSecret }}'
-  LOG_LEVEL: "{{ .Values.ldapServer.logLevel }}"
   CA_CERT_FILE: "{{ .Values.ldapServer.caCertFile }}"
   CERT_PEM_FILE: "{{ .Values.ldapServer.certPemFile }}"
   PRIVATE_KEY_FILE: "{{ .Values.ldapServer.privateKeyFile }}"
   DH_PARAM_FILE: "{{ .Values.ldapServer.dhParamFile }}"
-  {{- if .Values.ldapServer.ldapTlsCiphersuite }}
-  LDAP_TLS_CIPHERSUITE: "{{ .Values.ldapServer.ldapTlsCiphersuite }}"
-  {{- end }}
-  SAML_METADATA_URL: "{{ .Values.ldapServer.samlMetadataUrl }}"
-  SAML_METADATA_URL_INTERNAL: "{{ .Values.ldapServer.samlMetadataUrlInternal }}"
-  SERVICE_PROVIDERS: "{{ .Values.ldapServer.serviceProviders }}"
-  TLS_MODE: '{{ required "tlsMode is required" .Values.ldapServer.tlsMode }}'
 {{- end }}
 {{- end }}

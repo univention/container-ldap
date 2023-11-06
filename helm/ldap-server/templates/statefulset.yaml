@@ -44,6 +44,19 @@ spec:
           volumeMounts:
             - name: scripts
               mountPath: /scripts
+            - name: "config-map-ucr-defaults"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base.conf"
+            {{- if (and .Values.global .Values.global.configMapUcr) }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base.conf"
+              subPath: "base.conf"
+            {{- end }}
+            {{- if (and .Values.global .Values.global.configMapUcrForced) }}
+            - name: "config-map-ucr-forced"
+              mountPath: "/etc/univention/base-forced.conf"
+              subPath: "base.conf"
+            {{- end }}
           resources:
             {{- toYaml .Values.resourcesWaitForDependency | nindent 12 }}
         {{- end }}
@@ -57,6 +70,19 @@ spec:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
           volumeMounts:
+            - name: "config-map-ucr-defaults"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base.conf"
+            {{- if (and .Values.global .Values.global.configMapUcr) }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base.conf"
+              subPath: "base.conf"
+            {{- end }}
+            {{- if (and .Values.global .Values.global.configMapUcrForced) }}
+            - name: "config-map-ucr-forced"
+              mountPath: "/etc/univention/base-forced.conf"
+              subPath: "base.conf"
+            {{- end }}
             - name: secrets
               # TODO: conflict with /run/secrets, should use a namespace
               mountPath: /var/secrets
@@ -71,6 +97,19 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
+      - name: "config-map-ucr-defaults"
+        configMap:
+          name: {{ required "Please provide the name of the UCR ConfigMap in .Values.global.configMapUcrDefaults!" .Values.global.configMapUcrDefaults | quote }}
+      {{- if (and .Values.global .Values.global.configMapUcr) }}
+      - name: "config-map-ucr"
+        configMap:
+          name: "{{ .Values.global.configMapUcr }}"
+      {{- end }}
+      {{- if (and .Values.global .Values.global.configMapUcrForced) }}
+      - name: "config-map-ucr-forced"
+        configMap:
+          name: "{{ .Values.global.configMapUcrForced }}"
+      {{- end }}
       - name: secrets
         secret:
           secretName: {{ include "common.names.fullname" . | quote }}
