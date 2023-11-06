@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.4.0...v0.4.1) (2023-11-06)
+
+
+### Bug Fixes
+
+* **docker:** bump common-ci to build latest image ([6710b8b](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/6710b8bec8586639b37fa221ec077cf6c5049495))
+
 ## [0.4.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.3.1...v0.4.0) (2023-11-03)
 
 
