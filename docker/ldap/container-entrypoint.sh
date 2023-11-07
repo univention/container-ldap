@@ -248,5 +248,3 @@ setup_initial_ldif
 setup_translog_ldif
 setup_tls
 prepare_slapd_run
-
-exec "$@"

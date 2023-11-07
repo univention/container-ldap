@@ -33,6 +33,12 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
+def ldap_server(pytestconfig):
+    """LDAP server name."""
+    return pytestconfig.getoption("--ldap-server")
+
+
+@pytest.fixture(scope="session")
 def base_dn(pytestconfig):
     """Base DN of the LDAP server."""
     return pytestconfig.getoption("--ldap-base-dn")
@@ -45,11 +51,15 @@ def admin_dn(pytestconfig):
 
 
 @pytest.fixture(scope="session")
-def connection(pytestconfig):
+def admin_password(pytestconfig):
+    """Password for the Admin DN."""
+    return pytestconfig.getoption("--ldap-admin-password")
+
+
+@pytest.fixture(scope="session")
+def connection(ldap_server, admin_dn, admin_password):
     """Connection to LDAP server."""
-    server = Server(pytestconfig.getoption("--ldap-server"), get_info=ALL)
-    admin_dn = pytestconfig.getoption("--ldap-admin-dn")
-    admin_password = pytestconfig.getoption("--ldap-admin-password")
+    server = Server(ldap_server, get_info=ALL)
     conn = Connection(server, admin_dn, admin_password, auto_bind=True)
     return conn
 

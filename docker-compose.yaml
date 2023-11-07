@@ -26,13 +26,14 @@ services:
     ports:
     - 389:389
     - 636:636
-    secrets:
-    - ca_cert
-    - cert_pem
-    - private_key
-    - dh_param
+    ## Enable the secrets below if TLS is desired and `uldap/start-tls` is set.
+    # secrets:
+    # - ca_cert
+    # - cert_pem
+    # - private_key
+    # - dh_param
     volumes:
-    - ./tests/base.conf:/etc/univention/base-defaults.conf:ro
+    - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
     - ldap-shared-data:/var/lib/univention-ldap/:rw
     - ldap-shared-run:/var/run/slapd/:rw
 

@@ -15,6 +15,10 @@ include:
       - "jobs/lint-commit-messages.yaml"
       - "jobs/lint-pre-commit.yaml"
       - "jobs/package-and-publish-helm-charts.yaml"
+  - project: "univention/dist/docker-services"
+    ref: "master"
+    file:
+      - "dind.yml"
 
 variables:
   SOUVAP_HELM_PROJECT_ID: 155
@@ -83,21 +87,52 @@ build-testrunner-image:
 test-ldap-unit:
   stage: test
   needs:
+    - job: build-ldap-image
+      artifacts: true
     - job: build-testrunner-image
       artifacts: false
-    - job: build-ldap-image
-  image: "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
-  services:
-    - name: ${BUILD_IMAGE_TAG}
-  variables:
-    LDAP_CN_ADMIN_PW: univention
-    # CI_DEBUG_SERVICES: "true"
+  extends: .dind
   before_script:
-    # Working around setup issue with the Gitlab in knut
+    # The setup below would be easier with Docker Compose,
+    # except injecting the image tag into the Compose file
+    # would be very ugly.
+    - docker network create testnet
+    - docker volume create ldap-shared-data
+    - docker volume create ldap-shared-run
+    - docker image pull "${BUILD_IMAGE_TAG}"
+    - docker image pull "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
+    - >-
+      docker run
+      --detach
+      --name ldap-server
+      --env LDAP_CN_ADMIN_PW=univention
+      --network testnet
+      --mount type=bind,source="${PWD}"/tests/base-defaults.conf,target=/etc/univention/base-defaults.conf,readonly
+      --volume ldap-shared-data:/var/lib/univention-ldap/:rw
+      --volume ldap-shared-run:/var/run/slapd/:rw
+      ${BUILD_IMAGE_TAG}
+    - echo "Checking container start-up logs ... "
+    - sleep 10
+    - docker logs ldap-server
     - echo "Waiting for slapd to come up ... "
-    - timeout 300 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 389
+    - >-
+      docker run
+      --rm
+      --network testnet
+      --volume "${PWD}":/app
+      "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
+      pytest -k test_connection --capture=no --ldap-server=ldap-server:389
+    - echo "LDAP server logs:"
+    - docker logs ldap-server
   script:
-    - pytest
+    - >-
+      docker run
+      --rm
+      --network testnet
+      --volume "${PWD}":/app
+      "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
+      pytest
+      --ldap-server=ldap-server:389
 
 
 push-image-souvap-ldap-server:

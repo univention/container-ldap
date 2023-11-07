@@ -120,15 +120,15 @@ In order for clients to connect properly
 - the LDAP server must be reachable by the hostname listed in its certificate.
   (Maybe Subject Alternative Names can be useful here.)
 
-Setting `TLS_MODE` to `off` disables TLS support.
+Setting the UCR variable `uldap/start-tols` to `0` disables TLS support.
 In this case, no certificate files need to be provided.
 
 ## Logging
 
-The log level can be set through the `LOG_LEVEL` flag
+The log level can be set through the UCR variable `ldap/debug/level`
 as a comma-separated list of values found in the [OpenLDAP documentation](https://www.openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options).
 
-The default is `LOG_LEVEL=stats`.
+The default is `ldap/debug/level: stats`.
 
 ## Notifier Data Files
 
