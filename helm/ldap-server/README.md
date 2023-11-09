@@ -204,7 +204,8 @@ null
   "environment": "production",
   "ldapSecret": null,
   "privateKey": null,
-  "privateKeyFile": "/var/secrets/private_key"
+  "privateKeyFile": "/var/secrets/private_key",
+  "waitForSamlMetadata": false
 }
 </pre>
 </td>
@@ -263,6 +264,15 @@ null
 </pre>
 </td>
 			<td>Path to the server certificate's private key.</td>
+		</tr>
+		<tr>
+			<td>ldapServer.waitForSamlMetadata</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td>Whether to run an init container that waits for the IdP to be ready.</td>
 		</tr>
 		<tr>
 			<td>nameOverride</td>

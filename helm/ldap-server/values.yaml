@@ -24,6 +24,9 @@ ldapServer:
   # -- Initial password to set for "cn=admin"
   ldapSecret: null
 
+  # -- Whether to run an init container that waits for the IdP to be ready.
+  waitForSamlMetadata: false
+
   # -- Path to the CA certificate.
   caCertFile: "/var/secrets/ca_cert"
   caCert: null
