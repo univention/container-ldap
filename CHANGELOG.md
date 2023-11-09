@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.4.1...v0.4.2) (2023-11-09)
+
+
+### Bug Fixes
+
+* **server:** read UCR settings from ConfigMap ([1d6270b](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/1d6270b3eca5385e7bb6b9a05b72090486b465a2))
+* **tests:** run tests using DinD instead of GitLab services ([566fc2d](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/566fc2db3f6a6ce6e32fd4d366d67d7afac31a7f))
+
 ## [0.4.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.4.0...v0.4.1) (2023-11-06)
 
 
