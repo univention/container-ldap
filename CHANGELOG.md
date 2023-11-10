@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.4.2...v0.4.3) (2023-11-10)
+
+
+### Bug Fixes
+
+* **helm:** add a toggle to enable the wait-for-SAML init container ([ee91fb4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ee91fb4c20adde48672a5849df9507af4a8bc291))
+
 ## [0.4.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.4.1...v0.4.2) (2023-11-09)
 
 
