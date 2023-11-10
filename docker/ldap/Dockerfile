@@ -6,9 +6,6 @@
 ARG UCS_BASE_IMAGE_TAG=v0.7.5
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-505
 
-ARG DEB_BUILDER_IMAGE=gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/container-ldap-deb-builder
-ARG DEB_BUILDER_TAG=latest
-
 ARG PORTAL_UDM_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/components/univention-portal/portal-udm-extensions
 ARG PORTAL_UDM_EXTENSIONS_TAG=latest
 
@@ -48,11 +45,6 @@ RUN apt-get update && \
         cy2-saml=1.9.* && \
     (dpkg --force-all -i ./*.deb || true) && \
     rm -rf /var/lib/apt/lists/*
-
-###############################################################################
-# Builder image for OpenLDAP currently in deb package
-###############################################################################
-FROM ${DEB_BUILDER_IMAGE}:${DEB_BUILDER_TAG} AS deb_builder
 
 
 FROM ${PORTAL_UDM_EXTENSIONS_IMAGE}:${PORTAL_UDM_EXTENSIONS_TAG} AS portal-udm-extensions
@@ -182,18 +174,6 @@ COPY --from=ucs_builder \
 # and otherwise dlopen(,) complains about 'undefined symbol'
 COPY --from=ucs_builder /usr/lib/liblasso.so.3.13.0  /usr/lib/
 
-###############################################################################
-# Copy from OpenLDAP binary builder image
-###############################################################################
-COPY --from=deb_builder /root/src/debian/slapd_2.4.*_amd64.deb \
-                        /tmp/
-
-COPY --from=deb_builder /root/src/debian/libldap-2.4-2_2.4.*_amd64.deb \
-                        /tmp/
-
-COPY --from=deb_builder /root/src/debian/ldap-utils_2.4.*_amd64.deb \
-                        /tmp/
-
 RUN \
     # ldconfig doesn't create this links as this directory
     # is not in any config under /etc/ld.so.conf.d/
@@ -203,24 +183,19 @@ RUN \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
-    && DEBIAN_FRONTEND=noninteractive \
-      apt-get --assume-yes --verbose-versions --no-install-recommends install \
-        /tmp/slapd_*.deb /tmp/libldap-*.deb /tmp/ldap-utils_*.deb \
+    && apt-get update \
+    && apt-get --assume-yes --verbose-versions --no-install-recommends install \
+        slapd=2.4.47+dfsg-3+deb10u7A~5.0.1.202205211909 \
+        ldap-utils=2.4.47+dfsg-3+deb10u7A~5.0.1.202205211909 \
+    && rm -rf /var/lib/apt/lists/* \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
     # /etc/ldap/slapd.conf
     # this is the current behavior in UCS 5
     && mv "/etc/ldap/slapd.d/cn=config.ldif" \
        "/etc/ldap/slapd.d/cn=config.ldif.DISABLED" \
-    # extract the version of the custom-built univention ldap packages
-    && awk \
-      '/^Package: (slapd|libldap-2.4|ldap-utils)$/{ while(!/^Version: /){getline} print $2 }' \
-      /var/lib/dpkg/status | uniq > /version \
     && mkdir /var/lib/univention-ldap
 
-# assertion: check ldap packages version suffix
-#            to prevent accidental installation of Debian upstream packages
-RUN test -z "$(grep -v '+swp[0-9]\+$' /version)"
 
 ###############################################################################
 # Copy from Docker build context
