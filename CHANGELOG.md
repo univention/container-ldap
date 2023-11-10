@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.4.3...v0.5.0) (2023-11-10)
+
+
+### Features
+
+* Remove custom deb builder container ([f61ab66](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/f61ab6661fa7feee2020b7c30bd748bd1085d8e6))
+* Use the plain univention ldap packages ([cb1df95](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/cb1df951776ab19897680ebd362aa9981648dd62))
+
 ## [0.4.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.4.2...v0.4.3) (2023-11-10)
 
 
