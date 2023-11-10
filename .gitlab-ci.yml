@@ -34,29 +34,15 @@ pre-semantic-release:
   extends: ".pre-semantic-release"
 
 
-deb-builder-image:
-  stage: build
-  extends: .kaniko
-  needs: []
-  variables:
-    KANIKO_BUILD_CONTEXT: "docker/ldap"
-    DOCKERFILE_PATH: "docker/ldap/Dockerfile_deb_builder"
-    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/container-ldap-deb-builder"
-
-
 build-ldap-image:
   stage: build
   extends: .kaniko
   needs:
-    - job: "deb-builder-image"
-      artifacts: true
     - job: "pre-semantic-release"
       artifacts: true
   variables:
     CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-server"
     KANIKO_BUILD_CONTEXT: "docker/ldap"
-    KANIKO_ARGS: >-
-      --build-arg DEB_BUILDER_TAG=$BUILD_VERSION
     VERSION: "${RELEASE_VERSION}"
 
 
