@@ -5,6 +5,8 @@ set -euxo pipefail
 setup_paths() {
   mkdir --parents /var/lib/univention-ldap/ldap
   mkdir --parents /var/lib/univention-ldap/translog
+  mkdir --parents /var/lib/univention-ldap/notify
+  touch /var/lib/univention-ldap/notify/transaction
   if [ ! -e /var/run/slapd ]
   then
     mkdir /var/run/slapd
