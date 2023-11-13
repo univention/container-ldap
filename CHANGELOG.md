@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.5.1...v0.5.2) (2023-11-13)
+
+
+### Bug Fixes
+
+* Pin the version of portal-udm-extensions ([d830557](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/d830557352bca09beada76a96a223e831a302513))
+
 ## [0.5.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.5.0...v0.5.1) (2023-11-13)
 
 
