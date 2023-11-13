@@ -203,7 +203,9 @@ RUN \
 COPY ucr /usr/sbin/
 COPY ucr-light-filter /usr/sbin/
 
-COPY container-entrypoint.sh /entrypoint.d/50-entrypoint.sh
+COPY 40-self-service-acl.sh \
+     50-entrypoint.sh \
+     /entrypoint.d/
 
 CMD ["/run-slapd.sh"]
 
