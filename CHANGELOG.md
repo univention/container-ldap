@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.5.0...v0.5.1) (2023-11-13)
+
+
+### Bug Fixes
+
+* **ldap-server:** Ensure that notifier directories exist ([2012d36](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/2012d36d7da8006523d0d4aa8dcc7c408428845d))
+
 ## [0.5.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.4.3...v0.5.0) (2023-11-10)
 
 
