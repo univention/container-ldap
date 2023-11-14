@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.5.2...v0.5.3) (2023-11-14)
+
+
+### Bug Fixes
+
+* Add "kerberos/realm" in UCR values for test run ([3543a0f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/3543a0f1e8f582d3898c70e01b2cc095dd479eca))
+
 ## [0.5.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.5.1...v0.5.2) (2023-11-13)
 
 
