@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.5.3...v0.6.0) (2023-11-14)
+
+
+### Features
+
+* **helm:** support for extra volumes ([50ddd93](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/50ddd937bd39221ec93a39429a59ee33fb8cac78))
+
 ## [0.5.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.5.2...v0.5.3) (2023-11-14)
 
 
