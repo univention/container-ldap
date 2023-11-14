@@ -83,6 +83,9 @@ spec:
               mountPath: "/etc/univention/base-forced.conf"
               subPath: "base.conf"
             {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+            {{ toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
             - name: secrets
               # TODO: conflict with /run/secrets, should use a namespace
               mountPath: /var/secrets
@@ -109,6 +112,9 @@ spec:
       - name: "config-map-ucr-forced"
         configMap:
           name: "{{ .Values.global.configMapUcrForced }}"
+      {{- end }}
+      {{- if .Values.extraVolumes }}
+      {{ toYaml .Values.extraVolumes | nindent 6 }}
       {{- end }}
       - name: secrets
         secret:
