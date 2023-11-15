@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.6.0...v0.7.0) (2023-11-15)
+
+
+### Features
+
+* **server:** add ACL for self-service ([7e42e66](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/7e42e666b4fab49c33f0b887db3c2c8fc4fe212f))
+
 ## [0.6.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.5.3...v0.6.0) (2023-11-14)
 
 
