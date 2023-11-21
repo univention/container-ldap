@@ -67,6 +67,16 @@ repos:
   hooks:
   - id: dockerfilelint
 
+# "Copy .env.ldap-server.example so that docker-compose.yaml can be linted"
+- repo: local
+  hooks:
+    - id: copy-env-ldap-server
+      name: copy-env-ldap-server
+      entry: sh -c 'if [ ! -f .env.ldap-server ]; then cp .env.ldap-server.example .env.ldap-server; fi'
+      language: system
+      files: 'docker-compose.yaml'
+      pass_filenames: false
+
 # "docker-compose.yaml linter"
 - repo: https://gitlab.com/univention/pre-commit/docker-compose-check
   rev: 7702a8801a158b8595569dd29e2dd655d8a08310

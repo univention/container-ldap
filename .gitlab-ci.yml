@@ -1,82 +1,58 @@
 ---
-
 include:
   - project: "univention/customers/dataport/upx/common-ci"
-    ref: "v0.5.4"
+    ref: "v1.9.7"
     file:
       # TODO: Sphinx docs inherits a stage definition from upstream,
       # has to be included before our default stages to avoid trouble.
       - "jobs/sphinx-docs.yaml"
       - "defaults/stages.yaml"
       - "defaults/souvap-workflow.yaml"
-      - "templates/kaniko.yaml"
-      - "templates/semantic-release-env.yaml"
       - "templates/souvap.yaml"
-      - "jobs/lint-commit-messages.yaml"
       - "jobs/lint-pre-commit.yaml"
+      - "jobs/lint-commit-messages.yaml"
+      - "jobs/semantic-release-env.yaml"
+      - "jobs/container-build.yaml"
       - "jobs/package-and-publish-helm-charts.yaml"
   - project: "univention/dist/docker-services"
     ref: "master"
     file:
       - "dind.yml"
 
-variables:
-  SOUVAP_HELM_PROJECT_ID: 155
-  SOUVAP_REGISTRY_PATH: souvap/tooling/images/univention
-
-
 lint-pre-commit:
   before_script:
     - cp .env.ldap-server.example .env.ldap-server
 
+.build-matrix: &build-matrix
+  - IMAGE_NAME:
+      - "ldap-server"
+      - "ldap-notifier"
+      - "testrunner"
 
-pre-semantic-release:
-  extends: ".pre-semantic-release"
+.publish-matrix: &publish-matrix
+  - IMAGE_NAME:
+      - "ldap-server"
+      - "ldap-notifier"
 
+container-build:
+  parallel:
+    matrix: *build-matrix
 
-build-ldap-image:
-  stage: build
-  extends: .kaniko
-  needs:
-    - job: "pre-semantic-release"
-      artifacts: true
-  variables:
-    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-server"
-    KANIKO_BUILD_CONTEXT: "docker/ldap"
-    VERSION: "${RELEASE_VERSION}"
+container-generate-sbom:
+  parallel:
+    matrix: *build-matrix
 
+container-sign:
+  parallel:
+    matrix: *build-matrix
 
-build-notifier-image:
-  stage: build
-  extends: .kaniko
-  needs:
-    - job: "pre-semantic-release"
-      artifacts: true
-  variables:
-    KANIKO_BUILD_CONTEXT: "docker/notifier"
-    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/ldap-notifier"
-    VERSION: "${RELEASE_VERSION}"
-
-
-build-testrunner-image:
-  stage: build
-  extends: .kaniko
-  needs:
-    - job: "pre-semantic-release"
-      artifacts: true
-  variables:
-    KANIKO_BUILD_CONTEXT: "docker/testrunner"
-    CI_REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE/testrunner"
-    VERSION: "${RELEASE_VERSION}"
+container-security-scan:
+  parallel:
+    matrix: *build-matrix
 
 
 test-ldap-unit:
   stage: test
-  needs:
-    - job: build-ldap-image
-      artifacts: true
-    - job: build-testrunner-image
-      artifacts: false
   extends: .dind
   before_script:
     # The setup below would be easier with Docker Compose,
@@ -85,8 +61,8 @@ test-ldap-unit:
     - docker network create testnet
     - docker volume create ldap-shared-data
     - docker volume create ldap-shared-run
-    - docker image pull "${BUILD_IMAGE_TAG}"
-    - docker image pull "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
+    - docker image pull "${CI_REGISTRY_IMAGE}/ldap-server:${RELEASE_VERSION}"
+    - docker image pull "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
     - >-
       docker run
       --detach
@@ -96,7 +72,7 @@ test-ldap-unit:
       --mount type=bind,source="${PWD}"/tests/base-defaults.conf,target=/etc/univention/base-defaults.conf,readonly
       --volume ldap-shared-data:/var/lib/univention-ldap/:rw
       --volume ldap-shared-run:/var/run/slapd/:rw
-      ${BUILD_IMAGE_TAG}
+      ${CI_REGISTRY_IMAGE}/ldap-server:${RELEASE_VERSION}
     - echo "Checking container start-up logs ... "
     - sleep 10
     - docker logs ldap-server
@@ -106,7 +82,7 @@ test-ldap-unit:
       --rm
       --network testnet
       --volume "${PWD}":/app
-      "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
+      "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
       pytest -k test_connection --capture=no --ldap-server=ldap-server:389
     - echo "LDAP server logs:"
     - docker logs ldap-server
@@ -116,34 +92,15 @@ test-ldap-unit:
       --rm
       --network testnet
       --volume "${PWD}":/app
-      "${CI_REGISTRY_IMAGE}/testrunner:${BUILD_VERSION}"
+      "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
       pytest
       --ldap-server=ldap-server:389
 
-
-push-image-souvap-ldap-server:
-  needs:
-    - job: build-ldap-image
+publish-images:
   extends: .push-image-souvap
-  variables:
-    SOUVAP_IMAGE_NAME: "ldap-server"
-
-
-push-image-souvap-ldap-notifier:
-  needs:
-    - job: build-notifier-image
-  extends: .push-image-souvap
-  variables:
-    SOUVAP_IMAGE_NAME: "ldap-notifier"
-
-
-package-helm-charts:
-  needs:
-    - job: "pre-semantic-release"
-      artifacts: true
-
+  parallel:
+    matrix: *publish-matrix
 
 publish-helm-charts-souvap:
   extends: .publish-helm-charts-souvap
-
 ...

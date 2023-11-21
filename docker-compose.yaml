@@ -7,7 +7,7 @@ services:
     platform: linux/amd64
     image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-notifier:latest
     build:
-      context: ./docker/notifier
+      context: ./docker/ldap-notifier
     depends_on:
       ldap-server:
         condition: service_started
@@ -21,7 +21,7 @@ services:
     platform: linux/amd64
     image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-server:latest
     build:
-      context: ./docker/ldap
+      context: ./docker/ldap-server
     env_file: .env.ldap-server
     ports:
     - 389:389
