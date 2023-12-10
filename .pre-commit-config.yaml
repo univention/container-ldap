@@ -1,117 +1,158 @@
 ---
 
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2020-2023 Univention GmbH <info@univention.de>
+
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 
-exclude: 'docker/ldap/patches/'
+exclude: "docker/ldap/patches/"
+
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.4.0
-  hooks:
-  # "Check for added large files"
-  - id: check-added-large-files
-  # "Check for merge conflicts"
-  - id: check-merge-conflict
-  # "Check Yaml"
-  - id: check-yaml
-    exclude: ^helm/.+/templates/
-  # "Fix End of Files"
-  - id: end-of-file-fixer
-    exclude: ^helm/.+/README.md
-  # "Trim Trailing Whitespace"
-  - id: trailing-whitespace
+  # "Copy .env.ldap-server.example so that docker-compose.yaml can be linted"
+  - repo: "local"
+    hooks:
+      - id: "copy-env-ldap-server"
+        name: "copy-env-ldap-server"
+        entry: "sh -c 'if [ ! -f .env.ldap-server ]; then cp .env.ldap-server.example .env.ldap-server; fi'"
+        language: "system"
+        files: "docker-compose.yaml"
+        pass_filenames: false
 
-# "Commit messages"
-- repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v2.1.1
-  hooks:
-    - id: conventional-pre-commit
-      stages: [commit-msg]
+  - repo: "https://github.com/pre-commit/pre-commit-hooks"
+    rev: "v4.5.0"
+    hooks:
+      - id: "check-added-large-files"
+        name: "check for added large files"
+      - id: "check-executables-have-shebangs"
+        name: "check that executables have shebangs"
+      - id: "check-merge-conflict"
+        name: "check for merge conflicts"
+      - id: "check-yaml"
+        name: "check yaml"
+        args:
+          - "--allow-multiple-documents"
+          # Allow custom tags like Gitlab's "!reference" tag.
+          - "--unsafe"
+        exclude: "^helm/.+/templates/"
+      - id: "end-of-file-fixer"
+        name: "fix end of files"
+        exclude: "^helm/.+/README.md$"
+      - id: "fix-byte-order-marker"
+        name: "fix utf-8 byte order marker"
+      - id: "trailing-whitespace"
+        name: "trim trailing whitespace"
 
-# "yapf"
-- repo: https://github.com/pre-commit/mirrors-yapf
-  rev: v0.30.0
-  hooks:
-  - id: yapf
-    exclude: ^docs/conf.py
+  - repo: "https://github.com/compilerla/conventional-pre-commit"
+    rev: "v3.0.0"
+    hooks:
+      - id: "conventional-pre-commit"
+        name: "Conventional Commit"
+        stages: ["commit-msg"]
 
-# "flake8"
-- repo: https://github.com/PyCQA/flake8
-  rev: 5.0.4
-  hooks:
-  - id: flake8
-    exclude: ^docs/conf.py
+  - repo: "https://git.knut.univention.de/univention/dist/pre-commit-hooks/addlicense"
+    rev: "v0.1.3"
+    hooks:
+      - id: "addlicense"
+        name: "Check or add license headers to files"
 
-# "pylint"
-- repo: https://github.com/PyCQA/pylint
-  rev: v2.17.4
-  hooks:
-  - id: pylint
-    additional_dependencies:
-      - pytest
-      - ldap3
-    exclude: ^docs/conf\.py$
+  - repo: "https://github.com/google/yapf"
+    rev: "v0.40.2"
+    hooks:
+      - id: "yapf"
+        name: "yapf"
 
-# "Shell Syntax Check"
-# This is a wrapper for shellcheck as long as
-# shellcheck doesn't have it's own .pre-commit-hooks.yaml
-# https://github.com/koalaman/shellcheck/pull/1032
-- repo: https://gitlab.com/univention/pre-commit-hooks/pre-commit-shell
-  rev: v1.0.6
-  hooks:
-  - id: shell-lint
+  - repo: "https://github.com/astral-sh/ruff-pre-commit"
+    rev: "v0.1.8"
+    hooks:
+      - id: "ruff"
+        name: "ruff"
+        args:
+          - "check"
+          - "--fix"
+          - "--show-source"
+          - "--exit-non-zero-on-fix"
+          - "--extend-select"
+          - "COM"
 
-# "Dockerfile linter"
-- repo: https://gitlab.com/univention/pre-commit-hooks/dockerfilelint-precommit-hooks
-  rev: v0.1.0
-  hooks:
-  - id: dockerfilelint
+  - repo: "https://github.com/pre-commit/mirrors-autopep8"
+    rev: "v2.0.4"
+    hooks:
+      - id: "autopep8"
+        name: "autopep8"
+        args:
+          - "--recursive"
+          - "--in-place"
 
-# "Copy .env.ldap-server.example so that docker-compose.yaml can be linted"
-- repo: local
-  hooks:
-    - id: copy-env-ldap-server
-      name: copy-env-ldap-server
-      entry: sh -c 'if [ ! -f .env.ldap-server ]; then cp .env.ldap-server.example .env.ldap-server; fi'
-      language: system
-      files: 'docker-compose.yaml'
-      pass_filenames: false
+  - repo: "https://github.com/PyCQA/flake8"
+    rev: "6.1.0"
+    hooks:
+      - id: "flake8"
+        name: "flake8"
 
-# "docker-compose.yaml linter"
-- repo: https://gitlab.com/univention/pre-commit/docker-compose-check
-  rev: 7702a8801a158b8595569dd29e2dd655d8a08310
-  hooks:
-  - id: docker-compose-check
+  - repo: "https://github.com/pylint-dev/pylint"
+    rev: "v3.0.3"
+    hooks:
+      - id: "pylint"
+        name: "pylint"
+        additional_dependencies:
+          - "pytest"
+          - "ldap3"
 
-# "Runs hadolint installed on the local system"
-- repo: https://gitlab.com/univention/pre-commit-hooks/docker-pre-commit
-  rev: v2.0.0
-  hooks:
-  - id: hadolint-system
+  - repo: "https://github.com/hadolint/hadolint"
+    rev: "v2.12.0"
+    hooks:
+      - id: "hadolint"
+        name: "Lint Dockerfiles"
+        args:
+          - "--no-color"
+          - "--strict-labels"
 
-# ".gitlab-ci.yml linter"
-# Disable temporarily because gitlab-api can not be accessed.
-# "urllib.error.HTTPError: HTTP Error 401: Unauthorized"
-#- repo: https://gitlab.com/univention/pre-commit-hooks/gitlab-ci-linter
-#  rev: v1.0.1
-#  hooks:
-#  - id: gitlab-ci-linter
-#    args:
-#    - '--server'
-#    - 'https://git.knut.univention.de'
+  - repo: "https://gitlab.com/univention/pre-commit-hooks/docker-compose-check"
+    rev: "7702a8801a158b8595569dd29e2dd655d8a08310"
+    hooks:
+      - id: "docker-compose-check"
+        name: "Validate docker-compose files (python)"
 
-# "Helm chart linter"
-- repo: https://github.com/gruntwork-io/pre-commit
-  rev: v0.1.20
-  hooks:
-  - id: helmlint
+  # Cloned from github.com/IamTheFij/docker-pre-commit
+  - repo: "https://gitlab.com/univention/pre-commit-hooks/docker-pre-commit"
+    rev: "v3.0.1"
+    hooks:
+      - id: "docker-compose-check"
+        name: "Validate docker compose files (bash)"
 
-- repo: https://github.com/norwoodj/helm-docs
-  rev: v1.11.0
-  hooks:
-    - id: helm-docs
-      args:
-        - --chart-search-root=helm
-        - --template-files=README.md.gotmpl
+  - repo: "https://gitlab.com/univention/pre-commit-hooks/pre-commit-shell"
+    rev: "v1.0.6+uv1"
+    hooks:
+      - id: "shell-lint"
+        name: "Shell Syntax Check"
+        args:
+          - "--enable=all"
+
+  - repo: "https://github.com/gruntwork-io/pre-commit"
+    rev: "v0.1.23"
+    hooks:
+      - id: "shellcheck"
+        name: "Shellcheck Bash Linter"
+        args:
+          - "--enable=all"
+      - id: "helmlint"
+        name: "helmlint"
+
+  - repo: "https://github.com/norwoodj/helm-docs"
+    rev: "v1.12.0"
+    hooks:
+      - id: "helm-docs"
+        name: "Helm Docs"
+        args:
+          - "--chart-search-root=helm"
+          - "--template-files=README.md.gotmpl"
+
+  # Uses `GITLAB_SERVER`, `GITLAB_PROJECT_ID` and `GITLAB_PRIVATE_TOKEN`
+  - repo: "https://gitlab.com/univention/pre-commit-hooks/gitlab-ci-linter"
+    rev: "v1.0.6+uv2"
+    hooks:
+      - id: "gitlab-ci-linter"
+        name: ".gitlab-ci.yml linter"
 
 ...
