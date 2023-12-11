@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.7.0...v0.7.1) (2023-12-11)
+
+
+### Bug Fixes
+
+* **ci:** reference common-ci v1.11.0 to push sbom and signature to souvap ([a0f1077](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/a0f10774d5ecebab8d3a81999e9a05f65bca90f5))
+
 ## [0.7.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.6.0...v0.7.0) (2023-11-15)
 
 
