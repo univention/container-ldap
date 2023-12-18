@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.7.1...v0.7.2) (2023-12-18)
+
+
+### Bug Fixes
+
+* **ci:** add Helm chart signing and publishing to souvap via OCI ([a8a452f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/a8a452f064529850d78138973b0a7be12460363a))
+
 ## [0.7.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.7.0...v0.7.1) (2023-12-11)
 
 
