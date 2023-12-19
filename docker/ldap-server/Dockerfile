@@ -12,6 +12,9 @@ ARG PORTAL_UDM_EXTENSIONS_TAG=0.4.3
 ARG OX_CONNECTOR_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/open-xchange/provisioning/ox-connector-dependencies
 ARG OX_CONNECTOR_EXTENSIONS_TAG=0.3.0
 
+ARG GUARDIAN_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/components/authorization-engine/guardian/ums-dependencies
+ARG GUARDIAN_EXTENSIONS_TAG=latest
+
 
 ###############################################################################
 # Builder image for collecting Univention LDAP schema templates, base LDIFs
@@ -49,6 +52,7 @@ RUN apt-get update && \
 
 FROM ${PORTAL_UDM_EXTENSIONS_IMAGE}:${PORTAL_UDM_EXTENSIONS_TAG} AS portal-udm-extensions
 FROM ${OX_CONNECTOR_EXTENSIONS_IMAGE}:${OX_CONNECTOR_EXTENSIONS_TAG} AS ox-connector-extensions
+FROM ${GUARDIAN_EXTENSIONS_IMAGE}:${GUARDIAN_EXTENSIONS_TAG} AS guardian-extensions
 
 ###############################################################################
 # Final image
@@ -149,6 +153,10 @@ COPY --from=ox-connector-extensions \
 COPY --from=ox-connector-extensions \
      /dependencies/oxforucs-extra.schema \
      /var/lib/univention-ldap-local/local-schema/oxforucs-extra.schema
+
+COPY --from=guardian-extensions \
+     /ldap/schema/guardian.schema \
+     /var/lib/univention-ldap-local/local-schema/guardian.schema
 
 # ACLs:
 COPY --from=ucs_builder \
