@@ -1,7 +1,7 @@
 ---
 
 # SPDX-License-Identifier: AGPL-3.0-only
-# SPDX-FileCopyrightText: 2020-2023 Univention GmbH <info@univention.de>
+# SPDX-FileCopyrightText: 2023 Univention GmbH <info@univention.de>
 
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
@@ -51,10 +51,11 @@ repos:
         stages: ["commit-msg"]
 
   - repo: "https://git.knut.univention.de/univention/dist/pre-commit-hooks/addlicense"
-    rev: "v0.1.3"
+    rev: "v1.0.0"
     hooks:
       - id: "addlicense"
         name: "Check or add license headers to files"
+        args: []
 
   - repo: "https://github.com/google/yapf"
     rev: "v0.40.2"
