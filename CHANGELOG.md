@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.7.2...v0.8.0) (2023-12-20)
+
+
+### Features
+
+* **server:** add guardian schema ([8728238](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/8728238d1c4985cbaf3f3e661e3a265f2465ee4d)), closes [univention/customers/dataport/team-souvap#342](https://git.knut.univention.de/univention/customers/dataport/team-souvap/issues/342)
+
 ## [0.7.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.7.1...v0.7.2) (2023-12-18)
 
 
