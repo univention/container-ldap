@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.8.0...v0.8.1) (2023-12-21)
+
+
+### Bug Fixes
+
+* **docker:** update ucs-base from 5.0-5 to 5.0-6 ([f2f15c4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/f2f15c4c9fb3be6c95ad80104faa51d6a842ecfa))
+
 ## [0.8.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.7.2...v0.8.0) (2023-12-20)
 
 
