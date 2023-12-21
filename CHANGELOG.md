@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.8.1...v0.8.2) (2023-12-21)
+
+
+### Bug Fixes
+
+* **licensing/ci:** add spdx license headers, add license header checking with common-ci v1.13.x ([dbb3a94](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/dbb3a94b444f3f7806f529a2669aac0f057bdcab))
+
 ## [0.8.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.8.0...v0.8.1) (2023-12-21)
 
 
