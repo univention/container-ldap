@@ -2,9 +2,9 @@
 [style]
 based_on_style = facebook
 blank_line_before_module_docstring = true
+blank_line_before_nested_class_or_def = true
+split_before_arithmetic_operator = true
 
 # yapf with 79 sometimes uses 80
 # default=80
-column_limit = 79
-
-# [EOF]
+column_limit = 99

@@ -43,8 +43,6 @@ repos:
         name: "check for broken symlinks"
       - id: "detect-private-key"
         name: "detect private key"
-        # TOD: remove private key
-        exclude: "ssl/secret/private.key"
       - id: "end-of-file-fixer"
         name: "fix end of files"
         exclude: "^helm/.+/README.md$"
@@ -66,7 +64,13 @@ repos:
       - id: "addlicense"
         name: "Check or add license headers to files"
 
-  # TODO: add yamllint
+  - repo: "https://github.com/adrienverge/yamllint"
+    rev: "v1.33.0"
+    hooks:
+      - id: "yamllint"
+        name: "yamllint"
+        args:
+          - "-c=.yamllint"
 
   - repo: "https://github.com/google/yapf"
     rev: "v0.40.2"
@@ -74,9 +78,24 @@ repos:
       - id: "yapf"
         name: "yapf"
 
-  # TODO: add ruff
+  - repo: "https://github.com/astral-sh/ruff-pre-commit"
+    rev: "v0.1.9"
+    hooks:
+      - id: "ruff"
+        name: "ruff"
+        args:
+          - "--fix"
+          - "--show-source"
+          - "--exit-non-zero-on-fix"
+          - "--extend-select=COM"
 
-  # TODO: add autopep8
+  - repo: "https://github.com/pre-commit/mirrors-autopep8"
+    rev: "v2.0.4"
+    hooks:
+      - id: "autopep8"
+        name: "autopep8"
+        args:
+          - "--in-place"
 
   - repo: "https://github.com/PyCQA/flake8"
     rev: "6.1.0"
@@ -94,12 +113,15 @@ repos:
           - "pytest"
           - "sphinx"
 
-  # TODO: Update hadolint >= v2.12.0 from https://github.com/hadolint/hadolint
-  - repo: "https://gitlab.com/univention/pre-commit-hooks/docker-pre-commit"
-    rev: "v2.0.1"
+  - repo: "https://github.com/hadolint/hadolint"
+    rev: "v2.12.0"
     hooks:
-    - id: "hadolint-system"
-      name: Lint Dockerfiles
+      - id: "hadolint"
+        name: "Lint Dockerfiles"
+        types: ["dockerfile"]
+        args:
+          - "--no-color"
+          - "--strict-labels"
 
   - repo: "https://gitlab.com/univention/pre-commit-hooks/docker-compose-check"
     rev: "7702a8801a158b8595569dd29e2dd655d8a08310"
@@ -119,14 +141,16 @@ repos:
     hooks:
       - id: "shell-lint"
         name: "Shell Syntax Check"
-        # TODO: enable all
+        args:
+          - "--enable=all"
 
   - repo: "https://github.com/gruntwork-io/pre-commit"
     rev: "v0.1.23"
     hooks:
       - id: "shellcheck"
         name: "Shellcheck Bash Linter"
-        # TODO: enable all
+        args:
+          - "--enable=all"
       - id: "helmlint"
         name: "helmlint"
 

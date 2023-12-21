@@ -27,10 +27,6 @@ variables:
   GITLAB_PROJECT_ID: "${CI_PROJECT_ID}"
   GITLAB_SERVER: "https://git.knut.univention.de"
 
-lint-pre-commit:
-  before_script:
-    - cp .env.ldap-server.example .env.ldap-server
-
 .build-matrix: &build-matrix
   - IMAGE_NAME:
       - "ldap-server"
