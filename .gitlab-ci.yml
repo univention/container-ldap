@@ -1,11 +1,10 @@
 ---
-
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2023 Univention GmbH <info@univention.de>
 
 include:
   - project: "univention/customers/dataport/upx/common-ci"
-    ref: "v1.13.0"
+    ref: "v1.16.1"
     file:
       - "jobs/sphinx-docs.yaml"
       - "defaults/stages.yaml"
@@ -15,6 +14,7 @@ include:
       - "jobs/semantic-release-env.yaml"
       - "jobs/container-build-souvap.yaml"
       - "jobs/package-and-publish-helm-charts-souvap.yaml"
+      - "jobs/check-debian-updates.yaml"
 
   - project: "univention/dist/docker-services"
     ref: "master"
@@ -62,6 +62,10 @@ container-security-scan:
 test-ldap-unit:
   stage: test
   extends: .dind
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: "never"
+    - when: "on_success"
   before_script:
     # The setup below would be easier with Docker Compose,
     # except injecting the image tag into the Compose file
@@ -112,4 +116,9 @@ container-sign-souvap:
   parallel:
     matrix: *publish-matrix
 
+check-debian-updates:
+  parallel:
+    matrix: *publish-matrix
+  variables:
+    TARGET_IMAGE: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:latest"
 ...
