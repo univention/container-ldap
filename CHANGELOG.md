@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.8.2...v0.9.0) (2024-01-16)
+
+
+### Features
+
+* **ci:** add debian update check jobs for scheduled pipeline ([232ec97](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/232ec97bb62143aa61a7d6d9b1dda35502f14587))
+
+
+### Bug Fixes
+
+* **deps:** add renovate.json ([78b12eb](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/78b12eb3004c8946a785eaff6fd81a8434d56e4c))
+
 ## [0.8.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.8.1...v0.8.2) (2023-12-21)
 
 
