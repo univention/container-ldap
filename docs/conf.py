@@ -1,8 +1,12 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+# pylint: disable=invalid-name
+
+"""
+Configuration file for the Sphinx documentation builder.
+
+This file only contains a selection of the most common options. For a full
+list see the documentation:
+https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""
 
 # -- Path setup --------------------------------------------------------------
 
@@ -12,19 +16,18 @@
 #
 # import os
 import sys
+
 # sys.path.insert(0, os.path.abspath('.'))
 from sphinx.locale import _
-
 
 # -- Project information -----------------------------------------------------
 
 project = 'Containers for Univention LDAP'
-copyright = '2023, Univention GmbH'
+copyright = '2023, Univention GmbH'  # pylint: disable=redefined-builtin
 author = 'Team SouvAP Dev'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1.0'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -48,18 +51,27 @@ extensions = [
 ]
 
 intersphinx_mapping = {
-    # TODO: SSL Error, needs likely a certificate in the container to be installed
-    # "uv-team-souvap-docs": (
-    #     "https://univention.gitpages.knut.univention.de/internal/team-souvap-docs", None),
-    # "uv-quickstart": ("https://docs.software-univention.de/quickstart/5.0/en/", None),
+    # TODO: SSL Error, needs likely a certificate
+    #       in the container to be installed
+    # "uv-team-souvap-docs":
+    #     (
+    #         "https://univention.gitpages.knut.univention.de/internal/team-souvap-docs",
+    #         None,
+    #     ),
+    # "uv-quickstart":
+    #     (
+    #         "https://docs.software-univention.de/quickstart/5.0/en/",
+    #         None,
+    #     ),
     # "uv-manual": ("https://docs.software-univention.de/manual/5.0/en/", None),
 }
 
 extlinks = {
-    "repo-file": (
-        "https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/blob/main/%s",
-        "%s",
-    ),
+    "repo-file":
+        (
+            "https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/blob/main/%s",  # noqa: E501; pylint: disable=line-too-long
+            "%s",
+        ),
 }
 
 copybutton_prompt_text = r"\$ |> |.+# "
@@ -75,7 +87,6 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'decisions', 'Thumbs.db', '.DS_Store']
 
-
 # -- Options for HTML output -------------------------------------------------
 
 html_title = f'{project} Documentation'
@@ -83,9 +94,9 @@ html_title = f'{project} Documentation'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# See https://git.knut.univention.de/univention/documentation/univention_sphinx_book_theme
+# See
+# https://git.knut.univention.de/univention/documentation/univention_sphinx_book_theme
 html_theme = 'univention_sphinx_book_theme'
-
 
 # The following parts are inspired from the dev-onboarding document.
 # See https://git.knut.univention.de/univention/internal/dev-onboarding
@@ -122,15 +133,14 @@ if "spelling" in sys.argv:
     spelling_show_suggestions = True
     spelling_word_list_filename = ["spelling_wordlist"]
 
-tls_cacerts = {
-}
+tls_cacerts = {}
 
 linkcheck_allowed_redirects = {
-    r"https://git\.knut\.univention\.de/.*": r"https://git\.knut\.univention\.de/users/sign_in",
+    r"https://git\.knut\.univention\.de/.*":
+        r"https://git\.knut\.univention\.de/users/sign_in",
 }
 
-linkcheck_ignore = [
-]
+linkcheck_ignore = []
 
 root_doc = "index"
 pdf_doc_base = "common-ci"
@@ -141,19 +151,26 @@ html_context = {
 }
 
 html_theme_options = {
-    "path_to_docs": "docs/",
-    "repository_branch": "main",
-    "repository_provider": "gitlab",
-    "repository_url": "https://git.knut.univention.de/univention/customers/dataport/upx/common-ci",
-    "use_edit_page_button": True,
-    "use_repository_button": True,
+    "path_to_docs":
+        "docs/",
+    "repository_branch":
+        "main",
+    "repository_provider":
+        "gitlab",
+    "repository_url":
+        "https://git.knut.univention.de/univention/customers/dataport/upx/common-ci",  # noqa: E501
+    "use_edit_page_button":
+        True,
+    "use_repository_button":
+        True,
 }
 
 latex_engine = 'lualatex'
 latex_show_pagerefs = True
 latex_show_urls = "footnote"
 latex_documents = [
-    (root_doc, f'{pdf_doc_base}.tex', project, author, "manual", False)]
+    (root_doc, f'{pdf_doc_base}.tex', project, author, "manual", False)
+]
 latex_elements = {
     "papersize": "a4paper",
 }
