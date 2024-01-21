@@ -28,7 +28,6 @@ variables:
   GITLAB_SERVER: "https://git.knut.univention.de"
 
 lint-pre-commit:
-  allow_failure: true
   before_script:
     - cp .env.ldap-server.example .env.ldap-server
 
