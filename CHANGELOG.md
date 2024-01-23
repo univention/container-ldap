@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.0...v0.9.1) (2024-01-23)
+
+
+### Bug Fixes
+
+* **helm:** Use the internal knut registry as default image source ([b328966](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/b32896634b007d11082231582f6c24594609ae42))
+
 ## [0.9.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.8.2...v0.9.0) (2024-01-16)
 
 
