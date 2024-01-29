@@ -4,7 +4,7 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
-ARG UCS_BASE_IMAGE_TAG=0.10.0
+ARG UCS_BASE_IMAGE_TAG=0.11.0
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-506
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
