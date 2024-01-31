@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.1...v0.9.2) (2024-01-31)
+
+
+### Bug Fixes
+
+* **deps:** update all dependencies ([57b8d3f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/57b8d3f83e0af84b24420170937f4d016aae0e5b))
+
 ## [0.9.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.0...v0.9.1) (2024-01-23)
 
 
