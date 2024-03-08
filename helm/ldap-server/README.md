@@ -2,7 +2,7 @@
 
 A Helm Chart that deploys a standalone OpenLDAP server
 
-- **Version**: 0.0.1
+- **Version**: 0.10.0
 - **Type**: application
 - **AppVersion**:
 -
@@ -301,6 +301,15 @@ null
 			<td>Credentials to fetch images from private registry. Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/  imagePullSecrets:   - "docker-registry"</td>
 		</tr>
 		<tr>
+			<td>initResources</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>ldapServer.config.domainName</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -404,6 +413,15 @@ true
 			<td>string</td>
 			<td><pre lang="json">
 "0.9.0@sha256:2dda2136973398fdf6ecb7aa38b2da015557d890d91ed44e8162aa9bc981394a"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapServer.legacy.shareSamlSize</td>
+			<td>string</td>
+			<td><pre lang="json">
+"100Mi"
 </pre>
 </td>
 			<td></td>

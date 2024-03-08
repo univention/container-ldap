@@ -23,7 +23,7 @@ spec:
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
   {{/*
-    ToDo-0001
+    TODO-0001
     As per decision two volumes, shared-data and shared-run will be mounted by both the ldap-server and the ldap-notifier
     https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/blob/main/docs/decisions/0002-use-multiple-pods.md?ref_type=heads
 
@@ -59,7 +59,7 @@ spec:
         {{- end }}
         resources:
           requests:
-            storage: "100Mi"
+            storage: {{ .Values.ldapServer.legacy.shareSamlSize | quote }}
   {{- end }}
   selector:
     matchLabels:
@@ -123,13 +123,7 @@ spec:
               mountPath: /target/etc/ldap
             - name: etc-univention-volume
               mountPath: /target/etc/univention
-          resources:
-            requests:
-              cpu: 10m
-              memory: 10Mi
-            limits:
-              cpu: "1"
-              memory: 32Mi
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
       {{- if and .Values.ldapServer.generateDHparam .Values.ldapServer.tls.enabled }}
         - name: "init-dh"
           {{- if .Values.containerSecurityContext.enabled }}
@@ -148,13 +142,7 @@ spec:
             {{- if .Values.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
-          resources:
-            requests:
-              cpu: 10m
-              memory: 10Mi
-            limits:
-              cpu: "1"
-              memory: 32Mi
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
       {{- end }}
       containers:
         - name: "openldap"
@@ -200,7 +188,7 @@ spec:
             - name: etc-univention-volume
               mountPath: /etc/univention
               {{/*
-                ToDo-0002
+                TODO-0002
                 When legacy handling is disabled, use an emptyDir
                 - name: var-run-volume
                   mountPath: /var/run/slapd
@@ -222,7 +210,7 @@ spec:
             {{- end }}
             {{- if .Values.persistence.enabled }}
             {{/*
-              ToDo-0001 (also see above)
+              TODO-0001 (also see above)
               When legacy share volume between ldap-server and ldap-notifier has been resolved, use a pvc exclusive to ldap-server
               - name: {{ printf "data-%s" (include "common.names.fullname" .) }}
             */}}
@@ -263,7 +251,7 @@ spec:
             name: "{{ .Values.global.configMapUcrForced }}"
         {{- end }}
           {{/*
-              ToDo-0002 (also see above)
+              TODO-0002 (also see above)
               When legacy handling is disabled, use an emptyDir
               - name: "var-run-volume"
                 emptyDir: {}

@@ -18,5 +18,5 @@ name: "ldap-server"
 sources:
   - "https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/tree/main/helm/ldap-server?ref_type=heads"
 type: "application"
-version: "0.0.1"
+version: "0.10.0"
 ...
