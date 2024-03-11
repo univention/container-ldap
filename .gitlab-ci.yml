@@ -72,6 +72,7 @@ test-ldap-unit:
     - docker network create testnet
     - docker volume create ldap-shared-data
     - docker volume create ldap-shared-run
+    - echo "Pulling images ..."
     - docker image pull "${CI_REGISTRY_IMAGE}/ldap-server:${RELEASE_VERSION}"
     - docker image pull "${CI_REGISTRY_IMAGE}/testrunner:${RELEASE_VERSION}"
     - >-
