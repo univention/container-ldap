@@ -26,6 +26,11 @@ services:
     build:
       context: ./docker/ldap-server
     env_file: .env.ldap-server
+    # FIXME: slapd won't work on linux kernel 6.6
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 1024
     ports:
     - 389:389
     - 636:636
