@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.2...v0.9.3) (2024-03-12)
+
+
+### Bug Fixes
+
+* add get_int to ucr-light-filter Registry implementation ([2de4ea3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/2de4ea32cb20d468ae16a98e2ec2791df9c1b967))
+* restore upstream ucr compatibility ([1306b86](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/1306b867ee453fef59dac8249370e711e4cb9ba5))
+
 ## [0.9.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.1...v0.9.2) (2024-01-31)
 
 
