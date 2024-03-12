@@ -55,6 +55,13 @@ class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
         except FileNotFoundError:
             sys.stderr.write("Config file does not exist: " + filename + "\n")
 
+    def get_int(self, key, default=None, value=None):
+        """Get item from value-param, data-dict or default and
+        convert it to an integer"""
+        if value is None:
+            value = self.data.get(key)
+        return int(value) if value is not None else default
+
     def is_true(self, key, default=None, value=None):
         """Get item from value-param, data-dict or default and
         compare it to strings which stand for True"""
