@@ -5,7 +5,7 @@
 
 include:
   - project: "univention/customers/dataport/upx/common-ci"
-    ref: "pmacha/debug-helm-path-find"
+    ref: "v1.24.4"
     file:
       - "jobs/sphinx-docs.yaml"
       - "defaults/stages.yaml"

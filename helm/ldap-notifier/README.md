@@ -116,7 +116,7 @@ false
 			<td>image.pullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
-"Always"
+"IfNotPresent"
 </pre>
 </td>
 			<td></td>
@@ -134,7 +134,7 @@ false
 			<td>image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
-"registry.souvap-univention.de"
+"gitregistry.knut.univention.de"
 </pre>
 </td>
 			<td></td>
@@ -143,7 +143,7 @@ false
 			<td>image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
-"souvap/tooling/images/univention-ldap/ldap-notifier"
+"univention/customers/dataport/upx/container-ldap/ldap-notifier"
 </pre>
 </td>
 			<td></td>
