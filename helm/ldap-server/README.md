@@ -412,7 +412,7 @@ true
 			<td>ldapServer.image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
-"0.9.0@sha256:2dda2136973398fdf6ecb7aa38b2da015557d890d91ed44e8162aa9bc981394a"
+"latest"
 </pre>
 </td>
 			<td></td>
@@ -981,6 +981,51 @@ true
 </pre>
 </td>
 			<td>Set to Recreate if you use persistent volume that cannot be mounted by more than one pods to make sure the pods are destroyed first.</td>
+		</tr>
+		<tr>
+			<td>waitForDependency.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>waitForDependency.image.imagePullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"IfNotPresent"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>waitForDependency.image.registry</td>
+			<td>string</td>
+			<td><pre lang="json">
+"gitregistry.knut.univention.de"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>waitForDependency.image.repository</td>
+			<td>string</td>
+			<td><pre lang="json">
+"univention/components/univention-portal/wait-for-dependency"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>waitForDependency.image.tag</td>
+			<td>string</td>
+			<td><pre lang="json">
+"0.20.1@sha256:8b3d7195223de10ce6ac2649a363eed073dad9bb277c0d8d2d1c0f1613e0d5a7"
+</pre>
+</td>
+			<td></td>
 		</tr>
 	</tbody>
 </table>

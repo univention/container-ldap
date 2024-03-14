@@ -36,3 +36,48 @@ data:
   TLS_MODE: "off"
   {{- end }}
 ...
+{{- if .Values.waitForDependency.enabled }}
+---
+kind: "ConfigMap"
+apiVersion: "v1"
+metadata:
+  name: {{ printf "%s-scripts" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.additionalLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.additionalAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+data:
+  wait-for-saml-metadata.sh: |
+    #!/bin/bash
+
+    set -euxo pipefail
+
+    # we have no UCR in this container, so just grep the SAML URL from the config file
+    UCR_FILES="/etc/univention/base-defaults.conf /etc/univention/base.conf /etc/univention/base-forced.conf"
+    SAML_METADATA_URL=$(grep --no-filename '^umc/saml/idp-server:' $UCR_FILES 2>/dev/null | cut --delimiter=':' --fields='2-' | tail --lines=1 | xargs || true)
+    SAML_METADATA_URL_INTERNAL=$(grep --no-filename '^umc/saml/idp-server-internal:' $UCR_FILES 2>/dev/null | cut --delimiter=':' --fields='2-' | tail --lines=1 | xargs || true)
+
+    DOWNLOAD_URL=${SAML_METADATA_URL_INTERNAL:-${SAML_METADATA_URL}}
+    echo "Checking endpoint ${DOWNLOAD_URL}."
+
+    SECONDS=0
+    TIMEOUT=120
+
+    while ! curl -o /dev/null -sf "${DOWNLOAD_URL}"; do
+      echo "Checking if the SAML Metadata can be downloaded from keycloak ..."
+      sleep 2
+
+      if (($SECONDS > $TIMEOUT)); then
+        echo "Giving up after $TIMEOUT seconds"
+        exit 1
+      fi
+    done
+
+    echo "Success, the SAML Metadata is available."
+...
+{{- end }}

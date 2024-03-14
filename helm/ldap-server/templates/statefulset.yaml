@@ -50,16 +50,6 @@ spec:
         resources:
           requests:
             storage: {{ .Values.ldapServer.legacy.sharedRunSize | quote }}
-    - metadata:
-        name: {{ printf "usr-share-saml-%s" (include "common.names.fullname" .) }}
-      spec:
-        accessModes: [{{ range .Values.persistence.accessModes }}{{ . | quote }}{{ end }}]
-        {{- if .Values.persistence.storageClass }}
-        storageClassName: {{ .Values.persistence.storageClass | quote }}
-        {{- end }}
-        resources:
-          requests:
-            storage: {{ .Values.ldapServer.legacy.shareSamlSize | quote }}
   {{- end }}
   selector:
     matchLabels:
@@ -143,6 +133,36 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
           resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
+      {{- end }}
+      {{- if .Values.waitForDependency.enabled }}
+        - name: "wait-for-saml-metadata"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.waitForDependency.image.registry .Values.global.imageRegistry }}/{{ .Values.waitForDependency.image.repository }}:{{ .Values.waitForDependency.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.waitForDependency.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          command:
+            - "/bin/bash"
+            - "/scripts/wait-for-saml-metadata.sh"
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.fullname" . }}
+          volumeMounts:
+            - name: scripts-volume
+              mountPath: /scripts
+            - name: "config-map-ucr-defaults"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base.conf"
+            {{- if (and .Values.global .Values.global.configMapUcr) }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base.conf"
+              subPath: "base.conf"
+            {{- end }}
+            {{- if (and .Values.global .Values.global.configMapUcrForced) }}
+            - name: "config-map-ucr-forced"
+              mountPath: "/etc/univention/base-forced.conf"
+              subPath: "base.conf"
+            {{- end }}
       {{- end }}
       containers:
         - name: "openldap"
@@ -237,6 +257,11 @@ spec:
           emptyDir: {}
         - name: "etc-univention-volume"
           emptyDir: {}
+        {{- if .Values.waitForDependency.enabled }}
+        - name: "scripts-volume"
+          configMap:
+            name: {{ printf "%s-scripts" (include "common.names.fullname" .) }}
+        {{- end }}
         - name: "config-map-ucr-defaults"
           configMap:
             name: {{ required "Please provide the name of the UCR ConfigMap in .Values.global.configMapUcrDefaults!" .Values.global.configMapUcrDefaults | quote }}

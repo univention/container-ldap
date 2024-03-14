@@ -326,6 +326,15 @@ dhInitContainer:
     repository: "alpine/openssl"
     tag: "3.1.4@sha256:974b4593b02447256622dce7b930b98764441dab39c5ca729381aa35332d6778"
 
+# Configures an init container that waits for keycloak to be ready
+waitForDependency:
+  enabled: true
+  image:
+    imagePullPolicy: "IfNotPresent"
+    registry: "gitregistry.knut.univention.de"
+    repository: "univention/components/univention-portal/wait-for-dependency"
+    tag: "0.20.1@sha256:8b3d7195223de10ce6ac2649a363eed073dad9bb277c0d8d2d1c0f1613e0d5a7"
+
 # Definitions regarding to OpenLDAP deployment/configuration
 ldapServer:
   image:
@@ -334,7 +343,7 @@ ldapServer:
     # -- Container registry address. This setting has higher precedence than global.registry.
     registry: "gitregistry.knut.univention.de"
     repository: "univention/customers/dataport/upx/container-ldap/ldap-server"
-    tag: "0.9.0@sha256:2dda2136973398fdf6ecb7aa38b2da015557d890d91ed44e8162aa9bc981394a"
+    tag: "latest"
   # Configuration regarding OpenLDAP
   config:
     # -- Internal domain name of the UCS machine
@@ -372,7 +381,7 @@ ldapServer:
   # Enable to generate DH parameters on startup
   generateDHparam: true
 
-  # Legacy configuration
+  # Legacy configuration. These values are used to define shared volume sizes shared. They are shared between ldap-server and ldap-notifier. With the removal of ldap-notifier these values will disappear
   legacy:
     sharedRunSize: "1Gi"
     shareSamlSize: "100Mi"
