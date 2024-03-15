@@ -3,7 +3,6 @@
 
 ---
 annotations:
-  category: "Security"
   licenses: "AGPL-3.0-only"
 apiVersion: "v2"
 dependencies:
