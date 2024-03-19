@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.4...v0.9.5) (2024-03-19)
+
+
+### Bug Fixes
+
+* Update TLS related UCR variables to "directory/manager/starttls" ([72d4b86](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/72d4b8664f341a36ac2506aff085b902871268f6))
+
 ## [0.9.4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.3...v0.9.4) (2024-03-19)
 
 
