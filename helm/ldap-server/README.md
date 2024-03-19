@@ -4,7 +4,7 @@ A Helm chart for the ldap-server
 
 - **Version**: 0.1.0
 - **Type**: application
-- **AppVersion**: 2.4.47+dfsg-3+deb10u7A~5.0.1.202205211909
+- **AppVersion**:
 - **Homepage:** <https://www.univention.de/>
 
 ## TL;DR

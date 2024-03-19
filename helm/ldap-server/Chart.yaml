@@ -13,9 +13,6 @@ home: "https://www.univention.de/"
 # Apply Semantic Versioning (https://semver.org/)
 version: "0.1.0"
 
-# Application Version, compare "docker/ldap/Dockerfile_deb_builder"
-appVersion: "2.4.47+dfsg-3+deb10u7A~5.0.1.202205211909"
-
 dependencies:
   - name: "common"
     repository: "oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/common-helm/helm"
