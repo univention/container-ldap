@@ -195,7 +195,7 @@ setup_tls() {
   mkdir --parents "${target_dir}" /etc/univention/ssl/ucsCA/
   ln --symbolic --no-dereference --force "${target_dir}" "${link_dir}"
 
-  TLS_MODE=$(echo -n -e '@%@uldap/start-tls@%@' | ucr-light-filter)
+  TLS_MODE=$(echo -n -e '@%@directory/manager/starttls@%@' | ucr-light-filter)
   case "${TLS_MODE:-}" in
     "2" | "1")
       echo "Linking TLS certificates"

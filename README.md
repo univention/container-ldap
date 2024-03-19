@@ -120,7 +120,7 @@ In order for clients to connect properly
 - the LDAP server must be reachable by the hostname listed in its certificate.
   (Maybe Subject Alternative Names can be useful here.)
 
-Setting the UCR variable `uldap/start-tols` to `0` disables TLS support.
+Setting the UCR variable `directory/manager/starttls` to `0` disables TLS support.
 In this case, no certificate files need to be provided.
 
 ## Logging

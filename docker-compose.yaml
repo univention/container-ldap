@@ -29,7 +29,7 @@ services:
     ports:
     - 389:389
     - 636:636
-    ## Enable the secrets below if TLS is desired and `uldap/start-tls` is set.
+    ## Enable the secrets below if TLS is desired and `directory/manager/starttls` is set.
     # secrets:
     # - ca_cert
     # - cert_pem
