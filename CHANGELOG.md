@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.3...v0.9.4) (2024-03-19)
+
+
+### Bug Fixes
+
+* Remove "appVersion" from chart "ldap-server" ([473c474](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/473c474a30f835b5697fd6c14947128e402a1f98))
+
 ## [0.9.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.2...v0.9.3) (2024-03-12)
 
 
