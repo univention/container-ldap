@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.10.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.5...v0.10.0) (2024-03-20)
+
+
+### Features
+
+* **Helm/container:** BSI-compliant bitnami based Helm chart ([56f4c24](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/56f4c2420ac3915672b94d6ca05ffaaec7a5c9c3))
+
+
+### Bug Fixes
+
+* add mising ucr entries ([bcb20e8](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/bcb20e804b55a8835aa633025463e33a53506c40))
+* adding devops-based helm chart, making required adjustment to entrypoint script ([9c6ae9d](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9c6ae9d4a3b6126c75a56861c1fad651a13a5864))
+* adjust ldap-notifier registry ref ([d35befc](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/d35befcc94bcb39ec42fcd4e756f2d7af5da4595))
+* make resources for init containers adjustable via values ([78db204](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/78db2044754b0045b1f689f9c49d43e3a1628d77))
+* re-add waitForDependency ([ceca47e](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ceca47e7363cff4921b8063ad73e8f2d005c609b))
+* remove duplicates from base-defaults.conf ([0331ad4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/0331ad4d04b4440dd5391bc13e74fffee0a8f081))
+* remove unwanted chart category ([a10b7d0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/a10b7d05e0629d45d7372af150a6e303da6f5d4a))
+* update common-ci ref ([8ace7bd](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/8ace7bd95b93ee711fb7ef8cd6035f8ba86cbd51))
+
 ## [0.9.5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.4...v0.9.5) (2024-03-19)
 
 
