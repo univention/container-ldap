@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.10.0...v0.10.1) (2024-03-21)
+
+
+### Bug Fixes
+
+* create communication files with permissions of the ldap server ([9c9d4b9](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9c9d4b9aaba58577d523a2256d1cd6b19dec0792))
+
 ## [0.10.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.9.5...v0.10.0) (2024-03-20)
 
 
