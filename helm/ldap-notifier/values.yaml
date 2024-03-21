@@ -29,7 +29,8 @@ tolerations: []
 ldapNotifier:
   # -- TODO: Clarify usage of this parameter
   environment: "production"
-
+  ldapServerUid: "101"
+  ldapServerGid: "102"
 
 ## Docker image
 image:

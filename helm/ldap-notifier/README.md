@@ -162,7 +162,9 @@ false
 			<td>object</td>
 			<td><pre lang="json">
 {
-  "environment": "production"
+  "environment": "production",
+  "ldapServerGid": "102",
+  "ldapServerUid": "101"
 }
 </pre>
 </td>

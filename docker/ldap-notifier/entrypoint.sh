@@ -28,7 +28,12 @@ touch /var/lib/univention-ldap/notify/transaction
 # Both notifier and slapd need to be able to write this lock-file.
 # The slapd writes to it on db-change, not on startup.
 # The notifier writes to it whenever data is found in the "listener"-file.
+export LDAP_SERVER_UID=${LDAP_SERVER_UID:-101}
+export LDAP_SERVER_GID=${LDAP_SERVER_GID:-102}
 touch /var/lib/univention-ldap/listener/listener.lock
+chown "${LDAP_SERVER_UID}:${LDAP_SERVER_GID}" /var/lib/univention-ldap/listener/listener.lock
+touch /var/lib/univention-ldap/listener/listener.priv
+chown "${LDAP_SERVER_UID}:${LDAP_SERVER_GID}" /var/lib/univention-ldap/listener/listener.priv
 
 # Wait for the openldap container to create ldapi and translog file
 tsecho "Check for the listener and ldapi files:"

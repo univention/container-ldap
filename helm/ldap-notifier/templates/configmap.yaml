@@ -8,5 +8,7 @@
 {{- with .top }}
 data:
   ENVIRONMENT: "{{ .Values.ldapNotifier.environment }}"
+  LDAP_SERVER_UID: "{{ .Values.ldapNotifier.ldapServerUid }}"
+  LDAP_SERVER_GID: "{{ .Values.ldapNotifier.ldapServerGid }}"
 {{- end }}
 {{- end }}
