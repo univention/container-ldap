@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.10.1...v0.10.2) (2024-03-25)
+
+
+### Bug Fixes
+
+* **ci:** update common-ci from v1.24.4 to v1.24.5 ([8406404](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/840640408159f8d7d14af37d6d3b54d3d56c021b))
+
 ## [0.10.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.10.0...v0.10.1) (2024-03-21)
 
 
