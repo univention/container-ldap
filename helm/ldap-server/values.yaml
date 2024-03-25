@@ -324,7 +324,7 @@ dhInitContainer:
     imagePullPolicy: "IfNotPresent"
     registry: "docker.io"
     repository: "alpine/openssl"
-    tag: "3.1.4@sha256:974b4593b02447256622dce7b930b98764441dab39c5ca729381aa35332d6778"
+    tag: "3.1.4@sha256:38647c2372889f084c7f943f8d983409bd2cc3ed35e952d28ccb13751b479c0b"
 
 # Configures an init container that waits for keycloak to be ready
 waitForDependency:
