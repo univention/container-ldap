@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.10.2...v0.10.3) (2024-04-02)
+
+
+### Bug Fixes
+
+* pinning container name to ldap-notifier ([35cb66c](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/35cb66c8e5e73b86cd574340fa55e2584aa7534d))
+
 ## [0.10.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.10.1...v0.10.2) (2024-03-25)
 
 
