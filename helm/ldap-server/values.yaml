@@ -4,6 +4,8 @@
 ---
 # The global properties are used to configure multiple charts at once.
 global:
+  # -- Indicates wether this chart is part of a Nubus deployment.
+  nubusDeployment: false
   # -- Container registry address.
   imageRegistry: ""
 
@@ -26,11 +28,9 @@ global:
   # "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the
   #            kubelet attempts to start the container; otherwise, startup fails.
   imagePullPolicy: "IfNotPresent"
-
-  configMapUcrDefaults: "stack-data-ums-ucr"
-  configMapUcr: "stack-data-swp-ucr"
-  configMapUcrForced: null
-
+  ldap:
+    baseDn: ""
+    domainName: ""
 # -- Additional custom annotations to add to all deployed objects.
 additionalAnnotations: {}
 

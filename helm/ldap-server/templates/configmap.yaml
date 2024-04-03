@@ -17,12 +17,12 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
   {{- end }}
 data:
-  DOMAIN_NAME: {{ .Values.ldapServer.config.domainName | required ".Values.ldapServer.config.domainName is required" | quote }}
-  LDAP_BASE_DN: {{ .Values.ldapServer.config.ldapBaseDn | required ".Values.ldapServer.config.ldapBaseDn is required" | quote }}
+  DOMAIN_NAME: {{ ( coalesce .Values.ldapServer.config.domainName .Values.global.ldap.domainName ) | required "Either .Values.ldapServer.config.domainName or .Values.global.ldap.domainName must be set." | quote }}
+  LDAP_BASE_DN: {{ ( coalesce .Values.ldapServer.config.ldapBaseDn .Values.global.ldap.baseDn ) | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." | quote }}
   LOG_LEVEL: {{ .Values.ldapServer.config.logLevel | required ".Values.ldapServer.config.logLevel is required" | quote }}
-  SAML_METADATA_URL: {{ .Values.ldapServer.config.samlMetadataUrl | required ".Values.ldapServer.config.samlMetadataUrl is required" | quote }}
-  SAML_METADATA_URL_INTERNAL: {{ .Values.ldapServer.config.samlMetadataUrlInternal | required ".Values.ldapServer.config.samlMetadataUrlInternal is required" | quote }}
-  SERVICE_PROVIDERS: {{ .Values.ldapServer.config.samlServiceProviders | required ".Values.ldapServer.config.samlServiceProviders is required" | quote }}
+  SAML_METADATA_URL: {{ include "ldap-server.samlMetadataUrl" . | quote }}
+  SAML_METADATA_URL_INTERNAL: {{ include "ldap-server.samlMetadataUrlInternal" . | quote }}
+  SERVICE_PROVIDERS: {{ include "ldap-server.samlServiceProviders" . | quote }}
   {{- if .Values.ldapServer.tls.enabled }}
   TLS_MODE: "secure"
   CA_CERT_FILE: "{{ .Values.ldapServer.tls.caCertificateFile }}"
@@ -68,7 +68,7 @@ data:
     SECONDS=0
     TIMEOUT=120
 
-    while ! curl -o /dev/null -sf "${DOWNLOAD_URL}"; do
+    while ! curl -k -o /dev/null -sf "${DOWNLOAD_URL}"; do
       echo "Checking if the SAML Metadata can be downloaded from keycloak ..."
       sleep 2
 

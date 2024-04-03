@@ -238,33 +238,6 @@ true
 			<td>Provide a name to substitute for the full names of resources.</td>
 		</tr>
 		<tr>
-			<td>global.configMapUcr</td>
-			<td>string</td>
-			<td><pre lang="json">
-"stack-data-swp-ucr"
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>global.configMapUcrDefaults</td>
-			<td>string</td>
-			<td><pre lang="json">
-"stack-data-ums-ucr"
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>global.configMapUcrForced</td>
-			<td>string</td>
-			<td><pre lang="json">
-null
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
 			<td>global.imagePullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">

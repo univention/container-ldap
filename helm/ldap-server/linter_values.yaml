@@ -1,6 +1,13 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 # SPDX-License-Identifier: AGPL-3.0-only
 ---
+global:
+  ldap:
+    baseDn: dc=univention-organization,dc=intranet
+  configMapUcrDefaults: "stack-data-ums-ucr"
+  configMapUcr: "stack-data-swp-ucr"
+  configMapUcrForced: null
+
 extraSecrets:
   - name: openldap-tls
     data:
@@ -21,9 +28,14 @@ images:
 ldapServer:
   generateDHparam: false
   config:
+    domainName: univention-organization.intranet
     samlMetadataUrl: "http://localhost:8097/realms/ucs/protocol/saml/descriptor"
     samlMetadataUrlInternal: "http://keycloak/realms/ucs/protocol/saml/descriptor"
     samlServiceProviders: "http://localhost:8000/univention/saml/metadata,http://localhost:8000/auth/realms/ucs"
+  credentialSecret:
+    name: openldap-credentials
+    key: adminPassword
+
   tls:
     enabled: true
     certificateSecret: "openldap-tls"

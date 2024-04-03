@@ -153,12 +153,12 @@ spec:
             - name: "config-map-ucr-defaults"
               mountPath: "/etc/univention/base-defaults.conf"
               subPath: "base.conf"
-            {{- if (and .Values.global .Values.global.configMapUcr) }}
+            {{- if (include "ldap-server.configMapUcr" .) }}
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
             {{- end }}
-            {{- if (and .Values.global .Values.global.configMapUcrForced) }}
+            {{- if (include "ldap-server.configMapUcrForced" .) }}
             - name: "config-map-ucr-forced"
               mountPath: "/etc/univention/base-forced.conf"
               subPath: "base.conf"
@@ -178,8 +178,8 @@ spec:
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.ldapServer.credentialSecret.name | default (printf "%s-credentials" (include "common.names.fullname" . )) | quote }}
-                  key: {{ .Values.ldapServer.credentialSecret.adminPasswordKey | default "adminPassword" | quote }}
+                  name: {{ include ("ldap-server.credentialSecret.name") . | quote }}
+                  key: {{ include ("ldap-server.credentialSecret.key") . | quote }}
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
@@ -218,12 +218,12 @@ spec:
             - name: "config-map-ucr-defaults"
               mountPath: "/etc/univention/base-defaults.conf"
               subPath: "base.conf"
-            {{- if (and .Values.global .Values.global.configMapUcr) }}
+            {{- if (include "ldap-server.configMapUcr" .) }}
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
             {{- end }}
-            {{- if (and .Values.global .Values.global.configMapUcrForced) }}
+            {{- if (include "ldap-server.configMapUcrForced" .) }}
             - name: "config-map-ucr-forced"
               mountPath: "/etc/univention/base-forced.conf"
               subPath: "base.conf"
@@ -264,16 +264,16 @@ spec:
         {{- end }}
         - name: "config-map-ucr-defaults"
           configMap:
-            name: {{ required "Please provide the name of the UCR ConfigMap in .Values.global.configMapUcrDefaults!" .Values.global.configMapUcrDefaults | quote }}
-        {{- if (and .Values.global .Values.global.configMapUcr) }}
+            name: {{ include "ldap-server.configMapUcrDefaults" . | quote }}
+        {{- if (include "ldap-server.configMapUcr" .) }}
         - name: "config-map-ucr"
           configMap:
-            name: "{{ .Values.global.configMapUcr }}"
+            name: {{ include "ldap-server.configMapUcr" . | quote }}
         {{- end }}
-        {{- if (and .Values.global .Values.global.configMapUcrForced) }}
+        {{- if (include "ldap-server.configMapUcrForced" .) }}
         - name: "config-map-ucr-forced"
           configMap:
-            name: "{{ .Values.global.configMapUcrForced }}"
+            name: {{ include "ldap-server.configMapUcrForced" . | quote }}
         {{- end }}
           {{/*
               TODO-0002 (also see above)
