@@ -178,8 +178,7 @@ spec:
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
-                  name: {{ include ("ldap-server.credentialSecret.name") . | quote }}
-                  key: {{ include ("ldap-server.credentialSecret.key") . | quote }}
+                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
