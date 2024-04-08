@@ -113,6 +113,42 @@ false
 			<td></td>
 		</tr>
 		<tr>
+			<td>global.imagePullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"IfNotPresent"
+</pre>
+</td>
+			<td>Define an ImagePullPolicy.  Ref.: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy  "IfNotPresent" => The image is pulled only if it is not already present locally. "Always" => Every time the kubelet launches a container, the kubelet queries the container image registry to             resolve the name to an image digest. If the kubelet has a container image with that exact digest cached             locally, the kubelet uses its cached image; otherwise, the kubelet pulls the image with the resolved             digest, and uses that image to launch the container. "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the            kubelet attempts to start the container; otherwise, startup fails.</td>
+		</tr>
+		<tr>
+			<td>global.imagePullSecrets</td>
+			<td>list</td>
+			<td><pre lang="json">
+[]
+</pre>
+</td>
+			<td>Credentials to fetch images from private registry. Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/  imagePullSecrets:   - "docker-registry"</td>
+		</tr>
+		<tr>
+			<td>global.imageRegistry</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td>Container registry address.</td>
+		</tr>
+		<tr>
+			<td>global.nubusDeployment</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td>Indicates wether this chart is part of a Nubus deployment.</td>
+		</tr>
+		<tr>
 			<td>image.pullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -307,15 +343,12 @@ false
 		</tr>
 		<tr>
 			<td>volumes.claims</td>
-			<td>object</td>
+			<td>string</td>
 			<td><pre lang="json">
-{
-  "shared-data": "shared-data-ldap-server-0",
-  "shared-run": "shared-run-ldap-server-0"
-}
+null
 </pre>
 </td>
-			<td>Mapping of volumes to the volume claim names to use. Those have to match the volumes of the "ldap-server".</td>
+			<td>Mapping of volumes to the volume claim names to use. Those have to match the volumes of the "ldap-server". Example claims:   shared-data: "shared-data-ldap-server-0"   shared-run: "shared-run-ldap-server-0"</td>
 		</tr>
 	</tbody>
 </table>

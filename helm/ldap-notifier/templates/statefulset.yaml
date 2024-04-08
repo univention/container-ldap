@@ -53,11 +53,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-      {{- range $name, $claimName := .Values.volumes.claims }}
-        - name: "{{ $name }}"
-          persistentVolumeClaim:
-            claimName: "{{ $claimName }}"
-      {{- end}}
+        {{- include "ldap-notifier.ldapServer.volumeClaims" . | nindent 8 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

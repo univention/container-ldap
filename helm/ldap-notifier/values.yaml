@@ -3,7 +3,32 @@
 
 ---
 
-## Global values
+# The global properties are used to configure multiple charts at once.
+global:
+  # -- Indicates wether this chart is part of a Nubus deployment.
+  nubusDeployment: false
+  # -- Container registry address.
+  imageRegistry: ""
+
+  # -- Credentials to fetch images from private registry.
+  # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  #
+  # imagePullSecrets:
+  #   - "docker-registry"
+  imagePullSecrets: []
+
+  # -- Define an ImagePullPolicy.
+  #
+  # Ref.: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+  #
+  # "IfNotPresent" => The image is pulled only if it is not already present locally.
+  # "Always" => Every time the kubelet launches a container, the kubelet queries the container image registry to
+  #             resolve the name to an image digest. If the kubelet has a container image with that exact digest cached
+  #             locally, the kubelet uses its cached image; otherwise, the kubelet pulls the image with the resolved
+  #             digest, and uses that image to launch the container.
+  # "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the
+  #            kubelet attempts to start the container; otherwise, startup fails.
+  imagePullPolicy: "IfNotPresent"
 affinity:
   podAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
@@ -46,10 +71,11 @@ image:
 volumes:
   # -- Mapping of volumes to the volume claim names to use. Those have to match
   # the volumes of the "ldap-server".
-  claims:
-    shared-data: "shared-data-ldap-server-0"
-    shared-run: "shared-run-ldap-server-0"
-
+  # Example
+  # claims:
+  #   shared-data: "shared-data-ldap-server-0"
+  #   shared-run: "shared-run-ldap-server-0"
+  claims: null
 
 service:
   enabled: true
