@@ -339,7 +339,7 @@ waitForDependency:
     imagePullPolicy: "IfNotPresent"
     registry: "gitregistry.knut.univention.de"
     repository: "univention/components/univention-portal/wait-for-dependency"
-    tag: "0.20.1@sha256:8b3d7195223de10ce6ac2649a363eed073dad9bb277c0d8d2d1c0f1613e0d5a7"
+    tag: "latest"
 
 # Definitions regarding to OpenLDAP deployment/configuration
 ldapServer:

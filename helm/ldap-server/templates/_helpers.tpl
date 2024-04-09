@@ -24,11 +24,15 @@ ldap
 {{- end -}}
 
 {{- define "nubusTemplates.ldapServer.ldap.baseDn" -}}
-{{- ( coalesce .Values.ldapServer.config.ldapBaseDn .Values.global.ldap.baseDn ) | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." -}}
+{{- coalesce .Values.global.ldap.baseDn | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." -}}
 {{- end -}}
 
 {{- define "nubusTemplates.ldapServer.ldap.domainName" -}}
-{{- ( coalesce .Values.ldapServer.config.ldapBaseDn .Values.global.ldap.baseDn ) | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." -}}
+{{- coalesce .Values.global.ldap.domainName | required "Either .Values.ldapServer.config.domainName or .Values.global.ldap.domainName must be set." -}}
+{{- end -}}
+
+{{- define "nubusTemplates.ldapServer.ldap.adminDn" -}}
+{{- printf "cn=admin,%" (include "nubusTemplates.ldapServer.ldap.baseDn" . ) -}}
 {{- end -}}
 
 {{- define "nubusTemplates.ldapServer.samlMetadataUrl" -}}
@@ -51,7 +55,7 @@ These template definitions are only used in this chart.
     {{- $keycloakService := printf "%s-keycloak" .Release.Name -}}
     {{- $keycloakServicePort := "8080" -}}
     {{- $nubusKeycloakDefaultRealm := "nubus" -}}
-    {{- if .Values.ldapServer.config.samlMetadataUrl -}}
+    {{- if and .Values.ldapServer .Values.ldapServer.config .Values.ldapServer.config.samlMetadataUrl -}}
         {{- .Values.ldapServer.config.samlMetadataUrl -}}
     {{- else if and .Values.global.keycloak .Values.global.keycloak.realm -}}
         {{- printf "%s://%s:%s/realms/%s/protocol/saml/descriptor" $protocol $keycloakService $keycloakServicePort .Values.global.keycloak.realm -}}
@@ -67,7 +71,7 @@ These template definitions are only used in this chart.
     {{- $keycloakService := printf "%s-keycloak" .Release.Name -}}
     {{- $keycloakServicePort := "8080" -}}
     {{- $nubusKeycloakDefaultRealm := "nubus" -}}
-    {{- if .Values.ldapServer.config.samlMetadataUrlInternal -}}
+    {{- if and .Values.ldapServer .Values.ldapServer.config .Values.ldapServer.config.samlMetadataUrlInternal -}}
         {{- .Values.ldapServer.config.samlMetadataUrlInternal -}}
     {{- else if and .Values.global.keycloak .Values.global.keycloak.realm -}}
         {{- printf "%s://%s:%s/realms/%s/protocol/saml/descriptor" $protocol $keycloakService $keycloakServicePort .Values.global.keycloak.realm -}}
@@ -81,8 +85,8 @@ These template definitions are only used in this chart.
 {{- define "ldap-server.samlServiceProviders" -}}
     {{- $protocol := "https" -}}
     {{- $nubusKeycloakDefaultSubdomain := "defaultid" -}}
-    {{- if .Values.ldapServer.config.samlMetadataUrl -}}
-        {{- .Values.ldapServer.config.samlMetadataUrl -}}
+    {{- if and .Values.ldapServer .Values.ldapServer.config .Values.ldapServer.config.samlServiceProviders -}}
+        {{- .Values.ldapServer.config.samlServiceProviders -}}
     {{- else if and .Values.global.domain .Values.global.keycloak .Values.global.keycloak.subdomain -}}
         {{- printf "%s://%s.%s/univention/saml/metadata" $protocol .Values.global.keycloak.subdomain .Values.global.domain -}}
     {{- else if and .Values.global.nubusDeployment .Values.global.domain -}}
@@ -119,5 +123,5 @@ key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Val
 {{- end -}}
 
 {{- define "ldap-server.configMapUcrForced" -}}
-    {{- coalesce .Values.configMapUcrForced .Values.global.configMapUcrForced "null" -}}
+    {{- coalesce .Values.configMapUcrForced .Values.global.configMapUcrForced | default ""  -}}
 {{- end -}}
