@@ -7,11 +7,40 @@ These template definitions relate to the use of this Helm chart as a sub-chart o
 They are defined so other sub-charts can read information that otherwise would be solely known to this Helm chart.
 If compatible Helm charts set .Values.global.nubusDeployment to true, the templates defined here will be imported.
 */}}
-{{- define "nubusTemplates.ldap.protocol" -}}
+{{- define "nubusTemplates.ldapServer.ldap.connection.protocol" -}}
 ldap
 {{- end -}}
-{{- define "nubusTemplates.ldap.serviceName" -}}
+
+{{- define "nubusTemplates.ldapServer.ldap.connection.host" -}}
 {{- printf "%s-ldap-server" .Release.Name -}}
+{{- end -}}
+
+{{- define "nubusTemplates.ldapServer.ldap.connection.port" -}}
+389
+{{- end -}}
+
+{{- define "nubusTemplates.ldapServer.ldap.connection.uri" -}}
+{{- printf "%s://%s-ldap-server" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) .Release.Name -}}
+{{- end -}}
+
+{{- define "nubusTemplates.ldapServer.ldap.baseDn" -}}
+{{- ( coalesce .Values.ldapServer.config.ldapBaseDn .Values.global.ldap.baseDn ) | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." -}}
+{{- end -}}
+
+{{- define "nubusTemplates.ldapServer.ldap.domainName" -}}
+{{- ( coalesce .Values.ldapServer.config.ldapBaseDn .Values.global.ldap.baseDn ) | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." -}}
+{{- end -}}
+
+{{- define "nubusTemplates.ldapServer.samlMetadataUrl" -}}
+{{- include "ldap-server.samlMetadataUrl" . -}}
+{{- end -}}
+
+{{- define "nubusTemplates.ldapServer.samlMetadataUrlInternal" -}}
+{{- include "ldap-server.samlMetadataUrlInternal" . -}}
+{{- end -}}
+
+{{- define "nubusTemplates.ldapServer.samlServiceProviders" -}}
+{{- include "ldap-server.samlServiceProviders" . -}}
 {{- end -}}
 
 {{- /*

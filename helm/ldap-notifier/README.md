@@ -348,7 +348,7 @@ false
 null
 </pre>
 </td>
-			<td>Mapping of volumes to the volume claim names to use. Those have to match the volumes of the "ldap-server". Example claims:   shared-data: "shared-data-ldap-server-0"   shared-run: "shared-run-ldap-server-0"</td>
+			<td>Mapping of volumes to the volume claim names to use. Those have to match the volumes of the "ldap-server". Default: claims:   shared-data: "shared-data-ldap-server-0"   shared-run: "shared-run-ldap-server-0"</td>
 		</tr>
 	</tbody>
 </table>

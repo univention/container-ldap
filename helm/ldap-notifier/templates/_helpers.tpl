@@ -16,5 +16,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 - name: "shared-run"
   persistentVolumeClaim:
     claimName: {{ printf "shared-run-%s-ldap-server-0" .Release.Name }}
+{{- else -}}
+- name: "shared-data"
+  persistentVolumeClaim:
+    claimName: "shared-data-ldap-server-0"
+- name: "shared-run"
+  persistentVolumeClaim:
+    claimName: "shared-run-ldap-server-0"
 {{- end -}}
 {{- end -}}

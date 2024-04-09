@@ -71,7 +71,7 @@ image:
 volumes:
   # -- Mapping of volumes to the volume claim names to use. Those have to match
   # the volumes of the "ldap-server".
-  # Example
+  # Default:
   # claims:
   #   shared-data: "shared-data-ldap-server-0"
   #   shared-run: "shared-run-ldap-server-0"
