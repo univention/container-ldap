@@ -32,7 +32,7 @@ ldap
 {{- end -}}
 
 {{- define "nubusTemplates.ldapServer.ldap.adminDn" -}}
-{{- printf "cn=admin,%" (include "nubusTemplates.ldapServer.ldap.baseDn" . ) -}}
+{{- printf "cn=admin,%s" (include "nubusTemplates.ldapServer.ldap.baseDn" . ) -}}
 {{- end -}}
 
 {{- define "nubusTemplates.ldapServer.samlMetadataUrl" -}}
@@ -51,7 +51,7 @@ ldap
 These template definitions are only used in this chart.
 */}}
 {{- define "ldap-server.samlMetadataUrl" -}}
-    {{- $protocol := "https" -}}
+    {{- $protocol := "http" -}}
     {{- $keycloakService := printf "%s-keycloak" .Release.Name -}}
     {{- $keycloakServicePort := "8080" -}}
     {{- $nubusKeycloakDefaultRealm := "nubus" -}}
@@ -67,7 +67,7 @@ These template definitions are only used in this chart.
 {{- end -}}
 
 {{- define "ldap-server.samlMetadataUrlInternal" -}}
-    {{- $protocol := "https" -}}
+    {{- $protocol := "http" -}}
     {{- $keycloakService := printf "%s-keycloak" .Release.Name -}}
     {{- $keycloakServicePort := "8080" -}}
     {{- $nubusKeycloakDefaultRealm := "nubus" -}}
@@ -84,7 +84,7 @@ These template definitions are only used in this chart.
 
 {{- define "ldap-server.samlServiceProviders" -}}
     {{- $protocol := "https" -}}
-    {{- $nubusKeycloakDefaultSubdomain := "defaultid" -}}
+    {{- $nubusKeycloakDefaultSubdomain := "portal" -}}
     {{- if and .Values.ldapServer .Values.ldapServer.config .Values.ldapServer.config.samlServiceProviders -}}
         {{- .Values.ldapServer.config.samlServiceProviders -}}
     {{- else if and .Values.global.domain .Values.global.keycloak .Values.global.keycloak.subdomain -}}
