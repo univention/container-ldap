@@ -24,7 +24,7 @@ ldap
 {{- end -}}
 
 {{- define "nubusTemplates.ldapServer.ldap.baseDn" -}}
-{{- coalesce .Values.global.ldap.baseDn | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." -}}
+{{- coalesce .Values.global.ldap.baseDn | required ".Values.global.ldap.baseDn must be set." -}}
 {{- end -}}
 
 {{- define "nubusTemplates.ldapServer.ldap.domainName" -}}
