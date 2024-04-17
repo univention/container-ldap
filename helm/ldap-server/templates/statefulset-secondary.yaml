@@ -1,0 +1,290 @@
+{{/*
+SPDX-FileCopyrightText: 2024 Univention GmbH
+SPDX-License-Identifier: AGPL-3.0-only
+*/}}
+---
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
+kind: "StatefulSet"
+metadata:
+  name: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.additionalLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
+    {{- end }}
+    ldap-server-type: secondary
+  {{- if .Values.additionalAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+spec:
+  serviceName: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
+  replicas: {{ .Values.replicaCountSecondary }}
+  podManagementPolicy: {{ .Values.podManagementPolicy | default "OrderedReady" }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+  {{/*
+    TODO-0001
+    As per decision two volumes, shared-data and shared-run will be mounted by both the ldap-server and the ldap-notifier
+    https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/blob/main/docs/decisions/0002-use-multiple-pods.md?ref_type=heads
+
+    Change the name to the following to dissolve this coupling.
+    name: {{ printf "data-%s" (include "common.names.fullname" .) }}
+  */}}
+    - metadata:
+        name: "shared-data"
+      spec:
+        accessModes: [{{ range .Values.persistence.accessModes }}{{ . | quote }}{{ end }}]
+        {{- if .Values.persistence.storageClass }}
+        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+    - metadata:
+        name: "shared-run"
+      spec:
+        accessModes: [{{ range .Values.persistence.accessModes }}{{ . | quote }}{{ end }}]
+        {{- if .Values.persistence.storageClass }}
+        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.ldapServer.legacy.sharedRunSize | quote }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+      ldap-server-type: secondary
+  updateStrategy: {{ include "common.tplvalues.render" (dict "value" .Values.updateStrategy "context" .) | nindent 4 }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/configmap-secondary: {{ include (print .Template.BasePath "/configmap-secondary.yaml") . | sha256sum }}
+        {{- if .Values.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" .) | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+        ldap-server-type: secondary
+    spec:
+      {{- if or .Values.imagePullSecrets .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.global.imagePullSecrets }}
+        - name: "{{ . }}"
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: "{{ . }}"
+        {{- end }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.nodeSelector "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.fullname" . }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      initContainers:
+        - name: "univention-compatibility"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.ldapServer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          command:
+            - sh
+            - -c
+            - 'cp -a /usr/share/univention-ldap/* /target/usr/share/univention-ldap/; cp -a /etc/ldap/* /target/etc/ldap/; cp -a /etc/univention/* /target/etc/univention/'
+          volumeMounts:
+            - name: usr-share-univention-ldap-volume
+              mountPath: /target/usr/share/univention-ldap
+            - name: etc-ldap-volume
+              mountPath: /target/etc/ldap
+            - name: etc-univention-volume
+              mountPath: /target/etc/univention
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
+      {{- if and .Values.ldapServer.generateDHparam .Values.ldapServer.tls.enabled }}
+        - name: "init-dh"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.dhInitContainer.image.registry .Values.global.imageRegistry }}/{{ .Values.dhInitContainer.image.repository }}:{{ .Values.dhInitContainer.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.dhInitContainer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          args:
+            - dhparam
+            - -out
+            - /dhparam/dhparam.pem
+            - "2048"
+          volumeMounts:
+            - name: '{{ include "common.names.fullname" . }}-dh-volume'
+              mountPath: /dhparam
+            {{- if .Values.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
+            {{- end }}
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
+      {{- end }}
+      containers:
+        - name: "openldap"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.ldapServer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.fullname" . }}
+            - configMapRef:
+                name: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
+          env:
+            - name: SYNC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+            - name: LDAP_CN_ADMIN_PW
+              valueFrom:
+                secretKeyRef:
+                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+          {{- with .Values.extraEnvVars }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbe "context" .) | nindent 12 }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
+          ports:
+            {{- range $key, $value := .Values.service.ports }}
+            - name: {{ $key }}
+              containerPort: {{ $value.containerPort }}
+              protocol: {{ $value.protocol }}
+            {{- end }}
+          {{- if .Values.resources }}
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.resources "context" .) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: usr-share-univention-ldap-volume
+              mountPath: /usr/share/univention-ldap
+            - name: usr-share-saml-volume
+              mountPath: /usr/share/saml
+            - name: etc-ldap-volume
+              mountPath: /etc/ldap
+            - name: etc-univention-volume
+              mountPath: /etc/univention
+            - name: secondary-config-template-volume
+              mountPath: /config/templates
+            - name: secondary-config-template-volume
+              mountPath: /entrypoint.d/99-append-slapd-conf.sh
+              subPath: append-slapd.conf.sh
+              {{/*
+                TODO-0002
+                When legacy handling is disabled, use an emptyDir
+                - name: var-run-volume
+                  mountPath: /var/run/slapd
+              */}}
+            - name: shared-run
+              mountPath: /var/run/slapd
+            - name: "config-map-ucr-defaults"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base.conf"
+            {{- if (include "ldap-server.configMapUcr" .) }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base.conf"
+              subPath: "base.conf"
+            {{- end }}
+            {{- if (include "ldap-server.configMapUcrForced" .) }}
+            - name: "config-map-ucr-forced"
+              mountPath: "/etc/univention/base-forced.conf"
+              subPath: "base.conf"
+            {{- end }}
+            {{- if .Values.persistence.enabled }}
+            {{/*
+              TODO-0001 (also see above)
+              When legacy share volume between ldap-server and ldap-notifier has been resolved, use a pvc exclusive to ldap-server
+              - name: {{ printf "data-%s" (include "common.names.fullname" .) }}
+            */}}
+            - name: "shared-data"
+              mountPath: /var/lib/univention-ldap
+            {{- end }}
+            {{- if .Values.ldapServer.tls.enabled }}
+            - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
+              mountPath: /certificates
+            {{- end }}
+            {{- if and .Values.ldapServer.generateDHparam .Values.ldapServer.tls.enabled }}
+            - name: {{ printf "%s-dh-volume" (include "common.names.fullname" .) }}
+              mountPath: /dhparam
+            {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: "usr-share-univention-ldap-volume"
+          emptyDir: {}
+        - name: "usr-share-saml-volume"
+          emptyDir: {}
+        - name: "etc-ldap-volume"
+          emptyDir: {}
+        - name: "etc-univention-volume"
+          emptyDir: {}
+        - name: "secondary-config-template-volume"
+          configMap:
+            name: {{ printf "%s-secondary-config-templates" (include "common.names.fullname" .) }}
+            defaultMode: 0555
+        {{- if .Values.waitForDependency.enabled }}
+        - name: "scripts-volume"
+          configMap:
+            name: {{ printf "%s-scripts" (include "common.names.fullname" .) }}
+        {{- end }}
+        - name: "config-map-ucr-defaults"
+          configMap:
+            name: {{ include "ldap-server.configMapUcrDefaults" . | quote }}
+        {{- if (include "ldap-server.configMapUcr" .) }}
+        - name: "config-map-ucr"
+          configMap:
+            name: {{ include "ldap-server.configMapUcr" . | quote }}
+        {{- end }}
+        {{- if (include "ldap-server.configMapUcrForced" .) }}
+        - name: "config-map-ucr-forced"
+          configMap:
+            name: {{ include "ldap-server.configMapUcrForced" . | quote }}
+        {{- end }}
+          {{/*
+              TODO-0002 (also see above)
+              When legacy handling is disabled, use an emptyDir
+              - name: "var-run-volume"
+                emptyDir: {}
+          */}}
+        {{- if .Values.ldapServer.tls.enabled }}
+        - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
+          secret:
+            defaultMode: 0400
+            secretName: {{ .Values.ldapServer.tls.certificateSecret | default (printf "%s-tls" (include "common.names.fullname" . )) | quote }}
+        {{- if .Values.ldapServer.generateDHparam }}
+        - name: {{ printf "%s-dh-volume" (include "common.names.fullname" .) }}
+          emptyDir: {}
+        {{- else }}
+        - name: {{ printf "%s-dh-volume" (include "common.names.fullname" .) }}
+          secret:
+            defaultMode: 0400
+            secretName: {{ .Values.ldapServer.tls.dhparamSecret | default (printf "%s-dhparam" (include "common.names.fullname" . ))  | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes  "context" .) | nindent 8 }}
+        {{- end }}
+...

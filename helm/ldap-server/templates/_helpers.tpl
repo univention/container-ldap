@@ -23,6 +23,10 @@ ldap
 {{- printf "%s://%s-ldap-server" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) .Release.Name -}}
 {{- end -}}
 
+{{- define "nubusTemplates.ldapServer.ldap.connection.uriPrimary" -}}
+{{- printf "%s://%s-ldap-server-primary" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) .Release.Name -}}
+{{- end -}}
+
 {{- define "nubusTemplates.ldapServer.ldap.baseDn" -}}
 {{- coalesce .Values.global.ldap.baseDn | required ".Values.global.ldap.baseDn must be set." -}}
 {{- end -}}

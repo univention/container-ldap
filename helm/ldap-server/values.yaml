@@ -206,8 +206,11 @@ readinessProbe:
   tcpSocket:
     port: 389
 
-# -- Set the amount of replicas of deployment.
-replicaCount: 1
+# -- Set the amount of replicas of primary statefulset.
+replicaCountPrimary: 1
+
+# -- Set the amount of replicas of secondary statefulset.
+replicaCountSecondary: 1
 
 # Configure resource requests and limits.
 #

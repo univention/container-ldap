@@ -26,16 +26,16 @@ These template definitions are only used in this chart.
 {{- else if .Values.global.nubusDeployment }}
 - name: "shared-data"
   persistentVolumeClaim:
-    claimName: {{ printf "shared-data-%s-ldap-server-0" .Release.Name }}
+    claimName: {{ printf "shared-data-%s-ldap-server-primary-0" .Release.Name }}
 - name: "shared-run"
   persistentVolumeClaim:
-    claimName: {{ printf "shared-run-%s-ldap-server-0" .Release.Name }}
+    claimName: {{ printf "shared-run-%s-ldap-server-primary-0" .Release.Name }}
 {{- else -}}
 - name: "shared-data"
   persistentVolumeClaim:
-    claimName: "shared-data-ldap-server-0"
+    claimName: "shared-data-ldap-server-primary-0"
 - name: "shared-run"
   persistentVolumeClaim:
-    claimName: "shared-run-ldap-server-0"
+    claimName: "shared-run-ldap-server-primary-0"
 {{- end -}}
 {{- end -}}

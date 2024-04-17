@@ -6,19 +6,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: "StatefulSet"
 metadata:
-  name: {{ include "common.names.fullname" . }}
+  name: {{ printf "%s-primary" (include "common.names.fullname" .) }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
     {{- if .Values.additionalLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
     {{- end }}
+    ldap-server-type: primary
   {{- if .Values.additionalAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
   {{- end }}
 spec:
-  serviceName: {{ include "common.names.fullname" . }}
-  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ printf "%s-primary" (include "common.names.fullname" .) }}
+  replicas: {{ .Values.replicaCountPrimary }}
   podManagementPolicy: {{ .Values.podManagementPolicy | default "OrderedReady" }}
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
@@ -54,16 +55,19 @@ spec:
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
+      ldap-server-type: primary
   updateStrategy: {{ include "common.tplvalues.render" (dict "value" .Values.updateStrategy "context" .) | nindent 4 }}
   template:
     metadata:
       annotations:
         checksum/configmap: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/configmap-primary: {{ include (print .Template.BasePath "/configmap-primary.yaml") . | sha256sum }}
         {{- if .Values.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" .) | nindent 8 }}
         {{- end }}
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}
+        ldap-server-type: primary
     spec:
       {{- if or .Values.imagePullSecrets .Values.global.imagePullSecrets }}
       imagePullSecrets:
@@ -206,6 +210,11 @@ spec:
               mountPath: /etc/ldap
             - name: etc-univention-volume
               mountPath: /etc/univention
+            - name: primary-config-template-volume
+              mountPath: /config/templates
+            - name: primary-config-template-volume
+              mountPath: /entrypoint.d/99-append-slapd-conf.sh
+              subPath: append-slapd.conf.sh
               {{/*
                 TODO-0002
                 When legacy handling is disabled, use an emptyDir
@@ -256,6 +265,10 @@ spec:
           emptyDir: {}
         - name: "etc-univention-volume"
           emptyDir: {}
+        - name: "primary-config-template-volume"
+          configMap:
+            name: {{ printf "%s-primary-config-templates" (include "common.names.fullname" .) }}
+            defaultMode: 0555
         {{- if .Values.waitForDependency.enabled }}
         - name: "scripts-volume"
           configMap:

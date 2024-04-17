@@ -776,13 +776,22 @@ true
 			<td>Timeout for command return.</td>
 		</tr>
 		<tr>
-			<td>replicaCount</td>
+			<td>replicaCountPrimary</td>
 			<td>int</td>
 			<td><pre lang="json">
 1
 </pre>
 </td>
-			<td>Set the amount of replicas of deployment.</td>
+			<td>Set the amount of replicas of primary statefulset.</td>
+		</tr>
+		<tr>
+			<td>replicaCountSecondary</td>
+			<td>int</td>
+			<td><pre lang="json">
+1
+</pre>
+</td>
+			<td>Set the amount of replicas of secondary statefulset.</td>
 		</tr>
 		<tr>
 			<td>resources</td>

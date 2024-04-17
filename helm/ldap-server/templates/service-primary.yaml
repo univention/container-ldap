@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 apiVersion: "v1"
 kind: "Service"
 metadata:
-  name: "{{ include "common.names.fullname" . }}"
+  name: {{ printf "%s-primary" (include "common.names.fullname" .) }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
@@ -35,6 +35,6 @@ spec:
     {{- end }}
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
-    ldap-server-type: secondary
+    ldap-server-type: primary
 ...
 {{- end }}
