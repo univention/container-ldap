@@ -66,7 +66,7 @@ ARG LABEL_VERSION=undefined
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
-RUN apt-get update && \
+RUN \
     # Do the non-interactive package configuration
     # of slapd otherwise the build process would
     # stall when debconf asks for input interactively
@@ -106,7 +106,6 @@ RUN apt-get update && \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
         python3=3.7.* && \
-    rm -rf /var/lib/apt/lists/* && \
     # This file is a depencecy of the slapd.conf templates
     mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
     echo "1" >/var/lib/univention-ldap-local/schema/id/id
@@ -191,7 +190,6 @@ RUN \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
-    && apt-get update \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
         slapd=2.4.47+dfsg-3+deb10u7A~5.0.1.202205211909 \
         ldap-utils=2.4.47+dfsg-3+deb10u7A~5.0.1.202205211909 \
