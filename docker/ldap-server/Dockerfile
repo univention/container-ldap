@@ -35,9 +35,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 WORKDIR /home/deb_packages
 
-RUN apt-get update && \
-    # These packages are only partially needed, and their dependencies
-    # can and should not be met in Phoenix
+RUN \
     apt-get download \
         univention-appcenter=9.0.* \
         univention-self-service-passwordreset-umc=5.0.* \
@@ -49,8 +47,7 @@ RUN apt-get update && \
         univention-management-console-server=12.0.* \
         liblasso3=2.6.* \
         cy2-saml=1.9.* && \
-    (dpkg --force-all -i ./*.deb || true) && \
-    rm -rf /var/lib/apt/lists/*
+    (dpkg --force-all -i ./*.deb || true)
 
 
 FROM ${PORTAL_UDM_EXTENSIONS_IMAGE}:${PORTAL_UDM_EXTENSIONS_TAG} AS portal-udm-extensions
