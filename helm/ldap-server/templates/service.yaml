@@ -2,7 +2,6 @@
 SPDX-FileCopyrightText: 2024 Univention GmbH
 SPDX-License-Identifier: AGPL-3.0-only
 */}}
-{{- if .Values.service.enabled }}
 ---
 apiVersion: "v1"
 kind: "Service"
@@ -37,4 +36,3 @@ spec:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     ldap-server-type: secondary
 ...
-{{- end }}

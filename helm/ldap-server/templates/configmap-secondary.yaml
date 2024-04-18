@@ -17,7 +17,8 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
   {{- end }}
 data:
-  PRIMARY_LDAP_URI: {{ include "nubusTemplates.ldapServer.ldap.connection.uriPrimary" . | quote }}
+  PRIMARY_LDAP_URI: {{ include "ldap-server.ldap.connection.uriPrimary" . | quote }}
+  # TODO: Not needed, is read from the suffix of the database definition
   LDAP_BASEDN: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
   SYNC_USER_DN: {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
 ...

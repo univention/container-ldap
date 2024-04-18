@@ -228,7 +228,10 @@ prepare_slapd_run() {
   # Adding `-d LOG_LEVEL` here overrides earlier settings in /etc/ldap/slapd.conf,
   # but without `-d` slapd would detach and the container would exit.
 
-  LOG_LEVEL=$(echo -n -e '@%@ldap/debug/level@%@' | ucr-light-filter || true)
+  if [ -z "${LOG_LEVEL}" ]; then
+    echo "Setting log level from UCS."
+    LOG_LEVEL=$(echo -n -e '@%@ldap/debug/level@%@' | ucr-light-filter || true)
+  fi
 
   {
     echo '#!/usr/bin/env bash'

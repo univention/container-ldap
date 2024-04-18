@@ -2,7 +2,6 @@
 SPDX-FileCopyrightText: 2024 Univention GmbH
 SPDX-License-Identifier: AGPL-3.0-only
 */}}
-{{- if .Values.service.enabled }}
 ---
 apiVersion: "v1"
 kind: "Service"
@@ -22,19 +21,15 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
     {{- end }}
 spec:
-  type: "{{ .Values.service.type }}"
+  clusterIP: "None"
   ports:
     {{- range $key, $value := .Values.service.ports }}
     - name: "{{ $key }}"
       port: {{ $value.port }}
       targetPort: {{ $key | quote }}
       protocol: "{{ $value.protocol | default "TCP" }}"
-      {{- if and $value.nodePort (not (eq $.Values.service.type "ClusterIP")) }}
-      nodePort: {{ $value.nodePort }}
-      {{- end }}
     {{- end }}
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     ldap-server-type: primary
 ...
-{{- end }}

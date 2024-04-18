@@ -20,7 +20,7 @@ metadata:
 spec:
   serviceName: {{ printf "%s-primary" (include "common.names.fullname" .) }}
   replicas: {{ .Values.replicaCountPrimary }}
-  podManagementPolicy: {{ .Values.podManagementPolicy | default "OrderedReady" }}
+  podManagementPolicy: {{ .Values.podManagementPolicyPrimary | default "Parallel" }}
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
   {{/*
@@ -178,7 +178,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
+            - configMapRef:
+                name: {{ printf "%s-primary" (include "common.names.fullname" .) }}
           env:
+            - name: SYNC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
@@ -187,7 +193,7 @@ spec:
             {{- . | toYaml | nindent 12 }}
           {{- end }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbe "context" .) | nindent 12 }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbePrimary "context" .) | nindent 12 }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
           ports:
             {{- range $key, $value := .Values.service.ports }}
@@ -213,8 +219,13 @@ spec:
             - name: primary-config-template-volume
               mountPath: /config/templates
             - name: primary-config-template-volume
-              mountPath: /entrypoint.d/99-append-slapd-conf.sh
+              mountPath: /entrypoint.d/90-append-slapd-conf.sh
               subPath: append-slapd.conf.sh
+            - name: scripts-volume
+              mountPath: /entrypoint.d/91-init-internal-database.sh
+              subPath: init-internal-database.sh
+            - name: scripts-volume
+              mountPath: /scripts
               {{/*
                 TODO-0002
                 When legacy handling is disabled, use an emptyDir
@@ -269,11 +280,10 @@ spec:
           configMap:
             name: {{ printf "%s-primary-config-templates" (include "common.names.fullname" .) }}
             defaultMode: 0555
-        {{- if .Values.waitForDependency.enabled }}
         - name: "scripts-volume"
           configMap:
             name: {{ printf "%s-scripts" (include "common.names.fullname" .) }}
-        {{- end }}
+            defaultMode: 0555
         - name: "config-map-ucr-defaults"
           configMap:
             name: {{ include "ldap-server.configMapUcrDefaults" . | quote }}

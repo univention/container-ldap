@@ -23,12 +23,12 @@ ldap
 {{- printf "%s://%s-ldap-server" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) .Release.Name -}}
 {{- end -}}
 
-{{- define "nubusTemplates.ldapServer.ldap.connection.uriPrimary" -}}
-{{- printf "%s://%s-ldap-server-primary" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) .Release.Name -}}
-{{- end -}}
-
 {{- define "nubusTemplates.ldapServer.ldap.baseDn" -}}
-{{- coalesce .Values.global.ldap.baseDn | required ".Values.global.ldap.baseDn must be set." -}}
+{{ if .Values.global.nubusDeployment }}
+{{- required ".Values.global.ldap.baseDn must be set." .Values.global.ldap.baseDn -}}
+{{- else -}}
+{{- required ".Values.ldapServer.config.ldapBaseDn must be set." .Values.ldapServer.config.ldapBaseDn -}}
+{{- end -}}
 {{- end -}}
 
 {{- define "nubusTemplates.ldapServer.ldap.domainName" -}}
@@ -128,4 +128,12 @@ key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Val
 
 {{- define "ldap-server.configMapUcrForced" -}}
     {{- coalesce .Values.configMapUcrForced .Values.global.configMapUcrForced | default ""  -}}
+{{- end -}}
+
+{{- define "ldap-server.ldap.connection.servicePrimary" -}}
+{{ printf "%s-primary" (include "common.names.fullname" .) }}
+{{- end -}}
+
+{{- define "ldap-server.ldap.connection.uriPrimary" -}}
+{{- printf "%s://%s" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) (include "ldap-server.ldap.connection.servicePrimary" .) -}}
 {{- end -}}

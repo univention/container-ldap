@@ -358,7 +358,7 @@ false
 			<td>ldapServer.config.logLevel</td>
 			<td>string</td>
 			<td><pre lang="json">
-"stats"
+"conn,filter,stats,sync"
 </pre>
 </td>
 			<td>Log level for slapd.    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.    Example: `"conn,stats"`.</td>
@@ -776,13 +776,85 @@ true
 			<td>Timeout for command return.</td>
 		</tr>
 		<tr>
+			<td>readinessProbePrimary.exec.command[0]</td>
+			<td>string</td>
+			<td><pre lang="json">
+"/bin/bash"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>readinessProbePrimary.exec.command[1]</td>
+			<td>string</td>
+			<td><pre lang="json">
+"-c"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>readinessProbePrimary.exec.command[2]</td>
+			<td>string</td>
+			<td><pre lang="json">
+"/scripts/is_active_master.sh\n"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>readinessProbePrimary.failureThreshold</td>
+			<td>int</td>
+			<td><pre lang="json">
+10
+</pre>
+</td>
+			<td>Number of failed executions until container is terminated.</td>
+		</tr>
+		<tr>
+			<td>readinessProbePrimary.initialDelaySeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+15
+</pre>
+</td>
+			<td>Delay after container start until ReadinessProbe is executed.</td>
+		</tr>
+		<tr>
+			<td>readinessProbePrimary.periodSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+20
+</pre>
+</td>
+			<td>Time between probe executions.</td>
+		</tr>
+		<tr>
+			<td>readinessProbePrimary.successThreshold</td>
+			<td>int</td>
+			<td><pre lang="json">
+1
+</pre>
+</td>
+			<td>Number of successful executions after failed ones until container is marked healthy.</td>
+		</tr>
+		<tr>
+			<td>readinessProbePrimary.timeoutSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+5
+</pre>
+</td>
+			<td>Timeout for command return.</td>
+		</tr>
+		<tr>
 			<td>replicaCountPrimary</td>
 			<td>int</td>
 			<td><pre lang="json">
 1
 </pre>
 </td>
-			<td>Set the amount of replicas of primary statefulset.</td>
+			<td>Set the amount of replicas of the primary statefulset.</td>
 		</tr>
 		<tr>
 			<td>replicaCountSecondary</td>
@@ -791,7 +863,7 @@ true
 1
 </pre>
 </td>
-			<td>Set the amount of replicas of secondary statefulset.</td>
+			<td>Set the amount of replicas of the secondary statefulset.</td>
 		</tr>
 		<tr>
 			<td>resources</td>
@@ -810,15 +882,6 @@ true
 </pre>
 </td>
 			<td>Additional custom annotations.</td>
-		</tr>
-		<tr>
-			<td>service.enabled</td>
-			<td>bool</td>
-			<td><pre lang="json">
-true
-</pre>
-</td>
-			<td>Enable kubernetes service creation.</td>
 		</tr>
 		<tr>
 			<td>service.ports.ldap.containerPort</td>

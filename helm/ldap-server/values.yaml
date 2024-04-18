@@ -192,6 +192,25 @@ podSecurityContext:
       value: "1"
 
 #  Configure extra options for containers probes.
+readinessProbePrimary:
+  # -- Delay after container start until ReadinessProbe is executed.
+  initialDelaySeconds: 15
+  # -- Number of failed executions until container is terminated.
+  failureThreshold: 10
+  # -- Time between probe executions.
+  periodSeconds: 20
+  # -- Number of successful executions after failed ones until container is marked healthy.
+  successThreshold: 1
+  # -- Timeout for command return.
+  timeoutSeconds: 5
+  exec:
+    command:
+      - "/bin/bash"
+      - "-c"
+      - |
+        /scripts/is_active_master.sh
+
+#  Configure extra options for containers probes.
 readinessProbe:
   # -- Delay after container start until ReadinessProbe is executed.
   initialDelaySeconds: 15
@@ -206,10 +225,10 @@ readinessProbe:
   tcpSocket:
     port: 389
 
-# -- Set the amount of replicas of primary statefulset.
+# -- Set the amount of replicas of the primary statefulset.
 replicaCountPrimary: 1
 
-# -- Set the amount of replicas of secondary statefulset.
+# -- Set the amount of replicas of the secondary statefulset.
 replicaCountSecondary: 1
 
 # Configure resource requests and limits.
@@ -226,8 +245,6 @@ initResources: {}
 service:
   # -- Additional custom annotations.
   annotations: {}
-  # -- Enable kubernetes service creation.
-  enabled: true
   # "ClusterIP" => Exposes the Service on a cluster-internal IP. Choosing this value makes the Service only reachable
   #                from within the cluster. This is the default that is used if you don't explicitly specify a type for
   #                a Service.
@@ -366,7 +383,7 @@ ldapServer:
     # -- Log level for slapd.
     #    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.
     #    Example: `"conn,stats"`.
-    logLevel: "stats"
+    logLevel: "conn,filter,stats,sync"
 
     # -- A comma separated list of SAML2 Service Provider URLs (must be defined)
     #samlServiceProviders: "http://myportal.local:8000/univention/saml/metadata,http://myportal.local:8000/auth/realms/ucs"
