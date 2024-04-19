@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.11.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.10.3...v0.11.0) (2024-04-19)
+
+
+### Features
+
+* Avoid call to "apt-get update" in builder stage ([cf10ee9](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/cf10ee94749825d9b5d4c8de9f2316c8c03a93c1))
+* Avoid calling "apt-get update" in final stage of ldap-server ([844547f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/844547f3826ead77947b86918d6bad71e6dab5df))
+* Use date based build tag of the base image in ldap-notifier ([1c1e090](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/1c1e090b91382999017b9225ba5a0abd9bfbd5f4))
+* Use the date tagged base image to ensure a stable base package set ([2227da1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/2227da179ffb185bf97943801d8cd3635a0d4883))
+
 ## [0.10.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.10.2...v0.10.3) (2024-04-02)
 
 
