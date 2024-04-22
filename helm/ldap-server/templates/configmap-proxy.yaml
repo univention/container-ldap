@@ -1,0 +1,164 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+
+---
+kind: "ConfigMap"
+apiVersion: "v1"
+metadata:
+  name: {{ printf "%s-proxy" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.additionalLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.additionalAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+data:
+  PRIMARY_LDAP_URI: {{ include "ldap-server.ldap.connection.uriPrimary" . | quote }}
+  SECONDARY_LDAP_URI: {{ include "ldap-server.ldap.connection.uriSecondary" . | quote }}
+  LDAP_BASEDN: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
+  ADMIN_DN: {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
+...
+---
+kind: "ConfigMap"
+apiVersion: "v1"
+metadata:
+  name: {{ printf "%s-proxy-config-templates" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.additionalLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.additionalAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+data:
+  slapd.conf-proxy.tpl: |
+    PLACEHOLDER_SCHEMAS
+    attributeoptions "entry-" "lang-"
+    moduleload	constraint.so
+
+
+    pidfile /var/run/slapd/slapd.pid
+    argsfile /var/run/slapd/slapd.args
+
+    modulepath /usr/lib/ldap
+    moduleload back_ldap.so
+
+    database ldap
+    suffix {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
+    overlay constraint
+    constraint_attribute uidNumber regex ^[^0]+[0-9]*$
+    constraint_attribute gidNumber regex ^[^0]+[0-9]*$
+    moduleload            memberof.so
+    overlay               memberof
+    memberof-group-oc     posixGroup
+    memberof-member-ad    uniqueMember
+    memberof-memberof-ad  memberOf
+    memberof-dangling     ignore
+    memberof-refint       false
+    uri {{ include "ldap-server.ldap.connection.uriSecondary" . }}
+    lastmod on
+    chase-referrals yes
+    rebind-as-user yes
+    # idassert-bind mode=self bindmethod=simple
+    #  binddn="{{ include "nubusTemplates.ldapServer.ldap.adminDn" . }}"
+    #  credentials="PLACEHOLDER_LDAP_CN_ADMIN_PW"
+    #  tls_reqcert=never
+    idassert-passthru "dn.regex:.*"
+    authz-regexp
+      uid=([^,]*),cn=(gssapi|saml|oauthbearer),cn=auth
+      ldap:///PLACEHOLDER_LDAP_BASEDN??sub?uid=$1
+    access to * by * read
+
+...
+---
+kind: "ConfigMap"
+apiVersion: "v1"
+metadata:
+  name: {{ printf "%s-proxy-scripts" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.additionalLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.additionalAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+data:
+  wait-for-secondary.sh: |
+    #!/bin/bash
+    set -uxo pipefail
+    echo "Waiting for secondary LDAP to be available ..."
+    retry_interval=5
+    error=1
+    while [ $error -ne 0 ]; do
+      ldapsearch -H "${SECONDARY_LDAP_URI}" -x -D "${ADMIN_DN}" -w "${LDAP_CN_ADMIN_PW}" -b "${LDAP_BASEDN}" -s base >/dev/null 2>&1
+      error=$?
+      if [ $error -eq 49 ]; then
+        echo "Failed to authenticate with secondary LDAP at '${SECONDARY_LDAP_URI}' using binddn '${ADMIN_DN}' , retrying in ${retry_interval} seconds ..."
+      else
+        echo "Secondary LDAP not available at '${SECONDARY_LDAP_URI}' yet, errorcode was '$error', retrying in ${retry_interval} seconds ..."
+      fi
+      sleep ${retry_interval}
+    done
+
+  generate-slapd.conf.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # Read the existing slapd.conf file
+    slapd_conf=$(cat /etc/ldap/slapd.conf)
+
+    # Initialize the schema_definition_lines variable
+    schema_definition_lines=""
+
+    # Process the slapd.conf file line by line
+    while IFS=$'\n' read -r line; do
+      # Check if the current line starts with "include" and append the moduleload for back_ldap.so
+      if [[ "${line}" =~ ^include ]]; then
+        echo "Appending schema definition from slapd.conf"
+        schema_definition_lines+="${line}\n"
+      fi
+    done < <(echo "${slapd_conf}")
+
+    echo "Schema definitions: ${schema_definition_lines}\n"
+
+    # Read the slapd.conf-proxy.tpl file
+    template=$(cat /config/templates/slapd.conf-proxy.tpl)
+
+    # Initialize the generated slapd.conf variable
+    generated_slapd_conf=""
+
+    # Replace placeholders with environment variable values using sed and eval
+    while IFS=$'\n' read -r line; do
+      # Skip empty lines
+      if [[ -z "${line}" ]]; then
+        continue
+      fi
+
+      # Check if the current line contains the placeholder for the schema definitions and append the schema definitions
+      if [[ "${line}" =~ ^PLACEHOLDER_SCHEMAS ]]; then
+        echo "Found placeholder line. Appending schema definitions."
+        generated_slapd_conf+="${schema_definition_lines}\n"
+        continue
+      fi
+
+      PLACEHOLDER_LDAP_CN_ADMIN_PW=$(echo "${LDAP_CN_ADMIN_PW}" | sed 's/[&/\]/\\&/g')
+
+      modified_line=$(echo "${line}" | sed "s|PLACEHOLDER_LDAP_CN_ADMIN_PW|${PLACEHOLDER_LDAP_CN_ADMIN_PW}|g" | sed "s|PLACEHOLDER_LDAP_BASEDN|${LDAP_BASEDN}|g")
+
+      generated_slapd_conf+="${modified_line}\n"
+
+    done < <(echo "${template}")
+
+
+    # Write the modified slapd.conf
+    echo -e "${generated_slapd_conf}" > /etc/ldap/slapd.conf
+    cat /etc/ldap/slapd.conf
+    slaptest -f /etc/ldap/slapd.conf
+...

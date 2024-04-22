@@ -82,6 +82,7 @@ data:
     #!/bin/bash
 
     set -uxo pipefail
+    mkdir -p /var/lib/univention-ldap/internal
     echo "dn: cn=internal
     objectClass: organizationalRole
     " | slapadd -b cn=internal -f /etc/ldap/slapd.conf
@@ -113,39 +114,47 @@ data:
     description: $POD_NAME" | ldapmodify -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD"
         if [ $? -eq 0 ]; then
           echo "Acquired lock, becoming the active master"
-          return 0
+          echo "is_active_master.sh: Acquired lock, becoming the active master" > /proc/1/fd/1
+          exit 0
         else
           echo "Failed to acquire lock, another master is active"
-          return 1
+          echo "is_active_master.sh: Failed to acquire lock, another master is active" > /proc/1/fd/1
+          exit 1
         fi
       else
         # Lock entry exists, check if it matches the current pod name
         active_master=$(ldapsearch -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD" -b "$LOCK_DN" -s base "(objectClass=*)" description | grep ^description: | awk '{print $2}')
         if [ "$active_master" == "$POD_NAME" ]; then
           echo "Current pod is the active master"
-          return 0
+          echo "is_active_master.sh: Current pod is the active master" > /proc/1/fd/1
+          exit 0
         else
           echo "Another pod is the active master: $active_master"
+          echo "is_active_master.sh: Another pod is the active master: $active_master" > /proc/1/fd/1
 
           # Check if the other master is alive
           other_master_uri="${LDAP_PROTOCOL}://$active_master.${HEADLESS_SERVICE_NAME}:${LDAP_PORT}"
           ldapsearch -H "$other_master_uri" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD" -b "$LOCK_DN" -s base "(objectClass=*)" >/dev/null 2>&1
           if [ $? -ne 0 ]; then
             echo "Other master is not responding, attempting to acquire lock"
+            echo "is_active_master.sh: Other master is not responding, attempting to acquire lock" > /proc/1/fd/1
             echo "dn: $LOCK_DN
     changetype: modify
     replace: description
     description: $POD_NAME" | ldapmodify -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD"
             if [ $? -eq 0 ]; then
               echo "Acquired lock, becoming the active master"
-              return 0
+              echo "is_active_master.sh: Acquired lock, becoming the active master" > /proc/1/fd/1
+              exit 0
             else
               echo "Failed to acquire lock, another master is active"
-              return 1
+              echo "is_active_master.sh: Failed to acquire lock, another master is active" > /proc/1/fd/1
+              exit 1
             fi
           else
             echo "Other master is alive, remaining as a standby"
-            return 1
+            echo "is_active_master.sh: Other master is alive, remaining as a standby" > /proc/1/fd/1
+            exit 1
           fi
         fi
       fi

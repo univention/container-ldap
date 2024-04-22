@@ -1,73 +1,39 @@
-{{/*
-SPDX-FileCopyrightText: 2024 Univention GmbH
-SPDX-License-Identifier: AGPL-3.0-only
-*/}}
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+
 ---
-apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
-kind: "StatefulSet"
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
 metadata:
-  name: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
+  name: {{ printf "%s-proxy" (include "common.names.fullname" .) }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
     {{- if .Values.additionalLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
     {{- end }}
-    ldap-server-type: secondary
+    ldap-server-type: proxy
   {{- if .Values.additionalAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
   {{- end }}
 spec:
-  serviceName: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
-  replicas: {{ .Values.replicaCountSecondary }}
-  podManagementPolicy: {{ .Values.podManagementPolicy | default "OrderedReady" }}
-  {{- if .Values.persistence.enabled }}
-  volumeClaimTemplates:
-  {{/*
-    TODO-0001
-    As per decision two volumes, shared-data and shared-run will be mounted by both the ldap-server and the ldap-notifier
-    https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/blob/main/docs/decisions/0002-use-multiple-pods.md?ref_type=heads
-
-    Change the name to the following to dissolve this coupling.
-    name: {{ printf "data-%s" (include "common.names.fullname" .) }}
-  */}}
-    - metadata:
-        name: "shared-data"
-      spec:
-        accessModes: [{{ range .Values.persistence.accessModes }}{{ . | quote }}{{ end }}]
-        {{- if .Values.persistence.storageClass }}
-        storageClassName: {{ .Values.persistence.storageClass | quote }}
-        {{- end }}
-        resources:
-          requests:
-            storage: {{ .Values.persistence.size | quote }}
-    - metadata:
-        name: "shared-run"
-      spec:
-        accessModes: [{{ range .Values.persistence.accessModes }}{{ . | quote }}{{ end }}]
-        {{- if .Values.persistence.storageClass }}
-        storageClassName: {{ .Values.persistence.storageClass | quote }}
-        {{- end }}
-        resources:
-          requests:
-            storage: {{ .Values.ldapServer.legacy.sharedRunSize | quote }}
-  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+  strategy: {{- include "common.tplvalues.render" (dict "value" .Values.updateStrategy "context" .) | nindent 4 }}
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
-      ldap-server-type: secondary
-  updateStrategy: {{ include "common.tplvalues.render" (dict "value" .Values.updateStrategy "context" .) | nindent 4 }}
+      ldap-server-type: proxy
   template:
     metadata:
       annotations:
         checksum/configmap: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum }}
-        checksum/configmap-secondary: {{ include (print .Template.BasePath "/configmap-secondary.yaml") . | sha256sum }}
+        checksum/configmap: {{ include (print .Template.BasePath "/configmap-proxy.yaml") . | sha256sum }}
         {{- if .Values.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" .) | nindent 8 }}
         {{- end }}
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}
-        ldap-server-type: secondary
+        ldap-server-type: proxy
     spec:
       {{- if or .Values.imagePullSecrets .Values.global.imagePullSecrets }}
       imagePullSecrets:
@@ -118,57 +84,7 @@ spec:
             - name: etc-univention-volume
               mountPath: /target/etc/univention
           resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
-      {{- if and .Values.ldapServer.generateDHparam .Values.ldapServer.tls.enabled }}
-        - name: "init-dh"
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          image: "{{ coalesce .Values.dhInitContainer.image.registry .Values.global.imageRegistry }}/{{ .Values.dhInitContainer.image.repository }}:{{ .Values.dhInitContainer.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.dhInitContainer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
-          args:
-            - dhparam
-            - -out
-            - /dhparam/dhparam.pem
-            - "2048"
-          volumeMounts:
-            - name: '{{ include "common.names.fullname" . }}-dh-volume'
-              mountPath: /dhparam
-            {{- if .Values.extraVolumeMounts }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
-            {{- end }}
-          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
-      {{- end }}
-      {{- if .Values.waitForDependency.enabled }}
-        - name: "wait-for-saml-metadata"
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          image: "{{ coalesce .Values.waitForDependency.image.registry .Values.global.imageRegistry }}/{{ .Values.waitForDependency.image.repository }}:{{ .Values.waitForDependency.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.waitForDependency.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
-          command:
-            - "/bin/bash"
-            - "/scripts/wait-for-saml-metadata.sh"
-          envFrom:
-            - configMapRef:
-                name: {{ include "common.names.fullname" . }}
-          volumeMounts:
-            - name: scripts-volume
-              mountPath: /scripts
-            - name: "config-map-ucr-defaults"
-              mountPath: "/etc/univention/base-defaults.conf"
-              subPath: "base.conf"
-            {{- if (include "ldap-server.configMapUcr" .) }}
-            - name: "config-map-ucr"
-              mountPath: "/etc/univention/base.conf"
-              subPath: "base.conf"
-            {{- end }}
-            {{- if (include "ldap-server.configMapUcrForced" .) }}
-            - name: "config-map-ucr-forced"
-              mountPath: "/etc/univention/base-forced.conf"
-              subPath: "base.conf"
-            {{- end }}
-      {{- end }}
-        - name: "wait-for-primary"
+        - name: "wait-for-secondary"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
@@ -178,12 +94,8 @@ spec:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
             - configMapRef:
-                name: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
+                name: {{ printf "%s-proxy" (include "common.names.fullname" .) }}
           env:
-            - name: SYNC_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
@@ -191,10 +103,10 @@ spec:
           command:
             - bash
             - -c
-            - '/scripts-secondary/wait-for-primary.sh'
+            - '/scripts-proxy/wait-for-secondary.sh'
           volumeMounts:
-            - name: secondary-scripts-volume
-              mountPath: /scripts-secondary
+            - name: proxy-scripts-volume
+              mountPath: /scripts-proxy
           resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
       containers:
         - name: "openldap"
@@ -207,12 +119,8 @@ spec:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
             - configMapRef:
-                name: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
+                name: {{ printf "%s-proxy" (include "common.names.fullname" .) }}
           env:
-            - name: SYNC_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
@@ -244,21 +152,12 @@ spec:
               mountPath: /etc/ldap
             - name: etc-univention-volume
               mountPath: /etc/univention
-            - name: secondary-config-templates-volume
+            - name: proxy-config-templates-volume
               mountPath: /config/templates
-            - name: secondary-scripts-volume
-              mountPath: /entrypoint.d/90-append-slapd-conf.sh
-              subPath: append-slapd.conf.sh
-            - name: scripts-volume
-              mountPath: /entrypoint.d/91-init-internal-database.sh
-              subPath: init-internal-database.sh
-              {{/*
-                TODO-0002
-                When legacy handling is disabled, use an emptyDir
-                - name: var-run-volume
-                  mountPath: /var/run/slapd
-              */}}
-            - name: shared-run
+            - name: proxy-scripts-volume
+              mountPath: /entrypoint.d/90-generate-slapd-conf.sh
+              subPath: generate-slapd.conf.sh
+            - name: var-run-volume
               mountPath: /var/run/slapd
             - name: "config-map-ucr-defaults"
               mountPath: "/etc/univention/base-defaults.conf"
@@ -273,15 +172,8 @@ spec:
               mountPath: "/etc/univention/base-forced.conf"
               subPath: "base.conf"
             {{- end }}
-            {{- if .Values.persistence.enabled }}
-            {{/*
-              TODO-0001 (also see above)
-              When legacy share volume between ldap-server and ldap-notifier has been resolved, use a pvc exclusive to ldap-server
-              - name: {{ printf "data-%s" (include "common.names.fullname" .) }}
-            */}}
-            - name: "shared-data"
+            - name: "data-volume"
               mountPath: /var/lib/univention-ldap
-            {{- end }}
             {{- if .Values.ldapServer.tls.enabled }}
             - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
               mountPath: /certificates
@@ -294,6 +186,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
       volumes:
+        - name: "data-volume"
+          emptyDir: {}
+        - name: "var-run-volume"
+          emptyDir: {}
         - name: "usr-share-univention-ldap-volume"
           emptyDir: {}
         - name: "usr-share-saml-volume"
@@ -302,13 +198,13 @@ spec:
           emptyDir: {}
         - name: "etc-univention-volume"
           emptyDir: {}
-        - name: "secondary-scripts-volume"
+        - name: "proxy-scripts-volume"
           configMap:
-            name: {{ printf "%s-secondary-scripts" (include "common.names.fullname" .) }}
+            name: {{ printf "%s-proxy-scripts" (include "common.names.fullname" .) }}
             defaultMode: 0555
-        - name: "secondary-config-templates-volume"
+        - name: "proxy-config-templates-volume"
           configMap:
-            name: {{ printf "%s-secondary-config-templates" (include "common.names.fullname" .) }}
+            name: {{ printf "%s-proxy-config-templates" (include "common.names.fullname" .) }}
         - name: "scripts-volume"
           configMap:
             name: {{ printf "%s-scripts" (include "common.names.fullname" .) }}
@@ -326,12 +222,6 @@ spec:
           configMap:
             name: {{ include "ldap-server.configMapUcrForced" . | quote }}
         {{- end }}
-          {{/*
-              TODO-0002 (also see above)
-              When legacy handling is disabled, use an emptyDir
-              - name: "var-run-volume"
-                emptyDir: {}
-          */}}
         {{- if .Values.ldapServer.tls.enabled }}
         - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
           secret:

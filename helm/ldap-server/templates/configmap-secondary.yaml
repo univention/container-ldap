@@ -18,9 +18,170 @@ metadata:
   {{- end }}
 data:
   PRIMARY_LDAP_URI: {{ include "ldap-server.ldap.connection.uriPrimary" . | quote }}
-  # TODO: Not needed, is read from the suffix of the database definition
   LDAP_BASEDN: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
   SYNC_USER_DN: {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
+...
+---
+kind: "ConfigMap"
+apiVersion: "v1"
+metadata:
+  name: {{ printf "%s-secondary-scripts" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.additionalLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.additionalAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+data:
+  wait-for-primary.sh: |
+    #!/bin/bash
+    set -uxo pipefail
+    echo "Waiting for primary LDAP to be available ..."
+    retry_interval=5
+    error=1
+    while [ $error -ne 0 ]; do
+      ldapsearch -H "${PRIMARY_LDAP_URI}" -x -D "${SYNC_USER_DN}" -w "${LDAP_CN_ADMIN_PW}" -b "${LDAP_BASEDN}" -s base >/dev/null 2>&1
+      error=$?
+      if [ $error -eq 49 ]; then
+        echo "Failed to authenticate with primary LDAP at '${PRIMARY_LDAP_URI}' using binddn '${ADMIN_DN}' , retrying in ${retry_interval} seconds ..."
+      else
+        echo "Primary LDAP not available at '${PRIMARY_LDAP_URI}' yet, errorcode was '$error', retrying in ${retry_interval} seconds ..."
+      fi
+      sleep ${retry_interval}
+    done
+  append-slapd.conf.sh: |
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    # Export the SERVERID
+    export SERVERID=$(echo ${HOSTNAME} | awk -F '-' '{print $(NF)+1}')
+
+    # Read the slapd.conf.tpl file
+    template=$(cat /config/templates/slapd.conf.tpl)
+
+    # Replace placeholders with environment variable values using sed and eval
+    while IFS=$'\n' read -r line; do
+      # Skip empty lines
+      if [[ -z "${line}" ]]; then
+        continue
+      fi
+
+      # Get the leading spaces from the line
+      leading_spaces=$(echo "${line}" | sed -n 's/^\(\s*\).*/\1/p')
+
+      # Evaluate the line to expand any environment variables
+      evaluated_line=$(eval echo "${line}")
+
+      # Prepend the leading spaces to the evaluated line
+      evaluated_line="${leading_spaces}${evaluated_line}"
+
+      # Escape special characters in the line
+      escaped_line=$(echo "${line}" | sed 's|[\/&]|\\&|g; s|\.|\\.|g; s|\+|\\+|g; s|\=|\\=|g')
+
+      # Replace the line in the template with the evaluated line, preserving indentation
+      template=$(echo "${template}" | sed "s|^${escaped_line}|${evaluated_line}|")
+    done < <(echo "${template}")
+
+    # Read the slapd.conf-chaining.tpl file
+    templateChaining=$(cat /config/templates/slapd.conf-chaining.tpl)
+
+    # Replace placeholders with environment variable values using sed and eval
+    while IFS=$'\n' read -r line; do
+      # Skip empty lines
+      if [[ -z "${line}" ]]; then
+        continue
+      fi
+
+      # Get the leading spaces from the line
+      leading_spaces=$(echo "${line}" | sed -n 's/^\(\s*\).*/\1/p')
+
+      # Evaluate the line to expand any environment variables
+      evaluated_line=$(eval echo "${line}")
+
+      # Prepend the leading spaces to the evaluated line
+      evaluated_line="${leading_spaces}${evaluated_line}"
+
+      # Escape special characters in the line
+      escaped_line=$(echo "${line}" | sed 's|[\/&]|\\&|g; s|\.|\\.|g; s|\+|\\+|g; s|\=|\\=|g')
+
+      # Replace the line in the templateChaining with the evaluated line, preserving indentation
+      templateChaining=$(echo "${templateChaining}" | sed "s|^${escaped_line}|${evaluated_line}|")
+    done < <(echo "${templateChaining}")
+
+    # Read the existing slapd.conf file
+    slapd_conf=$(cat /etc/ldap/slapd.conf)
+
+    # Initialize an empty modified slapd.conf file
+    modified_slapd_conf="serverID 2${SERVERID}\n"
+
+    # Initialize the replication ID counter
+    replication_id=1
+
+    # Initialize the suffix variable
+    suffix=""
+
+    # Process the slapd.conf file line by line
+    while IFS=$'\n' read -r line; do
+      # Append the current line to the modified slapd.conf
+      modified_slapd_conf+="${line}\n"
+
+      # Check if the current line starts with "modulepath" and append the moduleload for back_ldap.so
+      if [[ "${line}" =~ ^modulepath ]]; then
+        modified_slapd_conf+="moduleload back_ldap.so\n"
+
+        # Add the chaining configuration to the modified slapd.conf
+        modified_slapd_conf+="${templateChaining}\n"
+        line="moduleload back_ldap.so\n"
+      fi
+
+      # Check if the current line starts with "suffix"
+      if [[ "${line}" =~ ^suffix ]]; then
+        # Extract the suffix value
+        suffix=$(echo "${line}" | awk '{print $2}' | tr -d '"')
+      fi
+
+      # The ucs based slapd.conf does not allow for networked admin access to cn=internal, this adds it.
+      # Check if the current line contains 'by sockname="PATH=/var/run/slapd/ldapi" write', if true, append the acl.
+      if ([[ "${suffix}" == "cn=internal" ]] || [[ "${suffix}" == "cn=translog" ]]) && echo "${line}" | grep -q '^[[:space:]]*by sockname="PATH=/var/run/slapd/ldapi" write'; then
+      # if echo "${line}" | grep -q '^[[:space:]]*by sockname="PATH=/var/run/slapd/ldapi" write'; then
+        echo "The suffix is ${suffix} and this line contains the socket acl."
+        echo "Line: ${line}"
+        # Append the syncrepl configuration to the modified slapd.conf
+        modified_slapd_conf+="    by dn=\"cn=admin,${LDAP_BASEDN}\" write\n"
+      fi
+
+      # The ucs based slapd.conf does not allow for networked admin access to cn=internal and does not specify a rootdn, this adds both.
+      # Check if the current line contains 'cn=translog', if true, append a roodn entry and the syncrepl configuration.
+      if echo "${line}" | grep -q '^.*suffix.*cn=translog.*'; then
+        echo "The suffix is ${suffix} and this line contains the cn=translog suffix."
+        echo "Line: ${line}"
+        # Append the syncrepl configuration to the modified slapd.conf
+        modified_slapd_conf+="rootdn \"cn=admin,${LDAP_BASEDN}\"\n"
+
+        # Set the line to the rootdn line so the following syncrepl configuration is added after it.
+        line="rootdn \"cn=admin,${LDAP_BASEDN}\"\n"
+      fi
+
+      # Check if the current line starts with "rootdn"
+      if [[ "${line}" =~ ^rootdn ]]; then
+        # Generate the syncrepl configuration with the current replication ID and suffix
+        syncrepl_config=$(echo "${template}" | sed "s/PLACEHOLDER_REPLICATION_ID/${replication_id}/"| sed "s/PLACEHOLDER_SERVER_ID/${SERVERID}/" | sed "s|PLACEHOLDER_LDAP_BASEDN|${suffix}|")
+
+        # Append the syncrepl configuration to the modified slapd.conf, preserving indentation
+        modified_slapd_conf+="${syncrepl_config}\n"
+
+        # Increment the replication ID
+        replication_id=$((replication_id + 1))
+      fi
+    done < <(echo "${slapd_conf}")
+
+    # Write the modified slapd.conf
+    echo -e "${modified_slapd_conf}" > /etc/ldap/slapd.conf
+    cat /etc/ldap/slapd.conf
+    # slaptest -f /etc/ldap/slapd.conf
 ...
 ---
 kind: "ConfigMap"
@@ -38,7 +199,7 @@ metadata:
   {{- end }}
 data:
   slapd.conf.tpl: |
-    syncrepl rid=00PLACEHOLDER_REPLICATION_ID
+    syncrepl rid=1PLACEHOLDER_SERVER_IDPLACEHOLDER_REPLICATION_ID
       provider=$PRIMARY_LDAP_URI
       type=refreshAndPersist
       interval=00:00:05:00
@@ -49,79 +210,19 @@ data:
       schemachecking=off
       scope=sub
       retry="60 +"
+    updateref $PRIMARY_LDAP_URI
+    # overlay chain
+    # chain-uri $PRIMARY_LDAP_URI
+    # chain-idassert-bind bindmethod=simple
+    #   binddn="$SYNC_USER_DN"
+    #   credentials=$SYNC_PASSWORD
+    #   mode=self
+    #   flags=prescriptive
+    # chain-rebind-as-user TRUE
+    # chain-return-error TRUE
 
-    mirrormode on
 
-  append-slapd.conf.sh: |
-    #!/usr/bin/env bash
-    set -euxo pipefail
+  slapd.conf-chaining.tpl: |
+    # placeholder
 
-    # Export the SERVERID
-    export SERVERID=$(echo ${HOSTNAME} | awk -F '-' '{print $(NF)+1}')
-
-    # Read the slapd.conf.tpl file
-    template=$(cat /config/templates/slapd.conf.tpl)
-
-    # Replace placeholders with environment variable values using sed and eval
-    while IFS=$'\n' read -r line; do
-      # Skip empty lines
-      if [[ -z "$line" ]]; then
-        continue
-      fi
-
-      # Get the leading spaces from the line
-      leading_spaces=$(echo "$line" | sed -n 's/^\(\s*\).*/\1/p')
-
-      # Evaluate the line to expand any environment variables
-      evaluated_line=$(eval echo "$line")
-
-      # Prepend the leading spaces to the evaluated line
-      evaluated_line="${leading_spaces}${evaluated_line}"
-
-      # Escape special characters in the line
-      escaped_line=$(echo "$line" | sed 's|[\/&]|\\&|g; s|\.|\\.|g; s|\+|\\+|g; s|\=|\\=|g')
-
-      # Replace the line in the template with the evaluated line, preserving indentation
-      template=$(echo "$template" | sed "s|^$escaped_line|$evaluated_line|")
-    done < <(echo "$template")
-
-    # Read the existing slapd.conf file
-    slapd_conf=$(cat /etc/ldap/slapd.conf)
-
-    # Initialize an empty modified slapd.conf file
-    modified_slapd_conf="serverID 2$SERVERID\n"
-
-    # Initialize the replication ID counter
-    replication_id=1
-
-    # Initialize the suffix variable
-    suffix=""
-
-    # Process the slapd.conf file line by line
-    while IFS=$'\n' read -r line; do
-      # Append the current line to the modified slapd.conf
-      modified_slapd_conf+="$line\n"
-
-      # Check if the current line starts with "suffix"
-      if [[ "$line" =~ ^suffix ]]; then
-        # Extract the suffix value
-        suffix=$(echo "$line" | awk '{print $2}')
-      fi
-
-      # Check if the current line starts with "rootdn"
-      if [[ "$line" =~ ^rootdn ]]; then
-        # Generate the syncrepl configuration with the current replication ID and suffix
-        syncrepl_config=$(echo "$template" | sed "s/PLACEHOLDER_REPLICATION_ID/$replication_id/" | sed "s|PLACEHOLDER_LDAP_BASEDN|$suffix|")
-
-        # Append the syncrepl configuration to the modified slapd.conf, preserving indentation
-        modified_slapd_conf+="$syncrepl_config\n"
-
-        # Increment the replication ID
-        replication_id=$((replication_id + 1))
-      fi
-    done < <(echo "$slapd_conf")
-
-    # Write the modified slapd.conf
-    echo -e "$modified_slapd_conf" > /etc/ldap/slapd.conf
-    cat /etc/ldap/slapd.conf
 ...

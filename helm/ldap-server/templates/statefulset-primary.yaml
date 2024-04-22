@@ -20,7 +20,7 @@ metadata:
 spec:
   serviceName: {{ printf "%s-primary" (include "common.names.fullname" .) }}
   replicas: {{ .Values.replicaCountPrimary }}
-  podManagementPolicy: {{ .Values.podManagementPolicyPrimary | default "Parallel" }}
+  podManagementPolicy: {{ .Values.podManagementPolicyPrimary | default "OrderedReady" }}
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
   {{/*
@@ -216,9 +216,9 @@ spec:
               mountPath: /etc/ldap
             - name: etc-univention-volume
               mountPath: /etc/univention
-            - name: primary-config-template-volume
+            - name: primary-config-templates-volume
               mountPath: /config/templates
-            - name: primary-config-template-volume
+            - name: primary-scripts-volume
               mountPath: /entrypoint.d/90-append-slapd-conf.sh
               subPath: append-slapd.conf.sh
             - name: scripts-volume
@@ -276,10 +276,13 @@ spec:
           emptyDir: {}
         - name: "etc-univention-volume"
           emptyDir: {}
-        - name: "primary-config-template-volume"
+        - name: "primary-scripts-volume"
+          configMap:
+            name: {{ printf "%s-primary-scripts" (include "common.names.fullname" .) }}
+            defaultMode: 0555
+        - name: "primary-config-templates-volume"
           configMap:
             name: {{ printf "%s-primary-config-templates" (include "common.names.fullname" .) }}
-            defaultMode: 0555
         - name: "scripts-volume"
           configMap:
             name: {{ printf "%s-scripts" (include "common.names.fullname" .) }}

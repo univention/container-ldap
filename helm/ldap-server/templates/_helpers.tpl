@@ -137,3 +137,11 @@ key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Val
 {{- define "ldap-server.ldap.connection.uriPrimary" -}}
 {{- printf "%s://%s" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) (include "ldap-server.ldap.connection.servicePrimary" .) -}}
 {{- end -}}
+
+{{- define "ldap-server.ldap.connection.serviceSecondary" -}}
+{{ printf "%s-secondary" (include "common.names.fullname" .) }}
+{{- end -}}
+
+{{- define "ldap-server.ldap.connection.uriSecondary" -}}
+{{- printf "%s://%s" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) (include "ldap-server.ldap.connection.serviceSecondary" .) -}}
+{{- end -}}

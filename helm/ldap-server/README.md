@@ -358,10 +358,10 @@ false
 			<td>ldapServer.config.logLevel</td>
 			<td>string</td>
 			<td><pre lang="json">
-"conn,filter,stats,sync"
+"stats"
 </pre>
 </td>
-			<td>Log level for slapd.    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.    Example: `"conn,stats"`.</td>
+			<td>Log level for slapd.    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.    Example: `"conns,stats"`.</td>
 		</tr>
 		<tr>
 			<td>ldapServer.config.samlMetadataUrl</td>
@@ -728,7 +728,7 @@ true
 10
 </pre>
 </td>
-			<td>Number of failed executions until container is terminated.</td>
+			<td>Number of failed executions until container is considered not ready.</td>
 		</tr>
 		<tr>
 			<td>readinessProbe.initialDelaySeconds</td>
@@ -806,10 +806,10 @@ true
 			<td>readinessProbePrimary.failureThreshold</td>
 			<td>int</td>
 			<td><pre lang="json">
-10
+1
 </pre>
 </td>
-			<td>Number of failed executions until container is terminated.</td>
+			<td>Number of failed executions until container is considered not ready.</td>
 		</tr>
 		<tr>
 			<td>readinessProbePrimary.initialDelaySeconds</td>
