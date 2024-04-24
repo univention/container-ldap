@@ -65,24 +65,24 @@ data:
     chase-referrals yes
     rebind-as-user yes
     # idassert-bind mode=self bindmethod=simple
-    #  binddn="{{ include "nubusTemplates.ldapServer.ldap.adminDn" . }}"
-    #  credentials="PLACEHOLDER_LDAP_CN_ADMIN_PW"
-    #  tls_reqcert=never
-    idassert-passthru "dn.regex:.*"
-    # authz-regexp
-    #   uid=([^,]*),cn=(gssapi|saml|oauthbearer),cn=auth
-    #   ldap:///PLACEHOLDER_LDAP_BASEDN??sub?uid=$1
+    #   binddn="{{ include "nubusTemplates.ldapServer.ldap.adminDn" . }}"
+    #   credentials="PLACEHOLDER_LDAP_CN_ADMIN_PW"
+    #   tls_reqcert=never
+    # idassert-passthru "dn.regex:.*"
+    authz-regexp
+      uid=([^,]*),cn=(gssapi|saml|oauthbearer),cn=auth
+      ldap:///PLACEHOLDER_LDAP_BASEDN??sub?uid=$1
     access to * by * read
 
-    database ldap
-    suffix "cn=translog"
-    overlay constraint
-    uri {{ include "ldap-server.ldap.connection.uriSecondary" . }}
-    lastmod on
-    chase-referrals yes
-    rebind-as-user yes
-    idassert-passthru "dn.regex:.*"
-    access to * by * read
+    # database ldap
+    # suffix "cn=translog"
+    # overlay constraint
+    # uri {{ include "ldap-server.ldap.connection.uriSecondary" . }}
+    # lastmod on
+    # chase-referrals yes
+    # rebind-as-user yes
+    # idassert-passthru "dn.regex:.*"
+    # access to * by * read
 
 
     sasl-secprops none,minssf=0

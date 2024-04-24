@@ -202,7 +202,9 @@ data:
     syncrepl rid=1PLACEHOLDER_SERVER_IDPLACEHOLDER_REPLICATION_ID
       provider=$PRIMARY_LDAP_URI
       type=refreshAndPersist
-      interval=00:00:05:00
+      interval=00:00:00:10
+      network-timeout=0
+      timeout=1
       searchbase="PLACEHOLDER_LDAP_BASEDN"
       bindmethod=simple
       binddn="$SYNC_USER_DN"
