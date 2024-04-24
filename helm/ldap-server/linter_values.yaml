@@ -32,6 +32,7 @@ ldapServer:
     samlMetadataUrl: "http://localhost:8097/realms/ucs/protocol/saml/descriptor"
     samlMetadataUrlInternal: "http://keycloak/realms/ucs/protocol/saml/descriptor"
     samlServiceProviders: "http://localhost:8000/univention/saml/metadata,http://localhost:8000/auth/realms/ucs"
+    ldapBaseDn: "dc=organization,dc=intranet"
   credentialSecret:
     name: openldap-credentials
     key: adminPassword

@@ -21,7 +21,9 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
     {{- end }}
 spec:
+  type: "ClusterIP"
   clusterIP: "None"
+  publishNotReadyAddresses: true
   ports:
     {{- range $key, $value := .Values.service.ports }}
     - name: "{{ $key }}"

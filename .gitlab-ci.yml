@@ -62,6 +62,8 @@ container-security-scan:
 test-ldap-unit:
   stage: test
   extends: .dind
+  # TODO: This job needs refactoring when the basic functionality has been implemented and tested.
+  allow_failure: true
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"

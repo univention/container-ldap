@@ -108,6 +108,36 @@ spec:
             - name: proxy-scripts-volume
               mountPath: /scripts-proxy
           resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
+      {{- if .Values.waitForDependency.enabled }}
+        - name: "wait-for-saml-metadata"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.waitForDependency.image.registry .Values.global.imageRegistry }}/{{ .Values.waitForDependency.image.repository }}:{{ .Values.waitForDependency.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.waitForDependency.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          command:
+            - "/bin/bash"
+            - "/scripts/wait-for-saml-metadata.sh"
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.fullname" . }}
+          volumeMounts:
+            - name: scripts-volume
+              mountPath: /scripts
+            - name: "config-map-ucr-defaults"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base.conf"
+            {{- if (include "ldap-server.configMapUcr" .) }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base.conf"
+              subPath: "base.conf"
+            {{- end }}
+            {{- if (include "ldap-server.configMapUcrForced" .) }}
+            - name: "config-map-ucr-forced"
+              mountPath: "/etc/univention/base-forced.conf"
+              subPath: "base.conf"
+            {{- end }}
+      {{- end }}
       containers:
         - name: "openldap"
           {{- if .Values.containerSecurityContext.enabled }}
