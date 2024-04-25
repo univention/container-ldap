@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.12.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.11.0...v0.12.0) (2024-04-25)
+
+
+### Features
+
+* changes to support the refactored umbrella values in a nubus deployment ([04d3337](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/04d33379e77afe010cbefc970678be6080646b86))
+* export nubusTemplates.ldapNotifier.connection.host ([ad24c75](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ad24c75a65b813a416d28c88f93b6679f9bf73ab))
+* set additional nubusTemplates ([b2cb030](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/b2cb03069e016adaff58a4454faf9fe4cb707b09))
+
+
+### Bug Fixes
+
+* configMapForced default value, only use global values for baseDn and domainName, added adminDn template, set waitForDependency tag to latest ([61dc87f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/61dc87fae5fe1e2d2419fb36c4193a8e8bd38687))
+* typos, change samlMetadataUrl and samlMetadataUrlInternal to http protocol ([859a6ce](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/859a6cef26e679236b0eeb8a14025d6cc864aafd))
+
 ## [0.11.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.10.3...v0.11.0) (2024-04-19)
 
 
