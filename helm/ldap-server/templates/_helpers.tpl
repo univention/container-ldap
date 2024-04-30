@@ -145,3 +145,13 @@ key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Val
 {{- define "ldap-server.ldap.connection.uriSecondary" -}}
 {{- printf "%s://%s" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) (include "ldap-server.ldap.connection.serviceSecondary" .) -}}
 {{- end -}}
+
+{{- define "ldap-server.service.selector.serverType" -}}
+{{- if and .Values.replicaCountProxy (gt (int .Values.replicaCountProxy) 0) -}}
+proxy
+{{- else if and .Values.replicaCountSecondary (gt (int .Values.replicaCountSecondary) 0) -}}
+secondary
+{{- else -}}
+primary
+{{- end -}}
+{{- end -}}

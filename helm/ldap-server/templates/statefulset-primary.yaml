@@ -117,7 +117,7 @@ spec:
               mountPath: /target/etc/ldap
             - name: etc-univention-volume
               mountPath: /target/etc/univention
-          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
+          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
       {{- if and .Values.ldapServer.generateDHparam .Values.ldapServer.tls.enabled }}
         - name: "init-dh"
           {{- if .Values.containerSecurityContext.enabled }}
@@ -136,7 +136,7 @@ spec:
             {{- if .Values.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
-          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
+          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
       {{- end }}
       {{- if .Values.waitForDependency.enabled }}
         - name: "wait-for-saml-metadata"
@@ -167,6 +167,7 @@ spec:
               mountPath: "/etc/univention/base-forced.conf"
               subPath: "base.conf"
             {{- end }}
+          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
       {{- end }}
       containers:
         - name: "openldap"
@@ -201,9 +202,7 @@ spec:
               containerPort: {{ $value.containerPort }}
               protocol: {{ $value.protocol }}
             {{- end }}
-          {{- if .Values.resources }}
-          resources: {{- include "common.tplvalues.render" (dict "value" .Values.resources "context" .) | nindent 12 }}
-          {{- end }}
+          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
           {{- end }}

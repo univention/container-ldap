@@ -34,5 +34,5 @@ spec:
     {{- end }}
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
-    ldap-server-type: proxy
+    ldap-server-type: {{ include "ldap-server.service.selector.serverType" . }}
 ...

@@ -231,9 +231,15 @@ replicaCountPrimary: 1
 # -- Set the amount of replicas of the secondary statefulset.
 replicaCountSecondary: 1
 
+# -- Set the amount of replicas of the proxy deployment.
+replicaCountProxy: 1
+
 # Configure resource requests and limits.
 #
 # Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+resourcesPrimary: null
+resourcesSecondary: null
+resourcesProxy: null
 resources: {}
 
 # Configure resource requests and limits for initContainers

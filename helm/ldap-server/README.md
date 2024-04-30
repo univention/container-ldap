@@ -857,6 +857,15 @@ true
 			<td>Set the amount of replicas of the primary statefulset.</td>
 		</tr>
 		<tr>
+			<td>replicaCountProxy</td>
+			<td>int</td>
+			<td><pre lang="json">
+1
+</pre>
+</td>
+			<td>Set the amount of replicas of the proxy deployment.</td>
+		</tr>
+		<tr>
 			<td>replicaCountSecondary</td>
 			<td>int</td>
 			<td><pre lang="json">
@@ -870,6 +879,33 @@ true
 			<td>object</td>
 			<td><pre lang="json">
 {}
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>resourcesPrimary</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>resourcesProxy</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>resourcesSecondary</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
 </pre>
 </td>
 			<td></td>

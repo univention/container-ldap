@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+{{- required "# pre-flight check for ldap-server failed. replicaCountPrimary must be defined." .Values.replicaCountPrimary -}}
+{{- required "# pre-flight check for ldap-server failed. replicaCountSecondary must be defined." .Values.replicaCountSecondary -}}
+{{- required "# pre-flight check for ldap-server failed. replicaCountProxy must be defined." .Values.replicaCountProxy -}}
+{{- $replicaCountPrimary := int .Values.replicaCountPrimary -}}
+{{- $replicaCountSecondary := int .Values.replicaCountSecondary -}}
+{{- $replicaCountProxy := int .Values.replicaCountProxy -}}
+{{- if not (gt $replicaCountPrimary 0) -}}
+{{- required "# pre-flight check for ldap-server failed. replicaCountPrimary must me larger than 0." .Values.failed -}}
+{{- end -}}
+{{- if not (or (le $replicaCountProxy 0) (gt $replicaCountSecondary 0)) -}}
+{{- required "# pre-flight check for ldap-server failed. If replicaCountProxy is larger than 0, replicaCountSecondary must be larger than 0." .Values.failed -}}
+{{- end -}}
