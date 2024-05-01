@@ -6,8 +6,8 @@
 # Global variables
 ###############################################################################
 
-ARG UCS_BASE_IMAGE_TAG=0.12.0-build-2024-04-18
-ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-506
+ARG UCS_BASE_IMAGE_TAG=0.12.0-build-2024-04-25
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-507
 
 ARG PORTAL_UDM_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/components/univention-portal/portal-udm-extensions
 ARG PORTAL_UDM_EXTENSIONS_TAG=0.10.0
