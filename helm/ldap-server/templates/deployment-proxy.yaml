@@ -28,8 +28,8 @@ spec:
       annotations:
         checksum/configmap: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/configmap-proxy: {{ include (print .Template.BasePath "/configmap-proxy.yaml") . | sha256sum }}
-        {{- if .Values.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" .) | nindent 8 }}
+        {{- if .Values.podAnnotationsProxy }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotationsProxy "context" .) | nindent 8 }}
         {{- end }}
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}

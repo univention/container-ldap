@@ -168,7 +168,9 @@ persistence:
 
 # -- Pod Annotations.
 # Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-podAnnotations: {}
+podAnnotationsPrimary: {}
+podAnnotationsSecondary: {}
+podAnnotationsProxy: {}
 
 # -- Pod Labels.
 # Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/

@@ -62,8 +62,8 @@ spec:
       annotations:
         checksum/configmap: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/configmap-primary: {{ include (print .Template.BasePath "/configmap-primary.yaml") . | sha256sum }}
-        {{- if .Values.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" .) | nindent 8 }}
+        {{- if .Values.podAnnotationsPrimary }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotationsPrimary "context" .) | nindent 8 }}
         {{- end }}
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}

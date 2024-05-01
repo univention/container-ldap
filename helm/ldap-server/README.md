@@ -663,13 +663,31 @@ true
 			<td>The (storage) class of PV.</td>
 		</tr>
 		<tr>
-			<td>podAnnotations</td>
+			<td>podAnnotationsPrimary</td>
 			<td>object</td>
 			<td><pre lang="json">
 {}
 </pre>
 </td>
 			<td>Pod Annotations. Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/</td>
+		</tr>
+		<tr>
+			<td>podAnnotationsProxy</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>podAnnotationsSecondary</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>podLabels</td>
