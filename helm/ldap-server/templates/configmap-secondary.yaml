@@ -180,7 +180,6 @@ data:
 
     # Write the modified slapd.conf
     echo -e "${modified_slapd_conf}" > /etc/ldap/slapd.conf
-    cat /etc/ldap/slapd.conf
     # slaptest -f /etc/ldap/slapd.conf
 ...
 ---
