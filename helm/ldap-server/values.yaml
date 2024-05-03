@@ -227,6 +227,10 @@ readinessProbe:
   tcpSocket:
     port: 389
 
+# -- HA Mode
+# If enabled, will override the replicaCountPrimary, replicaCountSecondary and replicaCountProxy values with the minimum viable values for a HA setup (if specified values are otherwise insufficient).
+highAvailabilityMode: false
+
 # -- Set the amount of replicas of the primary statefulset.
 replicaCountPrimary: 1
 

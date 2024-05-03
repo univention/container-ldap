@@ -155,3 +155,33 @@ secondary
 primary
 {{- end -}}
 {{- end -}}
+
+{{- define "ldap-server.replicaCountPrimary" -}}
+{{- if and .Values.replicaCountPrimary (gt (int .Values.replicaCountPrimary) 1) -}}
+{{- int .Values.replicaCountPrimary -}}
+{{- else if .Values.highAvailabilityMode -}}
+2
+{{- else -}}
+{{- int .Values.replicaCountPrimary -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "ldap-server.replicaCountSecondary" -}}
+{{- if and .Values.replicaCountSecondary (gt (int .Values.replicaCountSecondary) 1) -}}
+{{- int .Values.replicaCountSecondary -}}
+{{- else if .Values.highAvailabilityMode -}}
+3
+{{- else -}}
+{{- int .Values.replicaCountSecondary -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "ldap-server.replicaCountProxy" -}}
+{{- if and .Values.replicaCountProxy (gt (int .Values.replicaCountProxy) 1) -}}
+{{- int .Values.replicaCountProxy -}}
+{{- else if .Values.highAvailabilityMode -}}
+3
+{{- else -}}
+{{- int .Values.replicaCountProxy -}}
+{{- end -}}
+{{- end -}}

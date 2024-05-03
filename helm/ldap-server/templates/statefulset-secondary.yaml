@@ -19,7 +19,7 @@ metadata:
   {{- end }}
 spec:
   serviceName: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
-  replicas: {{ .Values.replicaCountSecondary }}
+  replicas: {{ include "ldap-server.replicaCountSecondary" . }}
   podManagementPolicy: {{ .Values.podManagementPolicy | default "OrderedReady" }}
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:

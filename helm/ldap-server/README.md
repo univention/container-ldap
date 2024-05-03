@@ -319,6 +319,15 @@ false
 			<td>Indicates wether this chart is part of a Nubus deployment.</td>
 		</tr>
 		<tr>
+			<td>highAvailabilityMode</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td>HA Mode If enabled, will override the replicaCountPrimary, replicaCountSecondary and replicaCountProxy values with the minimum viable values for a HA setup (if specified values are otherwise insufficient).</td>
+		</tr>
+		<tr>
 			<td>imagePullSecrets</td>
 			<td>list</td>
 			<td><pre lang="json">

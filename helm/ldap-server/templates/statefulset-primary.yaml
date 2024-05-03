@@ -19,7 +19,7 @@ metadata:
   {{- end }}
 spec:
   serviceName: {{ printf "%s-primary" (include "common.names.fullname" .) }}
-  replicas: {{ .Values.replicaCountPrimary }}
+  replicas: {{ include "ldap-server.replicaCountPrimary" . }}
   podManagementPolicy: {{ .Values.podManagementPolicyPrimary | default "OrderedReady" }}
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
