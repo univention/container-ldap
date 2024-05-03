@@ -227,6 +227,7 @@ setup_tls() {
 prepare_slapd_run() {
   # Adding `-d LOG_LEVEL` here overrides earlier settings in /etc/ldap/slapd.conf,
   # but without `-d` slapd would detach and the container would exit.
+  export LOG_LEVEL=${LOG_LEVEL:-}
 
   if [ -z "${LOG_LEVEL}" ]; then
     echo "Setting log level from UCS."
