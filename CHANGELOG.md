@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.12.0...v0.13.0) (2024-05-07)
+
+
+### Features
+
+* Update base image to 5.0-7 ([689b4b6](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/689b4b6f68e42f4b3db2d792c558ea7c8b5b1d8c))
+
 ## [0.12.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.11.0...v0.12.0) (2024-04-25)
 
 
