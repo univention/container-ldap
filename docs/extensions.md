@@ -1,7 +1,6 @@
 
-====================================
- Schema Extensions (UDM Extensions)
-====================================
+Schema Extensions (UDM Extensions)
+==================================
 
 The Univention Directory Manager (UDM) does support extensions which also can
 include LDAP related extensions:
@@ -19,7 +18,7 @@ artifact, the concept of plugging in extensions at runtime does not fit
 directly.
 
 The currently included extensions can be inspected in the file
-:repo-file:`docker/ldap/Dockerfile`.
+`docker/ldap/Dockerfile`.
 
 Further details regarding the UDM are available at the following URL:
 https://docs.software-univention.de/developer-reference/5.0/en/udm/index.html

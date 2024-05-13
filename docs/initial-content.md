@@ -1,6 +1,5 @@
-=================
- Initial content
-=================
+Initial content
+===============
 
 The content of the LDAP directory is initialized during the first start of the
 container `ldap-server` through its `ENTRYPOINT` script.
