@@ -72,13 +72,125 @@ helm uninstall ldap-server
 			<td>Additional custom labels to add to all deployed objects.</td>
 		</tr>
 		<tr>
-			<td>affinity</td>
+			<td>affinityPrimary</td>
 			<td>object</td>
 			<td><pre lang="json">
-{}
+{
+  "podAntiAffinity": {
+    "preferredDuringSchedulingIgnoredDuringExecution": [
+      {
+        "podAffinityTerm": {
+          "labelSelector": {
+            "matchExpressions": [
+              {
+                "key": "ldap-server-type",
+                "operator": "In",
+                "values": [
+                  "primary"
+                ]
+              }
+            ]
+          },
+          "topologyKey": "kubernetes.io/hostname"
+        },
+        "weight": 100
+      }
+    ]
+  }
+}
 </pre>
 </td>
 			<td>Affinity for pod assignment. Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity Note: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set.</td>
+		</tr>
+		<tr>
+			<td>affinityProxy.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].key</td>
+			<td>string</td>
+			<td><pre lang="json">
+"ldap-server-type"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinityProxy.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].operator</td>
+			<td>string</td>
+			<td><pre lang="json">
+"In"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinityProxy.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].values[0]</td>
+			<td>string</td>
+			<td><pre lang="json">
+"proxy"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinityProxy.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey</td>
+			<td>string</td>
+			<td><pre lang="json">
+"kubernetes.io/hostname"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinityProxy.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight</td>
+			<td>int</td>
+			<td><pre lang="json">
+100
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinitySecondary.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].key</td>
+			<td>string</td>
+			<td><pre lang="json">
+"ldap-server-type"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinitySecondary.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].operator</td>
+			<td>string</td>
+			<td><pre lang="json">
+"In"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinitySecondary.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].values[0]</td>
+			<td>string</td>
+			<td><pre lang="json">
+"secondary"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinitySecondary.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey</td>
+			<td>string</td>
+			<td><pre lang="json">
+"kubernetes.io/hostname"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinitySecondary.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight</td>
+			<td>int</td>
+			<td><pre lang="json">
+100
+</pre>
+</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>containerSecurityContext.allowPrivilegeEscalation</td>

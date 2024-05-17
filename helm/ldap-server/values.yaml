@@ -46,7 +46,42 @@ additionalLabels: {}
 # -- Affinity for pod assignment.
 # Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 # Note: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set.
-affinity: {}
+affinityPrimary:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: ldap-server-type
+                operator: In
+                values:
+                  - primary
+          topologyKey: kubernetes.io/hostname
+affinitySecondary:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: ldap-server-type
+                operator: In
+                values:
+                  - secondary
+          topologyKey: kubernetes.io/hostname
+affinityProxy:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: ldap-server-type
+                operator: In
+                values:
+                  - proxy
+          topologyKey: kubernetes.io/hostname
 
 # Security Context.
 # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/

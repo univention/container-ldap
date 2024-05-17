@@ -34,10 +34,10 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
           matchExpressions:
-            - key: app.kubernetes.io/name
+            - key: ldap-server-type
               operator: In
               values:
-                - ldap-server
+                - primary
         topologyKey: kubernetes.io/hostname
 
 environment: {}
