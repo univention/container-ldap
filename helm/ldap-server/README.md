@@ -999,7 +999,7 @@ true
 			<td>replicaCountProxy</td>
 			<td>int</td>
 			<td><pre lang="json">
-1
+0
 </pre>
 </td>
 			<td>Set the amount of replicas of the proxy deployment.</td>
@@ -1008,7 +1008,7 @@ true
 			<td>replicaCountSecondary</td>
 			<td>int</td>
 			<td><pre lang="json">
-1
+0
 </pre>
 </td>
 			<td>Set the amount of replicas of the secondary statefulset.</td>

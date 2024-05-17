@@ -118,16 +118,16 @@ key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Val
 
 {{- define "ldap-server.configMapUcrDefaults" -}}
     {{- $nubusDefaultConfigMapUcrDefaults := printf "%s-stack-data-ums-ucr" .Release.Name -}}
-    {{- coalesce .Values.configMapUcrDefaults .Values.global.configMapUcrDefaults $nubusDefaultConfigMapUcrDefaults | required ".Values.global.configMapUcrDefaults must be defined." -}}
+    {{- tpl (coalesce .Values.configMapUcrDefaults .Values.global.configMapUcrDefaults $nubusDefaultConfigMapUcrDefaults | required ".Values.global.configMapUcrDefaults must be defined.") . -}}
 {{- end -}}
 
 {{- define "ldap-server.configMapUcr" -}}
     {{- $nubusDefaultConfigMapUcr := printf "%s-stack-data-ums-ucr" .Release.Name -}}
-    {{- coalesce .Values.configMapUcr .Values.global.configMapUcr $nubusDefaultConfigMapUcr -}}
+    {{- tpl (coalesce .Values.configMapUcr .Values.global.configMapUcr $nubusDefaultConfigMapUcr) . -}}
 {{- end -}}
 
 {{- define "ldap-server.configMapUcrForced" -}}
-    {{- coalesce .Values.configMapUcrForced .Values.global.configMapUcrForced | default ""  -}}
+    {{- tpl (coalesce .Values.configMapUcrForced .Values.global.configMapUcrForced | default "" ) . -}}
 {{- end -}}
 
 {{- define "ldap-server.ldap.connection.servicePrimary" -}}
@@ -144,16 +144,6 @@ key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Val
 
 {{- define "ldap-server.ldap.connection.uriSecondary" -}}
 {{- printf "%s://%s" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) (include "ldap-server.ldap.connection.serviceSecondary" .) -}}
-{{- end -}}
-
-{{- define "ldap-server.service.selector.serverType" -}}
-{{- if and .Values.replicaCountProxy (gt (int .Values.replicaCountProxy) 0) -}}
-proxy
-{{- else if and .Values.replicaCountSecondary (gt (int .Values.replicaCountSecondary) 0) -}}
-secondary
-{{- else -}}
-primary
-{{- end -}}
 {{- end -}}
 
 {{- define "ldap-server.replicaCountPrimary" -}}
@@ -183,5 +173,16 @@ primary
 3
 {{- else -}}
 {{- int .Values.replicaCountProxy -}}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "ldap-server.service.selector.serverType" -}}
+{{- if gt (int (include "ldap-server.replicaCountProxy" .)) 0 -}}
+proxy
+{{- else if gt (int (include "ldap-server.replicaCountSecondary" .)) 0 -}}
+secondary
+{{- else -}}
+primary
 {{- end -}}
 {{- end -}}

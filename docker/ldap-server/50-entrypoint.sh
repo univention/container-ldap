@@ -230,7 +230,7 @@ prepare_slapd_run() {
   export LOG_LEVEL=${LOG_LEVEL:-}
 
   if [ -z "${LOG_LEVEL}" ]; then
-    echo "Setting log level from UCS."
+    echo "Setting OpenLDAP log level from UCS."
     LOG_LEVEL=$(echo -n -e '@%@ldap/debug/level@%@' | ucr-light-filter || true)
   fi
 

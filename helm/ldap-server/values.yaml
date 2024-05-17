@@ -270,10 +270,10 @@ highAvailabilityMode: false
 replicaCountPrimary: 1
 
 # -- Set the amount of replicas of the secondary statefulset.
-replicaCountSecondary: 1
+replicaCountSecondary: 0
 
 # -- Set the amount of replicas of the proxy deployment.
-replicaCountProxy: 1
+replicaCountProxy: 0
 
 # Configure resource requests and limits.
 #

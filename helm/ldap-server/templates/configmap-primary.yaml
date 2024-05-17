@@ -24,7 +24,7 @@ data:
   ADMIN_DN: {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
   LDAP_PORT: {{ include "nubusTemplates.ldapServer.ldap.connection.port" . | quote }}
   LDAP_PROTOCOL: {{ include "nubusTemplates.ldapServer.ldap.connection.protocol" . | quote }}
-  REPLICACOUNT: {{ .Values.replicaCountPrimary | quote }}
+  REPLICACOUNT: {{ include "ldap-server.replicaCountPrimary" . | quote }}
 ...
 ---
 kind: "ConfigMap"
@@ -120,7 +120,6 @@ data:
       # The ucs based slapd.conf does not allow for networked admin access to cn=internal, this adds it.
       # Check if the current line contains 'by sockname="PATH=/var/run/slapd/ldapi" write', if true, append the acl.
       if ([[ "${suffix}" == "cn=internal" ]] || [[ "${suffix}" == "cn=translog" ]]) && echo "${line}" | grep -q '^[[:space:]]*by sockname="PATH=/var/run/slapd/ldapi" write'; then
-      #if echo "${line}" | grep -q '^[[:space:]]*by sockname="PATH=/var/run/slapd/ldapi" write'; then
         echo "The suffix is ${suffix} and this line contains the socket acl."
         echo "Line: ${line}"
         # Append the syncrepl configuration to the modified slapd.conf
@@ -175,7 +174,7 @@ data:
     overlay syncprov
     syncprov-checkpoint 100 10
     syncprov-sessionlog 100
-    {{- if and .Values.replicaCountPrimary (gt (int .Values.replicaCountPrimary) 1) }}
+    {{- if gt (int (include "ldap-server.replicaCountPrimary" . )) 1 }}
     syncrepl rid=00PLACEHOLDER_REPLICATION_ID
       provider=$PRIMARY_LDAP_URI
       type=refreshAndPersist
