@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.14.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.13.0...v0.14.0) (2024-05-21)
+
+
+### Features
+
+* add back_ldap proxy configuration ([0569ccf](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/0569ccf727f7ba93e14339d42e5d0a1537002be0))
+* allow for separate podAnnotations for primaries, secondaries and proxies ([e990b65](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e990b65369caa44b1d6f571fd053d8ed1d201b2b))
+* allow for simplified HA configuration ([3ce1263](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/3ce12639a4c3690af77edcc3234fee90a01ca57c))
+* make primary a scalable multi-master configuration ([156c8b0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/156c8b00be046440bef9579227f47365df10f65a))
+* split into primary and secondary instances, secondary instances scalable ([026c0d9](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/026c0d98e6405c1e8bda97d3c09153d3334b899a))
+* support for templating of global.configMapUcr ([f48733f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/f48733f18e50e98c61f2994831348f57587ee679))
+* type based replicacounts and resource specification, pre-flight check, service selector based on replicacounts ([00b530a](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/00b530a23a7e48e7ea99620cec09acb17a396cd5))
+
+
+### Bug Fixes
+
+* add LOG_LEVEL variable definition to entrypoint script ([290214d](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/290214de0e95fded5a8500f245fb91c1a8db81e3))
+* add sasl proxy authentication support ([85065a1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/85065a1c35509713bc1e64c6ca1612177808d915))
+* fine-tuning network values for syncrepl ([4718fad](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/4718fad8291a2fa9a1cb2af6f963c97a7520c8c8))
+* pod affinities and antiaffinities ([9b9c27d](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9b9c27ddcef4e9e2d64411fa7bd7d3913b09e28e))
+
 ## [0.13.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.12.0...v0.13.0) (2024-05-07)
 
 
