@@ -14,8 +14,10 @@ WORKDIR ${WORKDIR}
 RUN apt-get -qq update \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
       python3-pip=23.* \
-      build-essential \
-      python3-dev libldap2-dev libsasl2-dev \
+      build-essential=12.9* \
+      python3-dev=3.11.* \
+      libldap2-dev=2.5.* \
+      libsasl2-dev=2.1.* \
     && rm -fr /var/lib/apt/lists/* /var/cache/apt/archives/*
 ENV \
     PATH="/root/.local/bin:${PATH}" \
@@ -36,10 +38,9 @@ ENV \
 RUN pip3 install --break-system-packages --no-cache-dir poetry==1.6.1
 
 # copy source code
-COPY ./src/shared ${WORKDIR}/shared
-COPY ./src/client ${WORKDIR}/client
-COPY ./src/poetry.lock \
-     ./src/pyproject.toml \
+COPY ./univention ${WORKDIR}/univention
+COPY ./poetry.lock \
+     ./pyproject.toml \
      ${WORKDIR}/
 
 # install dependencies
