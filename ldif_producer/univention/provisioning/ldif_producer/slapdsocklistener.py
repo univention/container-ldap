@@ -83,11 +83,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             self.len_temporary_dn_suffix = len(temporary_dn_string) + len(ldap_base)
 
     def is_temporary_dn(self, request):
-        return (
-            "," in request.dn[self.len_temporary_dn_suffix :]
-            if self.ignore_temporary
-            else False
-        )
+        return "," in request.dn[self.len_temporary_dn_suffix :] if self.ignore_temporary else False
 
     def do_add(self, request):
         """

@@ -39,12 +39,12 @@ import ldap3
 # on the same network as the LDAP server and it is accessible
 # by the service name provided by docker-compose
 # otherwise assume that ldap server is accessible locally
-LDAP_SERVICE_NAME = 'ldap-server'
-LOCAL_ADDRESS = '127.0.0.1'
+LDAP_SERVICE_NAME = "ldap-server"
+LOCAL_ADDRESS = "127.0.0.1"
 LDAP_SERVER = LOCAL_ADDRESS if os.getuid() else LDAP_SERVICE_NAME
-LDAP_URI = f'ldap://{LDAP_SERVER}:389'
+LDAP_URI = f"ldap://{LDAP_SERVER}:389"
 
-LDAP_BASE_DN = 'dc=univention-organization,dc=intranet'
+LDAP_BASE_DN = "dc=univention-organization,dc=intranet"
 EMPTY_DSA_INFO_ATTRIBUTES = {
     "altServer": [],
     "configContext": [""],
@@ -80,7 +80,7 @@ def is_ldap_bind_successful(user, password):
         return False
 
 
-def ldap_search(user, password, search_base, search_filter='(objectClass=*)'):
+def ldap_search(user, password, search_base, search_filter="(objectClass=*)"):
     """Checks whether LDAP Search works with the provided arguments"""
     try:
         with ldap3.Connection(
@@ -91,7 +91,7 @@ def ldap_search(user, password, search_base, search_filter='(objectClass=*)'):
             conn.search(search_base=search_base, search_filter=search_filter)
             return conn.entries
     except ldap3.core.exceptions.LDAPBindError:
-        return ['LDAPBindError']
+        return ["LDAPBindError"]
 
 
 def ldap_add(user, password, ldap_dn, object_class=None, attributes=None):
@@ -116,19 +116,17 @@ def ldap_modify(user, password, ldap_dn, updates):
         return True
 
 
-def ldap_search_without_bind(search_base, search_filter='(objectClass=*)'):
+def ldap_search_without_bind(search_base, search_filter="(objectClass=*)"):
     """Checks whether LDAP Search works without authentication"""
     return ldap_operation_without_bind(
-        lambda conn: conn.
-        search(search_base=search_base, search_filter=search_filter),
+        lambda conn: conn.search(search_base=search_base, search_filter=search_filter),
     )
 
 
 def ldap_add_without_bind(ldap_dn, object_class=None, attributes=None):
     """Checks whether LDAP Add works without authentication"""
     return ldap_operation_without_bind(
-        lambda conn: conn.
-        add(dn=ldap_dn, object_class=object_class, attributes=attributes),
+        lambda conn: conn.add(dn=ldap_dn, object_class=object_class, attributes=attributes),
     )
 
 
@@ -144,26 +142,26 @@ def ldap_operation_without_bind(operation):
     try:
         with ldap3.Connection(
             server=server,
-            auto_bind='NONE',
-            authentication='ANONYMOUS',
+            auto_bind="NONE",
+            authentication="ANONYMOUS",
             raise_exceptions=True,
         ) as conn:
             conn.open()
             operation(conn)
             return conn.result
     except ldap3.core.exceptions.LDAPStrongerAuthRequiredResult:
-        return ['LDAPStrongerAuthRequiredResult']
+        return ["LDAPStrongerAuthRequiredResult"]
     except ldap3.core.exceptions.LDAPChangeError:
-        return ['LDAPChangeError']
+        return ["LDAPChangeError"]
     except ldap3.core.exceptions.LDAPInsufficientAccessRightsResult:
-        return ['LDAPInsufficientAccessRightsResult']
+        return ["LDAPInsufficientAccessRightsResult"]
 
 
 def get_all_ldap_server_info(user, password):
     """Returns the DSA info from the LDAP server via TLS if possible
-       it is important to use TLS, because for example the advertised
-       supportedsaslmechanisms are typically different depending on
-       whether TLS is in use or not (ldaps:// vs ldap://)
+    it is important to use TLS, because for example the advertised
+    supportedsaslmechanisms are typically different depending on
+    whether TLS is in use or not (ldaps:// vs ldap://)
     """
     tls_protocol_version = ssl.PROTOCOL_TLSv1_2
 
@@ -189,8 +187,7 @@ def get_all_ldap_server_info(user, password):
         # TLS is a MUST for retrieving the correct DsaInfo
         if not conn.server.ssl:
             raise ValueError(
-                'Connection does not use the expected TLS '
-                f'version: {str(tls_protocol_version)}',
+                "Connection does not use the expected TLS " f"version: {str(tls_protocol_version)}",
             )
         return tmp_server.info
     return ldap3.DsaInfo(EMPTY_DSA_INFO_ATTRIBUTES, None)

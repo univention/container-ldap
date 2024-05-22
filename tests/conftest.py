@@ -82,8 +82,7 @@ def container(connection, test_dn):
     writer.commit()
     if writer.failed:
         print(writer.errors)
-    assert not writer.failed, \
-        "Creating the container in LDAP failed, manual cleanup required."
+    assert not writer.failed, "Creating the container in LDAP failed, manual cleanup required."
 
     yield testrunner_container
 
@@ -93,5 +92,4 @@ def container(connection, test_dn):
 
     if writer.failed:
         print(writer.errors)
-    assert not writer.failed, \
-        "Cleanup from LDAP failed, tests are leaking. Manual cleanup required."
+    assert not writer.failed, "Cleanup from LDAP failed, tests are leaking. Manual cleanup required."

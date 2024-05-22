@@ -66,33 +66,21 @@ repos:
       - id: "addlicense"
         name: "Check or add license headers to files"
 
-  # TODO: add yamllint
-
-  - repo: "https://github.com/google/yapf"
-    rev: "v0.40.2"
+  # "Ruff Python linter"
+  - repo: "https://github.com/charliermarsh/ruff-pre-commit"
+    rev: "v0.0.287"
     hooks:
-      - id: "yapf"
-        name: "yapf"
+      - id: "ruff"
+      - id: "ruff"
+        alias: "ruff-fix"
+        stages: ["manual"]
+        args: ["--fix"]
 
-  # TODO: add ruff
-
-  # TODO: add autopep8
-
-  - repo: "https://github.com/PyCQA/flake8"
-    rev: "6.1.0"
+  # "Black Python formatter"
+  - repo: "https://github.com/psf/black"
+    rev: "23.7.0"
     hooks:
-      - id: "flake8"
-        name: "flake8"
-
-  - repo: "https://github.com/pylint-dev/pylint"
-    rev: "v3.0.3"
-    hooks:
-      - id: "pylint"
-        name: "pylint"
-        additional_dependencies:
-          - "ldap3"
-          - "pytest"
-          - "sphinx"
+      - id: "black"
 
   # TODO: Update hadolint >= v2.12.0 from https://github.com/hadolint/hadolint
   - repo: "https://gitlab.com/univention/pre-commit-hooks/docker-pre-commit"

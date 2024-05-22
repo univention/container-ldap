@@ -192,10 +192,7 @@ def run_filter(template, directory):
             if line in (
                 "from univention.config_registry.handler import run_filter\n",
                 "from univention.lib.misc import custom_groupname\n",
-                (
-                    "from univention.lib.misc import "
-                    "custom_username, custom_groupname\n"
-                ),
+                ("from univention.lib.misc import " "custom_username, custom_groupname\n"),
             ):
                 continue
             to_be_compiled += line
