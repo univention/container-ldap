@@ -231,7 +231,7 @@ def main():
 
     ldaphandler = LDAPHandler(ldap_base, ldap_threads, ignore_temporary)
     with SlapdSockServer(
-        server_address="/var/lib/univention-ldap/slapd-sock",
+        server_address="/var/lib/univention-ldap/slapd-sock/sock",
         handler_class=ldaphandler,
         logger=logger,
         average_count=10,
