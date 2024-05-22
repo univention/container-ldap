@@ -396,7 +396,7 @@ dhInitContainer:
   image:
     imagePullPolicy: "IfNotPresent"
     registry: "docker.io"
-    repository: "alpine/openssl"
+    repository: "nubus-dev/images/openssl"
     tag: "3.1.4@sha256:974b4593b02447256622dce7b930b98764441dab39c5ca729381aa35332d6778"
 
 # Configures an init container that waits for keycloak to be ready
@@ -404,8 +404,8 @@ waitForDependency:
   enabled: true
   image:
     imagePullPolicy: "IfNotPresent"
-    registry: "gitregistry.knut.univention.de"
-    repository: "univention/components/univention-portal/wait-for-dependency"
+    registry: "artifacts.software-univention.de"
+    repository: "nubus-dev/images/wait-for-dependency"
     tag: "latest"
 
 # Definitions regarding to OpenLDAP deployment/configuration
@@ -414,8 +414,8 @@ ldapServer:
     # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
     imagePullPolicy: "IfNotPresent"
     # -- Container registry address. This setting has higher precedence than global.registry.
-    registry: "gitregistry.knut.univention.de"
-    repository: "univention/customers/dataport/upx/container-ldap/ldap-server"
+    registry: "artifacts.software-univention.de"
+    repository: "nubus-dev/images/ldap-server"
     tag: "latest"
   # Configuration regarding OpenLDAP
   config:

@@ -290,7 +290,7 @@ true
 			<td>dhInitContainer.image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
-"alpine/openssl"
+"nubus-dev/images/openssl"
 </pre>
 </td>
 			<td></td>
@@ -542,7 +542,7 @@ true
 			<td>ldapServer.image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
-"gitregistry.knut.univention.de"
+"artifacts.software-univention.de"
 </pre>
 </td>
 			<td>Container registry address. This setting has higher precedence than global.registry.</td>
@@ -551,7 +551,7 @@ true
 			<td>ldapServer.image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
-"univention/customers/dataport/upx/container-ldap/ldap-server"
+"nubus-dev/images/ldap-server"
 </pre>
 </td>
 			<td></td>
@@ -1278,7 +1278,7 @@ true
 			<td>waitForDependency.image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
-"gitregistry.knut.univention.de"
+"artifacts.software-univention.de"
 </pre>
 </td>
 			<td></td>
@@ -1287,7 +1287,7 @@ true
 			<td>waitForDependency.image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
-"univention/components/univention-portal/wait-for-dependency"
+"nubus-dev/images/wait-for-dependency"
 </pre>
 </td>
 			<td></td>

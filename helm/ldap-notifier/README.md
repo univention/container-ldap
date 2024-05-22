@@ -170,7 +170,7 @@ false
 			<td>image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
-"gitregistry.knut.univention.de"
+"artifacts.software-univention.de"
 </pre>
 </td>
 			<td></td>
@@ -179,7 +179,7 @@ false
 			<td>image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
-"univention/customers/dataport/upx/container-ldap/ldap-notifier"
+"nubus-dev/images/ldap-notifier"
 </pre>
 </td>
 			<td></td>

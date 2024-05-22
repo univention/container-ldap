@@ -61,8 +61,8 @@ ldapNotifier:
 image:
   pullPolicy: "IfNotPresent"
   pullSecrets: []
-  registry: "gitregistry.knut.univention.de"
-  repository: "univention/customers/dataport/upx/container-ldap/ldap-notifier"
+  registry: "artifacts.software-univention.de"
+  repository: "nubus-dev/images/ldap-notifier"
   tag: "latest"
   ## Define image sha256 as an alternative to `tag`
   # sha256:
