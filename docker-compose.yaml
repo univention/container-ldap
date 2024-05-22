@@ -20,6 +20,20 @@ services:
     - ldap-shared-data:/var/lib/univention-ldap/:rw
     - ldap-shared-run:/var/run/slapd/:ro
 
+  ldif-producer:
+    platform: linux/amd64
+    image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldif-producer:latest
+    build:
+      dockerfile: ../docker/ldif-producer/Dockerfile
+      context: ./ldif_producer
+    environment:
+      ldap_base: "dc=univention-organization,dc=intranet"
+      ldap_threads: 4
+      slapdsocklistener_ignore_temporary: true
+    volumes:
+    - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
+    - ldap-shared-data:/var/lib/univention-ldap/:rw
+
   ldap-server:
     platform: linux/amd64
     image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-server:latest

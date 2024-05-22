@@ -47,6 +47,7 @@ from slapdsock.message import CONTINUE_RESPONSE
 from ldap0.res import decode_response_ctrls
 from ldap0.controls.readentry import PostReadControl, PreReadControl
 
+
 class ReasonableSlapdSockHandler(SlapdSockHandler):
     def __call__(self, *args, **kwargs):
         """
@@ -82,7 +83,11 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             self.len_temporary_dn_suffix = len(temporary_dn_string) + len(ldap_base)
 
     def is_temporary_dn(self, request):
-        return "," in request.dn[self.len_temporary_dn_suffix :] if self.ignore_temporary else False
+        return (
+            "," in request.dn[self.len_temporary_dn_suffix :]
+            if self.ignore_temporary
+            else False
+        )
 
     def do_add(self, request):
         """
@@ -191,7 +196,10 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                     self._log(logging.INFO, "PostRead entry_as = %s", ctrl.res.entry_as)
                 elif isinstance(ctrl, PreReadControl):
                     self._log(logging.INFO, "PreRead entry_as = %s", ctrl.res.entry_as)
-            self._log(logging.INFO, "Call NATS for %s operation on dn = %s" % (reqtype, request.dn))
+            self._log(
+                logging.INFO,
+                "Call NATS for %s operation on dn = %s" % (reqtype, request.dn),
+            )
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
         resptime = time.time()
@@ -222,7 +230,7 @@ def main():
     logger.setLevel(logging.INFO)
 
     ldap_base = os.environ["ldap_base"]
-    ldap_threads = os.environ["ldap_threads"]
+    ldap_threads = int(os.environ["ldap_threads"])
     ignore_temporary = bool(os.environ["slapdsocklistener_ignore_temporary"])
 
     ldaphandler = LDAPHandler(ldap_base, ldap_threads, ignore_temporary)

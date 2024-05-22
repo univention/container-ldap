@@ -43,6 +43,7 @@ import re
 
 class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
     """Container-class to hold UCR items"""
+
     def add_file(self, filename):
         """Read the given UCR configuration file and add the settings to the
         registry."""
@@ -70,12 +71,12 @@ class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
             if value is None:
                 return default
         return value.lower() in (
-            'yes',
-            'true',
-            '1',
-            'enable',
-            'enabled',
-            'on',
+            "yes",
+            "true",
+            "1",
+            "enable",
+            "enabled",
+            "on",
         )
 
     def is_false(self, key, default=None, value=None):
@@ -86,12 +87,12 @@ class Registry(collections.UserDict):  # pylint: disable=too-many-ancestors
             if value is None:
                 return default
         return value.lower() in (
-            'no',
-            'false',
-            '0',
-            'disable',
-            'disabled',
-            'off',
+            "no",
+            "false",
+            "0",
+            "disable",
+            "disabled",
+            "off",
         )
 
 
@@ -103,7 +104,7 @@ config_registry.add_file("/etc/univention/base-forced.conf")
 
 # TODO: Eventually admit that it's not
 #       univention-config-registry anymore
-WARNING_TEXT = '''\
+WARNING_TEXT = """\
 # Warning: This file is auto-generated and might be overwritten by
 #          univention-config-registry.
 #          Please edit the following file(s) instead:
@@ -111,7 +112,7 @@ WARNING_TEXT = '''\
 #          univention-config-registry ueberschrieben werden.
 #          Bitte bearbeiten Sie an Stelle dessen die folgende(n) Datei(en):
 #
-'''  # noqa: E101
+"""  # noqa: E101
 
 
 # TODO: Check if full porting of warning_string() is needed
@@ -121,13 +122,13 @@ def warning_string():
     path = "/etc/univention/templates/files/etc/ldap/slapd.conf.d/"
     for file_name in sorted(os.listdir(path)):
         file_path = os.path.join(path, file_name)
-        string += f'# \t{file_path}\n'
+        string += f"# \t{file_path}\n"
     return string
 
 
 def resolve_variable(line):
     """Replaces a UCR-Template-variable with a value from UCR"""
-    VARIABLE_PATTERN = re.compile('@%@([^@]+)@%@')
+    VARIABLE_PATTERN = re.compile("@%@([^@]+)@%@")
     return VARIABLE_PATTERN.sub(lambda x: config_registry[x.group(1)], line)
 
 
@@ -150,30 +151,30 @@ def run_filter(template, directory):
 
     buf = io.StringIO()
     for line in template.splitlines():
-        line += '\n'
+        line += "\n"
         # The original implementation is in:
         # base/univention-config-registry/python/
         # univention/config_registry/handler.py
-        if line == '@%@UCRWARNING=# @%@\n':
+        if line == "@%@UCRWARNING=# @%@\n":
             print(warning_string(), file=buf)
             continue
 
-        if '@%@' in line:
+        if "@%@" in line:
             line = resolve_variable(line)
 
-        if line == '@!@\n':
+        if line == "@!@\n":
             if not inside_section:
                 inside_section = True
 
             else:
 
                 def print_wrapper(*_args, **kwargs):
-                    kwargs.setdefault('file', buf)
+                    kwargs.setdefault("file", buf)
                     print(*_args, **kwargs)
 
                 inside_section = False
                 exec(  # pylint: disable=exec-used
-                    ''.join(to_be_compiled),
+                    "".join(to_be_compiled),
                     {
                         "print": print_wrapper,
                         "custom_groupname": custom_groupname,
@@ -182,37 +183,37 @@ def run_filter(template, directory):
                         "run_filter": run_filter,
                     },
                 )
-                print('', file=buf)
+                print("", file=buf)
                 to_be_compiled = []
 
         elif inside_section:
             # Workaround for some import that doesn't do much anyway
             # TODO: Complete this, if needed
             if line in (
-                'from univention.config_registry.handler import run_filter\n',
-                'from univention.lib.misc import custom_groupname\n',
+                "from univention.config_registry.handler import run_filter\n",
+                "from univention.lib.misc import custom_groupname\n",
                 (
-                    'from univention.lib.misc import '
-                    'custom_username, custom_groupname\n'
+                    "from univention.lib.misc import "
+                    "custom_username, custom_groupname\n"
                 ),
             ):
                 continue
             to_be_compiled += line
 
         else:
-            print(line, file=buf, end='')
+            print(line, file=buf, end="")
 
     # This function must return a decodable byte array
     # in order to maintain compatibilty with the
     # 25univention-ldap-server_local-schema fragment
     # which invokes this function and tries to decode the result
-    return buf.getvalue().encode('UTF-8')
+    return buf.getvalue().encode("UTF-8")
 
 
 def main():
     """main - what else, pylint?"""
-    print(run_filter(sys.stdin.read(), config_registry).decode('UTF-8'))
+    print(run_filter(sys.stdin.read(), config_registry).decode("UTF-8"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
