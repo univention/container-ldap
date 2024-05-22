@@ -35,8 +35,13 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 WORKDIR /home/deb_packages
 
-RUN \
-    apt-get download \
+
+RUN echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/all/" > /etc/apt/sources.list.d/ucs-unreleased.list \
+        && echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/\$(ARCH)/" >> /etc/apt/sources.list.d/ucs-unreleased.list \
+        && echo "deb-src [trusted=yes] http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/source/" >> /etc/apt/sources.list.d/ucs-unreleased.list \
+    && apt-get update -o Dir::Etc::sourcelist="sources.list.d/ucs-unreleased.list" \
+        -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" \
+    && apt-get download \
         univention-appcenter=9.0.* \
         univention-self-service-passwordreset-umc=5.0.* \
         univention-ldap-config=16.0.* \
@@ -181,18 +186,23 @@ COPY --from=ucs_builder \
 # and otherwise dlopen(,) complains about 'undefined symbol'
 COPY --from=ucs_builder /usr/lib/liblasso.so.3.13.0  /usr/lib/
 
-RUN \
+RUN echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/all/" > /etc/apt/sources.list.d/ucs-unreleased.list \
+        && echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/\$(ARCH)/" >> /etc/apt/sources.list.d/ucs-unreleased.list \
+        && echo "deb-src [trusted=yes] http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/source/" >> /etc/apt/sources.list.d/ucs-unreleased.list \
+    && apt-get update -o Dir::Etc::sourcelist="sources.list.d/ucs-unreleased.list" \
+        -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" \
+    \
     # ldconfig doesn't create this links as this directory
     # is not in any config under /etc/ld.so.conf.d/
-    ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+    && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 \
     \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
-        slapd=2.4.47+dfsg-3+deb10u7A~5.0.1.202205211909 \
-        ldap-utils=2.4.47+dfsg-3+deb10u7A~5.0.1.202205211909 \
+        slapd=2.4.* \
+        ldap-utils=2.4.* \
     && rm -rf /var/lib/apt/lists/* \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
