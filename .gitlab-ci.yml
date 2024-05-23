@@ -55,10 +55,6 @@ container-sign-external:
   parallel:
     matrix: *build-matrix
 
-container-security-scan:
-  parallel:
-    matrix: *build-matrix
-
 test-ldap-unit:
   stage: test
   extends: .dind
@@ -121,4 +117,8 @@ check-debian-updates:
     matrix: *publish-matrix
   variables:
     TARGET_IMAGE: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:latest"
+
+package-helm-charts:
+  variables:
+    SKIP_UPDATE_HELM_VALUES: "true"
 ...
