@@ -13,7 +13,7 @@ global:
   # -- ConfigMap name to read forced UCR values from.
   configMapUcrForced: null
   # -- Container registry address.
-  imageRegistry: ""
+  imageRegistry: "artifacts.software-univention.de"
 
   # -- Credentials to fetch images from private registry.
   # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/

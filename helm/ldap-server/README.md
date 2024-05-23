@@ -398,7 +398,7 @@ null
 			<td>global.imageRegistry</td>
 			<td>string</td>
 			<td><pre lang="json">
-""
+"artifacts.software-univention.de"
 </pre>
 </td>
 			<td>Container registry address.</td>
