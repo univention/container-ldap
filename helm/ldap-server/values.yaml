@@ -13,7 +13,7 @@ global:
   # -- ConfigMap name to read forced UCR values from.
   configMapUcrForced: null
   # -- Container registry address.
-  imageRegistry: ""
+  imageRegistry: "artifacts.software-univention.de"
 
   # -- Credentials to fetch images from private registry.
   # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -404,8 +404,8 @@ waitForDependency:
   enabled: true
   image:
     imagePullPolicy: "IfNotPresent"
-    registry: "gitregistry.knut.univention.de"
-    repository: "univention/components/univention-portal/wait-for-dependency"
+    registry: ""
+    repository: "nubus-dev/images/wait-for-dependency"
     tag: "latest"
 
 # Definitions regarding to OpenLDAP deployment/configuration
@@ -414,8 +414,8 @@ ldapServer:
     # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
     imagePullPolicy: "IfNotPresent"
     # -- Container registry address. This setting has higher precedence than global.registry.
-    registry: "gitregistry.knut.univention.de"
-    repository: "univention/customers/dataport/upx/container-ldap/ldap-server"
+    registry: ""
+    repository: "nubus-dev/images/ldap-server"
     tag: "latest"
   # Configuration regarding OpenLDAP
   config:
