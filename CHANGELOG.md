@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.15.0...v0.15.1) (2024-05-23)
+
+
+### Bug Fixes
+
+* ldap-notifier use global registry ([435be6e](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/435be6e259da6e061fdd424bea621760ba1c5f5a))
+
 ## [0.15.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.14.0...v0.15.0) (2024-05-23)
 
 
