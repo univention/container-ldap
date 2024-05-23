@@ -118,7 +118,4 @@ check-debian-updates:
   variables:
     TARGET_IMAGE: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:latest"
 
-package-helm-charts:
-  variables:
-    SKIP_UPDATE_HELM_VALUES: "true"
 ...
