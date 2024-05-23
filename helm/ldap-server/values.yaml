@@ -404,7 +404,7 @@ waitForDependency:
   enabled: true
   image:
     imagePullPolicy: "IfNotPresent"
-    registry: "artifacts.software-univention.de"
+    registry: ""
     repository: "nubus-dev/images/wait-for-dependency"
     tag: "latest"
 
@@ -414,7 +414,7 @@ ldapServer:
     # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
     imagePullPolicy: "IfNotPresent"
     # -- Container registry address. This setting has higher precedence than global.registry.
-    registry: "artifacts.software-univention.de"
+    registry: ""
     repository: "nubus-dev/images/ldap-server"
     tag: "latest"
   # Configuration regarding OpenLDAP

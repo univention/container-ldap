@@ -542,7 +542,7 @@ true
 			<td>ldapServer.image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
-"artifacts.software-univention.de"
+""
 </pre>
 </td>
 			<td>Container registry address. This setting has higher precedence than global.registry.</td>
@@ -1278,7 +1278,7 @@ true
 			<td>waitForDependency.image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
-"artifacts.software-univention.de"
+""
 </pre>
 </td>
 			<td></td>
