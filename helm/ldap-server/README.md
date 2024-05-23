@@ -290,7 +290,7 @@ true
 			<td>dhInitContainer.image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
-"nubus-dev/images/openssl"
+"alpine/openssl"
 </pre>
 </td>
 			<td></td>
