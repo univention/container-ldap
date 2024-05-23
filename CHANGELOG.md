@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.14.0...v0.15.0) (2024-05-23)
+
+
+### Features
+
+* push to harbor ([ff9fe15](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ff9fe151d9d57b94bde722c93436a613750208e2))
+
 ## [0.14.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.13.0...v0.14.0) (2024-05-21)
 
 
