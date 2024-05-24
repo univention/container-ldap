@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.15.1...v0.15.2) (2024-05-24)
+
+
+### Bug Fixes
+
+* **ci:** use fixed common-ci/helm package to not update dependency waiter tags ([a2e9e80](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/a2e9e80b2de1c0bee9b73a29f123b2327f34ac51))
+
 ## [0.15.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.15.0...v0.15.1) (2024-05-23)
 
 
