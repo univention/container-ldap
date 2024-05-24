@@ -35,17 +35,23 @@
 #
 
 from binascii import a2b_base64
+from enum import Enum
 import logging
-import os
 from queue import Queue
-import sys
 import time
+from typing import Callable
 
-from slapdsock.service import SlapdSockServer
 from slapdsock.handler import SlapdSockHandler
 from slapdsock.message import CONTINUE_RESPONSE
 from ldap0.res import decode_response_ctrls
 from ldap0.controls.readentry import PostReadControl, PreReadControl
+
+
+class Reqtype(Enum):
+    add = "ADD"
+    modify = "MODIFY"
+    modrdn = "MODRDN"
+    delete = "DELETE"
 
 
 class ReasonableSlapdSockHandler(SlapdSockHandler):
@@ -68,7 +74,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
     case of misconfigured "overlay sock" section.
     """
 
-    def __init__(self, ldap_base, ldap_threads, ignore_temporary=False):
+    def __init__(self, ldap_base: str, ldap_threads: int, ignore_temporary: bool, callback: Callable):
         # NOTE: Be careful when extending the Queue maxsize!
         # It's not clear that RESULT responses come in the same order as the
         # requests, so in do_result the timestamps need to be matched with (msgid, connid).
@@ -76,6 +82,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         # to be somehow serialized to maintain order of ops towards NATS.
         # NOTE: (msgid, connid) are recycled after slapd restart (connid seems
         # to start at 1000 again).
+        self.callback = callback
         self.req_queue = Queue(maxsize=1)
         self.ignore_temporary = ignore_temporary
         if ignore_temporary:
@@ -169,13 +176,19 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if request.parsed_ldif:
             self._log(logging.DEBUG, "parsed_ldif = %s", request.parsed_ldif)
             if isinstance(request.parsed_ldif, list):
-                reqtype = "MODIFY"
+                reqtype = Reqtype.modify
             elif b"newrdn" in request.parsed_ldif:
-                reqtype = "MODRDN"
+                reqtype = Reqtype.modrdn
             else:
-                reqtype = "ADD"
+                reqtype = Reqtype.add
         elif request.parsed_ldif is None:
-            reqtype = "DELETE"
+            reqtype = Reqtype.delete
+        else:
+            self._log(
+                logging.INFO,
+                "could not parse the request type = %s" % (request.parsed_ldif),
+            )
+            raise ValueError()
 
         self._log(logging.DEBUG, "reqtype = %s", reqtype)
         self._log(logging.DEBUG, "parsed_ldif = %s", request.parsed_ldif)
@@ -192,10 +205,12 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                     self._log(logging.INFO, "PostRead entry_as = %s", ctrl.res.entry_as)
                 elif isinstance(ctrl, PreReadControl):
                     self._log(logging.INFO, "PreRead entry_as = %s", ctrl.res.entry_as)
+
             self._log(
                 logging.INFO,
                 "Call NATS for %s operation on dn = %s" % (reqtype, request.dn),
             )
+            self.callback(reqtype, request)
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
         resptime = time.time()
@@ -217,34 +232,3 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         _ = (self, request)  # pylint dummy
         return CONTINUE_RESPONSE
-
-
-def main():
-    stdout_handler = logging.StreamHandler(sys.stdout)
-    logger = logging.getLogger()
-    logger.addHandler(stdout_handler)
-    logger.setLevel(logging.INFO)
-
-    ldap_base = os.environ["ldap_base"]
-    ldap_threads = int(os.environ["ldap_threads"])
-    ignore_temporary = bool(os.environ["slapdsocklistener_ignore_temporary"])
-
-    ldaphandler = LDAPHandler(ldap_base, ldap_threads, ignore_temporary)
-    with SlapdSockServer(
-        server_address="/var/lib/univention-ldap/slapd-sock/sock",
-        handler_class=ldaphandler,
-        logger=logger,
-        average_count=10,
-        socket_timeout=30,
-        socket_permissions="600",
-        allowed_uids=(0,),
-        allowed_gids=(0,),
-        thread_pool_size=ldap_threads,
-    ) as server:
-        # Activate the server; this will keep running until you
-        # interrupt the program with Ctrl-C
-        server.serve_forever()
-
-
-if __name__ == "__main__":
-    main()
