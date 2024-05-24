@@ -405,8 +405,8 @@ waitForDependency:
   image:
     imagePullPolicy: "IfNotPresent"
     registry: ""
-    repository: "nubus-dev/images/wait-for-dependency"
-    tag: "latest"
+    repository: "nubus/images/wait-for-dependency"
+    tag: "0.25.0@sha256:71a4d66fd67db6f92212b1936862b2b0d5a678d412213d74452a9195c2fe67f7"
 
 # Definitions regarding to OpenLDAP deployment/configuration
 ldapServer:
