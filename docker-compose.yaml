@@ -27,9 +27,14 @@ services:
       dockerfile: ../docker/ldif-producer/Dockerfile
       context: ./ldif_producer
     environment:
-      ldap_base: "dc=univention-organization,dc=intranet"
-      ldap_threads: 4
-      slapdsocklistener_ignore_temporary: true
+      NATS_USER: ldif-producer
+      NATS_PASSWORD: ldifpass
+      NATS_HOST: "nats"
+      NATS_PORT: "4222"
+      NATS_MAX_RECONNECT_ATTEMPTS: 2
+      LDAP_BASE_DN: "dc=univention-organization,dc=intranet"
+      LDAP_THREADS: 4
+      IGNORE_TEMPORARY_OBJECTS: true
     volumes:
     - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
     - ldap-shared-data:/var/lib/univention-ldap/:rw
@@ -54,6 +59,20 @@ services:
     - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
     - ldap-shared-data:/var/lib/univention-ldap/:rw
     - ldap-shared-run:/var/run/slapd/:rw
+
+  nats:
+    image: "nats:latest"
+    environment:
+      jetstream: "enabled"
+    ports:
+      - "4222:4222" # Client connections
+      - "6222:6222" # Route connections
+      - "8222:8222" # HTTP monitoring port
+    volumes:
+      - ./nats.dev.conf:/etc/nats-config/nats.conf
+      - type: tmpfs
+        target: /var/run
+    command: --jetstream -m 8222 -p 4222 -config /etc/nats-config/nats.conf
 
   ldap-admin:
     image: osixia/phpldapadmin:0.9.0
