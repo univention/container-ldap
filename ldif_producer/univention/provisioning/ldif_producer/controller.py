@@ -3,29 +3,57 @@
 
 import asyncio
 import logging
+from queue import Queue
 import sys
 
 from datetime import datetime
+import threading
 
-from slapdsock.service import SlapdSockServer
-
-from univention.provisioning.ldif_producer.config import get_ldif_producer_settings
-from univention.provisioning.ldif_producer.port import LDAP_STREAM, LDAP_SUBJECT, LDIFProducerAdapter, LDIFProducerPort
-from univention.provisioning.ldif_producer.slapdsocklistener import LDAPHandler
+from univention.provisioning.ldif_producer.config import (
+    LDIFProducerSettings,
+    get_ldif_producer_settings,
+)
+from univention.provisioning.ldif_producer.port import (
+    LDAP_STREAM,
+    LDAP_SUBJECT,
+    LDIFProducerAdapter,
+    LDIFProducerMQPort,
+)
+from univention.provisioning.ldif_producer.socket_adapter.slapdsocklistener import (
+    LDAPHandler,
+    LDAPMessage,
+)
 from univention.provisioning.models import Message, PublisherName
+
+from univention.provisioning.ldif_producer.socket_adapter.server import (
+    LDIFProducerSocketPort,
+    LdifProducerSlapdSockServer,
+)
 
 
 class LDIFProducerController:
-    def __init__(self, message_queue_port: LDIFProducerPort) -> None:
+    def __init__(
+        self,
+        settings: LDIFProducerSettings,
+        message_queue_port: LDIFProducerMQPort,
+        socket_port: type[LDIFProducerSocketPort],
+    ) -> None:
+        self.settings = settings
+        self.message_queue_port = message_queue_port
+        self.socket_port = socket_port
+
+        self.queue = Queue(self.settings.max_in_flight_ldap_messages)
+
         self.logger = logging.getLogger(__name__)
 
         stdout_handler = logging.StreamHandler(sys.stdout)
         self.logger.addHandler(stdout_handler)
         self.logger.setLevel(logging.DEBUG)
 
-        self.message_queue_port = message_queue_port
-
-    async def _handle_changes(self, new, old):
+    async def handle_ldap_message(self, ldap_message: LDAPMessage):
+        self.logger.info("handeling ldap message: %s", ldap_message.request_type)
+        new = None
+        old = None
         message = Message(
             publisher_name=PublisherName.udm_listener,
             ts=datetime.now(),
@@ -35,41 +63,59 @@ class LDIFProducerController:
         )
         await self.message_queue_port.add_message(LDAP_STREAM, LDAP_SUBJECT, message)
 
-    def handle_changes(self, new, old):
-        asyncio.run(self._handle_changes(new, old))
+    async def process_queue(self):
+        self.logger.info("starting the processing of the outgoing queue")
+        while True:
+            message = self.queue.get()
+            self.logger.info("received a new outgoing message")
+            if message is None:
+                break
+            await self.handle_ldap_message(message)
 
-    async def run(self):
-        settings = get_ldif_producer_settings()
-        ldap_handler = LDAPHandler(
-            settings.ldap_base_dn, settings.ldap_threads, settings.ignore_temporary_objects, self.handle_changes
-        )
-
-        with SlapdSockServer(
+    def run_socket(self, handler: LDAPHandler):
+        with self.socket_port(
             server_address="/var/lib/univention-ldap/slapd-sock",
-            handler_class=ldap_handler,
+            handler_class=handler,
             logger=self.logger,
             average_count=10,
             socket_timeout=30,
             socket_permissions="600",
             allowed_uids=(0,),
             allowed_gids=(0,),
-            thread_pool_size=settings.ldap_threads,
+            thread_pool_size=self.settings.ldap_threads,
         ) as slapdsock_server:
-            await self.message_queue_port.ensure_stream(LDAP_STREAM, [LDAP_SUBJECT])
             # Activate the server; this will keep running until you
             # interrupt the program with Ctrl-C
+            self.logger.info("starting slapd socket server")
             slapdsock_server.serve_forever()
 
+    async def run(self):
+        await self.message_queue_port.ensure_stream(LDAP_STREAM, [LDAP_SUBJECT])
+        ldap_handler = LDAPHandler(
+            self.settings.ldap_base_dn,
+            self.settings.ldap_threads,
+            self.settings.ignore_temporary_objects,
+            self.queue,
+        )
 
-async def run(ldif_producer_port: type[LDIFProducerPort]):
+        socket_main_thread = threading.Thread(name="socket_main_thread", target=self.run_socket, args=(ldap_handler,))
+        socket_main_thread.start()
+
+        await self.process_queue()
+
+
+async def run(
+    message_queue_port: type[LDIFProducerMQPort],
+    socket_port: type[LDIFProducerSocketPort],
+):
     settings = get_ldif_producer_settings()
-    async with ldif_producer_port(settings) as mq_port:
-        controller = LDIFProducerController(mq_port)
+    async with message_queue_port(settings) as mq_port:
+        controller = LDIFProducerController(settings, mq_port, socket_port)
         await controller.run()
 
 
 def main():
-    asyncio.run(run(LDIFProducerAdapter))
+    asyncio.run(run(LDIFProducerAdapter, LdifProducerSlapdSockServer))
 
 
 if __name__ == "__main__":

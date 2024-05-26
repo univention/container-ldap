@@ -17,13 +17,13 @@ LDAP_SUBJECT = "ldif-producer-subject"
 logger = logging.getLogger(__name__)
 
 
-class LDIFProducerPort(ABC):
+class LDIFProducerMQPort(ABC):
     @abstractmethod
     def __init__(self, settings: LDIFProducerSettings) -> None:
         pass
 
     @abstractmethod
-    async def __aenter__(self) -> "LDIFProducerPort":
+    async def __aenter__(self) -> "LDIFProducerMQPort":
         pass
 
     @abstractmethod
@@ -43,7 +43,7 @@ def messagepack_encoder(data: Any) -> bytes:
     return msgpack.packb(data)
 
 
-class LDIFProducerAdapter(LDIFProducerPort):
+class LDIFProducerAdapter(LDIFProducerMQPort):
     def __init__(self, settings: LDIFProducerSettings):
         self.settings = settings
         self.mq_service = NatsMQService()

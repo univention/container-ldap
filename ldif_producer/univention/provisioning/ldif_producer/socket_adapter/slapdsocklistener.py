@@ -1,57 +1,32 @@
 #!/usr/bin/env -S python3 -O
-# -*- coding: utf-8 -*-
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
-#
-# Like what you see? Join us!
-# https://www.univention.com/about-us/careers/vacancies/
-#
-# Copyright 2024 Univention GmbH
-#
-# https://www.univention.de/
-#
-# All rights reserved.
-#
-# The source code of this program is made available
-# under the terms of the GNU Affero General Public License version 3
-# (GNU AGPL V3) as published by the Free Software Foundation.
-#
-# Binary versions of this program provided by Univention to you as
-# well as other copyrighted, protected or trademarked materials like
-# Logos, graphics, fonts, specific documentations and configurations,
-# cryptographic keys etc. are subject to a license agreement between
-# you and Univention and not subject to the GNU AGPL V3.
-#
-# In the case you use this program under the terms of the GNU AGPL V3,
-# the program is provided in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public
-# License with the Debian GNU/Linux or Univention distribution in file
-# /usr/share/common-licenses/AGPL-3; if not, see
-# <https://www.gnu.org/licenses/>.
-#
+
 
 from binascii import a2b_base64
 from enum import Enum
 import logging
 from queue import Queue
 import time
-from typing import Callable
+from typing import NamedTuple
 
 from slapdsock.handler import SlapdSockHandler
-from slapdsock.message import CONTINUE_RESPONSE
+from slapdsock.message import CONTINUE_RESPONSE, RESULTRequest
 from ldap0.res import decode_response_ctrls
 from ldap0.controls.readentry import PostReadControl, PreReadControl
+from slapdsock.service import threading
 
 
-class Reqtype(Enum):
+class RequestType(Enum):
     add = "ADD"
     modify = "MODIFY"
     modrdn = "MODRDN"
     delete = "DELETE"
+
+
+class LDAPMessage(NamedTuple):
+    request_type: RequestType
+    request: RESULTRequest
 
 
 class ReasonableSlapdSockHandler(SlapdSockHandler):
@@ -74,7 +49,13 @@ class LDAPHandler(ReasonableSlapdSockHandler):
     case of misconfigured "overlay sock" section.
     """
 
-    def __init__(self, ldap_base: str, ldap_threads: int, ignore_temporary: bool, callback: Callable):
+    def __init__(
+        self,
+        ldap_base: str,
+        ldap_threads: int,
+        ignore_temporary: bool,
+        outgoing_queue: Queue,
+    ):
         # NOTE: Be careful when extending the Queue maxsize!
         # It's not clear that RESULT responses come in the same order as the
         # requests, so in do_result the timestamps need to be matched with (msgid, connid).
@@ -82,13 +63,15 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         # to be somehow serialized to maintain order of ops towards NATS.
         # NOTE: (msgid, connid) are recycled after slapd restart (connid seems
         # to start at 1000 again).
-        self.callback = callback
-        self.req_queue = Queue(maxsize=1)
+        self.outgoing_queue = outgoing_queue
+        self.incoming_queue = Queue(maxsize=ldap_threads)
+        self.write_lock = threading.Lock()
         self.ignore_temporary = ignore_temporary
         if ignore_temporary:
             temporary_dn_string = ",cn=temporary,cn=univention,"
             self.len_temporary_dn_suffix = len(temporary_dn_string) + len(ldap_base)
 
+    # TODO: Better name to signify that this evaluates ignore_temporaty: apply_temporary_dn_rules() mabe
     def is_temporary_dn(self, request):
         return "," in request.dn[self.len_temporary_dn_suffix :] if self.ignore_temporary else False
 
@@ -99,7 +82,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_add = %s", request)
-        self.req_queue.put((request.connid, request.msgid, time.time()), block=True)
+        self.incoming_queue.put((request.connid, request.msgid, time.time()), block=True)
         return CONTINUE_RESPONSE
 
     def do_bind(self, request):
@@ -123,7 +106,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_delete = %s", request)
-        self.req_queue.put((request.connid, request.msgid, time.time()), block=True)
+        self.incoming_queue.put((request.connid, request.msgid, time.time()), block=True)
         return CONTINUE_RESPONSE
 
     def do_modify(self, request):
@@ -133,7 +116,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modify = %s", request)
-        self.req_queue.put((request.connid, request.msgid, time.time()), block=True)
+        self.incoming_queue.put((request.connid, request.msgid, time.time()), block=True)
         return CONTINUE_RESPONSE
 
     def do_modrdn(self, request):
@@ -143,7 +126,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modrdn = %s", request)
-        self.req_queue.put((request.connid, request.msgid, time.time()), block=True)
+        self.incoming_queue.put((request.connid, request.msgid, time.time()), block=True)
         return CONTINUE_RESPONSE
 
     def do_search(self, request):
@@ -160,10 +143,11 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         _ = (self, request)  # pylint dummy
         return ""
 
-    def do_result(self, request):
+    def do_result(self, request: RESULTRequest):
         """
         RESULT
         """
+        self.write_lock.acquire()
         _ = (self, request)  # pylint dummy
         if getattr(request, "dn", None) is None:
             # A search result or anything where RESULTRequest._parse_ldif didn't find anything.
@@ -176,13 +160,13 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if request.parsed_ldif:
             self._log(logging.DEBUG, "parsed_ldif = %s", request.parsed_ldif)
             if isinstance(request.parsed_ldif, list):
-                reqtype = Reqtype.modify
+                reqtype = RequestType.modify
             elif b"newrdn" in request.parsed_ldif:
-                reqtype = Reqtype.modrdn
+                reqtype = RequestType.modrdn
             else:
-                reqtype = Reqtype.add
+                reqtype = RequestType.add
         elif request.parsed_ldif is None:
-            reqtype = Reqtype.delete
+            reqtype = RequestType.delete
         else:
             self._log(
                 logging.INFO,
@@ -210,11 +194,11 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 logging.INFO,
                 "Call NATS for %s operation on dn = %s" % (reqtype, request.dn),
             )
-            self.callback(reqtype, request)
+            self.outgoing_queue.put(LDAPMessage(reqtype, request))
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
         resptime = time.time()
-        (connid, msgid, reqtime) = self.req_queue.get()  # signal one seat is free
+        (connid, msgid, reqtime) = self.incoming_queue.get()  # signal one seat is free
         self._log(logging.INFO, "processing time  = %s", round(resptime - reqtime, 3))
         return ""
 

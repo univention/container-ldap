@@ -16,11 +16,14 @@ class LDIFProducerSettings(BaseSettings):
     nats_port: int
     nats_max_reconnect_attempts: int
 
-    # Base DN of the LDAP tree
-    ldap_base_dn: str
+    # Maximum number of messages that are buffered and waiting to be sent to NATS
+    max_in_flight_ldap_messages: int
     # Number of concurrent LDAP threads.
     ldap_threads: int
+    # Base DN of the LDAP tree
+    ldap_base_dn: str
     # Configure whether to ignore temporary ldap objects, e.g. Lock objects created by UDM.
+    # TODO: Do we actually use this or is this just hard-coded?
     ignore_temporary_objects: bool
 
     @property
