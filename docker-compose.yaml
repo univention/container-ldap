@@ -23,10 +23,10 @@ services:
   ldif-producer:
     platform: linux/amd64
     image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldif-producer:${IMAGE_TAG:-latest}"
-    entrypoint:
-      - "/bin/bash"
-      - "-c"
-      - "sleep infinity"
+    # entrypoint:
+    #   - "/bin/bash"
+    #   - "-c"
+    #   - "sleep infinity"
     build:
       dockerfile: ../docker/ldif-producer/Dockerfile
       context: ./ldif_producer

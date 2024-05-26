@@ -48,6 +48,10 @@ class LDIFProducerController:
         self.logger = logging.getLogger(__name__)
 
         stdout_handler = logging.StreamHandler(sys.stdout)
+        log_formatter = logging.Formatter(
+            "%(asctime)s [%(process)d %(thread)d] [%(levelname)s] %(message)s [%(threadName)s]"
+        )
+        stdout_handler.setFormatter(log_formatter)
         self.logger.addHandler(stdout_handler)
         self.logger.setLevel(logging.DEBUG)
 
