@@ -37,7 +37,7 @@ lint-pre-commit:
       - "ldap-notifier"
       - "testrunner"
   - IMAGE_NAME: "ldif-producer"
-    DOCKERFILE_PATH: "./docker/events-and-consumer-api/Dockerfile"
+    DOCKERFILE_PATH: "../docker/events-and-consumer-api/Dockerfile"
     KANIKO_BUILD_CONTEXT: "./ldif_producer"
 
 .publish-matrix: &publish-matrix
@@ -57,7 +57,7 @@ container-sign-external:
   parallel:
     matrix: *build-matrix
 
-test-ldap-unit:
+test-ldap-smoke:
   stage: test
   extends: .dind
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
@@ -76,19 +76,20 @@ test-ldap-unit:
     - echo -e "\e[0Ksection_start:`date +%s`:docker_compose_config[collapsed=true]\r\e[0KDocker Compose configuration"
     - docker compose config test
     - echo -e "\e[0Ksection_end:`date +%s`:docker_compose_config\r\e[0K"
-    - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 ldap-server ldif-producer
+    - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 nats ldap-server ldif-producer
   script:
-    # Wait for UDM Listener to get ready. (It's not worth it to fix this properly atm)
-    - sleep 10
+    # - sleep 10
     - docker compose run --quiet-pull --rm test
   after_script:
     - docker logs ldap-server >& ldap-server.log
     - docker logs ldif-producer >& ldif-producer.log
+    - docker logs nats >& nats.log
     - docker compose down --volumes
   artifacts:
     paths:
       - ldap-server.log
       - ldif-producer.log
+      - nats.log
     expire_in: "1 day"
     when: "always"
     expose_as: "docker compose server logs"
