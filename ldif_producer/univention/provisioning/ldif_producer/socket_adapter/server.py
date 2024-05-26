@@ -58,7 +58,7 @@ class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):
         obtain request from queue instead of directly from server socket
         """
         while True:
-            threads = self.requests.get()
+            threads = self.incoming_queue.get()
             self.req_threads_active = len(threads)
             # TODO: Wtf is this doing here?
             if self.req_threads_active > self.req_threads_max:

@@ -9,6 +9,8 @@ import sys
 from datetime import datetime
 import threading
 
+from slapdsock.service import SlapdSockServer
+
 from univention.provisioning.ldif_producer.config import (
     LDIFProducerSettings,
     get_ldif_producer_settings,
@@ -27,7 +29,6 @@ from univention.provisioning.models import Message, PublisherName
 
 from univention.provisioning.ldif_producer.socket_adapter.server import (
     LDIFProducerSocketPort,
-    LdifProducerSlapdSockServer,
 )
 
 
@@ -52,7 +53,11 @@ class LDIFProducerController:
 
     async def handle_ldap_message(self, ldap_message: LDAPMessage):
         self.logger.info("handeling ldap message: %s", ldap_message.request_type)
-        new = None
+        new = {
+            "dn": ldap_message.request.dn,
+            "request_type": ldap_message.request_type,
+            "ldif": ldap_message.request.parsed_ldif,
+        }
         old = None
         message = Message(
             publisher_name=PublisherName.udm_listener,
@@ -115,7 +120,7 @@ async def run(
 
 
 def main():
-    asyncio.run(run(LDIFProducerAdapter, LdifProducerSlapdSockServer))
+    asyncio.run(run(LDIFProducerAdapter, SlapdSockServer))
 
 
 if __name__ == "__main__":

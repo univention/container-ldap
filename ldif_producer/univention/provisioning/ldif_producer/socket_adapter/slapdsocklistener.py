@@ -6,7 +6,7 @@
 from binascii import a2b_base64
 from enum import Enum
 import logging
-from queue import Queue
+from queue import Empty, Full, Queue
 import time
 from typing import NamedTuple
 
@@ -14,10 +14,11 @@ from slapdsock.handler import SlapdSockHandler
 from slapdsock.message import CONTINUE_RESPONSE, RESULTRequest
 from ldap0.res import decode_response_ctrls
 from ldap0.controls.readentry import PostReadControl, PreReadControl
-from slapdsock.service import threading
+
+# from slapdsock.service import threading
 
 
-class RequestType(Enum):
+class RequestType(str, Enum):
     add = "ADD"
     modify = "MODIFY"
     modrdn = "MODRDN"
@@ -64,8 +65,8 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         # NOTE: (msgid, connid) are recycled after slapd restart (connid seems
         # to start at 1000 again).
         self.outgoing_queue = outgoing_queue
-        self.incoming_queue = Queue(maxsize=ldap_threads)
-        self.write_lock = threading.Lock()
+        self.backpressure_queue = Queue(maxsize=ldap_threads)
+        # self.do_result_lock = threading.Lock()
         self.ignore_temporary = ignore_temporary
         if ignore_temporary:
             temporary_dn_string = ",cn=temporary,cn=univention,"
@@ -82,7 +83,19 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_add = %s", request)
-        self.incoming_queue.put((request.connid, request.msgid, time.time()), block=True)
+        try:
+            # TODO: tune timeout
+            self.backpressure_queue.put((request.connid, request.msgid, time.time()), timeout=2)
+        except Full:
+            self._log(
+                logging.ERROR,
+                "do_add = %s failed because no LDAPHandler seat was available within the timeout",
+                request,
+            )
+            return
+        self._log(
+            logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
+        )
         return CONTINUE_RESPONSE
 
     def do_bind(self, request):
@@ -106,7 +119,19 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_delete = %s", request)
-        self.incoming_queue.put((request.connid, request.msgid, time.time()), block=True)
+        try:
+            # TODO: tune timeout
+            self.backpressure_queue.put((request.connid, request.msgid, time.time()), timeout=2)
+        except Full:
+            self._log(
+                logging.ERROR,
+                "do_add = %s failed because no LDAPHandler seat was available within the timeout",
+                request,
+            )
+            return
+        self._log(
+            logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
+        )
         return CONTINUE_RESPONSE
 
     def do_modify(self, request):
@@ -116,7 +141,19 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modify = %s", request)
-        self.incoming_queue.put((request.connid, request.msgid, time.time()), block=True)
+        try:
+            # TODO: tune timeout
+            self.backpressure_queue.put((request.connid, request.msgid, time.time()), timeout=2)
+        except Full:
+            self._log(
+                logging.ERROR,
+                "do_add = %s failed because no LDAPHandler seat was available within the timeout",
+                request,
+            )
+            return
+        self._log(
+            logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
+        )
         return CONTINUE_RESPONSE
 
     def do_modrdn(self, request):
@@ -126,7 +163,19 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modrdn = %s", request)
-        self.incoming_queue.put((request.connid, request.msgid, time.time()), block=True)
+        try:
+            # TODO: tune timeout
+            self.backpressure_queue.put((request.connid, request.msgid, time.time()), timeout=2)
+        except Full:
+            self._log(
+                logging.ERROR,
+                "do_add = %s failed because no LDAPHandler seat was available within the timeout",
+                request,
+            )
+            return
+        self._log(
+            logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
+        )
         return CONTINUE_RESPONSE
 
     def do_search(self, request):
@@ -143,11 +192,28 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         _ = (self, request)  # pylint dummy
         return ""
 
+    # TODO: remove failed attempt
+    # def dont_do_result(self, request: RESULTRequest):
+    #     """
+    #     RESULT
+    #     """
+    #     self._log(logging.DEBUG, "aquiring the do_resutl lock")
+    #     # TODO: timeout is just for development purposes
+    #     self.do_result_lock.acquire(timeout=10)
+    #     try:
+    #         self._do_result(request)
+    #     except Exception:
+    #         # TODO: Refine this behaviour
+    #         self._log(logging.DEBUG, "releasing the do_resutl lock")
+    #         self.do_result_lock.release()
+    #         (connid, msgid, reqtime) = self.backpressure_queue.get()  # signal one seat is free
+    #         raise
+    #
+    #     self._log(logging.DEBUG, "releasing the do_result lock")
+    #     self.do_result_lock.release()
+    #     (connid, msgid, reqtime) = self.backpressure_queue.get()
+
     def do_result(self, request: RESULTRequest):
-        """
-        RESULT
-        """
-        self.write_lock.acquire()
         _ = (self, request)  # pylint dummy
         if getattr(request, "dn", None) is None:
             # A search result or anything where RESULTRequest._parse_ldif didn't find anything.
@@ -198,8 +264,13 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
         resptime = time.time()
-        (connid, msgid, reqtime) = self.incoming_queue.get()  # signal one seat is free
-        self._log(logging.INFO, "processing time  = %s", round(resptime - reqtime, 3))
+        try:
+            (connid, msgid, reqtime) = self.backpressure_queue.get(timeout=1)  # signal one seat is free
+        except Empty:
+            # TODO: improve this and decide if it should stay in the codebase.
+            self._log(logging.WARNING, "all seats are already free, don't know why")
+        else:
+            self._log(logging.INFO, "processing time  = %s", round(resptime - reqtime, 3))
         return ""
 
     def do_entry(self, request):
