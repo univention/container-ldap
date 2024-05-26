@@ -85,7 +85,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         self._log(logging.DEBUG, "do_add = %s", request)
         try:
             # TODO: tune timeout
-            self.backpressure_queue.put((request.connid, request.msgid, time.time()), timeout=2)
+            self.backpressure_queue.put((request.connid, request.msgid, time.perf_counter()), timeout=2)
         except Full:
             self._log(
                 logging.ERROR,
@@ -121,7 +121,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         self._log(logging.DEBUG, "do_delete = %s", request)
         try:
             # TODO: tune timeout
-            self.backpressure_queue.put((request.connid, request.msgid, time.time()), timeout=2)
+            self.backpressure_queue.put((request.connid, request.msgid, time.perf_counter()), timeout=2)
         except Full:
             self._log(
                 logging.ERROR,
@@ -143,7 +143,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         self._log(logging.DEBUG, "do_modify = %s", request)
         try:
             # TODO: tune timeout
-            self.backpressure_queue.put((request.connid, request.msgid, time.time()), timeout=2)
+            self.backpressure_queue.put((request.connid, request.msgid, time.perf_counter()), timeout=2)
         except Full:
             self._log(
                 logging.ERROR,
@@ -165,7 +165,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         self._log(logging.DEBUG, "do_modrdn = %s", request)
         try:
             # TODO: tune timeout
-            self.backpressure_queue.put((request.connid, request.msgid, time.time()), timeout=2)
+            self.backpressure_queue.put((request.connid, request.msgid, time.perf_counter()), timeout=2)
         except Full:
             self._log(
                 logging.ERROR,
@@ -206,12 +206,12 @@ class LDAPHandler(ReasonableSlapdSockHandler):
     #         # TODO: Refine this behaviour
     #         self._log(logging.DEBUG, "releasing the do_resutl lock")
     #         self.do_result_lock.release()
-    #         (connid, msgid, reqtime) = self.backpressure_queue.get()  # signal one seat is free
+    #         (connid, msgid, request_time) = self.backpressure_queue.get()  # signal one seat is free
     #         raise
     #
     #     self._log(logging.DEBUG, "releasing the do_result lock")
     #     self.do_result_lock.release()
-    #     (connid, msgid, reqtime) = self.backpressure_queue.get()
+    #     (connid, msgid, request_time) = self.backpressure_queue.get()
 
     def do_result(self, request: RESULTRequest):
         _ = (self, request)  # pylint dummy
@@ -263,14 +263,14 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             self.outgoing_queue.put(LDAPMessage(reqtype, request))
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
-        resptime = time.time()
+        resonse_time = time.perf_counter()
         try:
-            (connid, msgid, reqtime) = self.backpressure_queue.get(timeout=1)  # signal one seat is free
+            (connid, msgid, request_time) = self.backpressure_queue.get(timeout=1)  # signal one seat is free
         except Empty:
             # TODO: improve this and decide if it should stay in the codebase.
             self._log(logging.WARNING, "all seats are already free, don't know why")
         else:
-            self._log(logging.INFO, "processing time  = %s", round(resptime - reqtime, 3))
+            self._log(logging.INFO, "processing time  = %s", round(resonse_time - request_time, 6))
         return ""
 
     def do_entry(self, request):

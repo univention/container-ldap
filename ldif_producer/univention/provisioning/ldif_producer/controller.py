@@ -9,8 +9,6 @@ import sys
 from datetime import datetime
 import threading
 
-from slapdsock.service import SlapdSockServer
-
 from univention.provisioning.ldif_producer.config import (
     LDIFProducerSettings,
     get_ldif_producer_settings,
@@ -21,7 +19,7 @@ from univention.provisioning.ldif_producer.port import (
     LDIFProducerAdapter,
     LDIFProducerMQPort,
 )
-from univention.provisioning.ldif_producer.socket_adapter.slapdsocklistener import (
+from univention.provisioning.ldif_producer.socket_adapter.ldap_handler import (
     LDAPHandler,
     LDAPMessage,
 )
@@ -29,6 +27,7 @@ from univention.provisioning.models import Message, PublisherName
 
 from univention.provisioning.ldif_producer.socket_adapter.server import (
     LDIFProducerSocketPort,
+    LdifProducerSlapdSockServer,
 )
 
 
@@ -124,7 +123,7 @@ async def run(
 
 
 def main():
-    asyncio.run(run(LDIFProducerAdapter, SlapdSockServer))
+    asyncio.run(run(LDIFProducerAdapter, LdifProducerSlapdSockServer))
 
 
 if __name__ == "__main__":

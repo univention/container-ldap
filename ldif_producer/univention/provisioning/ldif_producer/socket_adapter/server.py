@@ -44,7 +44,7 @@ class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):
         # TODO: listen for sigterm and sigint or provide some option to gracefully terminate all threads.
         for _ in range(self.thread_pool_size):
             req_thread = threading.Thread(target=self.process_request_thread)
-            # TODO: daemon should be False, because we need to make sure the thead finishes.
+            # TODO: Daemon should be False, because we need to make sure the thread finishes.
             req_thread.daemon = True
             req_thread.start()
         # server main loop
@@ -58,9 +58,9 @@ class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):
         obtain request from queue instead of directly from server socket
         """
         while True:
-            threads = self.incoming_queue.get()
+            threads = self.requests.get()
             self.req_threads_active = len(threads)
-            # TODO: Wtf is this doing here?
+            # TODO: I don't understand this!
             if self.req_threads_active > self.req_threads_max:
                 self.req_threads_max = self.req_threads_active
             ThreadingMixIn.process_request_thread(self, *threads)
