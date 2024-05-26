@@ -37,8 +37,7 @@ lint-pre-commit:
       - "ldap-notifier"
       - "testrunner"
   - IMAGE_NAME: "ldif-producer"
-    DOCKERFILE_PATH: "../docker/events-and-consumer-api/Dockerfile"
-    KANIKO_BUILD_CONTEXT: "./ldif_producer"
+    DOCKERFILE_PATH: "./docker/events-and-consumer-api/Dockerfile"
 
 .publish-matrix: &publish-matrix
   - IMAGE_NAME:

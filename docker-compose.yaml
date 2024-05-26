@@ -28,8 +28,8 @@ services:
     #   - "-c"
     #   - "sleep infinity"
     build:
-      dockerfile: ../docker/ldif-producer/Dockerfile
-      context: ./ldif_producer
+      dockerfile: ./docker/ldif-producer/Dockerfile
+      context: ./
     environment:
       NATS_USER: ldif-producer
       NATS_PASSWORD: ldifpass

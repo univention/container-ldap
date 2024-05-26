@@ -38,10 +38,10 @@ ENV \
 RUN pip3 install --break-system-packages --no-cache-dir poetry==1.6.1
 
 # copy source code
-COPY ./univention ${WORKDIR}/univention
 COPY ./poetry.lock \
      ./pyproject.toml \
      ${WORKDIR}/
+COPY ./univention ${WORKDIR}/univention
 
 # install dependencies
 RUN poetry install --only main
