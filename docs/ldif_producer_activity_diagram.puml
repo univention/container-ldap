@@ -1,0 +1,73 @@
+@startuml LDIF Producer Activity Diagram
+start
+
+:socketserver = slapdsock.service.SlapdSockServer()
+:handler = slapdsocklistener.LDAPHandler(ReasonableSlapdSockHandler(SlapdSockHandler(BaseRequestHandler)));
+
+fork
+:Start event loop;
+:Connect to NATS;
+:read messages from queue
+and send them to NATS;
+:remove message from journal;
+
+fork again
+
+:socketserver.serve_forever()
+:slapdsock.service.SlapdSockServer.handle_request()
+put message into queue;
+floating note left
+    handle_request simply puts messages in a python queue
+    so that multiple threads can work on them.
+end note
+
+fork
+    partition "SocketServer\nWorker Thread" {
+    repeat
+    :get message from queue;
+    :handler.handle(message);
+    note left
+        Execute SlapdSockHandler.handle
+        to parse the socket message
+        and determine the ldap operation
+    end note
+    switch (ldap_operation_type)
+    case ( RESULT )
+        partition "do_result()" {
+        :get the write lock
+        (to ensure the message order);
+        :write message to journal;
+        :put message into `outgoing_queue`;
+        :release back-pressure
+        and write-lock;
+        }
+    case ( DELETE / MODIFY / MODRDN )
+        :do_delete()
+        do_modify()
+        do_modrdn()
+        ====
+        add to back-pressure
+        or adding to the `incoming_queue`;
+    case ( Everything else )
+        :do_add()
+        do_bind()
+        do_search()
+        ...
+        ====
+        do nothing;
+    endswitch
+    repeat while ( New ldap messages are coming in )
+    }
+fork again
+    partition "SocketServer\nWorker  Thread" {
+    }
+fork again
+    partition "SocketServer\nWorker  Thread" {
+    }
+end fork
+
+end fork
+
+stop
+
+@enduml
