@@ -10,10 +10,12 @@ from queue import Empty, Full, Queue
 import time
 from typing import NamedTuple
 
+from ldap0.typehints import EntryMixed
 from slapdsock.handler import SlapdSockHandler
 from slapdsock.message import CONTINUE_RESPONSE, RESULTRequest
 from ldap0.res import decode_response_ctrls
 from ldap0.controls.readentry import PostReadControl, PreReadControl
+from slapdsock.service import threading
 
 # from slapdsock.service import threading
 
@@ -27,7 +29,9 @@ class RequestType(str, Enum):
 
 class LDAPMessage(NamedTuple):
     request_type: RequestType
-    request: RESULTRequest
+    binddn: str
+    old: EntryMixed | None
+    new: EntryMixed | None
 
 
 class ReasonableSlapdSockHandler(SlapdSockHandler):
@@ -57,6 +61,9 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         ignore_temporary: bool,
         outgoing_queue: Queue,
     ):
+        self.journal_key = 0
+        self.journal_key_mutex = threading.Lock()
+
         # NOTE: Be careful when extending the Queue maxsize!
         # It's not clear that RESULT responses come in the same order as the
         # requests, so in do_result the timestamps need to be matched with (msgid, connid).
@@ -65,7 +72,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         # NOTE: (msgid, connid) are recycled after slapd restart (connid seems
         # to start at 1000 again).
         self.outgoing_queue = outgoing_queue
-        self.backpressure_queue = Queue(maxsize=ldap_threads)
+        self.backpressure_queue = Queue(maxsize=1)
         # self.do_result_lock = threading.Lock()
         self.ignore_temporary = ignore_temporary
         if ignore_temporary:
@@ -92,7 +99,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 "do_add = %s failed because no LDAPHandler seat was available within the timeout",
                 request,
             )
-            return
+            return ""
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
@@ -128,7 +135,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 "do_add = %s failed because no LDAPHandler seat was available within the timeout",
                 request,
             )
-            return
+            return ""
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
@@ -150,7 +157,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 "do_add = %s failed because no LDAPHandler seat was available within the timeout",
                 request,
             )
-            return
+            return ""
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
@@ -172,7 +179,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 "do_add = %s failed because no LDAPHandler seat was available within the timeout",
                 request,
             )
-            return
+            return ""
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
@@ -222,6 +229,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.is_temporary_dn(request):
             self._log(logging.INFO, "ignoring dn = %s", request.dn)
             return ""
+
         self._log(logging.INFO, "dn = %s", request.dn)
         if request.parsed_ldif:
             self._log(logging.DEBUG, "parsed_ldif = %s", request.parsed_ldif)
@@ -250,27 +258,42 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 for (control_type, criticality, control_value) in request.ctrls
             ]
             ctrls = decode_response_ctrls(ctrls)
+
+            old = None
+            new = None
             for ctrl in ctrls:
                 if isinstance(ctrl, PostReadControl):
+                    old = ctrl.res.entry_as
                     self._log(logging.INFO, "PostRead entry_as = %s", ctrl.res.entry_as)
                 elif isinstance(ctrl, PreReadControl):
+                    new = ctrl.res.entry_as
                     self._log(logging.INFO, "PreRead entry_as = %s", ctrl.res.entry_as)
 
             self._log(
                 logging.INFO,
                 "Call NATS for %s operation on dn = %s" % (reqtype, request.dn),
             )
-            self.outgoing_queue.put(LDAPMessage(reqtype, request))
+
+            ldap_message = LDAPMessage(reqtype, request.binddn, old, new)
+
+            with self.journal_key_mutex:
+                # TODO: Write the `ldap_message` into the sqlite journal!
+                # sqlite.put(key=self.journal_key, value=ldap_message)
+                self.journal_key += 1
+
+            # TODO: don't know if this shoud stay in
+            self.outgoing_queue.put(ldap_message, timeout=5)
+
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
         resonse_time = time.perf_counter()
         try:
-            (connid, msgid, request_time) = self.backpressure_queue.get(timeout=1)  # signal one seat is free
+            (connid, msgid, request_time) = self.backpressure_queue.get(timeout=5)  # signal one seat is free
         except Empty:
             # TODO: improve this and decide if it should stay in the codebase.
-            self._log(logging.WARNING, "all seats are already free, don't know why")
-        else:
-            self._log(logging.INFO, "processing time  = %s", round(resonse_time - request_time, 6))
+            self._log(logging.ERROR, "no in flight request found in backpressure_queue")
+            raise
+        self._log(logging.INFO, "processing time  = %s", round(resonse_time - request_time, 6))
         return ""
 
     def do_entry(self, request):

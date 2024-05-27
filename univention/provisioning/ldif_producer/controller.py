@@ -3,8 +3,9 @@
 
 import asyncio
 import logging
-from queue import Queue
+import signal
 import sys
+from queue import Queue
 
 from datetime import datetime
 import threading
@@ -56,18 +57,17 @@ class LDIFProducerController:
 
     async def handle_ldap_message(self, ldap_message: LDAPMessage):
         self.logger.info("handeling ldap message: %s", ldap_message.request_type)
-        new = {
-            "dn": ldap_message.request.dn,
-            "request_type": ldap_message.request_type,
-            "ldif": ldap_message.request.parsed_ldif,
-        }
-        old = None
         message = Message(
             publisher_name=PublisherName.udm_listener,
             ts=datetime.now(),
             realm="ldap",
             topic="ldap",
-            body={"new": new, "old": old},
+            body={
+                "ldap_request_type": ldap_message.request_type,
+                "binddn": ldap_message.binddn,
+                "new": ldap_message.new,
+                "old": ldap_message.old,
+            },
         )
         await self.message_queue_port.add_message(LDAP_STREAM, LDAP_SUBJECT, message)
 
@@ -80,9 +80,13 @@ class LDIFProducerController:
                 break
             await self.handle_ldap_message(message)
 
+    async def signal_handler(self):
+        self.socket_port.server_close()
+        self.socket_port.close = True
+
     def run_socket(self, handler: LDAPHandler):
         with self.socket_port(
-            server_address="/var/lib/univention-ldap/slapd-sock",
+            server_address="/var/lib/univention-ldap/slapd-sock/sock",
             handler_class=handler,
             logger=self.logger,
             average_count=10,
@@ -98,6 +102,9 @@ class LDIFProducerController:
             slapdsock_server.serve_forever()
 
     async def run(self):
+        for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+            asyncio.get_running_loop().add_signal_handler(sig, lambda s=sig: asyncio.create_task(self.signal_handler()))
+
         await self.message_queue_port.ensure_stream(LDAP_STREAM, [LDAP_SUBJECT])
         ldap_handler = LDAPHandler(
             self.settings.ldap_base_dn,

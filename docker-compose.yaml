@@ -42,7 +42,7 @@ services:
       IGNORE_TEMPORARY_OBJECTS: true
     volumes:
     - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
-    - ldap-shared-data:/var/lib/univention-ldap/:rw
+    - ldap-shared-data:/var/lib/univention-ldap/slapd-sock/:rw
 
   ldap-server:
     platform: linux/amd64
@@ -62,7 +62,7 @@ services:
     # - dh_param
     volumes:
     - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
-    - ldap-shared-data:/var/lib/univention-ldap/:rw
+    - ldap-shared-data:/var/lib/univention-ldap/slapd-sock/:rw
     - ldap-shared-run:/var/run/slapd/:rw
 
   nats:

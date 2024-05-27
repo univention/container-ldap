@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
-# import socket
 import threading
 
 from abc import ABC, abstractmethod
@@ -40,18 +39,26 @@ class LDIFProducerSocketPort(ABC):
 
 class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):
     def serve_forever(self):
+        self.close = False
+
         # set up the threadpool
         # TODO: listen for sigterm and sigint or provide some option to gracefully terminate all threads.
+        threads = []
         for _ in range(self.thread_pool_size):
             req_thread = threading.Thread(target=self.process_request_thread)
             # TODO: Daemon should be False, because we need to make sure the thread finishes.
-            req_thread.daemon = True
+            threads.append(req_thread)
             req_thread.start()
         # server main loop
         while True:
+            if self.close:
+                break
             self.handle_request()
+
+        for req_thread in threads:
+            req_thread.join()
+
         # TODO: make this actually reachable
-        self.server_close()
 
     def process_request_thread(self):
         """
@@ -64,16 +71,3 @@ class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):
             if self.req_threads_active > self.req_threads_max:
                 self.req_threads_max = self.req_threads_active
             ThreadingMixIn.process_request_thread(self, *threads)
-
-    # TODO: I probably don't have to touch this method. It's here as a reminder for the Moment
-    # def handle_request(self):
-    #     """
-    #     simply collect requests and put them on the queue for the workers.
-    #     """
-    #     try:
-    #         request, client_address = self.get_request()
-    #     except socket.error:
-    #         return
-    #     if self.verify_request(request, client_address):
-    #         self.logger.debug('Queuing new request: %r %r', request, client_address)
-    #         self.requests.put((request, client_address))
