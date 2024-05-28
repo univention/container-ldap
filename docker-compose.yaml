@@ -31,13 +31,14 @@ services:
       dockerfile: ./docker/ldif-producer/Dockerfile
       context: ./
     environment:
+      SOCKET_FILE_LOCATION: "/var/lib/univention-ldap/slapd-sock/sock"
       NATS_USER: ldif-producer
       NATS_PASSWORD: ldifpass
       NATS_HOST: "nats"
       NATS_PORT: "4222"
       NATS_MAX_RECONNECT_ATTEMPTS: 2
       MAX_IN_FLIGHT_LDAP_MESSAGES: 1
-      LDAP_THREADS: 1
+      LDAP_THREADS: 5
       LDAP_BASE_DN: "dc=univention-organization,dc=intranet"
       IGNORE_TEMPORARY_OBJECTS: true
     volumes:

@@ -5,25 +5,19 @@ import asyncio
 import logging
 import signal
 import sys
-from queue import Queue
+from queue import Empty, Queue
 
 from datetime import datetime
 import threading
 
-from univention.provisioning.ldif_producer.config import (
-    LDIFProducerSettings,
-    get_ldif_producer_settings,
-)
+from univention.provisioning.ldif_producer.config import LDIFProducerSettings, get_ldif_producer_settings
 from univention.provisioning.ldif_producer.port import (
     LDAP_STREAM,
     LDAP_SUBJECT,
     LDIFProducerAdapter,
     LDIFProducerMQPort,
 )
-from univention.provisioning.ldif_producer.socket_adapter.ldap_handler import (
-    LDAPHandler,
-    LDAPMessage,
-)
+from univention.provisioning.ldif_producer.socket_adapter.ldap_handler import LDAPHandler, LDAPMessage
 from univention.provisioning.models import Message, PublisherName
 
 from univention.provisioning.ldif_producer.socket_adapter.server import (
@@ -32,31 +26,24 @@ from univention.provisioning.ldif_producer.socket_adapter.server import (
 )
 
 
-class LDIFProducerController:
+class NATSController:
     def __init__(
         self,
-        settings: LDIFProducerSettings,
+        queue: Queue,
         message_queue_port: LDIFProducerMQPort,
-        socket_port: type[LDIFProducerSocketPort],
     ) -> None:
-        self.settings = settings
         self.message_queue_port = message_queue_port
-        self.socket_port = socket_port
 
-        self.queue = Queue(self.settings.max_in_flight_ldap_messages)
-
+        self.queue = queue
         self.logger = logging.getLogger(__name__)
 
-        stdout_handler = logging.StreamHandler(sys.stdout)
-        log_formatter = logging.Formatter(
-            "%(asctime)s [%(process)d %(thread)d] [%(levelname)s] %(message)s [%(threadName)s]"
-        )
-        stdout_handler.setFormatter(log_formatter)
-        self.logger.addHandler(stdout_handler)
-        self.logger.setLevel(logging.DEBUG)
+    async def setup(self) -> None:
+        await self.message_queue_port.ensure_stream(LDAP_STREAM, [LDAP_SUBJECT])
 
     async def handle_ldap_message(self, ldap_message: LDAPMessage):
-        self.logger.info("handeling ldap message: %s", ldap_message.request_type)
+        self.logger.info(
+            "sending LDAP message to NATS request_type: %s binddn: %s", ldap_message.request_type, ldap_message.binddn
+        )
         message = Message(
             publisher_name=PublisherName.udm_listener,
             ts=datetime.now(),
@@ -71,66 +58,99 @@ class LDIFProducerController:
         )
         await self.message_queue_port.add_message(LDAP_STREAM, LDAP_SUBJECT, message)
 
-    async def process_queue(self):
-        self.logger.info("starting the processing of the outgoing queue")
+    async def process_queue_forever(self):
+        self.logger.info("starting to process the outgoing queue")
         while True:
-            message = self.queue.get()
-            self.logger.info("received a new outgoing message")
-            if message is None:
-                break
+            try:
+                message = self.queue.get(timeout=1)
+            except Empty:
+                # give the signal handler a chance to interrupt the event loop
+                await asyncio.sleep(0.0001)
+                continue
+            self.logger.debug("received a new outgoing message")
             await self.handle_ldap_message(message)
 
-    async def signal_handler(self):
-        self.socket_port.server_close()
-        self.socket_port.close = True
 
-    def run_socket(self, handler: LDAPHandler):
-        with self.socket_port(
-            server_address="/var/lib/univention-ldap/slapd-sock/sock",
-            handler_class=handler,
-            logger=self.logger,
-            average_count=10,
-            socket_timeout=30,
-            socket_permissions="600",
-            allowed_uids=(0,),
-            allowed_gids=(0,),
-            thread_pool_size=self.settings.ldap_threads,
-        ) as slapdsock_server:
-            # Activate the server; this will keep running until you
-            # interrupt the program with Ctrl-C
-            self.logger.info("starting slapd socket server")
-            slapdsock_server.serve_forever()
+async def signal_handler(signal: signal.Signals, logger: logging.Logger, socket_port: LDIFProducerSocketPort):
+    logger.info("recieved stop signal: %s", signal)
 
-    async def run(self):
-        for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
-            asyncio.get_running_loop().add_signal_handler(sig, lambda s=sig: asyncio.create_task(self.signal_handler()))
+    logger.info("closing the unix socket and shutting down the socket server")
+    socket_port.server_close()
+    socket_port.exit.set()
 
-        await self.message_queue_port.ensure_stream(LDAP_STREAM, [LDAP_SUBJECT])
-        ldap_handler = LDAPHandler(
-            self.settings.ldap_base_dn,
-            self.settings.ldap_threads,
-            self.settings.ignore_temporary_objects,
-            self.queue,
-        )
+    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+    [task.cancel() for task in tasks]
+    await asyncio.gather(*tasks, return_exceptions=True)
+    logger.info("collected all asyncio tasks")
 
-        socket_main_thread = threading.Thread(name="socket_main_thread", target=self.run_socket, args=(ldap_handler,))
-        socket_main_thread.start()
+    asyncio.get_event_loop().stop()
 
-        await self.process_queue()
+
+def get_logger():
+    logger = logging.getLogger(__name__)
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    log_formatter = logging.Formatter(
+        "%(asctime)s [%(process)d %(thread)d] [%(levelname)s] %(message)s [%(threadName)s]"
+    )
+    stdout_handler.setFormatter(log_formatter)
+    logger.addHandler(stdout_handler)
+    logger.setLevel(logging.DEBUG)
+
+    return logger
 
 
 async def run(
-    message_queue_port: type[LDIFProducerMQPort],
-    socket_port: type[LDIFProducerSocketPort],
+    message_queue_port_type: type[LDIFProducerMQPort],
+    socket_port_type: type[LDIFProducerSocketPort],
+    ldap_handler_type: type[LDAPHandler],
+    settings: LDIFProducerSettings,
 ):
-    settings = get_ldif_producer_settings()
-    async with message_queue_port(settings) as mq_port:
-        controller = LDIFProducerController(settings, mq_port, socket_port)
-        await controller.run()
+    logger = get_logger()
+
+    outgoing_queue = Queue(settings.max_in_flight_ldap_messages)
+
+    async with message_queue_port_type(settings) as message_queue_port:
+        nats_controller = NATSController(outgoing_queue, message_queue_port)
+        await nats_controller.setup()
+
+        ldap_handler = ldap_handler_type(
+            settings.ldap_base_dn,
+            settings.ldap_threads,
+            settings.ignore_temporary_objects,
+            outgoing_queue,
+        )
+
+        socket_port = socket_port_type(
+            server_address=settings.socket_file_location,
+            handler_class=ldap_handler,
+            logger=logger,
+            average_count=10,
+            socket_timeout=1,
+            socket_permissions="600",
+            allowed_uids=(0,),
+            allowed_gids=(0,),
+            thread_pool_size=settings.ldap_threads,
+        )
+
+        for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+            asyncio.get_running_loop().add_signal_handler(
+                sig, lambda s=sig: asyncio.create_task(signal_handler(s, logger, socket_port))
+            )
+
+        socket_main_thread = threading.Thread(name="socket_main_thread", target=socket_port.serve_forever)
+        socket_main_thread.start()
+
+        try:
+            await nats_controller.process_queue_forever()
+        except asyncio.CancelledError:
+            logger.info("Stopped sending messages to NATS")
+            socket_main_thread.join()
+            pass
 
 
 def main():
-    asyncio.run(run(LDIFProducerAdapter, LdifProducerSlapdSockServer))
+    settings = get_ldif_producer_settings()
+    asyncio.run(run(LDIFProducerAdapter, LdifProducerSlapdSockServer, LDAPHandler, settings))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
+from queue import Empty
 import threading
 
 from abc import ABC, abstractmethod
@@ -24,10 +25,15 @@ class LDIFProducerSocketPort(ABC):
         allowed_gids: tuple[int, ...],
         thread_pool_size: int,
     ) -> None:
+        self.exit: threading.Event
         pass
 
     @abstractmethod
     def serve_forever(self) -> None:
+        pass
+
+    @abstractmethod
+    def server_close(self) -> None:
         pass
 
     def __enter__(self) -> "LDIFProducerSocketPort":
@@ -38,36 +44,39 @@ class LDIFProducerSocketPort(ABC):
 
 
 class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):
-    def serve_forever(self):
-        self.close = False
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.exit = threading.Event()
 
+    def serve_forever(self):
         # set up the threadpool
-        # TODO: listen for sigterm and sigint or provide some option to gracefully terminate all threads.
         threads = []
         for _ in range(self.thread_pool_size):
             req_thread = threading.Thread(target=self.process_request_thread)
-            # TODO: Daemon should be False, because we need to make sure the thread finishes.
             threads.append(req_thread)
             req_thread.start()
         # server main loop
-        while True:
-            if self.close:
-                break
+        while not self.exit.is_set():
             self.handle_request()
 
+        self.logger.info("recieved exit signal, joining worker threads")
         for req_thread in threads:
             req_thread.join()
-
-        # TODO: make this actually reachable
+        self.logger.info("all worker theads have completed, returning to main thread")
 
     def process_request_thread(self):
         """
         obtain request from queue instead of directly from server socket
         """
-        while True:
-            threads = self.requests.get()
+        while not self.exit.is_set():
+            try:
+                threads = self.requests.get(timeout=1)
+            except Empty:
+                continue
             self.req_threads_active = len(threads)
             # TODO: I don't understand this!
             if self.req_threads_active > self.req_threads_max:
                 self.req_threads_max = self.req_threads_active
             ThreadingMixIn.process_request_thread(self, *threads)
+
+        self.logger.info("exiting worker thread")
