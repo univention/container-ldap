@@ -1,33 +1,45 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-# SPDX-FileCopyrightText: 2023 Univention GmbH
+# SPDX-FileCopyrightText: 2024 Univention GmbH
 
-ARG DOCKER_PROXY
+ARG UCS_BASE_IMAGE_TAG=0.12.0
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520
 
-FROM ${DOCKER_PROXY}debian:bookworm-slim
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ARG WORKDIR="/app"
 
-# Install utilities
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        ldap-utils=2.5* \
-        python3=3.11.* \
-        python3-pip=23.* \
-        python3-venv=3.* \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} as build
+ARG WORKDIR
+WORKDIR ${WORKDIR}
 
-WORKDIR /testrunner
+RUN apt-get -qq update \
+    && apt-get --assume-yes --verbose-versions --no-install-recommends install \
+      python3-pip=23.* \
+      libldap2-dev=2.5.* \
+    && rm -fr /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-# Install python dependencies and helper scripts
-COPY Pipfile Pipfile.lock entrypoint.sh ./
+ENV \
+    WEB_CONCURRENCY=1 \
+    # Do not buffer `stdout`
+    PYTHONUNBUFFERED=1 \
+    # Do not create `.pyc` files
+    PYTHONDONTWRITEBYTECODE=1 \
+    # Do not exceed connection pool
+    POETRY_INSTALLER_MAX_WORKERS=5 \
+    # Do not ask questions
+    POETRY_NO_INTERACTION=1 \
+    # Put .venv inside source folder
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    # Cache of poetry
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
-# hadolint ignore=SC1091
-RUN python3 -m venv .venv \
-    && source ./.venv/bin/activate \
-    && pip install --no-cache-dir pipenv==2023.6.18 \
-    && pipenv sync --dev --system \
-    && rm -r ~/.cache
+# install Poetry
+RUN pip3 install --break-system-packages --no-cache-dir poetry==1.6.1
 
-WORKDIR /app
+# copy source code
+COPY ./univention ${WORKDIR}/univention/
+COPY ./tests ${WORKDIR}/tests/
+COPY poetry.lock \
+     pyproject.toml \
+     ${WORKDIR}/
 
-ENTRYPOINT ["/testrunner/entrypoint.sh"]
-CMD ["pytest"]
+# install dependencies
+RUN poetry install --with dev

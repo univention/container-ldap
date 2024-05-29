@@ -6,20 +6,6 @@
 name: "dev-local"
 
 services:
-  ldap-notifier:
-    platform: linux/amd64
-    image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-notifier:${IMAGE_TAG:-latest}"
-    build:
-      context: ./docker/ldap-notifier
-    depends_on:
-      ldap-server:
-        condition: service_started
-    ports:
-    - 6669:6669
-    volumes:
-    - ldap-shared-data:/var/lib/univention-ldap/:rw
-    - ldap-shared-run:/var/run/slapd/:ro
-
   ldif-producer:
     platform: linux/amd64
     image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldif-producer:${IMAGE_TAG:-latest}"
@@ -43,7 +29,7 @@ services:
       IGNORE_TEMPORARY_OBJECTS: true
     volumes:
     - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
-    - ldap-shared-data:/var/lib/univention-ldap/slapd-sock/:rw
+    - ldap-socket:/var/lib/univention-ldap/slapd-sock/:rw
 
   ldap-server:
     platform: linux/amd64
@@ -63,8 +49,7 @@ services:
     # - dh_param
     volumes:
     - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
-    - ldap-shared-data:/var/lib/univention-ldap/slapd-sock/:rw
-    - ldap-shared-run:/var/run/slapd/:rw
+    - ${LDAP_SOCKET_LOCATION:-ldap-socket}:/var/lib/univention-ldap/slapd-sock/:rw
 
   nats:
     image: "nats:latest"
@@ -101,7 +86,8 @@ services:
   test:
     image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/testrunner:${IMAGE_TAG:-latest}"
     build:
-      context: ./docker/testrunner/
+      dockerfile: ./docker/testrunner/Dockerfile
+      context: ./
     environment:
       PYTEST_ADDOPTS: --ldap-server=ldap-server
     profiles:
@@ -135,8 +121,7 @@ secrets:
     file: ssl/dh_2048.pem
 
 volumes:
-  ldap-shared-data:
-  ldap-shared-run:
+  ldap-socket:
   pre-commit-cache:
 
 ...

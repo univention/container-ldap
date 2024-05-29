@@ -35,14 +35,16 @@ lint-pre-commit:
   - IMAGE_NAME:
       - "ldap-server"
       - "ldap-notifier"
-      - "testrunner"
+  - IMAGE_NAME: "testrunner"
+    DOCKERFILE_PATH: "./docker/testrunner/Dockerfile"
   - IMAGE_NAME: "ldif-producer"
-    DOCKERFILE_PATH: "./docker/events-and-consumer-api/Dockerfile"
+    DOCKERFILE_PATH: "./docker/ldif-producer/Dockerfile"
 
 .publish-matrix: &publish-matrix
   - IMAGE_NAME:
       - "ldap-server"
       - "ldap-notifier"
+      - "ldif-producer"
 
 container-build:
   parallel:
@@ -50,7 +52,7 @@ container-build:
 
 container-generate-sbom:
   parallel:
-    matrix: *build-matrix
+    matrix: *publish-matrix
 
 container-sign-external:
   parallel:
@@ -78,7 +80,7 @@ test-ldap-smoke:
     - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 nats ldap-server ldif-producer
   script:
     # - sleep 10
-    - docker compose run --quiet-pull --rm test
+    - docker compose run --quiet-pull --rm test .venv/bin/pytest -v tests/unit tests/integration/
   after_script:
     - docker logs ldap-server >& ldap-server.log
     - docker logs ldif-producer >& ldif-producer.log
@@ -94,10 +96,6 @@ test-ldap-smoke:
     expose_as: "docker compose server logs"
 
 push-image-external:
-  parallel:
-    matrix: *publish-matrix
-
-container-sign-external:
   parallel:
     matrix: *publish-matrix
 
