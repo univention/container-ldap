@@ -1,6 +1,5 @@
 # Test Organization
 
-
 ## TL;DR run the tests
 
 In a container:
@@ -11,51 +10,66 @@ docker compose up --build test
 
 Locally:
 
-```shell
-# Use "pipenv" to have the right environment
-pipenv sync -d
-pipenv run pytest
-
-# Get a shell
-pipenv shell
+```sh
+poetry install
+poetry shell
+pytest --cov=univention/provisioning/ --cov-report term-missing -v
 ```
-
 
 ## Target structure
 
 The target structure for testing shall eventually follow this pattern:
 
 ```
-└── tests  # top-level tests folder
-    ├── README.md  # explains test organization inside this folder
-    ├── unit  # name this unit_and_integration if keeping both here
-    ├── integration  # optional: omit if kept together with unit tests
+└── tests
+    ├── README.md
+    ├── unit
+    ├── integration
     └── e2e
 ```
 
 ### Unit tests
 
-The *unit* under test is in this repository the "container":
+Unit tests can run without any external dependencies.
 
-- `ldap-server` is the OpenLDAP server
+The unittests in this repository test the python code
+of the the LDIF-Producer slapd-socket server.
 
-- `ldap-notifier` is the Univention Directory Notifier
+the LDIF-Producer is a multithreaded application
+using the python threading library.
+Due to this fact, some unittests take around a second to execute
+or more explicitly to shut down
+because the exit signal can only be evaluated
+between polling intervals.
 
-Simple checks which focus on a single container are kept in the subdirectory
-`unit`.
+The multithreaded nature of the LDIF-Producer
+makes debugging test failures significantly harder.
+Tests can seem to be "hanging forever"
+when a worker thread throws an exception.
 
+The LDIF-Producer implements extensive logging to help in debugging.
+In a pytest run, you can activate the logs with the `-s` and `--full-trace`
+cli arguments.
+
+As a last resort, you can separate `stdout` from `stderr`
+you can sort the logs by process id to reveal different patterns.
+
+```sh
+docker logs dev-local-ldif-producer-1 > ldif-producer.log \
+&& docker logs dev-local-ldif-producer-1 2>> ldif-producer.log \
+&& vim ldif-producer.log
+```
+
+vim sort command:
+`:sort /\[\d \d*\]/`
 
 ### Integration tests
 
-The current integration tests are in the folder `integration-test` in the root
-of this repository. The aim is to migrate those eventually into the folder
-`integration` as shown above in the overview.
+Integration tests are all test that depend on separately started containers.
+Those can be the `ldap-server`, `ldif-producer` and `nats`.
+Integration tests may need only one, some or all of those containers
 
-Tests which check the *integration* of multiple containers will be grouped into
-the folder `integration` as shown above in the overview.
-
-New tests are written as plain `pytest` based test cases.
-
+the tests in the `integration-tests` folder are assumed to be deprecated.
 
 ### End to end tests
 

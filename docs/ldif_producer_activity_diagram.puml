@@ -12,8 +12,10 @@ fork
 
 partition "Send Messages to NATS" {
 repeat
-:get message from queue;
-:send message to NATS;
+:get message from
+`outgoing_queue`;
+:send message to NATS
+into LDIF_PRODUCER queue;
 :remove message from journal;
 repeat while ( no SIGINT / SIGTERM )
 }
@@ -24,16 +26,15 @@ fork again
     fork
         repeat
             :listen for messages in the socket;
-            :handle_request()
+            :slapdsock.service
+            .SlapdSockServer.handle_request()
             ====
             handle_request simply puts
-            messages in a python queue
+            incoming socket messages into
+            the `requests` python queue
             so that multiple threads
             can work on them.;
 
-            :slapdsock.service
-            .SlapdSockServer.handle_request()
-            put message into queue;
         repeat while ( no SIGINT / SIGTERM )
 
     fork again
@@ -48,20 +49,24 @@ fork again
                 and determine the ldap operation;
                 switch (ldap_operation_type)
                 case ( RESULT )
-                    partition "do_result()" {
+                    partition "LDAPHandler.\ndo_result()" {
                         :write message to journal;
                         :put message into `outgoing_queue`;
                         :release back-pressure
-                        by removing an object from the `backpressure_queue`;
+                        by removing an object from
+                        the `backpressure_queue`;
                     }
                 case ( DELETE / MODIFY / MODRDN )
-                    :do_delete()
+                    :LDAPHandler.
+                    do_add()
+                    do_delete()
                     do_modify()
                     do_modrdn()
                     ====
-                    add object to `backpressure_queue`;
+                    add object to
+                    `backpressure_queue`;
                 case ( Everything else )
-                    :do_add()
+                    :LDAPHandler.
                     do_bind()
                     do_search()
                     ...
@@ -72,12 +77,6 @@ fork again
         }
     fork again
         partition "SocketServer\nWorker  Thread" {
-        }
-    fork again
-        partition "SocketServer\nWorker  Thread" {
-        }
-
-    end fork
         }
 
 end fork

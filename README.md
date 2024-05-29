@@ -20,10 +20,9 @@ The repository does include a compose file to start things up quickly. It will
 start three services:
 
 - `ldap-server` - The OpenLDAP server.
-- `ldap-notifier` - The Univention Directory Notifier.
+- `ldif-producer` - Generates a provisioning message from every LDAP write transaction, replaces notifier/listener
+- `ldap-notifier` - The Univention Directory Notifier. (deprecated, about to be removed)
 - `ldap-admin` - An instance of phpLDAPadmin as a web UI to access
-  `ldap-server`.
-
 
 To set it up:
 
@@ -32,27 +31,35 @@ To set it up:
 
 2. Bring up the services by running:
 
-   ```
-   docker compose up
-   ```
+```sh
+docker compose up
+```
+
+To always start with a fresh LDAP database,
+always build with the latest changes
+and check for mew remote images, run this optimized command:
+
+```sh
+docker compose down -v && docker compose up --pull always --build \
+ldif-producer ldap-server nats
+```
 
 The web UI is by default available at <http://localhost:8001>.
-
-
 
 ## Interacting with `ldap-server`
 
 
 From the command line if you have the required tools available:
 
-```
+```sh
 ldapwhoami -H ldap://localhost:389 -x -D cn=admin,dc=univention-organization,dc=intranet -w univention
 
 ldapsearch -H ldap://localhost:389 -x -D cn=admin,dc=univention-organization,dc=intranet -w univention -b dc=univention-organization,dc=intranet
 ```
 
+## Interacting with the `ldap-server`
 
-## Interacting with the `ldap-notifier`
+## Interacting with the `ldap-notifier` (about to be deprecated)
 
 One option is to connect the base listener to the running notifier, this does
 involve manual tweaking at the moment though. The process is roughly as follows:
@@ -61,8 +68,9 @@ involve manual tweaking at the moment though. The process is roughly as follows:
   via `docker compose`. Set the `.env.listener` according to your local
   containers.
 
-
 ## Manually testing a full round trip
+
+**deprecated** because the phpLDAPadmin doesn't have the necessary LDAP Controls.
 
 The easiest way is to open phpLDAPadmin and change the description of the admin
 user.
@@ -89,7 +97,6 @@ Have the `container-listener-base` and the services from this repository running
 ## Linting
 
 You may run the pre-commit linter as follows:
-
 ```
 docker compose run pre-commit
 ```
@@ -130,7 +137,7 @@ as a comma-separated list of values found in the [OpenLDAP documentation](https:
 
 The default is `ldap/debug/level: stats`.
 
-## Notifier Data Files
+## Notifier Data Files (deprecated, will soon be removed)
 
 ### OpenLDAP translog output file
 
