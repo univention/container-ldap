@@ -9,6 +9,7 @@
 # Python
 __pycache__
 /.venv/
+/.coverage
 
 # Robot framework logs
 log.html

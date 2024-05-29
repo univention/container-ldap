@@ -26,7 +26,6 @@ class LDIFProducerSocketPort(ABC):
         thread_pool_size: int,
     ) -> None:
         self.exit: threading.Event
-        pass
 
     @abstractmethod
     def serve_forever(self) -> None:

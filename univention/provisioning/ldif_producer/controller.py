@@ -65,7 +65,7 @@ class NATSController:
                 message = self.queue.get(timeout=1)
             except Empty:
                 # give the signal handler a chance to interrupt the event loop
-                await asyncio.sleep(0.0001)
+                await asyncio.sleep(0)
                 continue
             self.logger.debug("received a new outgoing message")
             await self.handle_ldap_message(message)
@@ -99,7 +99,7 @@ def get_logger():
     return logger
 
 
-async def run(
+async def run_ldif_producer(
     message_queue_port_type: type[LDIFProducerMQPort],
     socket_port_type: type[LDIFProducerSocketPort],
     ldap_handler_type: type[LDAPHandler],
@@ -150,7 +150,7 @@ async def run(
 
 def main():
     settings = get_ldif_producer_settings()
-    asyncio.run(run(LDIFProducerAdapter, LdifProducerSlapdSockServer, LDAPHandler, settings))
+    asyncio.run(run_ldif_producer(LDIFProducerAdapter, LdifProducerSlapdSockServer, LDAPHandler, settings))
 
 
 if __name__ == "__main__":
