@@ -4,42 +4,10 @@
 from queue import Empty
 import threading
 
-from abc import ABC, abstractmethod
-
 from socketserver import ThreadingMixIn
-from typing import Any, Callable
 from slapdsock.service import SlapdSockServer
 
-
-class LDIFProducerSocketPort(ABC):
-    @abstractmethod
-    def __init__(
-        self,
-        server_address: str,
-        handler_class: Callable,
-        logger: Any,
-        average_count: int,
-        socket_timeout: int,
-        socket_permissions: str,
-        allowed_uids: tuple[int, ...],
-        allowed_gids: tuple[int, ...],
-        thread_pool_size: int,
-    ) -> None:
-        self.exit: threading.Event
-
-    @abstractmethod
-    def serve_forever(self) -> None:
-        pass
-
-    @abstractmethod
-    def server_close(self) -> None:
-        pass
-
-    def __enter__(self) -> "LDIFProducerSocketPort":
-        return self
-
-    def __exit__(self, *args) -> None:
-        pass
+from univention.provisioning.ports.socket_port import LDIFProducerSocketPort
 
 
 class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):

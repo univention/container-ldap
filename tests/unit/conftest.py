@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from univention.provisioning.ldif_producer.port import LDIFProducerMQPort
+from univention.provisioning.ports.mq_port import LDIFProducerMQPort
 
 
 @pytest.fixture

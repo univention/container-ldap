@@ -17,7 +17,10 @@ from ldap0.res import decode_response_ctrls
 from ldap0.controls.readentry import PostReadControl, PreReadControl
 from slapdsock.service import threading
 
-# from slapdsock.service import threading
+
+TIMEOUT_RESPONSE = (
+    "RESULT\ncode: 51\nmatched: <DN>\ninfo: slapdsocklistener busy sending messages to the message queue\n"
+)
 
 
 class RequestType(str, Enum):
@@ -79,15 +82,14 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             temporary_dn_string = ",cn=temporary,cn=univention,"
             self.len_temporary_dn_suffix = len(temporary_dn_string) + len(ldap_base)
 
-    # TODO: Better name to signify that this evaluates ignore_temporaty: apply_temporary_dn_rules() mabe
-    def is_temporary_dn(self, request):
+    def filter_temporary_dn(self, request):
         return "," in request.dn[self.len_temporary_dn_suffix :] if self.ignore_temporary else False
 
     def do_add(self, request):
         """
         ADD
         """
-        if self.is_temporary_dn(request):
+        if self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_add = %s", request)
         try:
@@ -99,7 +101,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 "do_add = %s failed because no LDAPHandler seat was available within the timeout",
                 request,
             )
-            return ""
+            return TIMEOUT_RESPONSE
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
@@ -123,7 +125,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         DELETE
         """
-        if self.is_temporary_dn(request):
+        if self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_delete = %s", request)
         try:
@@ -132,10 +134,10 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         except Full:
             self._log(
                 logging.ERROR,
-                "do_add = %s failed because no LDAPHandler seat was available within the timeout",
+                "do_delete = %s failed because no LDAPHandler seat was available within the timeout",
                 request,
             )
-            return ""
+            return TIMEOUT_RESPONSE
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
@@ -145,7 +147,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         MODIFY
         """
-        if self.is_temporary_dn(request):
+        if self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modify = %s", request)
         try:
@@ -154,10 +156,10 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         except Full:
             self._log(
                 logging.ERROR,
-                "do_add = %s failed because no LDAPHandler seat was available within the timeout",
+                "do_modify = %s failed because no LDAPHandler seat was available within the timeout",
                 request,
             )
-            return ""
+            return TIMEOUT_RESPONSE
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
@@ -167,7 +169,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         MODRDN
         """
-        if self.is_temporary_dn(request):
+        if self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modrdn = %s", request)
         try:
@@ -176,10 +178,10 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         except Full:
             self._log(
                 logging.ERROR,
-                "do_add = %s failed because no LDAPHandler seat was available within the timeout",
+                "do_modrdn = %s failed because no LDAPHandler seat was available within the timeout",
                 request,
             )
-            return ""
+            return TIMEOUT_RESPONSE
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
@@ -199,37 +201,20 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         _ = (self, request)  # pylint dummy
         return ""
 
-    # TODO: remove failed attempt
-    # def dont_do_result(self, request: RESULTRequest):
-    #     """
-    #     RESULT
-    #     """
-    #     self._log(logging.DEBUG, "aquiring the do_resutl lock")
-    #     # TODO: timeout is just for development purposes
-    #     self.do_result_lock.acquire(timeout=10)
-    #     try:
-    #         self._do_result(request)
-    #     except Exception:
-    #         # TODO: Refine this behaviour
-    #         self._log(logging.DEBUG, "releasing the do_resutl lock")
-    #         self.do_result_lock.release()
-    #         (connid, msgid, request_time) = self.backpressure_queue.get()  # signal one seat is free
-    #         raise
-    #
-    #     self._log(logging.DEBUG, "releasing the do_result lock")
-    #     self.do_result_lock.release()
-    #     (connid, msgid, request_time) = self.backpressure_queue.get()
-
     def do_result(self, request: RESULTRequest):
+        # Ignore results from read requests
         _ = (self, request)  # pylint dummy
         if getattr(request, "dn", None) is None:
             # A search result or anything where RESULTRequest._parse_ldif didn't find anything.
             return ""
+
+        # ignore temporary dn modify results (if configured)
         self._log(logging.DEBUG, "do_result = %s", request)
-        if self.is_temporary_dn(request):
+        if self.filter_temporary_dn(request):
             self._log(logging.INFO, "ignoring dn = %s", request.dn)
             return ""
 
+        # Parse result request type
         self._log(logging.INFO, "dn = %s", request.dn)
         if request.parsed_ldif:
             self._log(logging.DEBUG, "parsed_ldif = %s", request.parsed_ldif)
@@ -247,10 +232,11 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 "could not parse the request type = %s" % (request.parsed_ldif),
             )
             raise ValueError()
-
         self._log(logging.DEBUG, "reqtype = %s", reqtype)
         self._log(logging.DEBUG, "parsed_ldif = %s", request.parsed_ldif)
+
         if request.code == 0:
+            # get the old and new objects from the ldap controls
             self._log(logging.INFO, "binddn = %s", request.binddn)
             self._log(logging.DEBUG, "ctrls = %s", request.ctrls)
             ctrls = [
@@ -273,24 +259,28 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 logging.INFO,
                 "Call NATS for %s operation on dn = %s" % (reqtype, request.dn),
             )
-
             ldap_message = LDAPMessage(reqtype, request.binddn, old, new)
 
+            # Write LDAP transaction to journal
+            self._log(logging.DEBUG, "Write %s request on dn = %s to internal journal" % (reqtype, request.dn))
             with self.journal_key_mutex:
                 # TODO: Write the `ldap_message` into the sqlite journal!
                 # sqlite.put(key=self.journal_key, value=ldap_message)
                 self.journal_key += 1
 
-            # TODO: don't know if this shoud stay in
-            self.outgoing_queue.put(ldap_message, timeout=5)
+            try:
+                self.outgoing_queue.put(ldap_message, timeout=5)
+            except Empty:
+                self._log(logging.ERROR, "timeout putting message into outgoing_queue")
+                raise
 
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
+
         resonse_time = time.perf_counter()
         try:
             (connid, msgid, request_time) = self.backpressure_queue.get(timeout=5)  # signal one seat is free
         except Empty:
-            # TODO: improve this and decide if it should stay in the codebase.
             self._log(logging.ERROR, "no in flight request found in backpressure_queue")
             raise
         self._log(logging.INFO, "processing time  = %s", round(resonse_time - request_time, 6))

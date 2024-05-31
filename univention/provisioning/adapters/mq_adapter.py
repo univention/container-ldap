@@ -2,48 +2,26 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
 import logging
-from abc import ABC, abstractmethod
 from typing import Any, Callable, List, Optional
 
 import msgpack
 from univention.provisioning.models import Message
 
-from univention.provisioning.nats_adapter import NatsKeys, NatsMQService
+from univention.provisioning.nats_service import NatsKeys, NatsMQService
 from univention.provisioning.ldif_producer.config import LDIFProducerSettings
+from univention.provisioning.ports.mq_port import LDIFProducerMQPort
 
-LDAP_STREAM = "ldif-producer"
-LDAP_SUBJECT = "ldif-producer-subject"
+LDIF_STREAM = "ldif-producer"
+LDIF_SUBJECT = "ldif-producer-subject"
 
 logger = logging.getLogger(__name__)
-
-
-class LDIFProducerMQPort(ABC):
-    @abstractmethod
-    def __init__(self, settings: LDIFProducerSettings) -> None:
-        pass
-
-    @abstractmethod
-    async def __aenter__(self) -> "LDIFProducerMQPort":
-        pass
-
-    @abstractmethod
-    async def __aexit__(self, *args) -> None:
-        pass
-
-    @abstractmethod
-    async def add_message(self, stream: str, subject: str, message: Message) -> None:
-        pass
-
-    @abstractmethod
-    async def ensure_stream(self, stream: str, subjects: Optional[List[str]] = None) -> None:
-        pass
 
 
 def messagepack_encoder(data: Any) -> bytes:
     return msgpack.packb(data)
 
 
-class LDIFProducerAdapter(LDIFProducerMQPort):
+class LDIFProducerMQAdapter(LDIFProducerMQPort):
     def __init__(self, settings: LDIFProducerSettings):
         self.settings = settings
         self.mq_service = NatsMQService()

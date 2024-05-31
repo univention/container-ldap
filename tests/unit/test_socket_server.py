@@ -11,7 +11,7 @@ from slapdsock.handler import logging
 from slapdsock.service import threading
 
 from univention.provisioning.ldif_producer.controller import get_logger
-from univention.provisioning.ldif_producer.socket_adapter.server import LdifProducerSlapdSockServer
+from univention.provisioning.adapters.socket_adapter import LdifProducerSlapdSockServer
 
 
 @pytest.fixture

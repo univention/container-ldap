@@ -10,20 +10,13 @@ from queue import Empty, Queue
 from datetime import datetime
 import threading
 
+from univention.provisioning.adapters.mq_adapter import LDIF_STREAM, LDIF_SUBJECT, LDIFProducerMQAdapter
+from univention.provisioning.adapters.socket_adapter import LdifProducerSlapdSockServer
 from univention.provisioning.ldif_producer.config import LDIFProducerSettings, get_ldif_producer_settings
-from univention.provisioning.ldif_producer.port import (
-    LDAP_STREAM,
-    LDAP_SUBJECT,
-    LDIFProducerAdapter,
-    LDIFProducerMQPort,
-)
-from univention.provisioning.ldif_producer.socket_adapter.ldap_handler import LDAPHandler, LDAPMessage
 from univention.provisioning.models import Message, PublisherName
-
-from univention.provisioning.ldif_producer.socket_adapter.server import (
-    LDIFProducerSocketPort,
-    LdifProducerSlapdSockServer,
-)
+from univention.provisioning.ports.mq_port import LDIFProducerMQPort
+from univention.provisioning.ports.socket_port import LDIFProducerSocketPort
+from univention.provisioning.ldif_producer.ldap_handler import LDAPHandler, LDAPMessage
 
 
 class NATSController:
@@ -38,7 +31,7 @@ class NATSController:
         self.logger = logging.getLogger(__name__)
 
     async def setup(self) -> None:
-        await self.message_queue_port.ensure_stream(LDAP_STREAM, [LDAP_SUBJECT])
+        await self.message_queue_port.ensure_stream(LDIF_STREAM, [LDIF_SUBJECT])
 
     async def handle_ldap_message(self, ldap_message: LDAPMessage):
         self.logger.info(
@@ -56,7 +49,7 @@ class NATSController:
                 "old": ldap_message.old,
             },
         )
-        await self.message_queue_port.add_message(LDAP_STREAM, LDAP_SUBJECT, message)
+        await self.message_queue_port.add_message(LDIF_STREAM, LDIF_SUBJECT, message)
 
     async def process_queue_forever(self):
         self.logger.info("starting to process the outgoing queue")
@@ -150,7 +143,7 @@ async def run_ldif_producer(
 
 def main():
     settings = get_ldif_producer_settings()
-    asyncio.run(run_ldif_producer(LDIFProducerAdapter, LdifProducerSlapdSockServer, LDAPHandler, settings))
+    asyncio.run(run_ldif_producer(LDIFProducerMQAdapter, LdifProducerSlapdSockServer, LDAPHandler, settings))
 
 
 if __name__ == "__main__":

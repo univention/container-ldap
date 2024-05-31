@@ -8,8 +8,9 @@ from unittest.mock import ANY, MagicMock, call
 
 import pytest
 from univention.provisioning.ldif_producer.controller import NATSController, get_logger, signal_handler
-from univention.provisioning.ldif_producer.port import LDAP_STREAM, LDAP_SUBJECT, LDIFProducerMQPort
-from univention.provisioning.ldif_producer.socket_adapter.ldap_handler import LDAPMessage, RequestType
+from univention.provisioning.ports.mq_port import LDIFProducerMQPort
+from univention.provisioning.adapters.mq_adapter import LDIF_STREAM, LDIF_SUBJECT
+from univention.provisioning.ldif_producer.ldap_handler import LDAPMessage, RequestType
 
 
 @pytest.mark.asyncio
@@ -22,7 +23,7 @@ async def test_controller_setup(mock_message_queue_port: LDIFProducerMQPort):
 
     await controller.setup()
 
-    mock_message_queue_port.ensure_stream.assert_called_once_with(LDAP_STREAM, [LDAP_SUBJECT])
+    mock_message_queue_port.ensure_stream.assert_called_once_with(LDIF_STREAM, [LDIF_SUBJECT])
 
 
 @pytest.mark.asyncio
@@ -37,7 +38,7 @@ async def test_nats_controller(mock_message_queue_port: LDIFProducerMQPort):
             new={"number": i},
         )
         queue.put(ldap_message)
-        expected_calls.append(call(LDAP_STREAM, LDAP_SUBJECT, ANY))
+        expected_calls.append(call(LDIF_STREAM, LDIF_SUBJECT, ANY))
 
     controller = NATSController(
         queue=queue,
