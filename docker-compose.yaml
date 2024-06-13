@@ -84,6 +84,7 @@ services:
       - docs
 
   test:
+    # image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/testrunner:0.15.0-pre-jlohmer-add-slapdsock-listener@sha256:7bcd3bcc9215561e57e84d30b3e4a590224346a4fda002bda1d9fcdf1a50cc76"
     image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/testrunner:${IMAGE_TAG:-latest}"
     build:
       dockerfile: ./docker/testrunner/Dockerfile
@@ -93,7 +94,9 @@ services:
     profiles:
       - test
     volumes:
-      - ".:/app"
+      - "./tests:/app/tests"
+      - "./univention:/app/univention"
+      - "./pyproject.toml:/app/pyproject.toml"
 
   # Environment of the pre-commit linter.
   pre-commit:
