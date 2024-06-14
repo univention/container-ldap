@@ -111,6 +111,8 @@ async def run_ldif_producer(
             settings.ldap_threads,
             settings.ignore_temporary_objects,
             outgoing_queue,
+            # TODO: tune timeout
+            20,
         )
 
         socket_port = socket_port_type(

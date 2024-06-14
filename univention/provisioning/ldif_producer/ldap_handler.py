@@ -63,7 +63,10 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         ldap_threads: int,
         ignore_temporary: bool,
         outgoing_queue: Queue,
+        backpressure_wait_timeout: int,
     ):
+        self.backpressure_wait_timeout = backpressure_wait_timeout
+
         self.journal_key = 0
         self.journal_key_mutex = threading.Lock()
 
@@ -93,8 +96,9 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_add = %s", request)
         try:
-            # TODO: tune timeout
-            self.backpressure_queue.put((request.connid, request.msgid, time.perf_counter()), timeout=2)
+            self.backpressure_queue.put(
+                (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
+            )
         except Full:
             self._log(
                 logging.ERROR,
@@ -129,8 +133,9 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_delete = %s", request)
         try:
-            # TODO: tune timeout
-            self.backpressure_queue.put((request.connid, request.msgid, time.perf_counter()), timeout=2)
+            self.backpressure_queue.put(
+                (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
+            )
         except Full:
             self._log(
                 logging.ERROR,
@@ -151,8 +156,9 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modify = %s", request)
         try:
-            # TODO: tune timeout
-            self.backpressure_queue.put((request.connid, request.msgid, time.perf_counter()), timeout=2)
+            self.backpressure_queue.put(
+                (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
+            )
         except Full:
             self._log(
                 logging.ERROR,
@@ -173,8 +179,9 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modrdn = %s", request)
         try:
-            # TODO: tune timeout
-            self.backpressure_queue.put((request.connid, request.msgid, time.perf_counter()), timeout=2)
+            self.backpressure_queue.put(
+                (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
+            )
         except Full:
             self._log(
                 logging.ERROR,
