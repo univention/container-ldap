@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.16.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.15.2...v0.16.0) (2024-06-14)
+
+
+### Features
+
+* **ldap-server:** install and activate lapdsock in the ldap-server container ([1ca787d](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/1ca787de6ed9c92780ad00c9494d1454b280abcc))
+* **ldif-producer:** scaffolding to push messages to nats ([e355f6e](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e355f6ea28270b57ee1c288bf59a230f0bb5da0e))
+* **ldif-producer:** separate asyncio thread ([03d0e31](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/03d0e318e564da9397110013219f121da303ea63))
+* **ldif-producer:** wip docker-compose ([12df461](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/12df461d46c312075f424e67a0d2e656252740aa))
+
+
+### Bug Fixes
+
+* **ldif-producer:** add exit signal handling ([39729ac](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/39729ac53e1306cb8f6be1cff247cd9b56e1188d))
+* **ldif-producer:** add nats to docker-compose ([dd57f1a](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/dd57f1a7715e6d1607a92cd19de577e448335b7e))
+* **ldif-producer:** Adjust slapd-sock path ([2db3d80](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/2db3d805aa6a16ec42134ac90cff63fe2ca58df3))
+* **ldif-producer:** better logging for threaded app ([bf0ce63](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/bf0ce63ef150bd776dbe148338368dc12a3600f0))
+* **ldif-producer:** copy demo files from Arvid ([90f2a99](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/90f2a99b716ef15d69db75949470bfe05dd6a147))
+* **ldif-producer:** increase backpressure timeout ([e392799](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e3927998663f33e906b5ebe5def95cab8992788f))
+* **ldif-producer:** refinements with arvid ([3592a5f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/3592a5fc1a11871f230ba5167297efbd8ed421e1))
+* **ldif-producer:** some cleanup ([3bf12ea](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/3bf12eacca471bef10f8c7df85d2fb2dbe051e3b))
+* **ldif-producer:** sort-of working SlapdSockServer ([42b59ec](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/42b59ec92ea91313929488f357c900179deca9fa))
+* **ldif-producer:** update dependencies and project metadata ([942cef1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/942cef151f65367d5a9246fab25ea0a343cb8547))
+
 ## [0.15.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.15.1...v0.15.2) (2024-05-24)
 
 
