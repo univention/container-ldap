@@ -9,8 +9,8 @@
 ARG UCS_BASE_IMAGE_TAG=0.12.0-build-2024-04-25
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-507
 
-ARG PORTAL_UDM_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/components/univention-portal/portal-udm-extensions
-ARG PORTAL_UDM_EXTENSIONS_TAG=0.10.0
+ARG PORTAL_EXTENSION_IMAGE=gitregistry.knut.univention.de/univention/components/univention-portal/portal-extension
+ARG PORTAL_EXTENSION_TAG=0.10.0
 
 ARG OX_CONNECTOR_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/open-xchange/provisioning/ox-connector-dependencies
 ARG OX_CONNECTOR_EXTENSIONS_TAG=0.7.1
@@ -55,7 +55,7 @@ RUN echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug5726
     (dpkg --force-all -i ./*.deb || true)
 
 
-FROM ${PORTAL_UDM_EXTENSIONS_IMAGE}:${PORTAL_UDM_EXTENSIONS_TAG} AS portal-udm-extensions
+FROM ${PORTAL_EXTENSION_IMAGE}:${PORTAL_EXTENSION_TAG} AS portal-extension
 FROM ${OX_CONNECTOR_EXTENSIONS_IMAGE}:${OX_CONNECTOR_EXTENSIONS_TAG} AS ox-connector-extensions
 FROM ${GUARDIAN_EXTENSIONS_IMAGE}:${GUARDIAN_EXTENSIONS_TAG} AS guardian-extensions
 
@@ -121,8 +121,8 @@ RUN \
 # slapd.conf templates:
 COPY --from=ucs_builder /usr/share/univention-ldap/schema \
                         /usr/share/univention-ldap/schema
-COPY --from=portal-udm-extensions /udm/schema \
-                                  /usr/lib/univention-portal/schema
+COPY --from=portal-extension /plugins/ldap-schema/ \
+                             /usr/lib/univention-portal/schema
 COPY --from=ucs_builder /etc/univention/templates/files/etc/ldap/slapd.conf.d \
                         /etc/univention/templates/files/etc/ldap/slapd.conf.d
 # This "info" file is also a dependency of the templates
@@ -146,9 +146,9 @@ COPY --from=ucs_builder \
      /usr/share/univention-self-service/self-service-passwordreset.schema \
      /var/lib/univention-ldap-local/local-schema/self-service-passwordreset.schema
 
-COPY --from=portal-udm-extensions \
-     /udm/schema/univention-portal.schema \
-     /var/lib/univention-ldap-local/local-schema/univention-portal.schema
+COPY --from=portal-extension \
+     /plugins/ldap-schema/ \
+     /var/lib/univention-ldap-local/local-schema/
 
 COPY --from=ox-connector-extensions \
      /dependencies/oxforucs.schema \
@@ -167,8 +167,8 @@ COPY --from=ucs_builder \
      /usr/share/univention-appcenter/66univention-appcenter_app.acl \
      /etc/univention/templates/files/etc/ldap/slapd.conf.d/
 
-COPY --from=portal-udm-extensions \
-     /udm/acls/62univention-portal.acl \
+COPY --from=portal-extension \
+     /plugins/ldap-acls/ \
      /etc/univention/templates/files/etc/ldap/slapd.conf.d/
 
 # Configuration of the Crude SAML plugin for Cyrus SASL2:
