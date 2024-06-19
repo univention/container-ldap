@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.16.0...v0.17.0) (2024-06-19)
+
+
+### Features
+
+* Adjust build to updated portal-extension image (former portal-udm-extensions) ([74dce4c](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/74dce4c34a137f34adc1715bb7f41045773842dd))
+* Update the portal-extensions version to 0.26.0 ([d846f20](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/d846f20523936045c6bf93092061edbd19de4d8d))
+
 ## [0.16.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.15.2...v0.16.0) (2024-06-14)
 
 
