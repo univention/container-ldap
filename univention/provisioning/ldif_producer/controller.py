@@ -38,6 +38,7 @@ class NATSController:
             "sending LDAP message to NATS request_type: %s binddn: %s", ldap_message.request_type, ldap_message.binddn
         )
         message = Message(
+            # change to ldif_producer once a new version of the client lib is integrated.
             publisher_name=PublisherName.udm_listener,
             ts=datetime.now(),
             realm="ldap",
@@ -57,26 +58,33 @@ class NATSController:
             try:
                 message = self.queue.get(timeout=1)
             except Empty:
-                # give the signal handler a chance to interrupt the event loop
-                await asyncio.sleep(0)
                 continue
             self.logger.debug("received a new outgoing message")
             await self.handle_ldap_message(message)
 
 
-async def signal_handler(signal: signal.Signals, logger: logging.Logger, socket_port: LDIFProducerSocketPort):
+def signal_handler(signal: signal.Signals, frame, logger: logging.Logger, socket_port: LDIFProducerSocketPort):
     logger.info("recieved stop signal: %s", signal)
 
     logger.info("closing the unix socket and shutting down the socket server")
     socket_port.server_close()
     socket_port.exit.set()
 
-    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
-    [task.cancel() for task in tasks]
-    await asyncio.gather(*tasks, return_exceptions=True)
-    logger.info("collected all asyncio tasks")
+    async def terminate_event_loop():
+        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        logger.info("collected all asyncio tasks")
 
-    asyncio.get_event_loop().stop()
+        asyncio.get_event_loop().stop()
+
+    try:
+        asyncio.ensure_future(terminate_event_loop())
+    except RuntimeError:
+        logger.info("no event loop found that needs to be terminated")
+        return
+    logger.info("terminated event loop, exiting after all threads are joined")
 
 
 def get_logger():
@@ -128,9 +136,7 @@ async def run_ldif_producer(
         )
 
         for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
-            asyncio.get_running_loop().add_signal_handler(
-                sig, lambda s=sig: asyncio.create_task(signal_handler(s, logger, socket_port))
-            )
+            signal.signal(sig, lambda signal, frame: signal_handler(signal, frame, logger, socket_port))
 
         socket_main_thread = threading.Thread(name="socket_main_thread", target=socket_port.serve_forever)
         socket_main_thread.start()

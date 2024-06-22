@@ -75,9 +75,16 @@ async def test_signal_handler():
 
     await asyncio.sleep(0)
 
-    await signal_handler(signal.SIGINT, logger, socket_port)
+    signal_handler(signal.SIGINT, MagicMock(), logger, socket_port)
 
     socket_port.server_close.assert_called_once()
     assert socket_port.exit.is_set()
 
-    asyncio.gather(task1, task2)
+    with pytest.raises(asyncio.CancelledError):
+        await asyncio.gather(task1, task2)
+
+    socket_port.server_close.assert_called_once()
+    assert socket_port.exit.is_set()
+
+    assert task1.cancelled()
+    assert task2.cancelled()
