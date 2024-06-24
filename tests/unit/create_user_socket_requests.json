@@ -1,0 +1,527 @@
+[
+    {
+        "timestamp": 1719322196.2582998,
+        "request_count": 1,
+        "request_data": "RESULT\nmsgid: 657\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2594984,
+        "request_count": 3,
+        "request_data": "RESULT\nmsgid: 658\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2594984,
+        "request_count": 3,
+        "request_data": "RESULT\nmsgid: 659\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.261625,
+        "request_count": 4,
+        "request_data": "RESULT\nmsgid: 660\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2919972,
+        "request_count": 5,
+        "request_data": "RESULT\nmsgid: 663\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2924693,
+        "request_count": 6,
+        "request_data": "RESULT\nmsgid: 664\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2935724,
+        "request_count": 7,
+        "request_data": "RESULT\nmsgid: 665\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2941458,
+        "request_count": 8,
+        "request_data": "RESULT\nmsgid: 666\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2946908,
+        "request_count": 9,
+        "request_data": "RESULT\nmsgid: 667\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2952657,
+        "request_count": 10,
+        "request_data": "RESULT\nmsgid: 668\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2980194,
+        "request_count": 12,
+        "request_data": "RESULT\nmsgid: 670\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2980194,
+        "request_count": 12,
+        "request_data": ""
+    },
+    {
+        "timestamp": 1719322196.298934,
+        "request_count": 13,
+        "request_data": "RESULT\nmsgid: 671\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.2997332,
+        "request_count": 14,
+        "request_data": "RESULT\nmsgid: 672\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.302751,
+        "request_count": 16,
+        "request_data": "RESULT\nmsgid: 673\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.302751,
+        "request_count": 16,
+        "request_data": "RESULT\nmsgid: 674\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3038187,
+        "request_count": 17,
+        "request_data": "RESULT\nmsgid: 675\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.319853,
+        "request_count": 18,
+        "request_data": "RESULT\nmsgid: 677\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3202648,
+        "request_count": 19,
+        "request_data": "RESULT\nmsgid: 678\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3363326,
+        "request_count": 20,
+        "request_data": "RESULT\nmsgid: 679\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3368526,
+        "request_count": 21,
+        "request_data": "RESULT\nmsgid: 680\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3378375,
+        "request_count": 22,
+        "request_data": "RESULT\nmsgid: 681\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.33854,
+        "request_count": 23,
+        "request_data": "RESULT\nmsgid: 682\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3388464,
+        "request_count": 24,
+        "request_data": "RESULT\nmsgid: 683\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3395424,
+        "request_count": 25,
+        "request_data": "RESULT\nmsgid: 684\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3400824,
+        "request_count": 26,
+        "request_data": "RESULT\nmsgid: 685\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3411655,
+        "request_count": 27,
+        "request_data": "RESULT\nmsgid: 686\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3420987,
+        "request_count": 28,
+        "request_data": "RESULT\nmsgid: 687\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.343149,
+        "request_count": 29,
+        "request_data": "RESULT\nmsgid: 688\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.343843,
+        "request_count": 30,
+        "request_data": "RESULT\nmsgid: 689\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3446946,
+        "request_count": 31,
+        "request_data": "RESULT\nmsgid: 690\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.345841,
+        "request_count": 32,
+        "request_data": "RESULT\nmsgid: 691\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3500843,
+        "request_count": 33,
+        "request_data": "RESULT\nmsgid: 692\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3511958,
+        "request_count": 34,
+        "request_data": "RESULT\nmsgid: 693\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.351927,
+        "request_count": 35,
+        "request_data": "RESULT\nmsgid: 694\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3522928,
+        "request_count": 36,
+        "request_data": "RESULT\nmsgid: 695\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3534703,
+        "request_count": 37,
+        "request_data": "RESULT\nmsgid: 696\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3540094,
+        "request_count": 38,
+        "request_data": "RESULT\nmsgid: 697\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3580072,
+        "request_count": 39,
+        "request_data": "RESULT\nmsgid: 698\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.35892,
+        "request_count": 40,
+        "request_data": "RESULT\nmsgid: 699\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3596346,
+        "request_count": 41,
+        "request_data": "RESULT\nmsgid: 700\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3599734,
+        "request_count": 42,
+        "request_data": "RESULT\nmsgid: 701\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3609686,
+        "request_count": 43,
+        "request_data": "RESULT\nmsgid: 702\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.3926084,
+        "request_count": 44,
+        "request_data": "RESULT\nmsgid: 704\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.392926,
+        "request_count": 45,
+        "request_data": "RESULT\nmsgid: 705\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.402453,
+        "request_count": 46,
+        "request_data": "RESULT\nmsgid: 706\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.4032156,
+        "request_count": 47,
+        "request_data": "RESULT\nmsgid: 707\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.4035347,
+        "request_count": 48,
+        "request_data": "RESULT\nmsgid: 708\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 32\nmatched: cn=uid,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.403951,
+        "request_count": 49,
+        "request_data": "ADD\nmsgid: 709\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=uid,cn=temporary,cn=univentio\n n,dc=univention-organization,dc=intranet\nobjectClass: top\nobjectClass: lock\ncn: 0334afa8-32f7-11ef-9700-ffb78fde9291\nlockTime: 1719322496\n\n"
+    },
+    {
+        "timestamp": 1719322196.4073064,
+        "request_count": 50,
+        "request_data": "RESULT\nmsgid: 709\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=uid,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.2 false ZIIC+wRwY249MDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxLGNuPXVpZCxjbj10ZW1wb3JhcnksY249dW5pdmVudGlvbixkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDCCAoUwGgQLb2JqZWN0Q2xhc3MxCwQDdG9wBARsb2NrMCwEAmNuMSYEJDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MTAYBAhsb2NrVGltZTEMBAoxNzE5MzIyNDk2MB8EFXN0cnVjdHVyYWxPYmplY3RDbGFzczEGBARsb2NrMDMECWVudHJ5VVVJRDEmBCRjMWM5Y2FmMi1jNzQyLTEwM2UtOGZiZC0wYmRlM2UzNjY2MTYwQQQMY3JlYXRvcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED2NyZWF0ZVRpbWVzdGFtcDERBA8yMDI0MDYyNTEzMjk1NlowNgQIZW50cnlDU04xKgQoMjAyNDA2MjUxMzI5NTYuNDA1Njk2WiMwMDAwMDAjMDAwIzAwMDAwMDBCBA1tb2RpZmllcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED21vZGlmeVRpbWVzdGFtcDERBA8yMDI0MDYyNTEzMjk1NlowfQQHZW50cnlETjFyBHBjbj0wMzM0YWZhOC0zMmY3LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEsY249dWlkLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: add\nobjectClass: top\nobjectClass: lock\ncn: 0334afa8-32f7-11ef-9700-ffb78fde9291\nlockTime: 1719322496\nstructuralObjectClass: lock\nentryUUID: c1c9caf2-c742-103e-8fbd-0bde3e366616\ncreatorsName: cn=admin,dc=univention-organization,dc=intranet\ncreateTimestamp: 20240625132956Z\nentryCSN: 20240625132956.405696Z#000000#000#000000\nmodifiersName: cn=admin,dc=univention-organization,dc=intranet\nmodifyTimestamp: 20240625132956Z\n\n"
+    },
+    {
+        "timestamp": 1719322196.409587,
+        "request_count": 51,
+        "request_data": "RESULT\nmsgid: 710\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.4104738,
+        "request_count": 52,
+        "request_data": "RESULT\nmsgid: 711\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.411131,
+        "request_count": 53,
+        "request_data": "RESULT\nmsgid: 712\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.411595,
+        "request_count": 54,
+        "request_data": "RESULT\nmsgid: 713\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 32\nmatched: cn=uidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.4121573,
+        "request_count": 55,
+        "request_data": "ADD\nmsgid: 714\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=2005,cn=uidNumber,cn=temporary,cn=univention,dc=univention-organizati\n on,dc=intranet\nobjectClass: top\nobjectClass: lock\ncn: 2005\nlockTime: 1719322496\n\n"
+    },
+    {
+        "timestamp": 1719322196.414822,
+        "request_count": 56,
+        "request_data": "RESULT\nmsgid: 714\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=2005,cn=uidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.2 false ZIICpwRWY249MjAwNSxjbj11aWROdW1iZXIsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwggJLMBoEC29iamVjdENsYXNzMQsEA3RvcAQEbG9jazAMBAJjbjEGBAQyMDA1MBgECGxvY2tUaW1lMQwECjE3MTkzMjI0OTYwHwQVc3RydWN0dXJhbE9iamVjdENsYXNzMQYEBGxvY2swMwQJZW50cnlVVUlEMSYEJGMxY2FmNjQ4LWM3NDItMTAzZS04ZmJlLTBiZGUzZTM2NjYxNjBBBAxjcmVhdG9yc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPY3JlYXRlVGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjA2BAhlbnRyeUNTTjEqBCgyMDI0MDYyNTEzMjk1Ni40MTMzNTlaIzAwMDAwMCMwMDAjMDAwMDAwMEIEDW1vZGlmaWVyc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPbW9kaWZ5VGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjBjBAdlbnRyeUROMVgEVmNuPTIwMDUsY249dWlkTnVtYmVyLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: add\nobjectClass: top\nobjectClass: lock\ncn: 2005\nlockTime: 1719322496\nstructuralObjectClass: lock\nentryUUID: c1caf648-c742-103e-8fbe-0bde3e366616\ncreatorsName: cn=admin,dc=univention-organization,dc=intranet\ncreateTimestamp: 20240625132956Z\nentryCSN: 20240625132956.413359Z#000000#000#000000\nmodifiersName: cn=admin,dc=univention-organization,dc=intranet\nmodifyTimestamp: 20240625132956Z\n\n"
+    },
+    {
+        "timestamp": 1719322196.4166114,
+        "request_count": 57,
+        "request_data": "RESULT\nmsgid: 715\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 32\nmatched: cn=gidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.4172113,
+        "request_count": 58,
+        "request_data": "ADD\nmsgid: 716\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=2005,cn=gidNumber,cn=temporary,cn=univention,dc=univention-organizati\n on,dc=intranet\nobjectClass: top\nobjectClass: lock\ncn: 2005\nlockTime: 1719322496\n\n"
+    },
+    {
+        "timestamp": 1719322196.4192157,
+        "request_count": 59,
+        "request_data": "RESULT\nmsgid: 716\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=2005,cn=gidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.2 false ZIICpwRWY249MjAwNSxjbj1naWROdW1iZXIsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwggJLMBoEC29iamVjdENsYXNzMQsEA3RvcAQEbG9jazAMBAJjbjEGBAQyMDA1MBgECGxvY2tUaW1lMQwECjE3MTkzMjI0OTYwHwQVc3RydWN0dXJhbE9iamVjdENsYXNzMQYEBGxvY2swMwQJZW50cnlVVUlEMSYEJGMxY2JhOGE0LWM3NDItMTAzZS04ZmJmLTBiZGUzZTM2NjYxNjBBBAxjcmVhdG9yc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPY3JlYXRlVGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjA2BAhlbnRyeUNTTjEqBCgyMDI0MDYyNTEzMjk1Ni40MTc5MjVaIzAwMDAwMCMwMDAjMDAwMDAwMEIEDW1vZGlmaWVyc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPbW9kaWZ5VGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjBjBAdlbnRyeUROMVgEVmNuPTIwMDUsY249Z2lkTnVtYmVyLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: add\nobjectClass: top\nobjectClass: lock\ncn: 2005\nlockTime: 1719322496\nstructuralObjectClass: lock\nentryUUID: c1cba8a4-c742-103e-8fbf-0bde3e366616\ncreatorsName: cn=admin,dc=univention-organization,dc=intranet\ncreateTimestamp: 20240625132956Z\nentryCSN: 20240625132956.417925Z#000000#000#000000\nmodifiersName: cn=admin,dc=univention-organization,dc=intranet\nmodifyTimestamp: 20240625132956Z\n\n"
+    },
+    {
+        "timestamp": 1719322196.4209356,
+        "request_count": 60,
+        "request_data": "RESULT\nmsgid: 717\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.4217114,
+        "request_count": 61,
+        "request_data": "RESULT\nmsgid: 718\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.4219828,
+        "request_count": 62,
+        "request_data": "DELETE\nmsgid: 718\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=2005,cn=gidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.4241807,
+        "request_count": 63,
+        "request_data": "RESULT\nmsgid: 718\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=2005,cn=gidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.1 false ZIICpwRWY249MjAwNSxjbj1naWROdW1iZXIsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwggJLMBoEC29iamVjdENsYXNzMQsEA3RvcAQEbG9jazAMBAJjbjEGBAQyMDA1MBgECGxvY2tUaW1lMQwECjE3MTkzMjI0OTYwHwQVc3RydWN0dXJhbE9iamVjdENsYXNzMQYEBGxvY2swMwQJZW50cnlVVUlEMSYEJGMxY2JhOGE0LWM3NDItMTAzZS04ZmJmLTBiZGUzZTM2NjYxNjBBBAxjcmVhdG9yc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPY3JlYXRlVGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjA2BAhlbnRyeUNTTjEqBCgyMDI0MDYyNTEzMjk1Ni40MTc5MjVaIzAwMDAwMCMwMDAjMDAwMDAwMEIEDW1vZGlmaWVyc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPbW9kaWZ5VGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjBjBAdlbnRyeUROMVgEVmNuPTIwMDUsY249Z2lkTnVtYmVyLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: delete\n\n"
+    },
+    {
+        "timestamp": 1719322196.4248023,
+        "request_count": 64,
+        "request_data": "RESULT\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.4258134,
+        "request_count": 65,
+        "request_data": "RESULT\nmsgid: 719\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.428158,
+        "request_count": 66,
+        "request_data": "RESULT\nmsgid: 720\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.4343576,
+        "request_count": 67,
+        "request_data": "RESULT\nmsgid: 721\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5527565,
+        "request_count": 68,
+        "request_data": "RESULT\nmsgid: 722\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 32\nmatched: cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.5530305,
+        "request_count": 69,
+        "request_data": "RESULT\nmsgid: 723\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5533717,
+        "request_count": 70,
+        "request_data": "RESULT\nmsgid: 724\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5539706,
+        "request_count": 71,
+        "request_data": "RESULT\nmsgid: 725\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5548608,
+        "request_count": 72,
+        "request_data": "RESULT\nmsgid: 726\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5555582,
+        "request_count": 74,
+        "request_data": "RESULT\nmsgid: 728\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5555582,
+        "request_count": 74,
+        "request_data": ""
+    },
+    {
+        "timestamp": 1719322196.560423,
+        "request_count": 75,
+        "request_data": "RESULT\nmsgid: 729\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5609026,
+        "request_count": 76,
+        "request_data": "RESULT\nmsgid: 730\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 32\nmatched: cn=sid,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.5612493,
+        "request_count": 77,
+        "request_data": "ADD\nmsgid: 731\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=S-1-5-21-UNSET-5010,cn=sid,cn=temporary,cn=univention,dc=univention-o\n rganization,dc=intranet\nobjectClass: top\nobjectClass: lock\ncn: S-1-5-21-UNSET-5010\nlockTime: 1719322496\n\n"
+    },
+    {
+        "timestamp": 1719322196.5635786,
+        "request_count": 78,
+        "request_data": "RESULT\nmsgid: 731\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=S-1-5-21-UNSET-5010,cn=sid,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.2 false ZIICyARfY249Uy0xLTUtMjEtVU5TRVQtNTAxMCxjbj1zaWQsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwggJjMBoEC29iamVjdENsYXNzMQsEA3RvcAQEbG9jazAbBAJjbjEVBBNTLTEtNS0yMS1VTlNFVC01MDEwMBgECGxvY2tUaW1lMQwECjE3MTkzMjI0OTYwHwQVc3RydWN0dXJhbE9iamVjdENsYXNzMQYEBGxvY2swMwQJZW50cnlVVUlEMSYEJGMxZTFhOGQ0LWM3NDItMTAzZS04ZmMwLTBiZGUzZTM2NjYxNjBBBAxjcmVhdG9yc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPY3JlYXRlVGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjA2BAhlbnRyeUNTTjEqBCgyMDI0MDYyNTEzMjk1Ni41NjIxMTBaIzAwMDAwMCMwMDAjMDAwMDAwMEIEDW1vZGlmaWVyc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPbW9kaWZ5VGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjBsBAdlbnRyeUROMWEEX2NuPVMtMS01LTIxLVVOU0VULTUwMTAsY249c2lkLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: add\nobjectClass: top\nobjectClass: lock\ncn: S-1-5-21-UNSET-5010\nlockTime: 1719322496\nstructuralObjectClass: lock\nentryUUID: c1e1a8d4-c742-103e-8fc0-0bde3e366616\ncreatorsName: cn=admin,dc=univention-organization,dc=intranet\ncreateTimestamp: 20240625132956Z\nentryCSN: 20240625132956.562110Z#000000#000#000000\nmodifiersName: cn=admin,dc=univention-organization,dc=intranet\nmodifyTimestamp: 20240625132956Z\n\n"
+    },
+    {
+        "timestamp": 1719322196.5649407,
+        "request_count": 79,
+        "request_data": "RESULT\nmsgid: 732\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5653644,
+        "request_count": 80,
+        "request_data": "RESULT\nmsgid: 733\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.565764,
+        "request_count": 81,
+        "request_data": "RESULT\nmsgid: 734\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5664902,
+        "request_count": 82,
+        "request_data": "ADD\nmsgid: 735\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: uid=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=users,dc=univention-organiza\n tion,dc=intranet\nkrb5MaxLife: 86400\nkrb5MaxRenew: 604800\nuid: 0334afa8-32f7-11ef-9700-ffb78fde9291\nuidNumber: 2005\nsn: univention\ngecos: univention\ndisplayName: univention\nhomeDirectory: /home/0334afa8-32f7-11ef-9700-ffb78fde9291\nloginShell: /bin/bash\ncn: univention\nkrb5PrincipalName: 0334afa8-32f7-11ef-9700-ffb78fde9291@UNIVENTION-ORGANIZAT\n ION.INTRANET\nkrb5KDCFlags: 126\nuserPassword:: e2NyeXB0fSQ2JGNET1Q1cWMyTy5YWjk3bWUkUjFpaWNuSjdDeW14Z0tIZ3VsW\n TlGY3Y3YmxzSTFSbGVXNnV0aHVoSklCcjNzTDUzcGNWcS53U1R5bTBhMUdRaXRoVEpZV1lXVzFZ\n djZzc2xxNTJPejA=\nkrb5Key:: MG6hGzAZoAMCAROhEgQQgJ8CEIr/yAT9p1CWhVHd5qJPME2gAwIBA6FGBERVTklWRU\n 5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4Z\n mRlOTI5MQ==\nkrb5Key:: MHahIzAhoAMCARChGgQYyIrQpP4O5XMqOJ0gIz6rp5fWDubQil6Mok8wTaADAgEDoU\n YERFVOSVZFTlRJT04tT1JHQU5JWkFUSU9OLklOVFJBTkVUMDMzNGFmYTgtMzJmNy0xMWVmLTk3M\n DAtZmZiNzhmZGU5Mjkx\nkrb5Key:: MH6hKzApoAMCARKhIgQgve29oOpVMPAYkoZOgSMo3o0b45sVWRkT7ezIKS/r1PuiTz\n BNoAMCAQOhRgREVU5JVkVOVElPTi1PUkdBTklaQVRJT04uSU5UUkFORVQwMzM0YWZhOC0zMmY3L\n TExZWYtOTcwMC1mZmI3OGZkZTkyOTE=\nkrb5Key:: MG6hGzAZoAMCARehEgQQVO86vHimZSjfqCCiGbgeJqJPME2gAwIBA6FGBERVTklWRU\n 5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4Z\n mRlOTI5MQ==\nkrb5Key:: MG6hGzAZoAMCARGhEgQQU7cBtCDCRYd/X7pFQQh7WKJPME2gAwIBA6FGBERVTklWRU\n 5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4Z\n mRlOTI5MQ==\nkrb5Key:: MH6hKzApoAMCARShIgQgZDJDeAAUeL8YbjogfJBkatpZx6/C8zDrZi+gvPxL+iiiTz\n BNoAMCAQOhRgREVU5JVkVOVElPTi1PUkdBTklaQVRJT04uSU5UUkFORVQwMzM0YWZhOC0zMmY3L\n TExZWYtOTcwMC1mZmI3OGZkZTkyOTE=\nkrb5KeyVersionNumber: 1\npwhistory:: ICQ2JHV1ZXMzakNCTS80OG13R1QkYzA1bHh2d2d5RE9UTmZCM3c0VFlkbVU5czhK\n T2VoMkwwYVNkdDc0dzZZb05rSDU3bUgzZ0ZDOFpGZlZaOVUzQnZta0oxb1I4Y29uQjhObGZzOEh\n yejE=\nsambaNTPassword: 54EF3ABC78A66528DFA820A219B81E26\nsambaPwdLastSet: 1719322196\nsambaBadPasswordCount: 0\nsambaBadPasswordTime: 0\nsambaAcctFlags: [U          ]\nobjectClass: posixAccount\nobjectClass: univentionObject\nobjectClass: krb5Principal\nobjectClass: organizationalPerson\nobjectClass: automount\nobjectClass: person\nobjectClass: univentionMail\nobjectClass: univentionPWHistory\nobjectClass: sambaSamAccount\nobjectClass: krb5KDCEntry\nobjectClass: top\nobjectClass: inetOrgPerson\nobjectClass: shadowAccount\nsambaSID: S-1-5-21-UNSET-5010\ngidNumber: 5001\nsambaPrimaryGroupSID: S-1-5-21-UNSET-513\nuniventionObjectType: users/user\n\n"
+    },
+    {
+        "timestamp": 1719322196.569625,
+        "request_count": 83,
+        "request_data": "RESULT\nmsgid: 735\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: uid=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=users,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.2 false ZIIKKwRYdWlkPTAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MSxjbj11c2VycyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDCCCc0wFgQLa3JiNU1heExpZmUxBwQFODY0MDAwGAQMa3JiNU1heFJlbmV3MQgEBjYwNDgwMDAtBAN1aWQxJgQkMDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxMBMECXVpZE51bWJlcjEGBAQyMDA1MBIEAnNuMQwECnVuaXZlbnRpb24wFQQFZ2Vjb3MxDAQKdW5pdmVudGlvbjAbBAtkaXNwbGF5TmFtZTEMBAp1bml2ZW50aW9uMD0EDWhvbWVEaXJlY3RvcnkxLAQqL2hvbWUvMDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxMBkECmxvZ2luU2hlbGwxCwQJL2Jpbi9iYXNoMBIEAmNuMQwECnVuaXZlbnRpb24wXAQRa3JiNVByaW5jaXBhbE5hbWUxRwRFMDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxQFVOSVZFTlRJT04tT1JHQU5JWkFUSU9OLklOVFJBTkVUMBUEDGtyYjVLRENGbGFnczEFBAMxMjYwgYMEDHVzZXJQYXNzd29yZDFzBHF7Y3J5cHR9JDYkY0RPVDVxYzJPLlhaOTdtZSRSMWlpY25KN0N5bXhnS0hndWxZOUZjdjdibHNJMVJsZVc2dXRodWhKSUJyM3NMNTNwY1ZxLndTVHltMGExR1FpdGhUSllXWVdXMVl2NnNzbHE1Mk96MDCCAuMEB2tyYjVLZXkxggLWBHAwbqEbMBmgAwIBE6ESBBCAnwIQiv/IBP2nUJaFUd3mok8wTaADAgEDoUYERFVOSVZFTlRJT04tT1JHQU5JWkFUSU9OLklOVFJBTkVUMDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxBHgwdqEjMCGgAwIBEKEaBBjIitCk/g7lcyo4nSAjPqunl9YO5tCKXoyiTzBNoAMCAQOhRgREVU5JVkVOVElPTi1PUkdBTklaQVRJT04uSU5UUkFORVQwMzM0YWZhOC0zMmY3LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEEgYAwfqErMCmgAwIBEqEiBCC97b2g6lUw8BiShk6BIyjejRvjmxVZGRPt7MgpL+vU+6JPME2gAwIBA6FGBERVTklWRU5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQRwMG6hGzAZoAMCARehEgQQVO86vHimZSjfqCCiGbgeJqJPME2gAwIBA6FGBERVTklWRU5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQRwMG6hGzAZoAMCARGhEgQQU7cBtCDCRYd/X7pFQQh7WKJPME2gAwIBA6FGBERVTklWRU5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQSBgDB+oSswKaADAgEUoSIEIGQyQ3gAFHi/GG46IHyQZGraWcevwvMw62YvoLz8S/oook8wTaADAgEDoUYERFVOSVZFTlRJT04tT1JHQU5JWkFUSU9OLklOVFJBTkVUMDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxMBsEFGtyYjVLZXlWZXJzaW9uTnVtYmVyMQMEATEwegQJcHdoaXN0b3J5MW0EayAkNiR1dWVzM2pDQk0vNDhtd0dUJGMwNWx4dndneURPVE5mQjN3NFRZZG1VOXM4Sk9laDJMMGFTZHQ3NHc2WW9Oa0g1N21IM2dGQzhaRmZWWjlVM0J2bWtKMW9SOGNvbkI4TmxmczhIcnoxMDUED3NhbWJhTlRQYXNzd29yZDEiBCA1NEVGM0FCQzc4QTY2NTI4REZBODIwQTIxOUI4MUUyNjAfBA9zYW1iYVB3ZExhc3RTZXQxDAQKMTcxOTMyMjE5NjAcBBVzYW1iYUJhZFBhc3N3b3JkQ291bnQxAwQBMDAbBBRzYW1iYUJhZFBhc3N3b3JkVGltZTEDBAEwMCEEDnNhbWJhQWNjdEZsYWdzMQ8EDVtVICAgICAgICAgIF0wgc8EC29iamVjdENsYXNzMYG/BAxwb3NpeEFjY291bnQEEHVuaXZlbnRpb25PYmplY3QEDWtyYjVQcmluY2lwYWwEFG9yZ2FuaXphdGlvbmFsUGVyc29uBAlhdXRvbW91bnQEBnBlcnNvbgQOdW5pdmVudGlvbk1haWwEE3VuaXZlbnRpb25QV0hpc3RvcnkED3NhbWJhU2FtQWNjb3VudAQMa3JiNUtEQ0VudHJ5BAN0b3AEDWluZXRPcmdQZXJzb24EDXNoYWRvd0FjY291bnQwIQQIc2FtYmFTSUQxFQQTUy0xLTUtMjEtVU5TRVQtNTAxMDATBAlnaWROdW1iZXIxBgQENTAwMTAsBBRzYW1iYVByaW1hcnlHcm91cFNJRDEUBBJTLTEtNS0yMS1VTlNFVC01MTMwJAQUdW5pdmVudGlvbk9iamVjdFR5cGUxDAQKdXNlcnMvdXNlcjAoBBVzdHJ1Y3R1cmFsT2JqZWN0Q2xhc3MxDwQNaW5ldE9yZ1BlcnNvbjAzBAllbnRyeVVVSUQxJgQkYzFlMjdhOGUtYzc0Mi0xMDNlLThmYzEtMGJkZTNlMzY2NjE2MEEEDGNyZWF0b3JzTmFtZTExBC9jbj1hZG1pbixkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDAkBA9jcmVhdGVUaW1lc3RhbXAxEQQPMjAyNDA2MjUxMzI5NTZaMDYECGVudHJ5Q1NOMSoEKDIwMjQwNjI1MTMyOTU2LjU2NzQ3OVojMDAwMDAwIzAwMCMwMDAwMDAwQgQNbW9kaWZpZXJzTmFtZTExBC9jbj1hZG1pbixkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDAkBA9tb2RpZnlUaW1lc3RhbXAxEQQPMjAyNDA2MjUxMzI5NTZaMGUEB2VudHJ5RE4xWgRYdWlkPTAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MSxjbj11c2VycyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDAjBBFzdWJzY2hlbWFTdWJlbnRyeTEOBAxjbj1TdWJzY2hlbWEwGgQPaGFzU3Vib3JkaW5hdGVzMQcEBUZBTFNF\nchangetype: add\nkrb5MaxLife: 86400\nkrb5MaxRenew: 604800\nuid: 0334afa8-32f7-11ef-9700-ffb78fde9291\nuidNumber: 2005\nsn: univention\ngecos: univention\ndisplayName: univention\nhomeDirectory: /home/0334afa8-32f7-11ef-9700-ffb78fde9291\nloginShell: /bin/bash\ncn: univention\nkrb5PrincipalName: 0334afa8-32f7-11ef-9700-ffb78fde9291@UNIVENTION-ORGANIZATION.INTRANET\nkrb5KDCFlags: 126\nuserPassword:: e2NyeXB0fSQ2JGNET1Q1cWMyTy5YWjk3bWUkUjFpaWNuSjdDeW14Z0tIZ3VsWTlGY3Y3YmxzSTFSbGVXNnV0aHVoSklCcjNzTDUzcGNWcS53U1R5bTBhMUdRaXRoVEpZV1lXVzFZdjZzc2xxNTJPejA=\nkrb5Key:: MG6hGzAZoAMCAROhEgQQgJ8CEIr/yAT9p1CWhVHd5qJPME2gAwIBA6FGBERVTklWRU5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQ==\nkrb5Key:: MHahIzAhoAMCARChGgQYyIrQpP4O5XMqOJ0gIz6rp5fWDubQil6Mok8wTaADAgEDoUYERFVOSVZFTlRJT04tT1JHQU5JWkFUSU9OLklOVFJBTkVUMDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5Mjkx\nkrb5Key:: MH6hKzApoAMCARKhIgQgve29oOpVMPAYkoZOgSMo3o0b45sVWRkT7ezIKS/r1PuiTzBNoAMCAQOhRgREVU5JVkVOVElPTi1PUkdBTklaQVRJT04uSU5UUkFORVQwMzM0YWZhOC0zMmY3LTExZWYtOTcwMC1mZmI3OGZkZTkyOTE=\nkrb5Key:: MG6hGzAZoAMCARehEgQQVO86vHimZSjfqCCiGbgeJqJPME2gAwIBA6FGBERVTklWRU5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQ==\nkrb5Key:: MG6hGzAZoAMCARGhEgQQU7cBtCDCRYd/X7pFQQh7WKJPME2gAwIBA6FGBERVTklWRU5USU9OLU9SR0FOSVpBVElPTi5JTlRSQU5FVDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQ==\nkrb5Key:: MH6hKzApoAMCARShIgQgZDJDeAAUeL8YbjogfJBkatpZx6/C8zDrZi+gvPxL+iiiTzBNoAMCAQOhRgREVU5JVkVOVElPTi1PUkdBTklaQVRJT04uSU5UUkFORVQwMzM0YWZhOC0zMmY3LTExZWYtOTcwMC1mZmI3OGZkZTkyOTE=\nkrb5KeyVersionNumber: 1\npwhistory:: ICQ2JHV1ZXMzakNCTS80OG13R1QkYzA1bHh2d2d5RE9UTmZCM3c0VFlkbVU5czhKT2VoMkwwYVNkdDc0dzZZb05rSDU3bUgzZ0ZDOFpGZlZaOVUzQnZta0oxb1I4Y29uQjhObGZzOEhyejE=\nsambaNTPassword: 54EF3ABC78A66528DFA820A219B81E26\nsambaPwdLastSet: 1719322196\nsambaBadPasswordCount: 0\nsambaBadPasswordTime: 0\nsambaAcctFlags: [U          ]\nobjectClass: posixAccount\nobjectClass: univentionObject\nobjectClass: krb5Principal\nobjectClass: organizationalPerson\nobjectClass: automount\nobjectClass: person\nobjectClass: univentionMail\nobjectClass: univentionPWHistory\nobjectClass: sambaSamAccount\nobjectClass: krb5KDCEntry\nobjectClass: top\nobjectClass: inetOrgPerson\nobjectClass: shadowAccount\nsambaSID: S-1-5-21-UNSET-5010\ngidNumber: 5001\nsambaPrimaryGroupSID: S-1-5-21-UNSET-513\nuniventionObjectType: users/user\nstructuralObjectClass: inetOrgPerson\nentryUUID: c1e27a8e-c742-103e-8fc1-0bde3e366616\ncreatorsName: cn=admin,dc=univention-organization,dc=intranet\ncreateTimestamp: 20240625132956Z\nentryCSN: 20240625132956.567479Z#000000#000#000000\nmodifiersName: cn=admin,dc=univention-organization,dc=intranet\nmodifyTimestamp: 20240625132956Z\n\n"
+    },
+    {
+        "timestamp": 1719322196.5724194,
+        "request_count": 84,
+        "request_data": "RESULT\nmsgid: 736\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5726845,
+        "request_count": 85,
+        "request_data": "DELETE\nmsgid: 736\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=S-1-5-21-UNSET-5010,cn=sid,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.575307,
+        "request_count": 86,
+        "request_data": "RESULT\nmsgid: 736\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=S-1-5-21-UNSET-5010,cn=sid,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.1 false ZIICyARfY249Uy0xLTUtMjEtVU5TRVQtNTAxMCxjbj1zaWQsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwggJjMBoEC29iamVjdENsYXNzMQsEA3RvcAQEbG9jazAbBAJjbjEVBBNTLTEtNS0yMS1VTlNFVC01MDEwMBgECGxvY2tUaW1lMQwECjE3MTkzMjI0OTYwHwQVc3RydWN0dXJhbE9iamVjdENsYXNzMQYEBGxvY2swMwQJZW50cnlVVUlEMSYEJGMxZTFhOGQ0LWM3NDItMTAzZS04ZmMwLTBiZGUzZTM2NjYxNjBBBAxjcmVhdG9yc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPY3JlYXRlVGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjA2BAhlbnRyeUNTTjEqBCgyMDI0MDYyNTEzMjk1Ni41NjIxMTBaIzAwMDAwMCMwMDAjMDAwMDAwMEIEDW1vZGlmaWVyc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPbW9kaWZ5VGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjBsBAdlbnRyeUROMWEEX2NuPVMtMS01LTIxLVVOU0VULTUwMTAsY249c2lkLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: delete\n\n"
+    },
+    {
+        "timestamp": 1719322196.57576,
+        "request_count": 87,
+        "request_data": "RESULT\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5768368,
+        "request_count": 88,
+        "request_data": "RESULT\nmsgid: 737\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5770264,
+        "request_count": 89,
+        "request_data": "MODIFY\nmsgid: 737\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=uidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\nreplace: univentionLastUsedValue\nuniventionLastUsedValue: 2005\n-\n\n"
+    },
+    {
+        "timestamp": 1719322196.5787182,
+        "request_count": 90,
+        "request_data": "RESULT\nmsgid: 737\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=uidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.1 false ZIIDDgROY249dWlkTnVtYmVyLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MIICujBOBAtvYmplY3RDbGFzczE/BAN0b3AEEm9yZ2FuaXphdGlvbmFsUm9sZQQSdW5pdmVudGlvbkxhc3RVc2VkBBB1bml2ZW50aW9uT2JqZWN0MCYEFHVuaXZlbnRpb25PYmplY3RUeXBlMQ4EDGNvbnRhaW5lci9jbjARBAJjbjELBAl1aWROdW1iZXIwLQQVc3RydWN0dXJhbE9iamVjdENsYXNzMRQEEm9yZ2FuaXphdGlvbmFsUm9sZTAzBAllbnRyeVVVSUQxJgQkOTQ5ODI4ZTAtYzc0MS0xMDNlLTg3ZDItZTM1ZTQzMzFkODAyMEEEDGNyZWF0b3JzTmFtZTExBC9jbj1hZG1pbixkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDAkBA9jcmVhdGVUaW1lc3RhbXAxEQQPMjAyNDA2MjUxMzIxMzFaMCEEF3VuaXZlbnRpb25MYXN0VXNlZFZhbHVlMQYEBDIwMDQwNgQIZW50cnlDU04xKgQoMjAyNDA2MjUxMzI3MjIuMTk2NDk4WiMwMDAwMDAjMDAwIzAwMDAwMDBCBA1tb2RpZmllcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED21vZGlmeVRpbWVzdGFtcDERBA8yMDI0MDYyNTEzMjcyMlowWwQHZW50cnlETjFQBE5jbj11aWROdW1iZXIsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwIwQRc3Vic2NoZW1hU3ViZW50cnkxDgQMY249U3Vic2NoZW1hMBkED2hhc1N1Ym9yZGluYXRlczEGBARUUlVF\ncontrol: 1.3.6.1.1.13.2 false ZIIDDgROY249dWlkTnVtYmVyLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MIICujBOBAtvYmplY3RDbGFzczE/BAN0b3AEEm9yZ2FuaXphdGlvbmFsUm9sZQQSdW5pdmVudGlvbkxhc3RVc2VkBBB1bml2ZW50aW9uT2JqZWN0MCYEFHVuaXZlbnRpb25PYmplY3RUeXBlMQ4EDGNvbnRhaW5lci9jbjARBAJjbjELBAl1aWROdW1iZXIwLQQVc3RydWN0dXJhbE9iamVjdENsYXNzMRQEEm9yZ2FuaXphdGlvbmFsUm9sZTAzBAllbnRyeVVVSUQxJgQkOTQ5ODI4ZTAtYzc0MS0xMDNlLTg3ZDItZTM1ZTQzMzFkODAyMEEEDGNyZWF0b3JzTmFtZTExBC9jbj1hZG1pbixkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDAkBA9jcmVhdGVUaW1lc3RhbXAxEQQPMjAyNDA2MjUxMzIxMzFaMCEEF3VuaXZlbnRpb25MYXN0VXNlZFZhbHVlMQYEBDIwMDUwNgQIZW50cnlDU04xKgQoMjAyNDA2MjUxMzI5NTYuNTc3NzgxWiMwMDAwMDAjMDAwIzAwMDAwMDBCBA1tb2RpZmllcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED21vZGlmeVRpbWVzdGFtcDERBA8yMDI0MDYyNTEzMjk1NlowWwQHZW50cnlETjFQBE5jbj11aWROdW1iZXIsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwIwQRc3Vic2NoZW1hU3ViZW50cnkxDgQMY249U3Vic2NoZW1hMBkED2hhc1N1Ym9yZGluYXRlczEGBARUUlVF\nchangetype: modify\nreplace: univentionLastUsedValue\nuniventionLastUsedValue: 2005\n-\nreplace: entryCSN\nentryCSN: 20240625132956.577781Z#000000#000#000000\n-\nreplace: modifiersName\nmodifiersName: cn=admin,dc=univention-organization,dc=intranet\n-\nreplace: modifyTimestamp\nmodifyTimestamp: 20240625132956Z\n-\n\n"
+    },
+    {
+        "timestamp": 1719322196.580907,
+        "request_count": 91,
+        "request_data": "RESULT\nmsgid: 738\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5811596,
+        "request_count": 92,
+        "request_data": "DELETE\nmsgid: 738\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=2005,cn=uidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.5831547,
+        "request_count": 93,
+        "request_data": "RESULT\nmsgid: 738\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=2005,cn=uidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.1 false ZIICpwRWY249MjAwNSxjbj11aWROdW1iZXIsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwggJLMBoEC29iamVjdENsYXNzMQsEA3RvcAQEbG9jazAMBAJjbjEGBAQyMDA1MBgECGxvY2tUaW1lMQwECjE3MTkzMjI0OTYwHwQVc3RydWN0dXJhbE9iamVjdENsYXNzMQYEBGxvY2swMwQJZW50cnlVVUlEMSYEJGMxY2FmNjQ4LWM3NDItMTAzZS04ZmJlLTBiZGUzZTM2NjYxNjBBBAxjcmVhdG9yc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPY3JlYXRlVGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjA2BAhlbnRyeUNTTjEqBCgyMDI0MDYyNTEzMjk1Ni40MTMzNTlaIzAwMDAwMCMwMDAjMDAwMDAwMEIEDW1vZGlmaWVyc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPbW9kaWZ5VGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjBjBAdlbnRyeUROMVgEVmNuPTIwMDUsY249dWlkTnVtYmVyLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: delete\n\n"
+    },
+    {
+        "timestamp": 1719322196.5834808,
+        "request_count": 94,
+        "request_data": "RESULT\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.58472,
+        "request_count": 95,
+        "request_data": "RESULT\nmsgid: 739\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5849497,
+        "request_count": 96,
+        "request_data": "DELETE\nmsgid: 739\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=uid,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"
+    },
+    {
+        "timestamp": 1719322196.5869339,
+        "request_count": 97,
+        "request_data": "RESULT\nmsgid: 739\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=uid,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.1 false ZIIC+wRwY249MDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxLGNuPXVpZCxjbj10ZW1wb3JhcnksY249dW5pdmVudGlvbixkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDCCAoUwGgQLb2JqZWN0Q2xhc3MxCwQDdG9wBARsb2NrMCwEAmNuMSYEJDAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MTAYBAhsb2NrVGltZTEMBAoxNzE5MzIyNDk2MB8EFXN0cnVjdHVyYWxPYmplY3RDbGFzczEGBARsb2NrMDMECWVudHJ5VVVJRDEmBCRjMWM5Y2FmMi1jNzQyLTEwM2UtOGZiZC0wYmRlM2UzNjY2MTYwQQQMY3JlYXRvcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED2NyZWF0ZVRpbWVzdGFtcDERBA8yMDI0MDYyNTEzMjk1NlowNgQIZW50cnlDU04xKgQoMjAyNDA2MjUxMzI5NTYuNDA1Njk2WiMwMDAwMDAjMDAwIzAwMDAwMDBCBA1tb2RpZmllcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED21vZGlmeVRpbWVzdGFtcDERBA8yMDI0MDYyNTEzMjk1NlowfQQHZW50cnlETjFyBHBjbj0wMzM0YWZhOC0zMmY3LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEsY249dWlkLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: delete\n\n"
+    },
+    {
+        "timestamp": 1719322196.5872152,
+        "request_count": 98,
+        "request_data": "RESULT\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.5883386,
+        "request_count": 99,
+        "request_data": "RESULT\nmsgid: 740\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.588814,
+        "request_count": 100,
+        "request_data": "RESULT\nmsgid: 741\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.589532,
+        "request_count": 102,
+        "request_data": "RESULT\nmsgid: 742\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.589532,
+        "request_count": 102,
+        "request_data": "MODIFY\nmsgid: 742\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\nadd: memberUid\nmemberUid: 0334afa8-32f7-11ef-9700-ffb78fde9291\n-\nadd: uniqueMember\nuniqueMember: uid=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=users,dc=univention-organization,dc=intranet\n-\n\n"
+    },
+    {
+        "timestamp": 1719322196.59274,
+        "request_count": 103,
+        "request_data": "RESULT\nmsgid: 742\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.1 false ZIIFbgRAY249RG9tYWluIFVzZXJzLGNuPWdyb3VwcyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDCCBSgwVgQLb2JqZWN0Q2xhc3MxRwQDdG9wBApwb3NpeEdyb3VwBA91bml2ZW50aW9uR3JvdXAEEXNhbWJhR3JvdXBNYXBwaW5nBBB1bml2ZW50aW9uT2JqZWN0MCYEFHVuaXZlbnRpb25PYmplY3RUeXBlMQ4EDGdyb3Vwcy9ncm91cDAkBBN1bml2ZW50aW9uR3JvdXBUeXBlMQ0ECy0yMTQ3NDgzNjQ2MBQEAmNuMQ4EDERvbWFpbiBVc2VyczAgBAhzYW1iYVNJRDEUBBJTLTEtNS0yMS1VTlNFVC01MTMwFQQOc2FtYmFHcm91cFR5cGUxAwQBMjATBAlnaWROdW1iZXIxBgQENTAwMTAlBBVzdHJ1Y3R1cmFsT2JqZWN0Q2xhc3MxDAQKcG9zaXhHcm91cDAzBAllbnRyeVVVSUQxJgQkOTRhNGI2NjQtYzc0MS0xMDNlLTg4MGEtZTM1ZTQzMzFkODAyMEEEDGNyZWF0b3JzTmFtZTExBC9jbj1hZG1pbixkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDAkBA9jcmVhdGVUaW1lc3RhbXAxEQQPMjAyNDA2MjUxMzIxMzFaMIGmBAltZW1iZXJVaWQxgZgEJGU0NjIzOWQ0LTMyZjUtMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQQkZmFjODUwYjQtMzJmNS0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxBCQxYWMyNGUyNC0zMmY2LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEEJGE3MmIyNGIyLTMyZjYtMTFlZi05NzAwLWZmYjc4ZmRlOTI5MTCCAXoEDHVuaXF1ZU1lbWJlcjGCAWgEWHVpZD1lNDYyMzlkNC0zMmY1LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEsY249dXNlcnMsZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQEWHVpZD1mYWM4NTBiNC0zMmY1LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEsY249dXNlcnMsZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQEWHVpZD0xYWMyNGUyNC0zMmY2LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEsY249dXNlcnMsZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQEWHVpZD1hNzJiMjRiMi0zMmY2LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEsY249dXNlcnMsZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwNgQIZW50cnlDU04xKgQoMjAyNDA2MjUxMzI3MjIuMjEwOTMxWiMwMDAwMDAjMDAwIzAwMDAwMDBCBA1tb2RpZmllcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED21vZGlmeVRpbWVzdGFtcDERBA8yMDI0MDYyNTEzMjcyMlowTQQHZW50cnlETjFCBEBjbj1Eb21haW4gVXNlcnMsY249Z3JvdXBzLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\ncontrol: 1.3.6.1.1.13.2 false ZIIF7gRAY249RG9tYWluIFVzZXJzLGNuPWdyb3VwcyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDCCBagwVgQLb2JqZWN0Q2xhc3MxRwQDdG9wBApwb3NpeEdyb3VwBA91bml2ZW50aW9uR3JvdXAEEXNhbWJhR3JvdXBNYXBwaW5nBBB1bml2ZW50aW9uT2JqZWN0MCYEFHVuaXZlbnRpb25PYmplY3RUeXBlMQ4EDGdyb3Vwcy9ncm91cDAkBBN1bml2ZW50aW9uR3JvdXBUeXBlMQ0ECy0yMTQ3NDgzNjQ2MBQEAmNuMQ4EDERvbWFpbiBVc2VyczAgBAhzYW1iYVNJRDEUBBJTLTEtNS0yMS1VTlNFVC01MTMwFQQOc2FtYmFHcm91cFR5cGUxAwQBMjATBAlnaWROdW1iZXIxBgQENTAwMTAlBBVzdHJ1Y3R1cmFsT2JqZWN0Q2xhc3MxDAQKcG9zaXhHcm91cDAzBAllbnRyeVVVSUQxJgQkOTRhNGI2NjQtYzc0MS0xMDNlLTg4MGEtZTM1ZTQzMzFkODAyMEEEDGNyZWF0b3JzTmFtZTExBC9jbj1hZG1pbixkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDAkBA9jcmVhdGVUaW1lc3RhbXAxEQQPMjAyNDA2MjUxMzIxMzFaMIHMBAltZW1iZXJVaWQxgb4EJGU0NjIzOWQ0LTMyZjUtMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQQkZmFjODUwYjQtMzJmNS0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxBCQxYWMyNGUyNC0zMmY2LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEEJGE3MmIyNGIyLTMyZjYtMTFlZi05NzAwLWZmYjc4ZmRlOTI5MQQkMDMzNGFmYTgtMzJmNy0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxMIIB1AQMdW5pcXVlTWVtYmVyMYIBwgRYdWlkPWU0NjIzOWQ0LTMyZjUtMTFlZi05NzAwLWZmYjc4ZmRlOTI5MSxjbj11c2VycyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldARYdWlkPWZhYzg1MGI0LTMyZjUtMTFlZi05NzAwLWZmYjc4ZmRlOTI5MSxjbj11c2VycyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldARYdWlkPTFhYzI0ZTI0LTMyZjYtMTFlZi05NzAwLWZmYjc4ZmRlOTI5MSxjbj11c2VycyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldARYdWlkPWE3MmIyNGIyLTMyZjYtMTFlZi05NzAwLWZmYjc4ZmRlOTI5MSxjbj11c2VycyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldARYdWlkPTAzMzRhZmE4LTMyZjctMTFlZi05NzAwLWZmYjc4ZmRlOTI5MSxjbj11c2VycyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDA2BAhlbnRyeUNTTjEqBCgyMDI0MDYyNTEzMjk1Ni41OTA3NDdaIzAwMDAwMCMwMDAjMDAwMDAwMEIEDW1vZGlmaWVyc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPbW9kaWZ5VGltZXN0YW1wMREEDzIwMjQwNjI1MTMyOTU2WjBNBAdlbnRyeUROMUIEQGNuPURvbWFpbiBVc2Vycyxjbj1ncm91cHMsZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwIwQRc3Vic2NoZW1hU3ViZW50cnkxDgQMY249U3Vic2NoZW1hMBoED2hhc1N1Ym9yZGluYXRlczEHBAVGQUxTRQ==\nchangetype: modify\nadd: memberUid\nmemberUid: 0334afa8-32f7-11ef-9700-ffb78fde9291\n-\nadd: uniqueMember\nuniqueMember: uid=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=users,dc=univention-organization,dc=intranet\n-\nreplace: entryCSN\nentryCSN: 20240625132956.590747Z#000000#000#000000\n-\nreplace: modifiersName\nmodifiersName: cn=admin,dc=univention-organization,dc=intranet\n-\nreplace: modifyTimestamp\nmodifyTimestamp: 20240625132956Z\n-\n\n"
+    },
+    {
+        "timestamp": 1719322196.6062343,
+        "request_count": 105,
+        "request_data": "RESULT\nmsgid: 744\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    },
+    {
+        "timestamp": 1719322196.6062343,
+        "request_count": 105,
+        "request_data": "RESULT\nmsgid: 745\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.33.3:49382\nconnid: 1001\ncode: 0\n\n"
+    }
+]

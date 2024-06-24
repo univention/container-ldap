@@ -81,12 +81,11 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         self.backpressure_queue = Queue(maxsize=1)
         # self.do_result_lock = threading.Lock()
         self.ignore_temporary = ignore_temporary
-        if ignore_temporary:
-            temporary_dn_string = ",cn=temporary,cn=univention,"
-            self.len_temporary_dn_suffix = len(temporary_dn_string) + len(ldap_base)
+
+        self.temporary_dn_identifier = f",cn=temporary,cn=univention,{ldap_base}"
 
     def filter_temporary_dn(self, request):
-        return "," in request.dn[self.len_temporary_dn_suffix :] if self.ignore_temporary else False
+        return request.dn.endswith(self.temporary_dn_identifier)
 
     def do_add(self, request):
         """
@@ -217,7 +216,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
 
         # ignore temporary dn modify results (if configured)
         self._log(logging.DEBUG, "do_result = %s", request)
-        if self.filter_temporary_dn(request):
+        if self.ignore_temporary and self.filter_temporary_dn(request):
             self._log(logging.INFO, "ignoring dn = %s", request.dn)
             return ""
 
@@ -252,14 +251,14 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             ]
             ctrls = decode_response_ctrls(ctrls)
 
-            old = None
             new = None
+            old = None
             for ctrl in ctrls:
                 if isinstance(ctrl, PostReadControl):
-                    old = ctrl.res.entry_as
+                    new = ctrl.res.entry_as
                     self._log(logging.INFO, "PostRead entry_as = %s", ctrl.res.entry_as)
                 elif isinstance(ctrl, PreReadControl):
-                    new = ctrl.res.entry_as
+                    old = ctrl.res.entry_as
                     self._log(logging.INFO, "PreRead entry_as = %s", ctrl.res.entry_as)
 
             self._log(
@@ -288,6 +287,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         try:
             (connid, msgid, request_time) = self.backpressure_queue.get(timeout=5)  # signal one seat is free
         except Empty:
+            raise
             self._log(logging.ERROR, "no in flight request found in backpressure_queue")
             raise
         self._log(logging.INFO, "processing time  = %s", round(resonse_time - request_time, 6))
