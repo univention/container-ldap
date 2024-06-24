@@ -12,8 +12,8 @@ ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base
 ARG PORTAL_EXTENSION_IMAGE=gitregistry.knut.univention.de/univention/components/univention-portal/portal-extension
 ARG PORTAL_EXTENSION_TAG=0.26.0
 
-ARG OX_CONNECTOR_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/open-xchange/provisioning/ox-connector-dependencies
-ARG OX_CONNECTOR_EXTENSIONS_TAG=0.7.1
+ARG OX_EXTENSION_IMAGE=gitregistry.knut.univention.de/univention/open-xchange/provisioning/ox-extension
+ARG OX_EXTENSION_TAG=0.9.0
 
 ARG GUARDIAN_EXTENSIONS_IMAGE=gitregistry.knut.univention.de/univention/components/authorization-engine/guardian/ums-dependencies
 ARG GUARDIAN_EXTENSIONS_TAG=latest
@@ -56,7 +56,7 @@ RUN echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug5726
 
 
 FROM ${PORTAL_EXTENSION_IMAGE}:${PORTAL_EXTENSION_TAG} AS portal-extension
-FROM ${OX_CONNECTOR_EXTENSIONS_IMAGE}:${OX_CONNECTOR_EXTENSIONS_TAG} AS ox-connector-extensions
+FROM ${OX_EXTENSION_IMAGE}:${OX_EXTENSION_TAG} AS ox-extension
 FROM ${GUARDIAN_EXTENSIONS_IMAGE}:${GUARDIAN_EXTENSIONS_TAG} AS guardian-extensions
 
 ###############################################################################
@@ -150,13 +150,13 @@ COPY --from=portal-extension \
      /plugins/ldap-schema/ \
      /var/lib/univention-ldap-local/local-schema/
 
-COPY --from=ox-connector-extensions \
-     /dependencies/oxforucs.schema \
+COPY --from=ox-extension \
+     /plugins/ldap-schema/oxforucs.schema \
      /var/lib/univention-ldap-local/local-schema/oxforucs.schema
 
-COPY --from=ox-connector-extensions \
-     /dependencies/oxforucs-extra.schema \
-     /var/lib/univention-ldap-local/local-schema/oxforucs-extra.schema
+COPY --from=ox-extension \
+    /plugins/ldap-schema/oxforucs-extra.schema \
+    /var/lib/univention-ldap-local/local-schema/oxforucs-extra.schema
 
 COPY --from=guardian-extensions \
      /ldap/schema/guardian.schema \
