@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.17.0...v0.17.1) (2024-06-25)
+
+
+### Bug Fixes
+
+* bump ucs-base to 5.0-8 ([f37579d](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/f37579d40684c2c33399ed35ac396f99f15218c5))
+
 ## [0.17.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.16.0...v0.17.0) (2024-06-19)
 
 
