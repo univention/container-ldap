@@ -224,6 +224,16 @@ setup_tls() {
   esac
 }
 
+log_configuration() {
+  echo "=== /etc/ldap/slapd.conf START ==="
+  cat /etc/ldap/slapd.conf
+  echo "=== /etc/ldap/slapd.conf  END  ==="
+
+  echo "=== Files and directories START ==="
+  find /etc/ldap /etc/univention/templates/files/etc/ldap /usr/lib/univention-ldap /usr/share/univention-ldap /var/lib/univention-ldap-local /var/lib/univention-ldap/ -ls || true
+  echo "=== Files and directories  END  ==="
+}
+
 prepare_slapd_run() {
   # Adding `-d LOG_LEVEL` here overrides earlier settings in /etc/ldap/slapd.conf,
   # but without `-d` slapd would detach and the container would exit.
@@ -257,4 +267,5 @@ setup_sasl_mech_saml
 setup_initial_ldif
 setup_translog_ldif
 setup_tls
+log_configuration
 prepare_slapd_run

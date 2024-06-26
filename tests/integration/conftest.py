@@ -3,6 +3,8 @@
 
 # pylint: disable=redefined-outer-name
 
+from typing import Callable
+
 import pytest
 from ldap3 import ALL, Connection, ObjectDef, Server, Writer
 from ldap3.utils.dn import safe_dn
@@ -42,3 +44,11 @@ def container(connection, test_dn):
     if writer.failed:
         print(writer.errors)
     assert not writer.failed, "Cleanup from LDAP failed, tests are leaking. Manual cleanup required."
+
+
+@pytest.fixture(scope="session")
+def object_class_is_loaded(connection) -> Callable[[str], bool]:
+    def _object_class_is_loaded(object_class: str) -> bool:
+        return object_class in connection.server.schema.object_classes
+
+    return _object_class_is_loaded

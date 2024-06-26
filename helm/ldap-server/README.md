@@ -2,7 +2,7 @@
 
 A Helm Chart that deploys a standalone OpenLDAP server
 
-- **Version**: 0.10.0
+- **Version**: 0.11.0
 - **Type**: application
 - **AppVersion**:
 -
@@ -701,6 +701,42 @@ false
 			<td>Node labels for pod assignment. Ref: https://kubernetes.io/docs/user-guide/node-selection/</td>
 		</tr>
 		<tr>
+			<td>oxPlugin.image.imagePullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"IfNotPresent"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>oxPlugin.image.registry</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>oxPlugin.image.repository</td>
+			<td>string</td>
+			<td><pre lang="json">
+"nubus/images/ox-extension"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>oxPlugin.image.tag</td>
+			<td>string</td>
+			<td><pre lang="json">
+"0.10.0"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>persistence.accessModes</td>
 			<td>list</td>
 			<td><pre lang="json">
@@ -859,6 +895,42 @@ true
 </pre>
 </td>
 			<td>Allow binding to ports below 1024 without root access.</td>
+		</tr>
+		<tr>
+			<td>portalPlugin.image.imagePullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"IfNotPresent"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>portalPlugin.image.registry</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>portalPlugin.image.repository</td>
+			<td>string</td>
+			<td><pre lang="json">
+"nubus/images/portal-extension"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>portalPlugin.image.tag</td>
+			<td>string</td>
+			<td><pre lang="json">
+"0.26.3"
+</pre>
+</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>readinessProbe.failureThreshold</td>

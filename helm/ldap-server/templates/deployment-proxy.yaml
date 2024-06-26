@@ -84,6 +84,42 @@ spec:
             - name: etc-univention-volume
               mountPath: /target/etc/univention
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesProxy .Values.resources) "context" .) | nindent 12 }}
+        - name: "load-internal-plugins"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.ldapServer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          command:
+            - sh
+            - -c
+            - |
+              cp -av /var/lib/univention-ldap-local/local-schema /target/ldap-schema
+              cp -av /etc/univention/templates/files/etc/ldap/slapd.conf.d /target/ldap-acls
+          volumeMounts:
+            - name: plugin-targets
+              mountPath: /target
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
+        - name: "load-portal-plugin"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.portalPlugin.image.registry .Values.global.imageRegistry }}/{{ .Values.portalPlugin.image.repository }}:{{ .Values.portalPlugin.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.portalPlugin.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          volumeMounts:
+            - name: plugin-targets
+              mountPath: /target
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
+        - name: "load-ox-plugin"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.oxPlugin.image.registry .Values.global.imageRegistry }}/{{ .Values.oxPlugin.image.repository }}:{{ .Values.oxPlugin.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.oxPlugin.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          volumeMounts:
+            - name: plugin-targets
+              mountPath: /target
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
         - name: "wait-for-secondary"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -187,6 +223,12 @@ spec:
             - name: proxy-scripts-volume
               mountPath: /entrypoint.d/90-generate-slapd-conf.sh
               subPath: generate-slapd.conf.sh
+            - name: plugin-targets
+              mountPath: /var/lib/univention-ldap-local/local-schema
+              subPath: ldap-schema
+            - name: plugin-targets
+              mountPath: /etc/univention/templates/files/etc/ldap/slapd.conf.d
+              subPath: ldap-acls
             - name: var-run-volume
               mountPath: /var/run/slapd
             - name: "config-map-ucr-defaults"
@@ -239,6 +281,8 @@ spec:
           configMap:
             name: {{ printf "%s-scripts" (include "common.names.fullname" .) }}
             defaultMode: 0555
+        - name: "plugin-targets"
+          emptyDir: {}
         - name: "config-map-ucr-defaults"
           configMap:
             name: {{ include "ldap-server.configMapUcrDefaults" . | quote }}

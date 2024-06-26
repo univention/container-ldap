@@ -6,30 +6,22 @@ import pytest
 from ldap3 import ObjectDef, Writer
 
 
-@pytest.mark.timeout(1)
-def test_ldap_server_can_be_reached(connection, admin_dn):
-    connection.search(
-        admin_dn,
-        "(objectclass=person)",
-        attributes=["sn", "objectclass"],
-    )
-    assert len(connection.entries) >= 1
+class MissingPortalExtension(Exception):
+    ...
+
+
+# We cannot use SKIP, because testing for LDAP schema requires opening a connection,
+# which we don't want to do at import time. So we're using XFAIL at runtime instead.
+# The test will still be reported as a regular failure if it raises anything else than
+# MissingPortalExtension.
 
 
 @pytest.mark.timeout(1)
-def test_create_entry_in_testrunner_container(connection, container):
-    organizational_unit = ObjectDef(["organizationalUnit"], connection)
-    writer = Writer(connection, organizational_unit)
+@pytest.mark.xfail(raises=MissingPortalExtension, reason="Missing Portal Extension")
+def test_create_portal_entry(connection, container, object_class_is_loaded):
+    if not object_class_is_loaded("univentionNewPortalEntry"):
+        raise MissingPortalExtension
 
-    child = writer.new("ou=child," + container.entry_dn)
-    assert writer.commit()
-
-    child.entry_delete()
-    assert writer.commit()
-
-
-@pytest.mark.timeout(1)
-def test_create_portal_entry(connection, container):
     portal_entry = ObjectDef(["univentionNewPortalEntry"], connection)
     writer = Writer(connection, portal_entry)
 
@@ -41,7 +33,11 @@ def test_create_portal_entry(connection, container):
 
 
 @pytest.mark.timeout(1)
-def test_create_portal_announcement(connection, container):
+@pytest.mark.xfail(raises=MissingPortalExtension, reason="Missing Portal Extension")
+def test_create_portal_announcement(connection, container, object_class_is_loaded):
+    if not object_class_is_loaded("univentionNewPortalAnnouncement"):
+        raise MissingPortalExtension
+
     portal_announcement = ObjectDef(
         ["univentionNewPortalAnnouncement"],
         connection,

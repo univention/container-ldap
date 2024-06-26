@@ -10,7 +10,7 @@ set -euxo pipefail
 #
 # In UCS, this runs as a UCR hook observing `self-service/ldap_attributes`.
 # This hook then writes the ACL to LDAP using UDM (`settings/ldapacl`).
-# The Listener plugin will observice this change, generate the ACL snippet,
+# The Listener plugin will observe this change, generate the ACL snippet,
 # regenerate slapd.conf and restart slapd.
 #
 # This flow is incompatible with container operation.
