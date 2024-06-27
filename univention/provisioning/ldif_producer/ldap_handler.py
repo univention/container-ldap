@@ -10,8 +10,9 @@ from queue import Empty, Full, Queue
 import time
 from typing import NamedTuple
 
+import slapdsock.message
 from ldap0.typehints import EntryMixed
-from slapdsock.handler import SlapdSockHandler
+from slapdsock.handler import InternalErrorResponse, SlapdSockHandler, SlapdSockHandlerError
 from slapdsock.message import CONTINUE_RESPONSE, RESULTRequest
 from ldap0.res import decode_response_ctrls
 from ldap0.controls.readentry import PostReadControl, PreReadControl
@@ -45,6 +46,99 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
         See https://stackoverflow.com/questions/21631799/how-can-i-pass-parameters-to-a-requesthandler
         """
         super().__init__(*args, **kwargs)
+
+    def handle(self):
+        """
+        Handle the incoming request
+        """
+        self.request_timestamp = time.time()
+        self.server._req_count += 1
+        msgid = None
+        # Generate basic log prefix here
+        self.log_prefix = str(id(self))
+        reqtype = "-/-"
+
+        try:  # -> Exception
+            self.peer_pid, self.peer_uid, self.peer_gid = self._get_peer_cred()
+            self._log(
+                logging.DEBUG,
+                "----- incoming request via %r from pid=%s uid=%s gid=%s -----",
+                self.request.getsockname(),
+                self.peer_pid,
+                self.peer_uid,
+                self.peer_gid,
+            )
+            request_data = self.request.recv(500000)
+            if __debug__:
+                # Security advice:
+                # Request data can contain clear-text passwords!
+                self._log(logging.DEBUG, "request_data = %r", request_data)
+            self.server._bytes_received += len(request_data)
+            req_lines = request_data.split(b"\n")
+            # Extract request type
+            reqtype = req_lines[0].decode("ascii")
+            self._log(logging.DEBUG, "reqtype = %r", reqtype)
+            # Get the request message class
+            request_class = getattr(slapdsock.message, "%sRequest" % reqtype)
+            self._log(logging.DEBUG, "request_class=%r", request_class)
+            # Extract the request message
+            sock_req = request_class(req_lines)
+            # Update request counter for request type
+            self.server._req_counters[reqtype.lower()] += 1
+            if __debug__:
+                # Security advice:
+                # Request data can contain sensitive data
+                # (e.g. BIND with password) => never run in debug mode!
+                self._log(logging.DEBUG, "sock_req = %r // %r", sock_req, sock_req.__dict__)
+            # Generate the request specific log prefix here
+            self.log_prefix = sock_req.log_prefix(self.log_prefix)
+            msgid = sock_req.msgid
+            cache_key = sock_req.cache_key()
+
+            try:  # -> SlapdSockHandlerError
+                try:  # Try cache
+                    response = self.server.req_cache[reqtype][cache_key]
+                except KeyError:
+                    self._log(logging.DEBUG, "Request not cached: cache_key = %r", cache_key)
+                    # Get the handler method in own class
+                    handle_method = getattr(self, "do_%s" % reqtype.lower())
+                    # Let the handler method generate a response message
+                    response = handle_method(sock_req)
+                    if cache_key and reqtype in self.server.req_cache:
+                        # Store response in cache
+                        self.server.req_cache[reqtype][cache_key] = response
+                        self._log(
+                            logging.DEBUG,
+                            "Response stored in cache: cache_key = %r",
+                            cache_key,
+                        )
+
+                else:
+                    self._log(logging.DEBUG, "Response from cache: cache_key = %r", cache_key)
+
+            except SlapdSockHandlerError as handler_exc:
+                handler_exc.log(self.server.logger)
+                response = handler_exc.response or InternalErrorResponse(msgid)
+
+        except Exception:
+            self._log(logging.ERROR, "Unhandled exception during processing request:", exc_info=True)
+            response = InternalErrorResponse(msgid)
+        try:
+            # Serialize the response instance
+            if isinstance(response, str):
+                response_str = response.encode("utf-8")
+            else:
+                response_str = bytes(response)
+            self._log(logging.DEBUG, "response_str = %r", response_str)
+            if response_str:
+                self.request.sendall(response_str)
+        except Exception:
+            self._log(logging.ERROR, "Unhandled exception while sending response:", exc_info=True)
+        else:
+            response_delay = time.time() - self.request_timestamp
+            self.server.update_monitor_data(len(response_str), response_delay)
+            self._log(logging.DEBUG, "response_delay = %0.3f", response_delay)
+        # end of handle()
 
 
 class LDAPHandler(ReasonableSlapdSockHandler):
