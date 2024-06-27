@@ -107,12 +107,11 @@ async def run_ldif_producer(
         await nats_controller.setup()
 
         ldap_handler = ldap_handler_type(
-            settings.ldap_base_dn,
-            settings.ldap_threads,
-            settings.ignore_temporary_objects,
-            outgoing_queue,
-            # TODO: tune timeout
-            20,
+            ldap_base=settings.ldap_base_dn,
+            ldap_threads=settings.ldap_threads,
+            ignore_temporary=settings.ignore_temporary_objects,
+            outgoing_queue=outgoing_queue,
+            backpressure_wait_timeout=5,
         )
 
         socket_port = socket_port_type(

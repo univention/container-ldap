@@ -180,7 +180,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         ADD
         """
-        if self.filter_temporary_dn(request):
+        if self.ignore_temporary and self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_add = %s", request)
         try:
@@ -217,7 +217,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         DELETE
         """
-        if self.filter_temporary_dn(request):
+        if self.ignore_temporary and self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_delete = %s", request)
         try:
@@ -240,7 +240,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         MODIFY
         """
-        if self.filter_temporary_dn(request):
+        if self.ignore_temporary and self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modify = %s", request)
         try:
@@ -263,7 +263,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         MODRDN
         """
-        if self.filter_temporary_dn(request):
+        if self.ignore_temporary and self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modrdn = %s", request)
         try:
