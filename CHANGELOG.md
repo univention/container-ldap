@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.17.1...v0.18.0) (2024-06-27)
+
+
+### Features
+
+* Update the ox-connector extensions to version 0.9.0 ([f3d3ab8](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/f3d3ab850aa61b7b1a18ed80ceead93179702b06))
+
 ## [0.17.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.17.0...v0.17.1) (2024-06-25)
 
 
