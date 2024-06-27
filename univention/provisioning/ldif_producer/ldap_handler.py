@@ -69,6 +69,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                 self.peer_gid,
             )
             request_data = self.request.recv(500000)
+
             if __debug__:
                 # Security advice:
                 # Request data can contain clear-text passwords!
@@ -79,46 +80,33 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             reqtype = req_lines[0].decode("ascii")
             self._log(logging.DEBUG, "reqtype = %r", reqtype)
             # Get the request message class
-            request_class = getattr(slapdsock.message, "%sRequest" % reqtype)
-            self._log(logging.DEBUG, "request_class=%r", request_class)
-            # Extract the request message
-            sock_req = request_class(req_lines)
-            # Update request counter for request type
-            self.server._req_counters[reqtype.lower()] += 1
-            if __debug__:
-                # Security advice:
-                # Request data can contain sensitive data
-                # (e.g. BIND with password) => never run in debug mode!
-                self._log(logging.DEBUG, "sock_req = %r // %r", sock_req, sock_req.__dict__)
-            # Generate the request specific log prefix here
-            self.log_prefix = sock_req.log_prefix(self.log_prefix)
-            msgid = sock_req.msgid
-            cache_key = sock_req.cache_key()
+            if not reqtype:
+                self._log(logging.WARNING, "recieved empty socket request: %s", req_lines)
+                response = InternalErrorResponse(msgid)
+            else:
+                request_class = getattr(slapdsock.message, "%sRequest" % reqtype)
+                self._log(logging.DEBUG, "request_class=%r", request_class)
+                # Extract the request message
+                sock_req = request_class(req_lines)
+                # Update request counter for request type
+                self.server._req_counters[reqtype.lower()] += 1
+                if __debug__:
+                    # Security advice:
+                    # Request data can contain sensitive data
+                    # (e.g. BIND with password) => never run in debug mode!
+                    self._log(logging.DEBUG, "sock_req = %r // %r", sock_req, sock_req.__dict__)
+                # Generate the request specific log prefix here
+                self.log_prefix = sock_req.log_prefix(self.log_prefix)
+                msgid = sock_req.msgid
 
-            try:  # -> SlapdSockHandlerError
-                try:  # Try cache
-                    response = self.server.req_cache[reqtype][cache_key]
-                except KeyError:
-                    self._log(logging.DEBUG, "Request not cached: cache_key = %r", cache_key)
+                try:  # -> SlapdSockHandlerError
                     # Get the handler method in own class
                     handle_method = getattr(self, "do_%s" % reqtype.lower())
                     # Let the handler method generate a response message
                     response = handle_method(sock_req)
-                    if cache_key and reqtype in self.server.req_cache:
-                        # Store response in cache
-                        self.server.req_cache[reqtype][cache_key] = response
-                        self._log(
-                            logging.DEBUG,
-                            "Response stored in cache: cache_key = %r",
-                            cache_key,
-                        )
-
-                else:
-                    self._log(logging.DEBUG, "Response from cache: cache_key = %r", cache_key)
-
-            except SlapdSockHandlerError as handler_exc:
-                handler_exc.log(self.server.logger)
-                response = handler_exc.response or InternalErrorResponse(msgid)
+                except SlapdSockHandlerError as handler_exc:
+                    handler_exc.log(self.server.logger)
+                    response = handler_exc.response or InternalErrorResponse(msgid)
 
         except Exception:
             self._log(logging.ERROR, "Unhandled exception during processing request:", exc_info=True)
