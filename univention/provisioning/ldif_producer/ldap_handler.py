@@ -45,6 +45,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
 
         See https://stackoverflow.com/questions/21631799/how-can-i-pass-parameters-to-a-requesthandler
         """
+        self.unittest = False
         super().__init__(*args, **kwargs)
 
     def handle(self):
@@ -105,10 +106,14 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                     # Let the handler method generate a response message
                     response = handle_method(sock_req)
                 except SlapdSockHandlerError as handler_exc:
+                    if self.unittest:
+                        raise
                     handler_exc.log(self.server.logger)
                     response = handler_exc.response or InternalErrorResponse(msgid)
 
         except Exception:
+            if self.unittest:
+                raise
             self._log(logging.ERROR, "Unhandled exception during processing request:", exc_info=True)
             response = InternalErrorResponse(msgid)
         try:
@@ -121,6 +126,8 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             if response_str:
                 self.request.sendall(response_str)
         except Exception:
+            if self.unittest:
+                raise
             self._log(logging.ERROR, "Unhandled exception while sending response:", exc_info=True)
         else:
             response_delay = time.time() - self.request_timestamp
