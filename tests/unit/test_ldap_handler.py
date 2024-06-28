@@ -12,10 +12,10 @@ from pprint import pprint
 
 from unittest.mock import MagicMock
 
-from univention.provisioning.ldif_producer.ldap_handler import LDAPHandler, RequestType
+from univention.provisioning.ldif_producer.ldap_handler import TIMEOUT_RESPONSE, LDAPHandler, RequestType
 
 
-def get_test_data(filename: str) -> dict:
+def get_test_data(filename: str) -> list[dict]:
     with open(filename, "r") as f:
         request_list = json.load(f)
     for request in request_list:
@@ -68,9 +68,6 @@ def ldap_handler(outgoing_queue, mock_socket_request, request) -> LDAPHandler:
 
     ldap_handler.server = MagicMock()
     ldap_handler.server.logger = logger
-    # TODO: make this unnecessary
-    # ldap_handler.server.req_cache = MagicMock()
-    # ldap_handler.server.req_cache.__getitem__.side_effect = KeyError("always compute function string")
     ldap_handler.request = mock_socket_request
     return ldap_handler
 
@@ -152,6 +149,21 @@ def test_handle_temporary_message(ldap_handler: LDAPHandler, outgoing_queue: que
     assert outgoing_queue.qsize() == queue_size
 
 
+# @pytest.mark.parametrize("ldap_handler, queue_size", [(True, 1), (False, 1)], indirect=["ldap_handler"])
+# def test_handle_delete_message(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
+#     binary_request_1 = b"RESULT\nmsgid: 358\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.43.4:54404\nconnid: 1000\ncode: 0\n\n"  # noqa E501
+#     binary_request_2 = b"MODIFY\nmsgid: 358\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.43.4:54404\nconnid: 1000\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\ndelete: memberUid\nmemberUid: 8a5dca86-3546-11ef-9700-ffb78fde9291\n-\ndelete: uniqueMember\nuniqueMember: uid=8a5dca86-3546-11ef-9700-ffb78fde9291,cn=users,dc=univention-organization,dc=intranet\n-\n\n"  # noqa E501
+#
+#     ldap_handler.request.recv = MagicMock(return_value=binary_request_1)
+#     ldap_handler.handle()
+#     ldap_handler.request.recv = MagicMock(return_value=binary_request_2)
+#     ldap_handler.handle()
+#
+#     pprint([event._asdict() for event in list(outgoing_queue.queue)])
+#
+#     assert outgoing_queue.qsize() == queue_size
+
+
 @pytest.mark.parametrize("ldap_handler, queue_size", [(True, 2), (False, 11)], indirect=["ldap_handler"])
 def test_replay_create_user_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
     request_list = get_test_data("tests/unit/create_user_socket_requests.json")
@@ -159,6 +171,10 @@ def test_replay_create_user_requests(ldap_handler: LDAPHandler, outgoing_queue: 
     for request in request_list:
         ldap_handler.request.recv = MagicMock(return_value=request["request_data"])
         ldap_handler.handle()
+
+        if ldap_handler.request.sendall.called:
+            handler_response = ldap_handler.request.sendall.call_args_list[-1].args[0]
+            assert handler_response != TIMEOUT_RESPONSE.encode("utf-8")
 
     event_list = list(outgoing_queue.queue)
     pprint([event._asdict() for event in event_list])
@@ -175,6 +191,33 @@ def test_replay_many_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Q
     for request in request_list:
         ldap_handler.request.recv = MagicMock(return_value=request["request_data"])
         ldap_handler.handle()
+
+        if ldap_handler.request.sendall.called:
+            handler_response = ldap_handler.request.sendall.call_args_list[-1].args[0]
+            assert handler_response != TIMEOUT_RESPONSE.encode("utf-8")
+
+    event_list = list(outgoing_queue.queue)
+    pprint([event._asdict() for event in event_list])
+
+    assert len(event_list) == queue_size
+    ldap_event = outgoing_queue.get(timeout=1)
+    assert ldap_event
+
+
+@pytest.mark.xfail
+@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 1), (False, 1)], indirect=["ldap_handler"])
+def test_replay_delete_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
+    request_list: list = get_test_data("tests/unit/delete_requests_test_data.json")
+
+    request_list = request_list
+
+    for request in request_list:
+        ldap_handler.request.recv = MagicMock(return_value=request["request_data"])
+        ldap_handler.handle()
+
+        if ldap_handler.request.sendall.called:
+            handler_response = ldap_handler.request.sendall.call_args_list[-1].args[0]
+            assert handler_response != TIMEOUT_RESPONSE.encode("utf-8")
 
     event_list = list(outgoing_queue.queue)
     pprint([event._asdict() for event in event_list])
