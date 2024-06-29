@@ -134,6 +134,7 @@ def test_handle_simple_udm_message(ldap_handler: LDAPHandler, outgoing_queue: qu
     }
 
     ldap_handler.request.recv.assert_called_once()
+    assert len(ldap_handler.backpressure_queue.queue) == 0
 
 
 @pytest.mark.parametrize("ldap_handler, queue_size", [(True, 0), (False, 1)], indirect=["ldap_handler"])
@@ -149,19 +150,16 @@ def test_handle_temporary_message(ldap_handler: LDAPHandler, outgoing_queue: que
     assert outgoing_queue.qsize() == queue_size
 
 
-# @pytest.mark.parametrize("ldap_handler, queue_size", [(True, 1), (False, 1)], indirect=["ldap_handler"])
-# def test_handle_delete_message(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
-#     binary_request_1 = b"RESULT\nmsgid: 358\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.43.4:54404\nconnid: 1000\ncode: 0\n\n"  # noqa E501
-#     binary_request_2 = b"MODIFY\nmsgid: 358\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.43.4:54404\nconnid: 1000\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\ndelete: memberUid\nmemberUid: 8a5dca86-3546-11ef-9700-ffb78fde9291\n-\ndelete: uniqueMember\nuniqueMember: uid=8a5dca86-3546-11ef-9700-ffb78fde9291,cn=users,dc=univention-organization,dc=intranet\n-\n\n"  # noqa E501
-#
-#     ldap_handler.request.recv = MagicMock(return_value=binary_request_1)
-#     ldap_handler.handle()
-#     ldap_handler.request.recv = MagicMock(return_value=binary_request_2)
-#     ldap_handler.handle()
-#
-#     pprint([event._asdict() for event in list(outgoing_queue.queue)])
-#
-#     assert outgoing_queue.qsize() == queue_size
+@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 0), (False, 0)], indirect=["ldap_handler"])
+def test_ignore_memberOf_overlay(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
+    binary_request = b"MODIFY\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\ndelete: uniqueMember\nuniqueMember: uid=0ad4a8be-35f2-11ef-951b-37af858e1364,cn=users,dc=univention-organization,dc=intranet\n-\nreplace: modifiersName\nmodifiersName: cn=Referential Integrity Overlay\n-\n\n"  # noqa E501
+
+    ldap_handler.request.recv = MagicMock(return_value=binary_request)
+    ldap_handler.handle()
+
+    assert outgoing_queue.qsize() == 0
+    assert len(ldap_handler.backpressure_queue.queue) == 0
+    ldap_handler.request.sendall.assert_called_once()
 
 
 @pytest.mark.parametrize("ldap_handler, queue_size", [(True, 2), (False, 11)], indirect=["ldap_handler"])
@@ -180,6 +178,7 @@ def test_replay_create_user_requests(ldap_handler: LDAPHandler, outgoing_queue: 
     pprint([event._asdict() for event in event_list])
 
     assert len(event_list) == queue_size
+    assert len(ldap_handler.backpressure_queue.queue) == 0
     ldap_event = outgoing_queue.get(timeout=1)
     assert ldap_event
 
@@ -200,12 +199,10 @@ def test_replay_many_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Q
     pprint([event._asdict() for event in event_list])
 
     assert len(event_list) == queue_size
-    ldap_event = outgoing_queue.get(timeout=1)
-    assert ldap_event
+    assert len(ldap_handler.backpressure_queue.queue) == 0
 
 
-@pytest.mark.xfail
-@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 1), (False, 1)], indirect=["ldap_handler"])
+@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 3), (False, 3)], indirect=["ldap_handler"])
 def test_replay_delete_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
     request_list: list = get_test_data("tests/unit/delete_requests_test_data.json")
 
@@ -223,5 +220,4 @@ def test_replay_delete_requests(ldap_handler: LDAPHandler, outgoing_queue: queue
     pprint([event._asdict() for event in event_list])
 
     assert len(event_list) == queue_size
-    ldap_event = outgoing_queue.get(timeout=1)
-    assert ldap_event
+    assert len(ldap_handler.backpressure_queue.queue) == 0

@@ -38,6 +38,13 @@ class LDAPMessage(NamedTuple):
     new: EntryMixed | None
 
 
+def is_memberOf_request(request_lines: list[bytes]) -> bool:
+    modifiers_name = [r for r in request_lines if r.startswith(b"modifiersName: ")]
+    if not modifiers_name:
+        return False
+    return modifiers_name[0].endswith(b"cn=Referential Integrity Overlay")
+
+
 class ReasonableSlapdSockHandler(SlapdSockHandler):
     def __call__(self, *args, **kwargs):
         """
@@ -243,6 +250,10 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.ignore_temporary and self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modify = %s", request)
+        if is_memberOf_request(request._req_lines):
+            self._log(logging.DEBUG, "ignoring memberOf modify request")
+            return CONTINUE_RESPONSE
+
         try:
             self.backpressure_queue.put(
                 (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
