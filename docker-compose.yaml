@@ -24,6 +24,7 @@ services:
       NATS_PORT: "4222"
       NATS_MAX_RECONNECT_ATTEMPTS: 2
       MAX_IN_FLIGHT_LDAP_MESSAGES: 1
+      BACKPRESSURE_WAIT_TIMEOUT: 25
       LDAP_THREADS: 5
       LDAP_BASE_DN: "dc=univention-organization,dc=intranet"
       IGNORE_TEMPORARY_OBJECTS: true

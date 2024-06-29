@@ -20,6 +20,8 @@ class LDIFProducerSettings(BaseSettings):
     socket_file_location: str
     # Maximum number of messages that are buffered and waiting to be sent to NATS
     max_in_flight_ldap_messages: int
+    # Timeout (seconds) before a write request is aborted when the max_in_flight_ldap_messages is reached.
+    backpressure_wait_timeout: int
     # Number of concurrent LDAP threads.
     ldap_threads: int
     # Base DN of the LDAP tree
