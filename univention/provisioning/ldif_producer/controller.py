@@ -10,7 +10,9 @@ from queue import Empty, Queue
 from datetime import datetime
 import threading
 
-from univention.provisioning.adapters.mq_adapter import LDIF_STREAM, LDIF_SUBJECT, LDIFProducerMQAdapter
+from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
+
+from univention.provisioning.adapters.mq_adapter import LDIFProducerMQAdapter
 from univention.provisioning.adapters.socket_adapter import LdifProducerSlapdSockServer
 from univention.provisioning.ldif_producer.config import LDIFProducerSettings, get_ldif_producer_settings
 from univention.provisioning.models import Message, PublisherName
@@ -38,7 +40,7 @@ class NATSController:
             "sending LDAP message to NATS request_type: %s binddn: %s", ldap_message.request_type, ldap_message.binddn
         )
         message = Message(
-            publisher_name=PublisherName.udm_listener,
+            publisher_name=PublisherName.ldif_producer,
             ts=datetime.now(),
             realm="ldap",
             topic="ldap",

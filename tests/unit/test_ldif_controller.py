@@ -7,9 +7,9 @@ import signal
 from unittest.mock import ANY, MagicMock, call
 
 import pytest
+from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
 from univention.provisioning.ldif_producer.controller import NATSController, get_logger, signal_handler
 from univention.provisioning.ports.mq_port import LDIFProducerMQPort
-from univention.provisioning.adapters.mq_adapter import LDIF_STREAM, LDIF_SUBJECT
 from univention.provisioning.ldif_producer.ldap_handler import LDAPMessage, RequestType
 
 

@@ -11,8 +11,6 @@ from univention.provisioning.nats_service import NatsKeys, NatsMQService
 from univention.provisioning.ldif_producer.config import LDIFProducerSettings
 from univention.provisioning.ports.mq_port import LDIFProducerMQPort
 
-LDIF_STREAM = "ldif-producer"
-LDIF_SUBJECT = "ldif-producer-subject"
 
 logger = logging.getLogger(__name__)
 
