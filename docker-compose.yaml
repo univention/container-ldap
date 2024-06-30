@@ -23,8 +23,8 @@ services:
       NATS_HOST: "nats"
       NATS_PORT: "4222"
       NATS_MAX_RECONNECT_ATTEMPTS: 2
-      MAX_IN_FLIGHT_LDAP_MESSAGES: 1
-      BACKPRESSURE_WAIT_TIMEOUT: 25
+      MAX_IN_FLIGHT_LDAP_MESSAGES: 5
+      BACKPRESSURE_WAIT_TIMEOUT: 10
       LDAP_THREADS: 5
       LDAP_BASE_DN: "dc=univention-organization,dc=intranet"
       IGNORE_TEMPORARY_OBJECTS: true
@@ -85,7 +85,6 @@ services:
       - docs
 
   test:
-    # image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/testrunner:0.15.0-pre-jlohmer-add-slapdsock-listener@sha256:7bcd3bcc9215561e57e84d30b3e4a590224346a4fda002bda1d9fcdf1a50cc76"
     image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/testrunner:${IMAGE_TAG:-latest}"
     build:
       dockerfile: ./docker/testrunner/Dockerfile

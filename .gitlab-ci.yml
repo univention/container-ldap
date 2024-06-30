@@ -85,9 +85,9 @@ test-ldap-smoke:
     # - sleep 10
     - docker compose run --quiet-pull --rm test .venv/bin/pytest -v tests/integration tests/unit
   after_script:
-    - docker logs ldap-server >& ldap-server.log
-    - docker logs ldif-producer >& ldif-producer.log
-    - docker logs nats >& nats.log
+    - docker logs dev-local-ldap-server-1 >& ldap-server.log
+    - docker logs dev-local-ldif-producer-1 >& ldif-producer.log
+    - docker logs dev-local-nats-1 >& nats.log
     - docker compose down --volumes
   artifacts:
     paths:
