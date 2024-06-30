@@ -83,7 +83,7 @@ test-ldap-smoke:
     - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 nats ldap-server ldif-producer
   script:
     # - sleep 10
-    - docker compose run --quiet-pull --rm test .venv/bin/pytest -v tests/unit tests/integration/
+    - docker compose run --quiet-pull --rm test .venv/bin/pytest -v tests/integration tests/unit
   after_script:
     - docker logs ldap-server >& ldap-server.log
     - docker logs ldif-producer >& ldif-producer.log

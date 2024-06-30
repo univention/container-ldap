@@ -221,3 +221,24 @@ def test_replay_delete_requests(ldap_handler: LDAPHandler, outgoing_queue: queue
 
     assert len(event_list) == queue_size
     assert len(ldap_handler.backpressure_queue.queue) == 0
+
+
+@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 11), (False, 65)], indirect=["ldap_handler"])
+def test_replay_provisioning_e2e_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
+    request_list: list = get_test_data("tests/unit/provisioning_e2e_test_data.json")
+
+    request_list = request_list
+
+    for request in request_list:
+        ldap_handler.request.recv = MagicMock(return_value=request["request_data"])
+        ldap_handler.handle()
+
+        if ldap_handler.request.sendall.called:
+            handler_response = ldap_handler.request.sendall.call_args_list[-1].args[0]
+            assert handler_response != TIMEOUT_RESPONSE.encode("utf-8")
+
+    event_list = list(outgoing_queue.queue)
+    pprint([event._asdict() for event in event_list])
+
+    assert len(event_list) == queue_size
+    assert len(ldap_handler.backpressure_queue.queue) == 0

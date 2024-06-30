@@ -360,6 +360,11 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 elif isinstance(ctrl, PreReadControl):
                     old = ctrl.res.entry_as
                     self._log(logging.INFO, "PreRead entry_as = %s", ctrl.res.entry_as)
+            if not old or new:
+                self._log(
+                    logging.WARNING,
+                    "Missing old or new object in socket request, add the necessary ldap controls to all clients.",
+                )
 
             self._log(
                 logging.INFO,
