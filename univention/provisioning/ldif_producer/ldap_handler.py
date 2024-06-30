@@ -314,6 +314,10 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             # A search result or anything where RESULTRequest._parse_ldif didn't find anything.
             return ""
 
+        if is_memberOf_request(request._req_lines):
+            self._log(logging.DEBUG, "ignoring memberOf do_result request")
+            return ""
+
         # ignore temporary dn modify results (if configured)
         self._log(logging.DEBUG, "do_result = %s", request)
         if self.ignore_temporary and self.filter_temporary_dn(request):
