@@ -27,8 +27,9 @@ slapdsocklistener = "univention.provisioning.ldif_producer.controller:main"
 [tool.poetry.group.dev.dependencies]
 pytest = "7.4"
 pytest-asyncio = "0.23"
-pytest-profiling = "1.7"
 pytest-cov = "5.0"
+pytest-profiling = "1.7"
+pytest-timeout = "2.3.1"
 ldap3 = "^2.9.1"
 
 

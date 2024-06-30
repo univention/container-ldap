@@ -4,8 +4,10 @@
 import time
 
 import ldap3
+import pytest
 
 
+@pytest.mark.timeout(1)
 def test_connection(ldap_server, admin_dn, admin_password):
     """Try to connect to the LDAP server."""
     server = ldap3.Server(ldap_server, get_info=ldap3.ALL)

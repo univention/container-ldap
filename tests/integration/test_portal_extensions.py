@@ -1,9 +1,12 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2023 Univention GmbH
 
+import pytest
+
 from ldap3 import ObjectDef, Writer
 
 
+@pytest.mark.timeout(1)
 def test_ldap_server_can_be_reached(connection, admin_dn):
     connection.search(
         admin_dn,
@@ -13,6 +16,7 @@ def test_ldap_server_can_be_reached(connection, admin_dn):
     assert len(connection.entries) >= 1
 
 
+@pytest.mark.timeout(1)
 def test_create_entry_in_testrunner_container(connection, container):
     organizational_unit = ObjectDef(["organizationalUnit"], connection)
     writer = Writer(connection, organizational_unit)
@@ -24,6 +28,7 @@ def test_create_entry_in_testrunner_container(connection, container):
     assert writer.commit()
 
 
+@pytest.mark.timeout(1)
 def test_create_portal_entry(connection, container):
     portal_entry = ObjectDef(["univentionNewPortalEntry"], connection)
     writer = Writer(connection, portal_entry)
@@ -35,6 +40,7 @@ def test_create_portal_entry(connection, container):
     assert writer.commit()
 
 
+@pytest.mark.timeout(1)
 def test_create_portal_announcement(connection, container):
     portal_announcement = ObjectDef(
         ["univentionNewPortalAnnouncement"],
