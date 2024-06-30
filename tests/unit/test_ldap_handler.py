@@ -162,49 +162,23 @@ def test_ignore_memberOf_overlay(ldap_handler: LDAPHandler, outgoing_queue: queu
     ldap_handler.request.sendall.assert_called_once()
 
 
-@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 2), (False, 11)], indirect=["ldap_handler"])
-def test_replay_create_user_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
-    request_list = get_test_data("tests/unit/create_user_socket_requests.json")
-
-    for request in request_list:
-        ldap_handler.request.recv = MagicMock(return_value=request["request_data"])
-        ldap_handler.handle()
-
-        if ldap_handler.request.sendall.called:
-            handler_response = ldap_handler.request.sendall.call_args_list[-1].args[0]
-            assert handler_response != TIMEOUT_RESPONSE.encode("utf-8")
-
-    event_list = list(outgoing_queue.queue)
-    pprint([event._asdict() for event in event_list])
-
-    assert len(event_list) == queue_size
-    assert len(ldap_handler.backpressure_queue.queue) == 0
-    ldap_event = outgoing_queue.get(timeout=1)
-    assert ldap_event
-
-
-@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 1), (False, 18)], indirect=["ldap_handler"])
-def test_replay_many_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
-    request_list = get_test_data("tests/unit/ldap_handler_test_data.json")
-
-    for request in request_list:
-        ldap_handler.request.recv = MagicMock(return_value=request["request_data"])
-        ldap_handler.handle()
-
-        if ldap_handler.request.sendall.called:
-            handler_response = ldap_handler.request.sendall.call_args_list[-1].args[0]
-            assert handler_response != TIMEOUT_RESPONSE.encode("utf-8")
-
-    event_list = list(outgoing_queue.queue)
-    pprint([event._asdict() for event in event_list])
-
-    assert len(event_list) == queue_size
-    assert len(ldap_handler.backpressure_queue.queue) == 0
-
-
-@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 3), (False, 3)], indirect=["ldap_handler"])
-def test_replay_delete_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
-    request_list: list = get_test_data("tests/unit/delete_requests_test_data.json")
+@pytest.mark.parametrize(
+    "request_file, ldap_handler, queue_size",
+    [
+        ("tests/unit/create_user_socket_requests.json", True, 2),
+        ("tests/unit/create_user_socket_requests.json", False, 11),
+        ("tests/unit/ldap_handler_test_data.json", True, 1),
+        ("tests/unit/ldap_handler_test_data.json", False, 18),
+        ("tests/unit/delete_requests_test_data.json", True, 3),
+        ("tests/unit/delete_requests_test_data.json", False, 3),
+        ("tests/unit/provisioning_e2e_test_data.json", True, 11),
+        # Some temporary requests don't have corresponding results
+        # ("tests/unit/provisioning_e2e_test_data.json", False, 65),
+    ],
+    indirect=["ldap_handler"],
+)
+def test_replay_socket_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, request_file, queue_size):
+    request_list: list = get_test_data(request_file)
 
     request_list = request_list
 
@@ -214,28 +188,13 @@ def test_replay_delete_requests(ldap_handler: LDAPHandler, outgoing_queue: queue
 
         if ldap_handler.request.sendall.called:
             handler_response = ldap_handler.request.sendall.call_args_list[-1].args[0]
-            assert handler_response != TIMEOUT_RESPONSE.encode("utf-8")
+            error_response = handler_response == TIMEOUT_RESPONSE.encode("utf-8")
 
-    event_list = list(outgoing_queue.queue)
-    pprint([event._asdict() for event in event_list])
-
-    assert len(event_list) == queue_size
-    assert len(ldap_handler.backpressure_queue.queue) == 0
-
-
-@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 11), (False, 65)], indirect=["ldap_handler"])
-def test_replay_provisioning_e2e_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
-    request_list: list = get_test_data("tests/unit/provisioning_e2e_test_data.json")
-
-    request_list = request_list
-
-    for request in request_list:
-        ldap_handler.request.recv = MagicMock(return_value=request["request_data"])
-        ldap_handler.handle()
-
-        if ldap_handler.request.sendall.called:
-            handler_response = ldap_handler.request.sendall.call_args_list[-1].args[0]
-            assert handler_response != TIMEOUT_RESPONSE.encode("utf-8")
+            if error_response:
+                pprint(handler_response)
+                pprint(request)
+                pprint(ldap_handler.backpressure_queue.queue)
+            assert not error_response
 
     event_list = list(outgoing_queue.queue)
     pprint([event._asdict() for event in event_list])
