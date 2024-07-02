@@ -4,8 +4,8 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
-ARG UCS_BASE_IMAGE_TAG=0.12.0-build-2024-04-25
-ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-507
+ARG UCS_BASE_IMAGE_TAG=0.13.1-build-2024-07-02
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
 
@@ -27,18 +27,16 @@ COPY fake.sh /usr/local/bin/univention-config-registry
 RUN \
   apt-get update && \
   apt-get download \
-    libunivention-debug1=12.0.* \
-    python3-univention-config-registry=15.0.* \
-    python3-univention-debhelper=2.0.* \
-    univention-directory-notifier=14.0.* && \
+    libunivention-debug1=14.0.* \
+    python3-univention-config-registry=17.0.* \
+    python3-univention-debhelper=4.0.* \
+    univention-directory-notifier=16.0.* && \
   mkdir /usr/share/univention-lib/ && \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
   dpkg --install --force-depends /apt/* && \
   rm -rf /apt /var/lib/apt/lists/* && \
-  awk \
-    '/^Package: univention-directory-notifier$/{ while(!/^Version: /){getline} print $2 }' \
-    /var/lib/dpkg/status > /version
+  dpkg-query -f '${Version}' -W univention-directory-notifier > /version
 
 
 ###############################################################################
@@ -56,7 +54,7 @@ RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive \
     apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      python3=3.* \
+      python3=3.11.* \
       python3-ldap=3.* \
       python3-lazy-object-proxy=1.* \
       python3-six=1.* \

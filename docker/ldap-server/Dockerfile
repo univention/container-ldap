@@ -6,8 +6,8 @@
 # Global variables
 ###############################################################################
 
-ARG UCS_BASE_IMAGE_TAG=0.13.0-build-2024-06-18
-ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-508
+ARG UCS_BASE_IMAGE_TAG=0.13.1-build-2024-07-02
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520
 
 ###############################################################################
 # Builder image for collecting Univention LDAP schema templates, base LDIFs
@@ -26,23 +26,18 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 WORKDIR /home/deb_packages
 
 
-RUN echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/all/" > /etc/apt/sources.list.d/ucs-unreleased.list \
-        && echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/\$(ARCH)/" >> /etc/apt/sources.list.d/ucs-unreleased.list \
-        && echo "deb-src [trusted=yes] http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/source/" >> /etc/apt/sources.list.d/ucs-unreleased.list \
-    && apt-get update -o Dir::Etc::sourcelist="sources.list.d/ucs-unreleased.list" \
-        -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" \
-    && apt-get download \
+RUN apt-get download \
         # The Self-service does not have an extension package. It's part of the UMC.
         # We bake support for it directly into the LDAP server image.
-        univention-self-service-passwordreset-umc=5.0.* \
-        univention-ldap-config=16.0.* \
-        univention-ldap-server=16.0.* \
-        univention-saml-schema=7.0.* \
-        univention-ldap-overlay-memberof=12.0.* \
-        univention-ldap-acl-master=16.0.* \
-        univention-management-console-server=12.0.* \
-        liblasso3=2.6.* \
-        cy2-saml=1.9.* && \
+        univention-self-service-passwordreset-umc=7.0.* \
+        univention-ldap-config=18.0.* \
+        univention-ldap-server=18.0.* \
+        univention-saml-schema=9.0.* \
+        univention-ldap-overlay-memberof=14.0.* \
+        univention-ldap-acl-master=18.0.* \
+        univention-management-console-server=14.0.* \
+        liblasso3=2.8.* \
+        cy2-saml=3.0.* && \
     (dpkg --force-all -i ./*.deb || true)
 
 ###############################################################################
@@ -73,30 +68,30 @@ RUN \
         # Slapd Debian dependencies, some of them could be removed later
         libltdl7=2.4.* \
         libodbc1=2.3.* \
-        libperl5.28=5.28.* \
+        libperl5.36=5.36.* \
         libwrap0=7.6.* \
         psmisc=23.* \
-        perl=5.28.* \
-        lsb-base=10.* \
+        perl=5.36.* \
+        lsb-base=11.* \
         # Some definitely needed slapd dependencies
         libsasl2-2=2.1.* \
         libsasl2-modules=2.1.* \
         libsasl2-modules-db=2.1.* \
         libsasl2-modules-gssapi-heimdal=2.1.* \
-        krb5-config=2.6 \
+        krb5-config=2.7 \
         libgssapi-krb5-2=1.* \
-        libkrb5-26-heimdal=7.5.* \
-        libkadm5srv8-heimdal=7.5.* \
-        openssl=1.1.* \
+        libkrb5-26-heimdal=7.8.* \
+        libkadm5srv8-heimdal=7.8.* \
+        openssl=3.0.* \
         # cy2-saml dependencies
         libglib2.0-0=2.* \
         libxmlsec1-openssl=1.2.* \
         # for downloading SAML metadata on startup
-        wget=1.20.* \
+        wget=1.21.* \
         ca-certificates=* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
-        python3=3.7.* && \
+        python3=3.11.* && \
     # This file is a dependency of the slapd.conf templates
     mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
     echo "1" >/var/lib/univention-ldap-local/schema/id/id
@@ -139,25 +134,19 @@ COPY --from=ucs_builder \
 
 # Only the UCS version of this library fits as libsaml linked against this
 # and otherwise dlopen(,) complains about 'undefined symbol'
-COPY --from=ucs_builder /usr/lib/liblasso.so.3.13.0  /usr/lib/
+COPY --from=ucs_builder /usr/lib/liblasso.so.3.15.1  /usr/lib/
 
-RUN echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/all/" > /etc/apt/sources.list.d/ucs-unreleased.list \
-        && echo "deb [trusted=yes]    http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/\$(ARCH)/" >> /etc/apt/sources.list.d/ucs-unreleased.list \
-        && echo "deb-src [trusted=yes] http://192.168.0.10/build2/     ucs_5.0-0-bug57267-nubus-slapdsock-prepostread/source/" >> /etc/apt/sources.list.d/ucs-unreleased.list \
-    && apt-get update -o Dir::Etc::sourcelist="sources.list.d/ucs-unreleased.list" \
-        -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" \
-    \
-    # ldconfig doesn't create this links as this directory
-    # is not in any config under /etc/ld.so.conf.d/
-    && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+# ldconfig doesn't create the following links as this directory
+# is not in any config under /etc/ld.so.conf.d/
+RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 \
     \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
-        slapd=2.4.* \
-        ldap-utils=2.4.* \
+        slapd=2.5.* \
+        ldap-utils=2.5.* \
     && rm -rf /var/lib/apt/lists/* \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
