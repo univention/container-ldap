@@ -647,6 +647,114 @@ false
 			<td></td>
 		</tr>
 		<tr>
+			<td>ldifProducer.config.backpressureWaitTimeout</td>
+			<td>int</td>
+			<td><pre lang="json">
+5
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.config.ldapThreads</td>
+			<td>int</td>
+			<td><pre lang="json">
+5
+</pre>
+</td>
+			<td>Amount of socketserver worker threads, should be roughly equivalent to the amount of ldap threads.</td>
+		</tr>
+		<tr>
+			<td>ldifProducer.config.logLevel</td>
+			<td>string</td>
+			<td><pre lang="json">
+"INFO"
+</pre>
+</td>
+			<td>Log level for the ldif-producer. valid values are: ERROR WARNING, INFO, DEBUG</td>
+		</tr>
+		<tr>
+			<td>ldifProducer.config.maxInFlightLdapMessages</td>
+			<td>int</td>
+			<td><pre lang="json">
+10
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.image.imagePullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"IfNotPresent"
+</pre>
+</td>
+			<td>Image pull policy. This setting has higher precedence than global.imagePullPolicy.</td>
+		</tr>
+		<tr>
+			<td>ldifProducer.image.registry</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td>Container registry address. This setting has higher precedence than global.registry.</td>
+		</tr>
+		<tr>
+			<td>ldifProducer.image.repository</td>
+			<td>string</td>
+			<td><pre lang="json">
+"nubus-dev/images/ldif-producer"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.image.tag</td>
+			<td>string</td>
+			<td><pre lang="json">
+"latest"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.nats.auth.credentialSecretName</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.nats.connection.host</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.nats.connection.port</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.nats.maxReconnectAttempts</td>
+			<td>int</td>
+			<td><pre lang="json">
+2
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>lifecycleHooks</td>
 			<td>object</td>
 			<td><pre lang="json">

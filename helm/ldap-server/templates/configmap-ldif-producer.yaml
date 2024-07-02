@@ -1,0 +1,31 @@
+
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+
+---
+kind: "ConfigMap"
+apiVersion: "v1"
+metadata:
+  name: {{ printf "%s-ldif-producer-config" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.additionalLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.additionalAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+data:
+  SOCKET_FILE_LOCATION: "/var/lib/univention-ldap/slapd-sock/sock"
+  # TODO: Actually respect the Log Level in the code
+  LOG_LEVEL: {{ required ".Values.ldifProducer.config.logLevel is required." .Values.ldifProducer.config.logLevel | quote  }}
+  NATS_HOST: {{ required ".Values.ldifProducer.nats.connection.host is required." .Values.ldifProducer.nats.connection.host | quote }}
+  NATS_PORT: {{ required ".Values.ldifProducer.nats.connection.port is required." .Values.ldifProducer.nats.connection.port | quote }}
+  NATS_MAX_RECONNECT_ATTEMPTS: {{ required ".Values.ldifProducer.nats.maxReconnectAttempts is required." .Values.ldifProducer.nats.maxReconnectAttempts | quote }}
+  MAX_IN_FLIGHT_LDAP_MESSAGES: {{ required ".Values.ldifProducer.config.maxInFlightLdapMessages is required." .Values.ldifProducer.config.maxInFlightLdapMessages | quote }}
+  BACKPRESSURE_WAIT_TIMEOUT: {{ required ".Values.ldifProducer.config.backpressureWaitTimeout is required." .Values.ldifProducer.config.backpressureWaitTimeout | quote }}
+  LDAP_THREADS: {{ required ".Values.ldifProducer.config.ldapThreads is required." .Values.ldifProducer.config.ldapThreads | quote }}
+  LDAP_BASE_DN: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
+  IGNORE_TEMPORARY_OBJECTS: "true"
+...

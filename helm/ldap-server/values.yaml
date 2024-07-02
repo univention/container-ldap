@@ -423,7 +423,31 @@ waitForDependency:
     repository: "nubus/images/wait-for-dependency"
     tag: "0.25.0@sha256:71a4d66fd67db6f92212b1936862b2b0d5a678d412213d74452a9195c2fe67f7"
 
-# Definitions regarding the OpenLDAP deployment/configuration
+ldifProducer:
+  image:
+    # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
+    imagePullPolicy: "IfNotPresent"
+    # -- Container registry address. This setting has higher precedence than global.registry.
+    registry: ""
+    repository: "nubus-dev/images/ldif-producer"
+    tag: "latest"
+  nats:
+    auth:
+      credentialSecretName: ""
+    connection:
+      host: ""
+      port: ""
+    maxReconnectAttempts: 2
+  config:
+    # -- Log level for the ldif-producer.
+    # valid values are: ERROR WARNING, INFO, DEBUG
+    logLevel: "INFO"
+    maxInFlightLdapMessages: 10
+    backpressureWaitTimeout: 5
+    # -- Amount of socketserver worker threads, should be roughly equivalent to the amount of ldap threads.
+    ldapThreads: 5
+
+# Definitions regarding to OpenLDAP deployment/configuration
 ldapServer:
   image:
     # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.

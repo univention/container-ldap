@@ -100,6 +100,10 @@ These template definitions are only used in this chart.
     {{- end -}}
 {{- end -}}
 
+{{- define "ldif-producer.nats.auth.credentialSecretName" -}}
+{{- coalesce .Values.ldifProducer.nats.auth.credentialSecretName (printf "%s-ldif-producer-nats-credentials" .Release.Name) -}}
+{{- end -}}
+
 {{- define "ldap-server.credentialSecret" -}}
     {{- $name := default (printf "%s-credentials" (include "common.names.fullname" .)) .Values.ldapServer.credentialSecret.name -}}
     {{- $key := default "adminPassword" .Values.ldapServer.credentialSecret.key -}}

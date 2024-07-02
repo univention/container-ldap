@@ -200,6 +200,41 @@ spec:
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
       {{- end }}
       containers:
+        - name: "ldif-producer"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.ldifProducer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldifProducer.image.repository }}:{{ .Values.ldifProducer.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.ldifProducer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          envFrom:
+            - configMapRef:
+                name: {{ printf "%s-ldif-producer-config" (include "common.names.fullname" .) }}
+            {{- if (include "ldif-producer.nats.auth.credentialSecretName" .) }}
+            - secretRef:
+                name: {{ include "ldif-producer.nats.auth.credentialSecretName" . | quote }}
+            {{- end }}
+          env:
+            - name: SYNC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+            - name: LDAP_CN_ADMIN_PW
+              valueFrom:
+                secretKeyRef:
+                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+          {{- with .Values.extraEnvVars }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
+          {{/* livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }} */}}
+          {{/* readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbePrimary "context" .) | nindent 12 }} */}}
+          {{/* startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }} */}}
+          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
+          {{- if .Values.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: slapd-overlay-unix-socket-volume
+              mountPath: /var/lib/univention-ldap/slapd-sock
         - name: "openldap"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
