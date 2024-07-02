@@ -38,7 +38,11 @@ class LDAPMessage(NamedTuple):
     new: EntryMixed | None
 
 
-def is_memberOf_request(request_lines: list[bytes]) -> bool:
+def is_refint_request(request_lines: list[bytes]) -> bool:
+    """
+    matches the default refint modifiersName
+    in theory this could be changed / broken by a custom name configuration in the slapd.conf
+    """
     modifiers_name = [r for r in request_lines if r.startswith(b"modifiersName: ")]
     if not modifiers_name:
         return False
@@ -131,6 +135,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                 response_str = bytes(response)
             self._log(logging.DEBUG, "response_str = %r", response_str)
             if response_str:
+                # TODO: don't send response that triggers tracebacks.
                 self.request.sendall(response_str)
         except Exception:
             if self.unittest:
@@ -250,8 +255,8 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         if self.ignore_temporary and self.filter_temporary_dn(request):
             return CONTINUE_RESPONSE
         self._log(logging.DEBUG, "do_modify = %s", request)
-        if is_memberOf_request(request._req_lines):
-            self._log(logging.DEBUG, "ignoring memberOf modify request")
+        if is_refint_request(request._req_lines):
+            self._log(logging.DEBUG, "ignoring referential integrity modify request")
             return CONTINUE_RESPONSE
 
         try:
@@ -314,7 +319,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             # A search result or anything where RESULTRequest._parse_ldif didn't find anything.
             return ""
 
-        if is_memberOf_request(request._req_lines):
+        if is_refint_request(request._req_lines):
             self._log(logging.DEBUG, "ignoring memberOf do_result request")
             return ""
 

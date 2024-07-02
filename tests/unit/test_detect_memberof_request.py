@@ -22,7 +22,7 @@ import pytest
 import slapdsock.message
 
 from tests.unit.test_ldap_handler import get_test_data
-from univention.provisioning.ldif_producer.ldap_handler import is_memberOf_request
+from univention.provisioning.ldif_producer.ldap_handler import is_refint_request
 
 
 binary_requests = [
@@ -35,15 +35,15 @@ binary_requests = [
 @pytest.mark.parametrize("binary_request", binary_requests)
 def test_detect_modifiersName(binary_request):
     req_lines = binary_request.split(b"\n")
-    assert is_memberOf_request(req_lines)
+    assert is_refint_request(req_lines)
 
 
 def test_empty_list():
-    assert not is_memberOf_request([])
+    assert not is_refint_request([])
 
 
 def test_detect_not_modifiersName():
-    assert not is_memberOf_request([b"foo", b"bar", b"baz"])
+    assert not is_refint_request([b"foo", b"bar", b"baz"])
 
 
 @pytest.mark.parametrize("binary_request", binary_requests)
@@ -51,7 +51,7 @@ def test_create_request_class(binary_request):
     req_lines = binary_request.split(b"\n")
     request = slapdsock.message.MODIFYRequest(req_lines)
     assert request
-    assert is_memberOf_request(request._req_lines)
+    assert is_refint_request(request._req_lines)
 
 
 def test_many_messages():
@@ -60,4 +60,4 @@ def test_many_messages():
 
     for request in request_list:
         request_lines = request["request_data"].split(b"\n")
-        assert not is_memberOf_request(request_lines)
+        assert not is_refint_request(request_lines)
