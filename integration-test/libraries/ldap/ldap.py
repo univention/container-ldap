@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright 2020 Univention GmbH
+# Copyright 2020-2024 Univention GmbH
 #
 # https://www.univention.de/
 #

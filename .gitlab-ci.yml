@@ -1,7 +1,7 @@
 ---
 
 # SPDX-License-Identifier: AGPL-3.0-only
-# SPDX-FileCopyrightText: 2023 Univention GmbH <info@univention.de>
+# SPDX-FileCopyrightText: 2023-2024 Univention GmbH <info@univention.de>
 
 include:
   - project: "univention/customers/dataport/upx/common-ci"
