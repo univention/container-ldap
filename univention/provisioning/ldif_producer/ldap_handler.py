@@ -144,17 +144,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             if response_str == b"":
                 self._log(logging.ERROR, "empty response string for request: %s", request_data)
             if response_str:
-                # TODO: don't send response that triggers tracebacks.
-                try:
-                    self.request.sendall(response_str)
-                except (BrokenPipeError, OSError) as error:
-                    self._log(
-                        logging.ERROR,
-                        "socket response error for request: %s, response: %s",
-                        request_data,
-                        response_str,
-                        exc_info=error,
-                    )
+                self.request.sendall(response_str)
         except Exception:
             if self.unittest:
                 raise
