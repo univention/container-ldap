@@ -237,6 +237,8 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: slapd-overlay-unix-socket-volume
+              mountPath: /var/lib/univention-ldap/slapd-sock
             - name: usr-share-univention-ldap-volume
               mountPath: /usr/share/univention-ldap
             - name: usr-share-saml-volume
@@ -303,6 +305,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
       volumes:
+        - name: "slapd-overlay-unix-socket-volume"
+          emptyDir: {}
         - name: "usr-share-univention-ldap-volume"
           emptyDir: {}
         - name: "usr-share-saml-volume"

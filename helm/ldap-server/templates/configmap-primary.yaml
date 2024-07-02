@@ -111,6 +111,12 @@ data:
       # Append the current line to the modified slapd.conf
       modified_slapd_conf+="${line}\n"
 
+      # Check if the current line starts with "modulepath" and append the moduleload for back_sock.so
+      if [[ "${line}" =~ ^modulepath ]]; then
+        modified_slapd_conf+="moduleload back_sock.so\n"
+        line="moduleload back_ldap.so\n"
+      fi
+
       # Check if the current line starts with "suffix"
       if [[ "${line}" =~ ^suffix ]]; then
         # Extract the suffix value
@@ -149,11 +155,18 @@ data:
         # Increment the replication ID
         replication_id=$((replication_id + 1))
       fi
+
+      if [[ "${line}" =~ ^suffix ]] && [[ "${suffix}" == "${LDAP_BASEDN}" ]]; then
+        modified_slapd_conf+=$(cat /config/templates/slapd.conf.socket_overlay.tpl)
+      fi
+
     done < <(echo "${slapd_conf}")
 
     # Write the modified slapd.conf
     echo -e "${modified_slapd_conf}" > /etc/ldap/slapd.conf
-    # slaptest -f /etc/ldap/slapd.conf
+    # TODO: Comment this back out
+    cat /etc/ldap/slapd.conf
+    slaptest -f /etc/ldap/slapd.conf
 ...
 ---
 kind: "ConfigMap"
@@ -191,5 +204,12 @@ data:
 
     mirrormode on
     {{- end }}
+
+  slapd.conf.socket_overlay.tpl: |
+    overlay sock
+    extensions binddn connid peername
+    socketpath /var/lib/univention-ldap/slapd-sock/sock
+    sockops add delete modify modrdn
+    sockresps extendedresult
 
 ...
