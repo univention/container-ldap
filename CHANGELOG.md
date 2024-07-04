@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.18.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.18.0...v0.18.1) (2024-07-04)
+
+
+### Bug Fixes
+
+* **ldif-producer:** copy SlapdSockHandler.handle() into subclass ([d656aa7](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/d656aa72a56a29e3da0181cb7d5d321493d505ff))
+* **ldif-producer:** don't cache handler function responses ([f512e4d](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/f512e4dfd8630114dd3b81630c0bb4c1ab60486c))
+* **ldif-producer:** ignore memberOf overlay requests in do_result aswell ([b575dfd](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/b575dfd492a556071e696b3fe872e60bcbe3c52f))
+* **ldif-producer:** ignore socket requests from the memeberOf overlay and add test-cases for it ([876975c](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/876975ca2564a855fe182743d8186734a2692bf5))
+* **ldif-producer:** improve tests and raise exceptions in unittest scenarios ([b208d18](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/b208d18b8fed82f7d05f99b58bd0f0f95d594fa9))
+* **ldif-producer:** improvements with Arvid ([068419f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/068419fba210429546cbb0228128699872547554))
+* **ldif-producer:** LDAPHandler unit tests ([4ae3214](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/4ae3214b85d13ffa5751ee46e6f7ff160fbafb51))
+* **ldif-producer:** make backpressure timeout configurable ([66a64f6](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/66a64f6777084cb3aa031ece280c09d3955f1609))
+* **ldif-producer:** optionally ignore temporary objects also in pre-hooks ([0930ec7](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/0930ec762855cd09c7e01cad224238452025e116))
+
 ## [0.18.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.17.1...v0.18.0) (2024-06-27)
 
 
