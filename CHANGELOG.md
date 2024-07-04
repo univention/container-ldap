@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.18.1...v0.19.0) (2024-07-04)
+
+
+### Features
+
+* remove extensions for Guardian, App Center; keep Self-service; temp. keep Portal, OX-Connector ([fccd26e](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/fccd26e33faf154a862f9471dab64ac5b088b45a))
+
 ## [0.18.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.18.0...v0.18.1) (2024-07-04)
 
 
