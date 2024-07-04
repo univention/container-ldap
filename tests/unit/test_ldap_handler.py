@@ -172,15 +172,14 @@ def test_ignore_memberOf_overlay(ldap_handler: LDAPHandler, outgoing_queue: queu
         ("tests/unit/delete_requests_test_data.json", True, 3),
         ("tests/unit/delete_requests_test_data.json", False, 3),
         ("tests/unit/provisioning_e2e_test_data.json", True, 11),
-        # Some temporary requests don't have corresponding results
-        # ("tests/unit/provisioning_e2e_test_data.json", False, 65),
+        ("tests/unit/provisioning_e2e_test_data.json", False, 65),
+        ("tests/unit/dev-env-requests.json", True, 1),
+        ("tests/unit/dev-env-requests.json", False, 1),
     ],
     indirect=["ldap_handler"],
 )
 def test_replay_socket_requests(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, request_file, queue_size):
     request_list: list = get_test_data(request_file)
-
-    request_list = request_list
 
     for request in request_list:
         ldap_handler.request.recv = MagicMock(return_value=request["request_data"])

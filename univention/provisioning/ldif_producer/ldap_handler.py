@@ -107,6 +107,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                     # Request data can contain sensitive data
                     # (e.g. BIND with password) => never run in debug mode!
                     self._log(logging.DEBUG, "sock_req = %r // %r", sock_req, sock_req.__dict__)
+                    self._log(logging.DEBUG, "raw_socket_request = %r", request_data)
                 # Generate the request specific log prefix here
                 self.log_prefix = sock_req.log_prefix(self.log_prefix)
                 msgid = sock_req.msgid
