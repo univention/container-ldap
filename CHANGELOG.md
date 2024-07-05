@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.19.0...v0.20.0) (2024-07-05)
+
+
+### Features
+
+* Add support for dynamic extension configuration ([cc8d63c](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/cc8d63c23f98be5b0133e62e28500af7c85abcb6))
+
 ## [0.19.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.18.1...v0.19.0) (2024-07-04)
 
 
