@@ -85,7 +85,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             if __debug__:
                 # Security advice:
                 # Request data can contain clear-text passwords!
-                self._log(logging.DEBUG, "request_data = %r", request_data)
+                self._log(logging.DEBUG, ", request.data = %r", request_data)
             self.server._bytes_received += len(request_data)
             req_lines = request_data.split(b"\n")
             # Extract request type
@@ -97,7 +97,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                 response = InternalErrorResponse(msgid)
             else:
                 request_class = getattr(slapdsock.message, "%sRequest" % reqtype)
-                self._log(logging.DEBUG, "request_class=%r", request_class)
+                self._log(logging.DEBUG, ", request.class=%r", request_class)
                 # Extract the request message
                 sock_req = request_class(req_lines)
                 # Update request counter for request type
@@ -189,13 +189,12 @@ class LDAPHandler(ReasonableSlapdSockHandler):
     def filter_temporary_dn(self, request):
         return request.dn.endswith(self.temporary_dn_identifier)
 
-    def do_add(self, request):
-        """
-        ADD
-        """
+    def add_backpressure(self, request, request_type: str) -> bool:
         if self.ignore_temporary and self.filter_temporary_dn(request):
-            return CONTINUE_RESPONSE
-        self._log(logging.DEBUG, "do_add = %s", request)
+            return True
+        if is_refint_request(request._req_lines):
+            self._log(logging.DEBUG, "ignoring referential integrity modify request: %s", request.msgid)
+            return True
         try:
             self.backpressure_queue.put(
                 (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
@@ -204,19 +203,38 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             self._log(
                 logging.ERROR,
                 "do_add = %s failed because no LDAPHandler seat was available within the timeout",
-                request,
+                request.msgid,
             )
-            return TIMEOUT_RESPONSE
+            return False
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
+        return True
+
+    def release_backpressuren(self, msgid: int) -> None:
+        resonse_time = time.perf_counter()
+        try:
+            (_, _, request_time) = self.backpressure_queue.get(timeout=5)  # signal one seat is free
+        except Empty:
+            self._log(logging.ERROR, "no in flight request found in backpressure_queue for message id: %s", msgid)
+            raise
+        self._log(logging.INFO, "processing time  = %s", round(resonse_time - request_time, 6))
+
+    def do_add(self, request):
+        """
+        ADD
+        """
+        if not self.add_backpressure(request, "do_add"):
+            return TIMEOUT_RESPONSE
+
+        self._log(logging.DEBUG, "do_add = %s", request.msgid)
         return CONTINUE_RESPONSE
 
     def do_bind(self, request):
         """
         BIND
         """
-        self._log(logging.DEBUG, "do_bind = %s", request)
+        self._log(logging.DEBUG, "do_bind = %s", request.msgid)
         return CONTINUE_RESPONSE
 
     def do_compare(self, request):
@@ -230,73 +248,31 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         DELETE
         """
-        if self.ignore_temporary and self.filter_temporary_dn(request):
-            return CONTINUE_RESPONSE
-        self._log(logging.DEBUG, "do_delete = %s", request)
-        try:
-            self.backpressure_queue.put(
-                (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
-            )
-        except Full:
-            self._log(
-                logging.ERROR,
-                "do_delete = %s failed because no LDAPHandler seat was available within the timeout",
-                request,
-            )
+        if not self.add_backpressure(request, "do_delete"):
             return TIMEOUT_RESPONSE
-        self._log(
-            logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
-        )
+
+        self._log(logging.DEBUG, "do_delete = %s", request.msgid)
         return CONTINUE_RESPONSE
 
     def do_modify(self, request):
         """
         MODIFY
         """
-        if self.ignore_temporary and self.filter_temporary_dn(request):
-            return CONTINUE_RESPONSE
-        self._log(logging.DEBUG, "do_modify = %s", request)
-        if is_refint_request(request._req_lines):
-            self._log(logging.DEBUG, "ignoring referential integrity modify request")
-            return CONTINUE_RESPONSE
-
-        try:
-            self.backpressure_queue.put(
-                (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
-            )
-        except Full:
-            self._log(
-                logging.ERROR,
-                "do_modify = %s failed because no LDAPHandler seat was available within the timeout",
-                request,
-            )
+        if not self.add_backpressure(request, "do_delete"):
             return TIMEOUT_RESPONSE
-        self._log(
-            logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
-        )
+
+        self._log(logging.DEBUG, "do_modify = %s", request.msgid)
         return CONTINUE_RESPONSE
 
     def do_modrdn(self, request):
         """
         MODRDN
         """
-        if self.ignore_temporary and self.filter_temporary_dn(request):
-            return CONTINUE_RESPONSE
-        self._log(logging.DEBUG, "do_modrdn = %s", request)
-        try:
-            self.backpressure_queue.put(
-                (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
-            )
-        except Full:
-            self._log(
-                logging.ERROR,
-                "do_modrdn = %s failed because no LDAPHandler seat was available within the timeout",
-                request,
-            )
+        self._log(logging.DEBUG, "do_modrdn = %s", request.msgid)
+        if not self.add_backpressure(request, "do_delete"):
             return TIMEOUT_RESPONSE
-        self._log(
-            logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
-        )
+
+        self._log(logging.DEBUG, "do_modrdn = %s", request.msgid)
         return CONTINUE_RESPONSE
 
     def do_search(self, request):
@@ -325,7 +301,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             return ""
 
         # ignore temporary dn modify results (if configured)
-        self._log(logging.DEBUG, "do_result = %s", request)
+        self._log(logging.DEBUG, "do_result = %s", request.msgid)
         if self.ignore_temporary and self.filter_temporary_dn(request):
             self._log(logging.INFO, "ignoring dn = %s", request.dn)
             return ""
@@ -398,14 +374,8 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
 
-        resonse_time = time.perf_counter()
-        try:
-            (connid, msgid, request_time) = self.backpressure_queue.get(timeout=5)  # signal one seat is free
-        except Empty:
-            raise
-            self._log(logging.ERROR, "no in flight request found in backpressure_queue")
-            raise
-        self._log(logging.INFO, "processing time  = %s", round(resonse_time - request_time, 6))
+        self.release_backpressuren(request.msgid)
+
         return ""
 
     def do_entry(self, request):
