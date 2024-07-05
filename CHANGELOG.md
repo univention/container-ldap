@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.20.0...v0.20.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* update base to UCS 5.2 ([e27c2e5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e27c2e5c0bc469998c53983c352dc53f455c9ec3))
+
 ## [0.20.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.19.0...v0.20.0) (2024-07-05)
 
 
