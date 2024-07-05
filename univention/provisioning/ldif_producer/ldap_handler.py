@@ -85,7 +85,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             if __debug__:
                 # Security advice:
                 # Request data can contain clear-text passwords!
-                self._log(logging.DEBUG, ", request.data = %r", request_data)
+                self._log(logging.DEBUG, ", request_data = %r", request_data)
             self.server._bytes_received += len(request_data)
             req_lines = request_data.split(b"\n")
             # Extract request type
@@ -189,42 +189,55 @@ class LDAPHandler(ReasonableSlapdSockHandler):
     def filter_temporary_dn(self, request):
         return request.dn.endswith(self.temporary_dn_identifier)
 
-    def add_backpressure(self, request, request_type: str) -> bool:
+    def legacy_add_backpressure(self, request) -> bool:
+        if not __debug__:
+            return True
         if self.ignore_temporary and self.filter_temporary_dn(request):
             return True
         if is_refint_request(request._req_lines):
             self._log(logging.DEBUG, "ignoring referential integrity modify request: %s", request.msgid)
             return True
         try:
-            self.backpressure_queue.put(
-                (request.connid, request.msgid, time.perf_counter()), timeout=self.backpressure_wait_timeout
-            )
+            self.backpressure_queue.put_nowait((request.connid, request.msgid, time.perf_counter()))
         except Full:
+            orphan = self.backpressure_queue.get_nowait()
             self._log(
                 logging.ERROR,
-                "do_add = %s failed because no LDAPHandler seat was available within the timeout",
+                "backpressure_queue full, this suggests a failure in syncronizing the previous pre- and post- hook "
+                "current message id: %s, time: %s orphaned backpressure_queue item: %r",
                 request.msgid,
+                time.perf_counter(),
+                orphan,
             )
-            return False
+            return True
         self._log(
             logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
         )
         return True
 
-    def release_backpressuren(self, msgid: int) -> None:
-        resonse_time = time.perf_counter()
+    def legacy_release_backpressuren(self, msgid: int) -> None:
+        if not __debug__:
+            return
         try:
             (_, _, request_time) = self.backpressure_queue.get(timeout=5)  # signal one seat is free
         except Empty:
-            self._log(logging.ERROR, "no in flight request found in backpressure_queue for message id: %s", msgid)
-            raise
-        self._log(logging.INFO, "processing time  = %s", round(resonse_time - request_time, 6))
+            self._log(
+                logging.ERROR,
+                "no in flight request found in backpressure_queue "
+                "this suggests a failure in synchorizing the pre- and post- hook for the current message"
+                "current message id: %s, time: %",
+                msgid,
+                time.perf_counter(),
+            )
+            return
+        response_time = time.perf_counter()
+        self._log(logging.INFO, "processing time  = %s", round(response_time - request_time, 6))
 
     def do_add(self, request):
         """
         ADD
         """
-        if not self.add_backpressure(request, "do_add"):
+        if not self.legacy_add_backpressure(request):
             return TIMEOUT_RESPONSE
 
         self._log(logging.DEBUG, "do_add = %s", request.msgid)
@@ -248,7 +261,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         DELETE
         """
-        if not self.add_backpressure(request, "do_delete"):
+        if not self.legacy_add_backpressure(request):
             return TIMEOUT_RESPONSE
 
         self._log(logging.DEBUG, "do_delete = %s", request.msgid)
@@ -258,7 +271,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         MODIFY
         """
-        if not self.add_backpressure(request, "do_delete"):
+        if not self.legacy_add_backpressure(request):
             return TIMEOUT_RESPONSE
 
         self._log(logging.DEBUG, "do_modify = %s", request.msgid)
@@ -269,7 +282,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         MODRDN
         """
         self._log(logging.DEBUG, "do_modrdn = %s", request.msgid)
-        if not self.add_backpressure(request, "do_delete"):
+        if not self.legacy_add_backpressure(request):
             return TIMEOUT_RESPONSE
 
         self._log(logging.DEBUG, "do_modrdn = %s", request.msgid)
@@ -374,7 +387,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
 
-        self.release_backpressuren(request.msgid)
+        self.legacy_release_backpressuren(request.msgid)
 
         return ""
 

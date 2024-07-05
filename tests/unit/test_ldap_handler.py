@@ -32,7 +32,7 @@ def get_logger():
     logger.propagate = False
     handler.setFormatter(log_formatter)
     logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     return logger
 
