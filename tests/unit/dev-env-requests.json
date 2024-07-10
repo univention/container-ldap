@@ -849,8 +849,6 @@
 
     {"request_data": "RESULT\nmsgid: 364\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=10.244.0.230:44020\nconnid: 1063\ncode: 0\n\n"},
 
-    {"request_data": "ADD\nmsgid: 365\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=10.244.0.230:44020\nconnid: 1063\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=UMC,cn=univention,dc=univention-organization,dc=intranet\ncn: UMC\nobjectClass: univentionObject\nobjectClass: top\nobjectClass: organizationalRole\nuniventionObjectType: container/cn\n\n"},
-
     {"request_data": "RESULT\nmsgid: 366\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=10.244.0.230:44020\nconnid: 1063\ncode: 32\nmatched: cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"},
 
     {"request_data": "DELETE\nmsgid: 366\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=10.244.0.230:44020\nconnid: 1063\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=UMC,cn=cn-uid-position,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\n\n"},
