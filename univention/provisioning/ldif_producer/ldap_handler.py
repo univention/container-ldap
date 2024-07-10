@@ -94,7 +94,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             # Get the request message class
             if not reqtype:
                 self._log(logging.WARNING, "recieved empty socket request: %s", req_lines)
-                response = InternalErrorResponse(msgid)
+                response = CONTINUE_RESPONSE
             else:
                 request_class = getattr(slapdsock.message, "%sRequest" % reqtype)
                 self._log(logging.DEBUG, ", request.class=%r", request_class)
@@ -126,7 +126,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
         except Exception:
             if self.unittest:
                 raise
-            self._log(logging.ERROR, "Unhandled exception during processing request:", exc_info=True)
+            self._log(logging.ERROR, "Unhandled exception during processing request: %s", msgid, exc_info=True)
             response = InternalErrorResponse(msgid)
         try:
             # Serialize the response instance
@@ -203,6 +203,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             return True
 
         if not self.request_throttling_mutex.acquire(timeout=self.backpressure_wait_timeout):
+            self._log(logging.INFO, "Timed out waiting for the outgoing queue. message id: %s", request.msgid)
             return False
         try:
             max_loops = int(2 / 0.1)
