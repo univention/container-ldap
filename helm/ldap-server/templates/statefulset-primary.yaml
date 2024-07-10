@@ -200,6 +200,7 @@ spec:
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
       {{- end }}
       containers:
+        {{- if .Values.ldifProducer.enabled }}
         - name: "ldif-producer"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -235,6 +236,7 @@ spec:
           volumeMounts:
             - name: slapd-overlay-unix-socket-volume
               mountPath: /var/lib/univention-ldap/slapd-sock
+          {{- end }}
         - name: "openldap"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}

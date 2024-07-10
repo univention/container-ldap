@@ -25,6 +25,7 @@ data:
   LDAP_PORT: {{ include "nubusTemplates.ldapServer.ldap.connection.port" . | quote }}
   LDAP_PROTOCOL: {{ include "nubusTemplates.ldapServer.ldap.connection.protocol" . | quote }}
   REPLICACOUNT: {{ include "ldap-server.replicaCountPrimary" . | quote }}
+  ENABLE_SOCKET_OVERLAY: {{ required ".Values.ldifProducer.enabled is required."  .Values.ldifProducer.enabled | quote }}
 ...
 ---
 kind: "ConfigMap"
@@ -112,7 +113,7 @@ data:
       modified_slapd_conf+="${line}\n"
 
       # Check if the current line starts with "modulepath" and append the moduleload for back_sock.so
-      if [[ "${line}" =~ ^modulepath ]]; then
+      if [[ "${line}" =~ ^modulepath ]] && [[ "${ENABLE_SOCKET_OVERLAY}" == "true" ]]; then
         modified_slapd_conf+="moduleload back_sock.so\n"
         line="moduleload back_ldap.so\n"
       fi
@@ -156,7 +157,7 @@ data:
         replication_id=$((replication_id + 1))
       fi
 
-      if [[ "${line}" =~ ^suffix ]] && [[ "${suffix}" == "${LDAP_BASEDN}" ]]; then
+      if [[ "${line}" =~ ^suffix ]] && [[ "${suffix}" == "${LDAP_BASEDN}" ]] && [[ "${ENABLE_SOCKET_OVERLAY}" == "true" ]]; then
         modified_slapd_conf+=$(cat /config/templates/slapd.conf.socket_overlay.tpl)
       fi
 

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
+{{- if .Values.ldifProducer.enabled }}
 ---
 kind: "ConfigMap"
 apiVersion: "v1"
@@ -29,3 +30,4 @@ data:
   LDAP_BASE_DN: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
   IGNORE_TEMPORARY_OBJECTS: "true"
 ...
+{{- end }}

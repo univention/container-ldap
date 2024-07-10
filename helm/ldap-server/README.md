@@ -683,6 +683,15 @@ false
 			<td></td>
 		</tr>
 		<tr>
+			<td>ldifProducer.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>ldifProducer.image.imagePullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
