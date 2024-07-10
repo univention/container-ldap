@@ -102,7 +102,7 @@ async def run_ldif_producer(
 ):
     logger = get_logger()
 
-    outgoing_queue = Queue(settings.max_in_flight_ldap_messages)
+    outgoing_queue = Queue(maxsize=settings.max_in_flight_ldap_messages)
 
     async with message_queue_port_type(settings) as message_queue_port:
         nats_controller = NATSController(outgoing_queue, message_queue_port)

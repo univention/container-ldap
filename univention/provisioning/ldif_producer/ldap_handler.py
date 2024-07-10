@@ -135,9 +135,16 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             else:
                 response_str = bytes(response)
             self._log(logging.DEBUG, "response_str = %r", response_str)
+            if response_str == b"":
+                self._log(logging.ERROR, "empty response string for request: %s", request_data)
             if response_str:
                 # TODO: don't send response that triggers tracebacks.
-                self.request.sendall(response_str)
+                try:
+                    self.request.sendall(response_str)
+                except (BrokenPipeError, OSError):
+                    self._log(
+                        logging.ERROR, "socket response error for request: %s, response: %s", request_data, response_str
+                    )
         except Exception:
             if self.unittest:
                 raise
@@ -171,6 +178,12 @@ class LDAPHandler(ReasonableSlapdSockHandler):
 
         self.journal_key = 0
         self.journal_key_mutex = threading.Lock()
+        self.outgoing_queue = outgoing_queue
+        self.request_throttling_mutex = threading.Lock()
+
+        self.ignore_temporary = ignore_temporary
+
+        self.temporary_dn_identifier = f",cn=temporary,cn=univention,{ldap_base}"
 
         # NOTE: Be careful when extending the Queue maxsize!
         # It's not clear that RESULT responses come in the same order as the
@@ -179,15 +192,36 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         # to be somehow serialized to maintain order of ops towards NATS.
         # NOTE: (msgid, connid) are recycled after slapd restart (connid seems
         # to start at 1000 again).
-        self.outgoing_queue = outgoing_queue
-        self.backpressure_queue = Queue(maxsize=1)
-        # self.do_result_lock = threading.Lock()
-        self.ignore_temporary = ignore_temporary
-
-        self.temporary_dn_identifier = f",cn=temporary,cn=univention,{ldap_base}"
+        self.legacy_backpressure_queue = Queue(maxsize=1)
 
     def filter_temporary_dn(self, request):
         return request.dn.endswith(self.temporary_dn_identifier)
+
+    def request_throttling(self, request) -> bool:
+        self.legacy_add_backpressure(request)
+        if not self.outgoing_queue.full():
+            return True
+
+        if not self.request_throttling_mutex.acquire(timeout=self.backpressure_wait_timeout):
+            return False
+        try:
+            max_loops = int(2 / 0.1)
+            for _ in range(max_loops):
+                if not self.outgoing_queue.full():
+                    return True
+                time.sleep(0.1)
+            error_time = time.perf_counter()
+            self._log(
+                logging.ERROR,
+                "LDAP write operation was aborted because the backpressure did not decrease within the timeout"
+                "message id: %s, time: %s",
+                request.msgid,
+                error_time,
+            )
+            # "do_add = %s failed because no LDAPHandler seat was available within the timeout"
+            return False
+        finally:
+            self.request_throttling_mutex.release()
 
     def legacy_add_backpressure(self, request) -> bool:
         if not __debug__:
@@ -198,46 +232,56 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             self._log(logging.DEBUG, "ignoring referential integrity modify request: %s", request.msgid)
             return True
         try:
-            self.backpressure_queue.put_nowait((request.connid, request.msgid, time.perf_counter()))
+            self.legacy_backpressure_queue.put_nowait((request.connid, request.msgid, time.perf_counter()))
         except Full:
-            orphan = self.backpressure_queue.get_nowait()
+            try:
+                orphan = self.legacy_backpressure_queue.get_nowait()
+            except Empty:
+                self._log(logging.ERROR, "conjestion has cleared up in the mean-time")
+
+                return True
+
+            error_time = time.perf_counter()
             self._log(
                 logging.ERROR,
-                "backpressure_queue full, this suggests a failure in syncronizing the previous pre- and post- hook "
+                "backpressure_queue full, "
+                "this suggests a failure in syncronizing the previous pre- and post- hook "
                 "current message id: %s, time: %s orphaned backpressure_queue item: %r",
                 request.msgid,
-                time.perf_counter(),
+                error_time,
                 orphan,
             )
             return True
         self._log(
-            logging.DEBUG, "added new element to backpressure_queue. new size: %s", self.backpressure_queue.qsize()
+            logging.DEBUG,
+            "added new element to backpressure_queue. new size: %s",
+            self.legacy_backpressure_queue.qsize(),
         )
         return True
 
     def legacy_release_backpressuren(self, msgid: int) -> None:
         if not __debug__:
             return
+        response_time = time.perf_counter()
         try:
-            (_, _, request_time) = self.backpressure_queue.get(timeout=5)  # signal one seat is free
+            (_, _, request_time) = self.legacy_backpressure_queue.get_nowait()  # signal one seat is free
         except Empty:
             self._log(
                 logging.ERROR,
                 "no in flight request found in backpressure_queue "
-                "this suggests a failure in synchorizing the pre- and post- hook for the current message"
-                "current message id: %s, time: %",
+                "this suggests a failure in synchorizing the pre- and post- hook for the current message "
+                "current message id: %s, time: %s",
                 msgid,
-                time.perf_counter(),
+                response_time,
             )
             return
-        response_time = time.perf_counter()
         self._log(logging.INFO, "processing time  = %s", round(response_time - request_time, 6))
 
     def do_add(self, request):
         """
         ADD
         """
-        if not self.legacy_add_backpressure(request):
+        if not self.request_throttling(request):
             return TIMEOUT_RESPONSE
 
         self._log(logging.DEBUG, "do_add = %s", request.msgid)
@@ -261,7 +305,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         DELETE
         """
-        if not self.legacy_add_backpressure(request):
+        if not self.request_throttling(request):
             return TIMEOUT_RESPONSE
 
         self._log(logging.DEBUG, "do_delete = %s", request.msgid)
@@ -271,7 +315,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         """
         MODIFY
         """
-        if not self.legacy_add_backpressure(request):
+        if not self.request_throttling(request):
             return TIMEOUT_RESPONSE
 
         self._log(logging.DEBUG, "do_modify = %s", request.msgid)
@@ -282,7 +326,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         MODRDN
         """
         self._log(logging.DEBUG, "do_modrdn = %s", request.msgid)
-        if not self.legacy_add_backpressure(request):
+        if not self.request_throttling(request):
             return TIMEOUT_RESPONSE
 
         self._log(logging.DEBUG, "do_modrdn = %s", request.msgid)
