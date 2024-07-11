@@ -10,17 +10,20 @@ import pytest
 from slapdsock.handler import logging
 from slapdsock.service import threading
 
-from univention.provisioning.ldif_producer.controller import get_logger
+from univention.provisioning.ldif_producer.controller import setup_logging
 from univention.provisioning.adapters.socket_adapter import LdifProducerSlapdSockServer
 
 
-@pytest.fixture
-def logger() -> logging.Logger:
-    return get_logger()
+logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _setup_logging():
+    return setup_logging()
 
 
 @pytest.fixture
-def socket_server(logger) -> LdifProducerSlapdSockServer:
+def socket_server() -> LdifProducerSlapdSockServer:
     ldap_handler = mock.MagicMock()
 
     server = LdifProducerSlapdSockServer.__new__(LdifProducerSlapdSockServer)
@@ -48,7 +51,7 @@ def test_socket_server_initialization(socket_server):
     pass
 
 
-def test_exit_socket_server(logger: logging.Logger, socket_server: LdifProducerSlapdSockServer):
+def test_exit_socket_server(socket_server: LdifProducerSlapdSockServer):
     socket_main_thread = threading.Thread(name="socket_main_thread", target=socket_server.serve_forever)
     logger.warning("Starting socket server thread")
     socket_main_thread.start()
@@ -60,7 +63,7 @@ def test_exit_socket_server(logger: logging.Logger, socket_server: LdifProducerS
     logger.warning("joined socket thread, exiting")
 
 
-def test_serve_forever(logger: logging.Logger, socket_server: LdifProducerSlapdSockServer):
+def test_serve_forever(socket_server: LdifProducerSlapdSockServer):
     counter = 0
     request_syncronization_queue = Queue()
 

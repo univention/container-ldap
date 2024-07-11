@@ -8,7 +8,7 @@ from unittest.mock import ANY, MagicMock, call
 
 import pytest
 from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
-from univention.provisioning.ldif_producer.controller import NATSController, get_logger, signal_handler
+from univention.provisioning.ldif_producer.controller import NATSController, signal_handler
 from univention.provisioning.ports.mq_port import LDIFProducerMQPort
 from univention.provisioning.ldif_producer.ldap_handler import LDAPMessage, RequestType
 
@@ -45,10 +45,10 @@ async def test_nats_controller(mock_message_queue_port: LDIFProducerMQPort):
         message_queue_port=mock_message_queue_port,
     )
 
-    async def check_queue_and_cancel(task):
+    async def check_queue_and_cancel(task_):
         while not queue.empty():
             await asyncio.sleep(0.2)
-        task.cancel()
+        task_.cancel()
 
     task = asyncio.create_task(controller.process_queue_forever())
     monitor = asyncio.create_task(check_queue_and_cancel(task))
@@ -63,21 +63,24 @@ async def test_nats_controller(mock_message_queue_port: LDIFProducerMQPort):
 
 @pytest.mark.asyncio
 async def test_signal_handler():
-    logger = get_logger()
     socket_port = MagicMock()
 
     async def dummy_task():
-        while True:
-            await asyncio.sleep(1)
+        try:
+            while True:
+                await asyncio.sleep(1)
+        except asyncio.CancelledError:
+            pass
 
     task1 = asyncio.create_task(dummy_task())
     task2 = asyncio.create_task(dummy_task())
 
     await asyncio.sleep(0)
 
-    await signal_handler(signal.SIGINT, logger, socket_port)
+    await signal_handler(signal.SIGINT, socket_port)
 
     socket_port.server_close.assert_called_once()
     assert socket_port.exit.is_set()
 
-    asyncio.gather(task1, task2)
+    await task1
+    await task2
