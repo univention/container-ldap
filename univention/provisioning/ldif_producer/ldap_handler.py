@@ -93,7 +93,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             self._log(logging.DEBUG, "reqtype = %r", reqtype)
             # Get the request message class
             if not reqtype:
-                self._log(logging.WARNING, "recieved empty socket request: %s", req_lines)
+                self._log(logging.WARNING, "received empty socket request: %s", req_lines)
                 response = CONTINUE_RESPONSE
             else:
                 request_class = getattr(slapdsock.message, "%sRequest" % reqtype)
@@ -188,7 +188,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         # NOTE: Be careful when extending the Queue maxsize!
         # It's not clear that RESULT responses come in the same order as the
         # requests, so in do_result the timestamps need to be matched with (msgid, connid).
-        # Also then several paralel threads may run do_result, so that may need
+        # Also, then several parallel threads may run do_result, so that may need
         # to be somehow serialized to maintain order of ops towards NATS.
         # NOTE: (msgid, connid) are recycled after slapd restart (connid seems
         # to start at 1000 again).
@@ -238,7 +238,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             try:
                 orphan = self.legacy_backpressure_queue.get_nowait()
             except Empty:
-                self._log(logging.ERROR, "conjestion has cleared up in the mean-time")
+                self._log(logging.ERROR, "congestion has cleared up in the mean-time")
 
                 return True
 
@@ -246,7 +246,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             self._log(
                 logging.ERROR,
                 "backpressure_queue full, "
-                "this suggests a failure in syncronizing the previous pre- and post- hook "
+                "this suggests a failure in synchronizing the previous pre- and post- hook "
                 "current message id: %s, time: %s orphaned backpressure_queue item: %r",
                 request.msgid,
                 error_time,
@@ -260,7 +260,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         )
         return True
 
-    def legacy_release_backpressuren(self, msgid: int) -> None:
+    def legacy_release_backpressure(self, msgid: int) -> None:
         if not __debug__:
             return
         response_time = time.perf_counter()
@@ -270,7 +270,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             self._log(
                 logging.ERROR,
                 "no in flight request found in backpressure_queue "
-                "this suggests a failure in synchorizing the pre- and post- hook for the current message "
+                "this suggests a failure in synchronizing the pre- and post- hook for the current message "
                 "current message id: %s, time: %s",
                 msgid,
                 response_time,
@@ -432,7 +432,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
 
-        self.legacy_release_backpressuren(request.msgid)
+        self.legacy_release_backpressure(request.msgid)
 
         return ""
 

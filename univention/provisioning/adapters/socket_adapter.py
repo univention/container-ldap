@@ -26,10 +26,10 @@ class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):
         while not self.exit.is_set():
             self.handle_request()
 
-        self.logger.info("recieved exit signal, joining worker threads")
+        self.logger.info("received exit signal, joining worker threads")
         for req_thread in threads:
             req_thread.join()
-        self.logger.info("all worker theads have completed, returning to main thread")
+        self.logger.info("all worker threads have completed, returning to main thread")
 
     def process_request_thread(self):
         """

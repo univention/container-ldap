@@ -96,7 +96,7 @@ The logic for how to respond to back-sock hook requests
 is defined in the LDAPHandler class and it's parents.
 It is instantiated as a signleton,
 owns and instantiates the `backpressure_queue`
-and recieves a reference to the `outgoing_queue`
+and receives a reference to the `outgoing_queue`
 from the main controller.
 
 ## Performance Considerations
