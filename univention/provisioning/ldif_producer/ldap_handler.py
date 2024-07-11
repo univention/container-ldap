@@ -123,10 +123,16 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                     handler_exc.log(self.server.logger)
                     response = handler_exc.response or InternalErrorResponse(msgid)
 
-        except Exception:
+        except Exception as error:
             if self.unittest:
                 raise
-            self._log(logging.ERROR, "Unhandled exception during processing request: %s", msgid, exc_info=True)
+            self._log(
+                logging.ERROR,
+                "Unhandled exception during processing request: %s",
+                msgid,
+                exc_info=error,
+                stack_info=True,
+            )
             response = InternalErrorResponse(msgid)
         try:
             # Serialize the response instance
@@ -141,9 +147,13 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                 # TODO: don't send response that triggers tracebacks.
                 try:
                     self.request.sendall(response_str)
-                except (BrokenPipeError, OSError):
+                except (BrokenPipeError, OSError) as error:
                     self._log(
-                        logging.ERROR, "socket response error for request: %s, response: %s", request_data, response_str
+                        logging.ERROR,
+                        "socket response error for request: %s, response: %s",
+                        request_data,
+                        response_str,
+                        exc_info=error,
                     )
         except Exception:
             if self.unittest:

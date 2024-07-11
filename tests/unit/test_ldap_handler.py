@@ -151,7 +151,7 @@ def test_handle_temporary_message(ldap_handler: LDAPHandler, outgoing_queue: que
 
 
 @pytest.mark.parametrize("ldap_handler, queue_size", [(True, 0), (False, 0)], indirect=["ldap_handler"])
-def test_ignore_memberOf_overlay(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
+def test_ignore_refint_overlay(ldap_handler: LDAPHandler, outgoing_queue: queue.Queue, queue_size):
     binary_request = b"MODIFY\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\ndelete: uniqueMember\nuniqueMember: uid=0ad4a8be-35f2-11ef-951b-37af858e1364,cn=users,dc=univention-organization,dc=intranet\n-\nreplace: modifiersName\nmodifiersName: cn=Referential Integrity Overlay\n-\n\n"  # noqa E501
 
     ldap_handler.request.recv = MagicMock(return_value=binary_request)
