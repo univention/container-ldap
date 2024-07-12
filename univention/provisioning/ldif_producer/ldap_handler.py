@@ -93,35 +93,34 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             self._log(logging.DEBUG, "reqtype = %r", reqtype)
             # Get the request message class
             if not reqtype:
-                self._log(logging.WARNING, "received empty socket request: %s", req_lines)
-                response = CONTINUE_RESPONSE
-            else:
-                request_class = getattr(slapdsock.message, "%sRequest" % reqtype)
-                self._log(logging.DEBUG, ", request.class=%r", request_class)
-                # Extract the request message
-                sock_req = request_class(req_lines)
-                # Update request counter for request type
-                self.server._req_counters[reqtype.lower()] += 1
-                if __debug__:
-                    # Security advice:
-                    # Request data can contain sensitive data
-                    # (e.g. BIND with password) => never run in debug mode!
-                    self._log(logging.DEBUG, "sock_req = %r // %r", sock_req, sock_req.__dict__)
-                    self._log(logging.DEBUG, "raw_socket_request = %r", request_data)
-                # Generate the request specific log prefix here
-                self.log_prefix = sock_req.log_prefix(self.log_prefix)
-                msgid = sock_req.msgid
+                self._log(logging.DEBUG, "ignoring empty socket request: %s", req_lines)
+                return
+            request_class = getattr(slapdsock.message, "%sRequest" % reqtype)
+            self._log(logging.DEBUG, ", request.class=%r", request_class)
+            # Extract the request message
+            sock_req = request_class(req_lines)
+            # Update request counter for request type
+            self.server._req_counters[reqtype.lower()] += 1
+            if __debug__:
+                # Security advice:
+                # Request data can contain sensitive data
+                # (e.g. BIND with password) => never run in debug mode!
+                self._log(logging.DEBUG, "sock_req = %r // %r", sock_req, sock_req.__dict__)
+                self._log(logging.DEBUG, "raw_socket_request = %r", request_data)
+            # Generate the request specific log prefix here
+            self.log_prefix = sock_req.log_prefix(self.log_prefix)
+            msgid = sock_req.msgid
 
-                try:  # -> SlapdSockHandlerError
-                    # Get the handler method in own class
-                    handle_method = getattr(self, "do_%s" % reqtype.lower())
-                    # Let the handler method generate a response message
-                    response = handle_method(sock_req)
-                except SlapdSockHandlerError as handler_exc:
-                    if self.unittest:
-                        raise
-                    handler_exc.log(self.server.logger)
-                    response = handler_exc.response or InternalErrorResponse(msgid)
+            try:  # -> SlapdSockHandlerError
+                # Get the handler method in own class
+                handle_method = getattr(self, "do_%s" % reqtype.lower())
+                # Let the handler method generate a response message
+                response = handle_method(sock_req)
+            except SlapdSockHandlerError as handler_exc:
+                if self.unittest:
+                    raise
+                handler_exc.log(self.server.logger)
+                response = handler_exc.response or InternalErrorResponse(msgid)
 
         except Exception as error:
             if self.unittest:
