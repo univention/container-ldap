@@ -141,7 +141,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             else:
                 response_str = bytes(response)
             self._log(logging.DEBUG, "response_str = %r", response_str)
-            if response_str == b"":
+            if not response_str and reqtype not in {"ENTRY", "RESULT", "UNBIND"}:
                 self._log(logging.ERROR, "empty response string for request: %s", request_data)
             if response_str:
                 self.request.sendall(response_str)
