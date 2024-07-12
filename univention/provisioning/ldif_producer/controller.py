@@ -86,7 +86,7 @@ async def signal_handler(signal_: signal.Signals, socket_port: LDIFProducerSocke
 def setup_logging():
     stdout_handler = logging.StreamHandler(sys.stdout)
     log_formatter = logging.Formatter(
-        "%(asctime)s [%(process)d %(thread)d] [%(levelname)s] %(message)s [%(threadName)s]"
+        "%(asctime)s [%(process)d %(thread)d] [%(levelname)s] %(message)s"
     )
     stdout_handler.setFormatter(log_formatter)
     logger.addHandler(stdout_handler)
