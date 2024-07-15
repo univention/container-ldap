@@ -3,14 +3,17 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
 
+import asyncio
 from binascii import a2b_base64
 from enum import Enum
+import inspect
 import logging
 from queue import Empty, Full, Queue
 import time
 from typing import NamedTuple
 
 import slapdsock.message
+from slapdsock.service import SlapdSockServer
 from ldap0.typehints import EntryMixed
 from slapdsock.handler import InternalErrorResponse, SlapdSockHandler, SlapdSockHandlerError
 from slapdsock.message import CONTINUE_RESPONSE, RESULTRequest
@@ -22,6 +25,9 @@ from slapdsock.service import threading
 TIMEOUT_RESPONSE = (
     "RESULT\ncode: 51\nmatched: <DN>\ninfo: slapdsocklistener busy sending messages to the message queue\n"
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class RequestType(str, Enum):
@@ -50,16 +56,17 @@ def is_refint_request(request_lines: list[bytes]) -> bool:
 
 
 class ReasonableSlapdSockHandler(SlapdSockHandler):
+    unittest = False
+
     def __call__(self, *args, **kwargs):
         """
         Handle a request.
 
         See https://stackoverflow.com/questions/21631799/how-can-i-pass-parameters-to-a-requesthandler
         """
-        self.unittest = False
         super().__init__(*args, **kwargs)
 
-    def handle(self):
+    async def handle(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         """
         Handle the incoming request
         """
@@ -71,21 +78,23 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
         reqtype = "-/-"
 
         try:  # -> Exception
-            self.peer_pid, self.peer_uid, self.peer_gid = self._get_peer_cred()
-            self._log(
-                logging.DEBUG,
-                "----- incoming request via %r from pid=%s uid=%s gid=%s -----",
-                self.request.getsockname(),
-                self.peer_pid,
-                self.peer_uid,
-                self.peer_gid,
-            )
-            request_data = self.request.recv(500000)
+            self._log(logging.DEBUG, "----- incoming request -----")
+            request_data = b""
+            try:
+                while True:
+                    data = await reader.read(1024)
+                    request_data += data
+                    if not data or data[-2:] == b"\n\n":
+                        break
+            except OSError as exc:
+                self._log(logging.ERROR, "Error reading request data: %s", exc)
+                self._log(logging.ERROR, "Request data so far: %r", request_data)
+                return
 
             if __debug__:
                 # Security advice:
                 # Request data can contain clear-text passwords!
-                self._log(logging.DEBUG, ", request_data = %r", request_data)
+                self._log(logging.DEBUG, ", raw_socket_request (length: %d) = %r", len(request_data), request_data)
             self.server._bytes_received += len(request_data)
             req_lines = request_data.split(b"\n")
             # Extract request type
@@ -106,7 +115,6 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                 # Request data can contain sensitive data
                 # (e.g. BIND with password) => never run in debug mode!
                 self._log(logging.DEBUG, "sock_req = %r // %r", sock_req, sock_req.__dict__)
-                self._log(logging.DEBUG, "raw_socket_request = %r", request_data)
             # Generate the request specific log prefix here
             self.log_prefix = sock_req.log_prefix(self.log_prefix)
             msgid = sock_req.msgid
@@ -115,7 +123,10 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
                 # Get the handler method in own class
                 handle_method = getattr(self, "do_%s" % reqtype.lower())
                 # Let the handler method generate a response message
-                response = handle_method(sock_req)
+                if inspect.iscoroutinefunction(handle_method):
+                    response = await handle_method(sock_req)
+                else:
+                    response = handle_method(sock_req)
             except SlapdSockHandlerError as handler_exc:
                 if self.unittest:
                     raise
@@ -143,7 +154,17 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
             if not response_str and reqtype not in {"ENTRY", "RESULT", "UNBIND"}:
                 self._log(logging.ERROR, "empty response string for request: %s", request_data)
             if response_str:
-                self.request.sendall(response_str)
+                # TODO: don't send response that triggers tracebacks.
+                try:
+                    self.request.sendall(response_str)
+                except (BrokenPipeError, OSError) as error:
+                    self._log(
+                        logging.ERROR,
+                        "socket response error for request: %s, response: %s",
+                        request_data,
+                        response_str,
+                        exc_info=error,
+                    )
         except Exception:
             if self.unittest:
                 raise
@@ -151,7 +172,7 @@ class ReasonableSlapdSockHandler(SlapdSockHandler):
         else:
             response_delay = time.time() - self.request_timestamp
             self.server.update_monitor_data(len(response_str), response_delay)
-            self._log(logging.DEBUG, "response_delay = %0.3f", response_delay)
+            self._log(logging.DEBUG, "response_delay = %0.3f ms", response_delay * 1000)
         # end of handle()
 
 
@@ -170,9 +191,22 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         ldap_base: str,
         ldap_threads: int,
         ignore_temporary: bool,
-        outgoing_queue: Queue,
+        outgoing_queue: asyncio.Queue,
         backpressure_wait_timeout: int,
     ):
+        # workaround for not using the 'socketserver' API anymore
+        self.server = SlapdSockServer(
+            "/tmp/___sock",
+            self.__class__,
+            logger,
+            average_count=10,
+            socket_timeout=1,
+            socket_permissions="600",
+            allowed_uids=(0,),
+            allowed_gids=(0,),
+            thread_pool_size=1,
+        )
+
         self.backpressure_wait_timeout = backpressure_wait_timeout
 
         self.journal_key = 0
@@ -346,7 +380,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
         _ = (self, request)  # pylint dummy
         return ""
 
-    def do_result(self, request: RESULTRequest):
+    async def do_result(self, request: RESULTRequest):
         # Ignore results from read requests
         _ = (self, request)  # pylint dummy
         if getattr(request, "dn", None) is None:
@@ -403,7 +437,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 elif isinstance(ctrl, PreReadControl):
                     old = ctrl.res.entry_as
                     self._log(logging.INFO, "PreRead entry_as = %s", ctrl.res.entry_as)
-            if not old or new:
+            if not old and not new:
                 self._log(
                     logging.WARNING,
                     "Missing old or new object in socket request, add the necessary ldap controls to all clients.",
@@ -422,11 +456,16 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 # sqlite.put(key=self.journal_key, value=ldap_message)
                 self.journal_key += 1
 
-            try:
-                self.outgoing_queue.put(ldap_message, timeout=5)
-            except Empty:
+            timeout = time.time() + 5
+            while time.time() < timeout:
+                try:
+                    self.outgoing_queue.put_nowait(ldap_message)
+                    break
+                except asyncio.QueueFull:
+                    await asyncio.sleep(0.05)
+            else:
                 self._log(logging.ERROR, "timeout putting message into outgoing_queue")
-                raise
+                raise Empty
 
         else:
             self._log(logging.INFO, "ignoring op with RESULT code = %s", request.code)
