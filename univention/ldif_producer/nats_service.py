@@ -7,13 +7,16 @@ from typing import List, Optional
 
 from nats.aio.client import Client as NATS
 from nats.js.api import ConsumerConfig
-from nats.js.errors import (
-    NotFoundError,
-)
+from nats.js.errors import NotFoundError
 
 MAX_RECONNECT_ATTEMPTS = 5
 
 logger = logging.getLogger(__name__)
+
+#
+# FIXME: The code in this file is a copy of code in provisioning/src/server/adapters/nats_adapter.py
+# TODO:  The common code should be refactored into a common library.
+#
 
 
 class NatsKeys:

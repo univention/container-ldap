@@ -5,8 +5,9 @@ import logging
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from univention.provisioning.ldif_producer.config import LDIFProducerSettings
 from univention.provisioning.models import Message
+
+from .config import LDIFProducerSettings
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 class LDIFProducerMQPort(ABC):
     @abstractmethod
     def __init__(self, settings: LDIFProducerSettings) -> None:
-        pass
+        self.settings = settings
 
     @abstractmethod
     async def __aenter__(self) -> "LDIFProducerMQPort":

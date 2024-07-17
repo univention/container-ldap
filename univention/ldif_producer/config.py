@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
+
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings
@@ -23,8 +24,6 @@ class LDIFProducerSettings(BaseSettings):
     # Timeout (seconds) after which a write request is aborted
     # when the max_in_flight_ldap_messages limit is reached.
     backpressure_wait_timeout: int
-    # Number of concurrent LDAP threads.
-    ldap_threads: int
     # Base DN of the LDAP tree
     ldap_base_dn: str
     # Configure whether to ignore temporary ldap objects, e.g. Lock objects created by UDM.

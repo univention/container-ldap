@@ -11,7 +11,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from univention.provisioning.ldif_producer.ldap_handler import TIMEOUT_RESPONSE, LDAPHandler, RequestType
+from univention.ldif_producer.ldap_hanlder import TIMEOUT_RESPONSE, LDAPHandler
+from univention.ldif_producer.models import RequestType
 
 
 def get_test_data(filename: str) -> list[dict]:

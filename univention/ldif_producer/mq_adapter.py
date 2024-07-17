@@ -6,10 +6,11 @@ from typing import Any, Callable, List, Optional
 
 import msgpack
 
-from univention.provisioning.ldif_producer.config import LDIFProducerSettings
 from univention.provisioning.models import Message
-from univention.provisioning.nats_service import NatsKeys, NatsMQService
-from univention.provisioning.ports.mq_port import LDIFProducerMQPort
+
+from .config import LDIFProducerSettings
+from .mq_port import LDIFProducerMQPort
+from .nats_service import NatsKeys, NatsMQService
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ def messagepack_encoder(data: Any) -> bytes:
 
 class LDIFProducerMQAdapter(LDIFProducerMQPort):
     def __init__(self, settings: LDIFProducerSettings):
-        self.settings = settings
+        super().__init__(settings)
         self.mq_service = NatsMQService()
 
     async def __aenter__(self):
@@ -50,7 +51,7 @@ class LDIFProducerMQAdapter(LDIFProducerMQPort):
             binary_encoder(message.model_dump()),
             stream=stream_name,
         )
-        logger.info(
+        logger.debug(
             "Message was published to the stream: %s with the subject: %s",
             stream_name,
             subject,

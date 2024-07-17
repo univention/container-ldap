@@ -6,7 +6,8 @@ from queue import Empty
 from socketserver import ThreadingMixIn
 
 from slapdsock.service import SlapdSockServer
-from univention.provisioning.ports.socket_port import LDIFProducerSocketPort
+
+from .socket_port import LDIFProducerSocketPort
 
 
 class LdifProducerSlapdSockServer(SlapdSockServer, LDIFProducerSocketPort):
