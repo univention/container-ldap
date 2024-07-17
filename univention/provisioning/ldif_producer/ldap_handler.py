@@ -264,8 +264,9 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             return True
         if self.ignore_temporary and self.filter_temporary_dn(request):
             return True
-        if is_refint_request(request._req_lines):
-            self._log(logging.DEBUG, "ignoring referential integrity modify request: %s", request.msgid)
+        if is_refint_request(request._req_lines) and request.msgid == 0:
+            # Fixme: this never happens, as it is prevented in do_result()
+            self._log(logging.WARNING, "Ignoring referential integrity modify request.")
             return True
         try:
             self.legacy_backpressure_queue.put_nowait((request.connid, request.msgid, time.perf_counter()))
@@ -389,8 +390,8 @@ class LDAPHandler(ReasonableSlapdSockHandler):
             # A search result or anything where RESULTRequest._parse_ldif didn't find anything.
             return ""
 
-        if is_refint_request(request._req_lines):
-            self._log(logging.DEBUG, "ignoring memberOf do_result request")
+        if is_refint_request(request._req_lines) and request.msgid == 0:
+            self._log(logging.WARNING, "Ignoring referential integrity modify result.")
             return ""
 
         # ignore temporary dn modify results (if configured)
@@ -444,11 +445,10 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                     logging.WARNING,
                     "Missing old or new object in socket request, add the necessary ldap controls to all clients.",
                 )
+            if reqtype == RequestType.modify and not old:
+                self._log(logging.WARNING, f"Missing 'old' in MODIFY operation on {request.dn!r}.")
 
-            self._log(
-                logging.INFO,
-                "Call NATS for %s operation on dn = %s" % (reqtype, request.dn),
-            )
+            self._log(logging.INFO, "Call NATS for %s operation on dn = %s" % (reqtype, request.dn))
             ldap_message = LDAPMessage(reqtype, request.binddn, old, new, request.msgid, "TODO")
 
             # Write LDAP transaction to journal

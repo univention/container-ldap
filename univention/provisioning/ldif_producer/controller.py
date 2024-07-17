@@ -118,7 +118,7 @@ async def main():
     outgoing_queue = asyncio.Queue(maxsize=settings.max_in_flight_ldap_messages)
     # start message sender task in the background
     sender_coro = start_mq_sender(LDIFProducerMQAdapter, settings, outgoing_queue)
-    sender_task = asyncio.create_task(sender_coro)
+    sender_task = asyncio.create_task(sender_coro, name="mq_sender")
     await asyncio.sleep(0)
     logger.info("Started MQ sender task.")
     # start socket listener in the foreground
