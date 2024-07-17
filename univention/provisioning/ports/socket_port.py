@@ -2,9 +2,7 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
 import threading
-
 from abc import ABC, abstractmethod
-
 from typing import Any, Callable
 
 

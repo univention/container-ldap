@@ -19,11 +19,10 @@ modifiersName: cn=Referential Integrity Overlay\n
 """
 
 import pytest
-import slapdsock.message
 
+import slapdsock.message
 from tests.unit.test_ldap_handler import get_test_data
 from univention.provisioning.ldif_producer.ldap_handler import is_refint_request
-
 
 binary_requests = [
     b"MODIFY\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\ndelete: uniqueMember\nuniqueMember: uid=0ad4a8be-35f2-11ef-951b-37af858e1364,cn=users,dc=univention-organization,dc=intranet\n-\nreplace: modifiersName\nmodifiersName: cn=Referential Integrity Overlay\n-\n\n"  # noqa E501

@@ -4,23 +4,22 @@
 
 
 import asyncio
-from binascii import a2b_base64
-from enum import Enum
 import inspect
 import logging
-from queue import Empty, Full, Queue
 import time
+from binascii import a2b_base64
+from enum import Enum
+from queue import Empty, Full, Queue
 from typing import NamedTuple
 
-import slapdsock.message
-from slapdsock.service import SlapdSockServer
+from ldap0.controls.readentry import PostReadControl, PreReadControl
+from ldap0.res import decode_response_ctrls
 from ldap0.typehints import EntryMixed
+
+import slapdsock.message
 from slapdsock.handler import InternalErrorResponse, SlapdSockHandler, SlapdSockHandlerError
 from slapdsock.message import CONTINUE_RESPONSE, RESULTRequest
-from ldap0.res import decode_response_ctrls
-from ldap0.controls.readentry import PostReadControl, PreReadControl
-from slapdsock.service import threading
-
+from slapdsock.service import SlapdSockServer, threading
 
 TIMEOUT_RESPONSE = (
     "RESULT\ncode: 51\nmatched: <DN>\ninfo: slapdsocklistener busy sending messages to the message queue\n"

@@ -1,18 +1,17 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
-from queue import Queue
 import socket
 import time
+from queue import Queue
 from unittest import mock
 
 import pytest
+
 from slapdsock.handler import logging
 from slapdsock.service import threading
-
-from univention.provisioning.ldif_producer.controller import setup_logging
 from univention.provisioning.adapters.socket_adapter import LdifProducerSlapdSockServer
-
+from univention.provisioning.ldif_producer.controller import setup_logging
 
 logger = logging.getLogger(__name__)
 

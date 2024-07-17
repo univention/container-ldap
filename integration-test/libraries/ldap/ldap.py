@@ -32,6 +32,7 @@
 
 import os
 import ssl
+
 import ldap3
 
 # If we are running as root then we assume

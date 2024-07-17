@@ -1,12 +1,11 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
-from queue import Empty
 import threading
-
+from queue import Empty
 from socketserver import ThreadingMixIn
-from slapdsock.service import SlapdSockServer
 
+from slapdsock.service import SlapdSockServer
 from univention.provisioning.ports.socket_port import LDIFProducerSocketPort
 
 

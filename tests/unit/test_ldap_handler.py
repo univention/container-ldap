@@ -6,11 +6,10 @@ import logging
 import queue
 import struct
 import time
-import pytest
-
 from pprint import pprint
-
 from unittest.mock import MagicMock
+
+import pytest
 
 from univention.provisioning.ldif_producer.ldap_handler import TIMEOUT_RESPONSE, LDAPHandler, RequestType
 

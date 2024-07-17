@@ -2,22 +2,19 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
 import asyncio
-from datetime import datetime
 import logging
-from pathlib import Path
 import sys
+from datetime import datetime
+from pathlib import Path
 from typing import Awaitable, Callable
-
-
-from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
-
-from univention.provisioning.adapters.mq_adapter import LDIFProducerMQAdapter
-from univention.provisioning.models import Message, PublisherName
-from univention.provisioning.ports.mq_port import LDIFProducerMQPort
 
 from config import LDIFProducerSettings, get_ldif_producer_settings
 from ldap_handler import LDAPHandler, LDAPMessage
 
+from univention.provisioning.adapters.mq_adapter import LDIFProducerMQAdapter
+from univention.provisioning.models import Message, PublisherName
+from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
+from univention.provisioning.ports.mq_port import LDIFProducerMQPort
 
 logger = logging.getLogger(__name__)
 AsyncioHandler = Callable[[asyncio.StreamReader, asyncio.StreamWriter], Awaitable[None]]

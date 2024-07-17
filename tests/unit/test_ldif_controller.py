@@ -2,15 +2,16 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
 import asyncio
-from queue import Queue
 import signal
+from queue import Queue
 from unittest.mock import ANY, MagicMock, call
 
 import pytest
-from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
+
 from univention.provisioning.ldif_producer.controller import NATSController, signal_handler
-from univention.provisioning.ports.mq_port import LDIFProducerMQPort
 from univention.provisioning.ldif_producer.ldap_handler import LDAPMessage, RequestType
+from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
+from univention.provisioning.ports.mq_port import LDIFProducerMQPort
 
 
 @pytest.mark.asyncio

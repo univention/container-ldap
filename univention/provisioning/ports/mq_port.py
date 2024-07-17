@@ -5,10 +5,8 @@ import logging
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from univention.provisioning.models import Message
-
 from univention.provisioning.ldif_producer.config import LDIFProducerSettings
-
+from univention.provisioning.models import Message
 
 logger = logging.getLogger(__name__)
 

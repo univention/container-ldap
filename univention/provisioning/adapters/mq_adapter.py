@@ -5,12 +5,11 @@ import logging
 from typing import Any, Callable, List, Optional
 
 import msgpack
-from univention.provisioning.models import Message
 
-from univention.provisioning.nats_service import NatsKeys, NatsMQService
 from univention.provisioning.ldif_producer.config import LDIFProducerSettings
+from univention.provisioning.models import Message
+from univention.provisioning.nats_service import NatsKeys, NatsMQService
 from univention.provisioning.ports.mq_port import LDIFProducerMQPort
-
 
 logger = logging.getLogger(__name__)
 
