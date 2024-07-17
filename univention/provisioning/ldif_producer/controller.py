@@ -47,6 +47,8 @@ class NATSController:
                 "binddn": ldap_message.binddn,
                 "new": ldap_message.new,
                 "old": ldap_message.old,
+                "message_id": ldap_message.message_id,
+                "request_id": ldap_message.request_id,
             },
         )
         if ldap_message.old:

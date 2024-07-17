@@ -42,6 +42,8 @@ class LDAPMessage(NamedTuple):
     binddn: str
     old: EntryMixed | None
     new: EntryMixed | None
+    message_id: int = 0
+    request_id: str = ""
 
 
 def is_refint_request(request_lines: list[bytes]) -> bool:
@@ -447,7 +449,7 @@ class LDAPHandler(ReasonableSlapdSockHandler):
                 logging.INFO,
                 "Call NATS for %s operation on dn = %s" % (reqtype, request.dn),
             )
-            ldap_message = LDAPMessage(reqtype, request.binddn, old, new)
+            ldap_message = LDAPMessage(reqtype, request.binddn, old, new, request.msgid, "TODO")
 
             # Write LDAP transaction to journal
             self._log(logging.DEBUG, "Write %s request on dn = %s to internal journal" % (reqtype, request.dn))
