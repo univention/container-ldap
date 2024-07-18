@@ -5,8 +5,7 @@ import pytest
 from ldap3 import ObjectDef, Writer
 
 
-class MissingPortalExtension(Exception):
-    ...
+class MissingPortalExtension(Exception): ...
 
 
 # We cannot use SKIP, because testing for LDAP schema requires opening a connection,

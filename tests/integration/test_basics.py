@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: 2023-2024 Univention GmbH
 
 import pytest
-
 from ldap3 import ObjectDef, Writer
 
 

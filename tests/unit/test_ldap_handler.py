@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from univention.ldif_producer.ldap_hanlder import TIMEOUT_RESPONSE, LDAPHandler
+from univention.ldif_producer.ldap_handler import LDAPHandler
 from univention.ldif_producer.models import RequestType
 
 
@@ -58,13 +58,10 @@ def ldap_handler(outgoing_queue, mock_socket_request, request) -> LDAPHandler:
     logger = get_logger()
     ldap_handler = LDAPHandler(
         "dc=univention-organization,dc=intranet",
-        5,
         ignore_temporary,
         outgoing_queue,
         1,
     )
-
-    ldap_handler.unittest = True
 
     ldap_handler.server = MagicMock()
     ldap_handler.server.logger = logger
