@@ -46,7 +46,7 @@ class LDAPHandler(SlapdSockHandler):
         self.journal_key = 0
         self.journal_key_mutex = threading.Lock()
         self.outgoing_queue = outgoing_queue
-        self.request_throttling_mutex = threading.Lock()
+        self.request_throttling_mutex = asyncio.Lock()
         self.ignore_temporary = ignore_temporary
         self.temporary_dn_identifier = f",cn=temporary,cn=univention,{ldap_base}"
 
@@ -73,26 +73,36 @@ class LDAPHandler(SlapdSockHandler):
     def filter_temporary_dn(self, request):
         return request.dn.endswith(self.temporary_dn_identifier)
 
-    def request_throttling(self, request) -> bool:
+    async def request_throttling(self, request) -> bool:
         self.legacy_add_backpressure(request)
         if not self.outgoing_queue.full():
             return True
 
-        if not self.request_throttling_mutex.acquire(timeout=self.backpressure_wait_timeout):
+        try:
+            logger.info(
+                "The outgoing queue is full. Waiting for a maximum of self.backpressure_wait_timeout seconds. message id: %s",
+                request.msgid,
+            )
+            await asyncio.wait_for(self.request_throttling_mutex.acquire(), self.backpressure_wait_timeout)
+        except asyncio.TimeoutError:
             logger.info("Timed out waiting for the outgoing queue. message id: %s", request.msgid)
             return False
+
         try:
             max_loops = int(2 / 0.1)
             for _ in range(max_loops):
                 if not self.outgoing_queue.full():
                     return True
-                time.sleep(0.1)
+                await asyncio.sleep(0.1)
             error_time = time.perf_counter()
             logger.error(
-                "LDAP write operation was aborted because the backpressure did not decrease within the timeout"
-                "message id: %s, time: %s",
+                "LDAP write operation was aborted because the backpressure did not decrease within the timeout "
+                "message id: %s, time: %s "
+                "outgoing_queue length: %s, queue items: %r",
                 request.msgid,
                 error_time,
+                self.outgoing_queue.qsize(),
+                list(self.outgoing_queue._queue),
             )
             # "do_add = %s failed because no LDAPHandler seat was available within the timeout"
             return False
@@ -150,22 +160,22 @@ class LDAPHandler(SlapdSockHandler):
         logger.debug("Request-Response duration: %.2f ms", (response_time - request_time) * 1000)
 
     async def do_add(self, request: ADDRequest) -> bytes | str | SockResponse:
-        if not self.request_throttling(request):
+        if not await self.request_throttling(request):
             return TIMEOUT_RESPONSE
         return CONTINUE_RESPONSE
 
     async def do_delete(self, request: DELETERequest) -> bytes | str | SockResponse:
-        if not self.request_throttling(request):
+        if not await self.request_throttling(request):
             return TIMEOUT_RESPONSE
         return CONTINUE_RESPONSE
 
     async def do_modify(self, request: MODIFYRequest) -> bytes | str | SockResponse:
-        if not self.request_throttling(request):
+        if not await self.request_throttling(request):
             return TIMEOUT_RESPONSE
         return CONTINUE_RESPONSE
 
     async def do_modrdn(self, request: MODRDNRequest) -> bytes | str | SockResponse:
-        if not self.request_throttling(request):
+        if not await self.request_throttling(request):
             return TIMEOUT_RESPONSE
         return CONTINUE_RESPONSE
 
