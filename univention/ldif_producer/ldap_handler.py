@@ -7,6 +7,7 @@ import threading
 import time
 from binascii import a2b_base64
 from queue import Empty, Full, Queue
+from typing import Any
 
 from ldap0.controls.readentry import PostReadControl, PreReadControl
 from ldap0.res import decode_response_ctrls
@@ -169,80 +170,13 @@ class LDAPHandler(SlapdSockHandler):
         return CONTINUE_RESPONSE
 
     async def do_result(self, request: RESULTRequest) -> bytes | str | SockResponse:
-        # Ignore results from read requests
-        if getattr(request, "dn", None) is None:
-            # A search result or anything where RESULTRequest._parse_ldif didn't find anything.
+        if self._ignore_result(request):
             return ""
-
-        if self.is_refint_request(request._req_lines) and request.msgid == 0:
-            logger.debug("Ignoring referential integrity modify result.")
-            return ""
-
-        # ignore temporary dn modify results (if configured)
-        if self.ignore_temporary and self.filter_temporary_dn(request):
-            logger.debug("Ignoring temporary object %r.", request.dn)
-            return ""
-
-        # Parse result request type
-        if request.parsed_ldif:
-            if isinstance(request.parsed_ldif, list):
-                reqtype = RequestType.modify
-            elif b"newrdn" in request.parsed_ldif:
-                reqtype = RequestType.modrdn
-            else:
-                reqtype = RequestType.add
-        elif request.parsed_ldif is None:
-            reqtype = RequestType.delete
-        else:
-            logger.error("Could not parse the request type: %r", request.parsed_ldif)
-            raise ValueError()
-        logger.debug("reqtype: %r | parsed_ldif: %r", reqtype, request.parsed_ldif)
 
         if request.code == 0:
-            # get the old and new objects from the ldap controls
-            logger.debug("binddn: %r | ctrls: %r", request.binddn, request.ctrls)
-            ctrls = [
-                (control_type, criticality, a2b_base64(control_value))
-                for (control_type, criticality, control_value) in request.ctrls
-            ]
-            ctrls = decode_response_ctrls(ctrls)
-
-            new = None
-            old = None
-            for ctrl in ctrls:
-                if isinstance(ctrl, PostReadControl):
-                    new = ctrl.res.entry_as
-                    logger.debug("PostRead entry_as = %s", ctrl.res.entry_as)
-                elif isinstance(ctrl, PreReadControl):
-                    old = ctrl.res.entry_as
-                    logger.debug("PreRead entry_as = %s", ctrl.res.entry_as)
-            if not old and not new:
-                logger.warning(
-                    "Missing old or new object in socket request, add the necessary ldap controls to all clients."
-                )
-            if reqtype == RequestType.modify and not old:
-                logger.warning("Missing 'old' in MODIFY operation on %r.", request.dn)
-
-            ldap_message = LDAPMessage(reqtype, request.binddn, old, new, request.msgid, request_id.get())
-
-            # Write LDAP transaction to journal
-            logger.debug("Writing %r request on DN %r to internal journal.", reqtype, request.dn)
-            with self.journal_key_mutex:
-                # TODO: Write the `ldap_message` into the sqlite journal!
-                # sqlite.put(key=self.journal_key, value=ldap_message)
-                self.journal_key += 1
-
-            timeout = time.time() + 5
-            while time.time() < timeout:
-                try:
-                    self.outgoing_queue.put_nowait(ldap_message)
-                    break
-                except asyncio.QueueFull:
-                    await asyncio.sleep(0.05)
-            else:
-                logger.error("Timeout putting message into outgoing_queue.")
-                raise Empty
-
+            ldap_message = self._result_extract_ldap_message(request)
+            self._result_write_to_journal(ldap_message.request_type, request)
+            await self._result_put_into_outgoing_queue(ldap_message)
         else:
             logger.warning(
                 "Ignoring RESULT response with code %r. msgid: %r info: %r",
@@ -253,5 +187,92 @@ class LDAPHandler(SlapdSockHandler):
             logger.debug(f"{request.__dict__=}")
 
         self.legacy_release_backpressure(request.msgid)
-
         return ""
+
+    def _ignore_result(self, request: RESULTRequest) -> bool:
+        # Ignore results from read requests
+        if getattr(request, "dn", None) is None:
+            # A search result or anything where RESULTRequest._parse_ldif didn't find anything.
+            return True
+
+        if self.is_refint_request(request._req_lines) and request.msgid == 0:
+            logger.debug("Ignoring referential integrity modify result.")
+            return True
+
+        # ignore temporary dn modify results (if configured)
+        if self.ignore_temporary and self.filter_temporary_dn(request):
+            logger.debug("Ignoring temporary object %r.", request.dn)
+            return True
+
+        return False
+
+    def _result_request_type(self, request: RESULTRequest) -> RequestType:
+        # Parse result request type
+        if request.parsed_ldif:
+            if isinstance(request.parsed_ldif, list):
+                return RequestType.modify
+            elif b"newrdn" in request.parsed_ldif:
+                return RequestType.modrdn
+            else:
+                return RequestType.add
+        elif request.parsed_ldif is None:
+            return RequestType.delete
+        else:
+            raise ValueError(f"Could not parse the request type of message {request.msgid!r}: {request.parsed_ldif!r}")
+
+    def _result_ldap_controls(self, request: RESULTRequest):
+        logger.debug("binddn: %r | ctrls: %r", request.binddn, request.ctrls)
+        ctrls = [
+            (control_type, criticality, a2b_base64(control_value))
+            for (control_type, criticality, control_value) in request.ctrls
+        ]
+        return decode_response_ctrls(ctrls)
+
+    @staticmethod
+    def _result_extract_old_new(ctrls) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+        new = None
+        old = None
+        for ctrl in ctrls:
+            if isinstance(ctrl, PostReadControl):
+                new = ctrl.res.entry_as
+                logger.debug("PostRead entry_as = %s", ctrl.res.entry_as)
+            elif isinstance(ctrl, PreReadControl):
+                old = ctrl.res.entry_as
+                logger.debug("PreRead entry_as = %s", ctrl.res.entry_as)
+        return old, new
+
+    def _result_extract_ldap_message(self, request: RESULTRequest) -> LDAPMessage:
+        reqtype = self._result_request_type(request)
+        logger.debug("reqtype: %r | parsed_ldif: %r", reqtype, request.parsed_ldif)
+
+        ctrls = self._result_ldap_controls(request)
+        old, new = self._result_extract_old_new(ctrls)
+
+        if not old and not new:
+            logger.warning(
+                "Missing old or new object in socket request, add the necessary ldap controls to all clients."
+            )
+        if reqtype == RequestType.modify and not old:
+            logger.warning("Missing 'old' in MODIFY operation on %r.", request.dn)
+
+        return LDAPMessage(reqtype, request.binddn, old, new, request.msgid, request_id.get())
+
+    def _result_write_to_journal(self, reqtype, request):
+        # Write LDAP transaction to journal
+        logger.debug("Writing %r request on DN %r to internal journal.", reqtype, request.dn)
+        with self.journal_key_mutex:
+            # TODO: Write the `ldap_message` into the sqlite journal!
+            # sqlite.put(key=self.journal_key, value=ldap_message)
+            self.journal_key += 1
+
+    async def _result_put_into_outgoing_queue(self, ldap_message: LDAPMessage):
+        timeout = time.time() + 5
+        while time.time() < timeout:
+            try:
+                self.outgoing_queue.put_nowait(ldap_message)
+                break
+            except asyncio.QueueFull:
+                await asyncio.sleep(0.05)
+        else:
+            logger.error("Timeout putting message into outgoing_queue.")
+            raise Empty
