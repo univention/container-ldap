@@ -7,7 +7,6 @@ import threading
 import time
 from binascii import a2b_base64
 from queue import Empty, Full, Queue
-from typing import Any
 
 from ldap0.controls.readentry import PostReadControl, PreReadControl
 from ldap0.res import decode_response_ctrls
@@ -183,18 +182,31 @@ class LDAPHandler(SlapdSockHandler):
         if self._ignore_result(request):
             return ""
 
-        if request.code == 0:
-            ldap_message = self._result_extract_ldap_message(request)
-            self._result_write_to_journal(ldap_message.request_type, request)
-            await self._result_put_into_outgoing_queue(ldap_message)
-        else:
+        if request.code != 0:
             logger.warning(
                 "Ignoring RESULT response with code %r. msgid: %r info: %r",
                 request.code,
                 request.msgid,
                 request.info if hasattr(request, "info") else "n/a",
             )
-            logger.debug(f"{request.__dict__=}")
+            logger.debug("%r", request.__dict__)
+            self.legacy_release_backpressure(request.msgid)
+            return ""
+
+        ldap_message = self._result_extract_ldap_message(request)
+
+        # Write LDAP transaction to journal
+        logger.debug("Writing %r request on DN %r to internal journal.", ldap_message.request_type, request.dn)
+        with self.journal_key_mutex:
+            # TODO: Write the `ldap_message` into the sqlite journal!
+            # sqlite.put(key=self.journal_key, value=ldap_message)
+            self.journal_key += 1
+
+        try:
+            await asyncio.wait_for(self.outgoing_queue.put(ldap_message), self.backpressure_wait_timeout)
+        except asyncio.TimeoutError:
+            logger.error("Timeout putting message into outgoing_queue.")
+            raise
 
         self.legacy_release_backpressure(request.msgid)
         return ""
@@ -230,18 +242,19 @@ class LDAPHandler(SlapdSockHandler):
         else:
             raise ValueError(f"Could not parse the request type of message {request.msgid!r}: {request.parsed_ldif!r}")
 
-    def _result_ldap_controls(self, request: RESULTRequest):
+    def _result_extract_ldap_message(self, request: RESULTRequest) -> LDAPMessage:
+        reqtype = self._result_request_type(request)
+        logger.debug("reqtype: %r | parsed_ldif: %r", reqtype, request.parsed_ldif)
+
         logger.debug("binddn: %r | ctrls: %r", request.binddn, request.ctrls)
-        ctrls = [
+        encoded_ctrls = [
             (control_type, criticality, a2b_base64(control_value))
             for (control_type, criticality, control_value) in request.ctrls
         ]
-        return decode_response_ctrls(ctrls)
+        ctrls = decode_response_ctrls(encoded_ctrls)
 
-    @staticmethod
-    def _result_extract_old_new(ctrls) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
-        new = None
         old = None
+        new = None
         for ctrl in ctrls:
             if isinstance(ctrl, PostReadControl):
                 new = ctrl.res.entry_as
@@ -249,14 +262,6 @@ class LDAPHandler(SlapdSockHandler):
             elif isinstance(ctrl, PreReadControl):
                 old = ctrl.res.entry_as
                 logger.debug("PreRead entry_as = %s", ctrl.res.entry_as)
-        return old, new
-
-    def _result_extract_ldap_message(self, request: RESULTRequest) -> LDAPMessage:
-        reqtype = self._result_request_type(request)
-        logger.debug("reqtype: %r | parsed_ldif: %r", reqtype, request.parsed_ldif)
-
-        ctrls = self._result_ldap_controls(request)
-        old, new = self._result_extract_old_new(ctrls)
 
         if not old and not new:
             logger.warning(
@@ -266,23 +271,3 @@ class LDAPHandler(SlapdSockHandler):
             logger.warning("Missing 'old' in MODIFY operation on %r.", request.dn)
 
         return LDAPMessage(reqtype, request.binddn, request.msgid, request_id.get(), old, new)
-
-    def _result_write_to_journal(self, reqtype, request):
-        # Write LDAP transaction to journal
-        logger.debug("Writing %r request on DN %r to internal journal.", reqtype, request.dn)
-        with self.journal_key_mutex:
-            # TODO: Write the `ldap_message` into the sqlite journal!
-            # sqlite.put(key=self.journal_key, value=ldap_message)
-            self.journal_key += 1
-
-    async def _result_put_into_outgoing_queue(self, ldap_message: LDAPMessage):
-        timeout = time.time() + 5
-        while time.time() < timeout:
-            try:
-                self.outgoing_queue.put_nowait(ldap_message)
-                break
-            except asyncio.QueueFull:
-                await asyncio.sleep(0.05)
-        else:
-            logger.error("Timeout putting message into outgoing_queue.")
-            raise Empty
