@@ -255,7 +255,7 @@ class LDAPHandler(SlapdSockHandler):
         if reqtype == RequestType.modify and not old:
             logger.warning("Missing 'old' in MODIFY operation on %r.", request.dn)
 
-        return LDAPMessage(reqtype, request.binddn, old, new, request.msgid, request_id.get())
+        return LDAPMessage(reqtype, request.binddn, request.msgid, request_id.get(), old, new)
 
     def _result_write_to_journal(self, reqtype, request):
         # Write LDAP transaction to journal

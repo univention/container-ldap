@@ -15,14 +15,12 @@ aiohttp = "^3.8.5"
 msgpack = "1.0.*"
 nats-py = "^2.7.0"
 # TODO: revert back to main branch version after the provisioning MR has also been merged.
-nubus-provisioning-consumer = "0.29.0.dev0+pre-jlohmer-ldif-producer.1e7ef294"
+nubus-provisioning-consumer = "0.30.0"
 pydantic = "^2.3.0"
 pydantic-settings = "^2.0.3"
 python = "^3.11"
 slapdsock = "=2.0.1.dev0+dtroeder.async.streams.server.8937e079"
-
-[tool.poetry.scripts]
-slapdsocklistener = "univention.ldif_producer:main"
+# slapdsock = { path = "../python-slapdsock/", develop = true }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.4"

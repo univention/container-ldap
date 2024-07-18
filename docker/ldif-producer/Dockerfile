@@ -54,4 +54,4 @@ WORKDIR ${WORKDIR}
 
 COPY --from=build ${WORKDIR} ${WORKDIR}
 
-ENTRYPOINT ["poetry", "run", "slapdsocklistener", "--"]
+ENTRYPOINT [".venv/bin/python3", "-m", "univention.ldif_producer"]

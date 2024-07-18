@@ -17,7 +17,7 @@ class RequestType(str, Enum):
 class LDAPMessage(NamedTuple):
     request_type: RequestType
     binddn: str
+    message_id: int
+    request_id: str
     old: EntryMixed | None
     new: EntryMixed | None
-    message_id: int = 0
-    request_id: str = ""
