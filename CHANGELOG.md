@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.21.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.20.1...v0.21.0) (2024-07-19)
+
+
+### Features
+
+* **ldap-server:** load, activate and configure the back-sock overlay in the ldap-server slapd.conf ([99fa529](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/99fa5292221b1b2053720ac08c3856a207d872f1))
+* **ldif-producer:** add the ldif-producer sidecar container to the ldap-server helm chart ([d13e4b1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/d13e4b123da5ef157d278225fe5531fafcb48a14))
+* **ldif-producer:** new, more reliable backpressure mechanism without pre- and post-hook synchronization ([7187c60](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/7187c60ca3af212b0e92f4bd5caf5f341ba36835))
+
+
+### Bug Fixes
+
+* **ldif-producer:** improvements with Arvid ([dea6176](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/dea61767271a47c76962b4a9ad4a7386b94469d9))
+* **ldif-producer:** log exception tracebacks ([e681532](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e6815325329f521c18c35bed4f5eb3ab46c71ac8))
+* **ldif-producer:** make existing backpressure-mechanism non-blocking ([e3e9454](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e3e9454b06b56c6d887a33f9ebadcf2d77df6a1c))
+* **ldif-producer:** put the ldif-producer and slapd-sock overlay behind a feature-flag ([cfdbded](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/cfdbdeda0291393a717c6d1e8aead199e84247cc))
+* **ldif-producer:** return Continue for requests with empty body and improve logging ([bc0a7f4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/bc0a7f46169730708cda659e953be8efb5fff127))
+
 ## [0.20.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.20.0...v0.20.1) (2024-07-05)
 
 
