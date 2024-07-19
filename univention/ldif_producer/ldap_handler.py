@@ -38,7 +38,7 @@ class LDAPHandler(SlapdSockHandler):
         ldap_base: str,
         ignore_temporary: bool,
         outgoing_queue: asyncio.Queue,
-        backpressure_wait_timeout: int,
+        backpressure_wait_timeout: float,
     ):
         super().__init__()
         self.backpressure_wait_timeout = backpressure_wait_timeout
@@ -79,16 +79,17 @@ class LDAPHandler(SlapdSockHandler):
 
         try:
             logger.info(
-                "The outgoing queue is full. Waiting for a maximum of self.backpressure_wait_timeout seconds. message id: %s",
+                "The outgoing queue is full. Waiting for a maximum of %s seconds. message id: %s",
+                self.backpressure_wait_timeout,
                 request.msgid,
             )
-            await asyncio.wait_for(self.request_throttling_mutex.acquire(), self.backpressure_wait_timeout)
+            await asyncio.wait_for(self.request_throttling_mutex.acquire(), self.backpressure_wait_timeout * 0.8)
         except asyncio.TimeoutError:
             logger.info("Timed out waiting for the outgoing queue. message id: %s", request.msgid)
             return False
 
         try:
-            max_loops = int(2 / 0.1)
+            max_loops = max(int(self.backpressure_wait_timeout * 0.2 / 0.1), 1)
             for _ in range(max_loops):
                 if not self.outgoing_queue.full():
                     return True
