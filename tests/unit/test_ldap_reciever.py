@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from slapdsock.message import CONTINUE_RESPONSE
-from univention.ldif_producer.ldap_handler import TIMEOUT_RESPONSE, LDAPHandler
+from univention.ldif_producer.ldap_reciever import TIMEOUT_RESPONSE, LDAPReciever
 from univention.ldif_producer.models import RequestType
 
 
@@ -55,25 +55,25 @@ def mock_socket_request():
 
 
 @pytest.fixture(scope="function")
-def ldap_handler(outgoing_queue, mock_socket_request, request) -> LDAPHandler:
+def ldap_reciever(outgoing_queue, mock_socket_request, request) -> LDAPReciever:
     ignore_temporary = getattr(request, "param", True)
     logger = get_logger()
-    ldap_handler = LDAPHandler(
+    ldap_reciever = LDAPReciever(
         "dc=univention-organization,dc=intranet",
         ignore_temporary,
         outgoing_queue,
         1,
     )
 
-    ldap_handler.server = MagicMock()
-    ldap_handler.server.logger = logger
-    ldap_handler.request = mock_socket_request
-    return ldap_handler
+    ldap_reciever.server = MagicMock()
+    ldap_reciever.server.logger = logger
+    ldap_reciever.request = mock_socket_request
+    return ldap_reciever
 
 
-@pytest.mark.parametrize("ldap_handler", [True, False], indirect=["ldap_handler"])
-def test_ldap_handler_startup(ldap_handler: LDAPHandler):
-    assert ldap_handler
+@pytest.mark.parametrize("ldap_reciever", [True, False], indirect=["ldap_reciever"])
+def test_ldap_reciever_startup(ldap_reciever: LDAPReciever):
+    assert ldap_reciever
 
 
 @pytest.mark.parametrize(
@@ -83,30 +83,30 @@ def test_ldap_handler_startup(ldap_handler: LDAPHandler):
         "cn=4f8f67ac-3208-11ef-9700-ffb78fde9291,cn=groupName,cn=temporary,cn=univention,dc=univention-organization,dc=intranet",
     ],
 )
-def test_is_temporary_dn(ldap_handler: LDAPHandler, dn):
+def test_is_temporary_dn(ldap_reciever: LDAPReciever, dn):
     request = MagicMock()
     request.dn = dn
-    assert ldap_handler.filter_temporary_dn(request) is True
+    assert ldap_reciever.filter_temporary_dn(request) is True
 
 
-def test_is_not_temporary_dn(ldap_handler: LDAPHandler):
+def test_is_not_temporary_dn(ldap_reciever: LDAPReciever):
     request = MagicMock()
     request.dn = "uid=0334afa8-32f7-11ef-9700-ffb78fde9291,cn=users,dc=univention-organization,dc=intranet"
 
-    assert ldap_handler.filter_temporary_dn(request) is False
+    assert ldap_reciever.filter_temporary_dn(request) is False
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("ldap_handler", [True, False], indirect=["ldap_handler"])
-async def test_handle_simple_udm_message(ldap_handler: LDAPHandler, outgoing_queue: asyncio.Queue):
+@pytest.mark.parametrize("ldap_reciever", [True, False], indirect=["ldap_reciever"])
+async def test_handle_simple_udm_message(ldap_reciever: LDAPReciever, outgoing_queue: asyncio.Queue):
     binary_request = b"RESULT\nmsgid: 281\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.29.3:54846\nconnid: 1001\ncode: 0\ndn: cn=4f8f67ac-3208-11ef-9700-ffb78fde9291,cn=groups,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.2 false ZIIDkQRYY249NGY4ZjY3YWMtMzIwOC0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxLGNuPWdyb3VwcyxkYz11bml2ZW50aW9uLW9yZ2FuaXphdGlvbixkYz1pbnRyYW5ldDCCAzMwLAQCY24xJgQkNGY4ZjY3YWMtMzIwOC0xMWVmLTk3MDAtZmZiNzhmZGU5MjkxMBMECWdpZE51bWJlcjEGBAQ1MDA4MBUEDnNhbWJhR3JvdXBUeXBlMQMEATIwJAQTdW5pdmVudGlvbkdyb3VwVHlwZTENBAstMjE0NzQ4MzY0NjAiBAhzYW1iYVNJRDEWBBRTLTEtNS0yMS1VTlNFVC0xMTAxNzBWBAtvYmplY3RDbGFzczFHBBFzYW1iYUdyb3VwTWFwcGluZwQKcG9zaXhHcm91cAQDdG9wBA91bml2ZW50aW9uR3JvdXAEEHVuaXZlbnRpb25PYmplY3QwJgQUdW5pdmVudGlvbk9iamVjdFR5cGUxDgQMZ3JvdXBzL2dyb3VwMCUEFXN0cnVjdHVyYWxPYmplY3RDbGFzczEMBApwb3NpeEdyb3VwMDMECWVudHJ5VVVJRDEmBCQwZTMwNDgyMC1jNjU0LTEwM2UtOTg3Yi1iMzRlNjg0YjQ5ODEwQQQMY3JlYXRvcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED2NyZWF0ZVRpbWVzdGFtcDERBA8yMDI0MDYyNDA5MDExNFowNgQIZW50cnlDU04xKgQoMjAyNDA2MjQwOTAxMTQuODY1ODMzWiMwMDAwMDAjMDAwIzAwMDAwMDBCBA1tb2RpZmllcnNOYW1lMTEEL2NuPWFkbWluLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCQED21vZGlmeVRpbWVzdGFtcDERBA8yMDI0MDYyNDA5MDExNFowZQQHZW50cnlETjFaBFhjbj00ZjhmNjdhYy0zMjA4LTExZWYtOTcwMC1mZmI3OGZkZTkyOTEsY249Z3JvdXBzLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: add\ncn: 4f8f67ac-3208-11ef-9700-ffb78fde9291\ngidNumber: 5008\nsambaGroupType: 2\nuniventionGroupType: -2147483646\nsambaSID: S-1-5-21-UNSET-11017\nobjectClass: sambaGroupMapping\nobjectClass: posixGroup\nobjectClass: top\nobjectClass: univentionGroup\nobjectClass: univentionObject\nuniventionObjectType: groups/group\nstructuralObjectClass: posixGroup\nentryUUID: 0e304820-c654-103e-987b-b34e684b4981\ncreatorsName: cn=admin,dc=univention-organization,dc=intranet\ncreateTimestamp: 20240624090114Z\nentryCSN: 20240624090114.865833Z#000000#000#000000\nmodifiersName: cn=admin,dc=univention-organization,dc=intranet\nmodifyTimestamp: 20240624090114Z\n\n"  # noqa E501
 
     reader = AsyncMock()
     reader.read = AsyncMock(return_value=binary_request)
     writer = MagicMock()
-    ldap_handler.legacy_backpressure_queue.put((123, 456, time.perf_counter()))
+    ldap_reciever.legacy_backpressure_queue.put((123, 456, time.perf_counter()))
 
-    await ldap_handler.handle(reader, writer)
+    await ldap_reciever.handle(reader, writer)
 
     pprint([event._asdict() for event in list(outgoing_queue._queue)])
 
@@ -138,20 +138,20 @@ async def test_handle_simple_udm_message(ldap_handler: LDAPHandler, outgoing_que
 
     # RESULT requests don't expect a response from the socket backend.
     writer.write.assert_not_called()
-    assert ldap_handler.legacy_backpressure_queue.qsize() == 0
+    assert ldap_reciever.legacy_backpressure_queue.qsize() == 0
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 0), (False, 1)], indirect=["ldap_handler"])
-async def test_handle_temporary_message(ldap_handler: LDAPHandler, outgoing_queue: asyncio.Queue, queue_size):
+@pytest.mark.parametrize("ldap_reciever, queue_size", [(True, 0), (False, 1)], indirect=["ldap_reciever"])
+async def test_handle_temporary_message(ldap_reciever: LDAPReciever, outgoing_queue: asyncio.Queue, queue_size):
     binary_request = b"RESULT\nmsgid: 284\nbinddn: cn=admin,dc=univention-organization,dc=intranet\npeername: IP=172.26.29.3:54846\nconnid: 1001\ncode: 0\ndn: cn=5008,cn=gidNumber,cn=temporary,cn=univention,dc=univention-organization,dc=intranet\ncontrol: 1.3.6.1.1.13.1 false ZIICpwRWY249NTAwOCxjbj1naWROdW1iZXIsY249dGVtcG9yYXJ5LGNuPXVuaXZlbnRpb24sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwggJLMBoEC29iamVjdENsYXNzMQsEA3RvcAQEbG9jazAMBAJjbjEGBAQ1MDA4MBgECGxvY2tUaW1lMQwECjE3MTkyMTk5NzQwHwQVc3RydWN0dXJhbE9iamVjdENsYXNzMQYEBGxvY2swMwQJZW50cnlVVUlEMSYEJDBlMmM1MjEwLWM2NTQtMTAzZS05ODc4LWIzNGU2ODRiNDk4MTBBBAxjcmVhdG9yc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPY3JlYXRlVGltZXN0YW1wMREEDzIwMjQwNjI0MDkwMTE0WjA2BAhlbnRyeUNTTjEqBCgyMDI0MDYyNDA5MDExNC44Mzk4NzRaIzAwMDAwMCMwMDAjMDAwMDAwMEIEDW1vZGlmaWVyc05hbWUxMQQvY249YWRtaW4sZGM9dW5pdmVudGlvbi1vcmdhbml6YXRpb24sZGM9aW50cmFuZXQwJAQPbW9kaWZ5VGltZXN0YW1wMREEDzIwMjQwNjI0MDkwMTE0WjBjBAdlbnRyeUROMVgEVmNuPTUwMDgsY249Z2lkTnVtYmVyLGNuPXRlbXBvcmFyeSxjbj11bml2ZW50aW9uLGRjPXVuaXZlbnRpb24tb3JnYW5pemF0aW9uLGRjPWludHJhbmV0MCMEEXN1YnNjaGVtYVN1YmVudHJ5MQ4EDGNuPVN1YnNjaGVtYTAaBA9oYXNTdWJvcmRpbmF0ZXMxBwQFRkFMU0U=\nchangetype: delete\n\n"  # noqa E501
 
     reader = AsyncMock()
     reader.read = AsyncMock(return_value=binary_request)
     writer = MagicMock()
-    ldap_handler.legacy_backpressure_queue.put((123, 456, time.perf_counter()))
+    ldap_reciever.legacy_backpressure_queue.put((123, 456, time.perf_counter()))
 
-    await ldap_handler.handle(reader, writer)
+    await ldap_reciever.handle(reader, writer)
 
     pprint([event._asdict() for event in list(outgoing_queue._queue)])
 
@@ -159,25 +159,25 @@ async def test_handle_temporary_message(ldap_handler: LDAPHandler, outgoing_queu
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("ldap_handler, queue_size", [(True, 0), (False, 0)], indirect=["ldap_handler"])
-async def test_ignore_refint_overlay(ldap_handler: LDAPHandler, outgoing_queue: asyncio.Queue, queue_size):
+@pytest.mark.parametrize("ldap_reciever, queue_size", [(True, 0), (False, 0)], indirect=["ldap_reciever"])
+async def test_ignore_refint_overlay(ldap_reciever: LDAPReciever, outgoing_queue: asyncio.Queue, queue_size):
     binary_request = b"MODIFY\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\ndelete: uniqueMember\nuniqueMember: uid=0ad4a8be-35f2-11ef-951b-37af858e1364,cn=users,dc=univention-organization,dc=intranet\n-\nreplace: modifiersName\nmodifiersName: cn=Referential Integrity Overlay\n-\n\n"  # noqa E501
 
     reader = AsyncMock()
     reader.read = AsyncMock(return_value=binary_request)
     writer = MagicMock()
 
-    await ldap_handler.handle(reader, writer)
+    await ldap_reciever.handle(reader, writer)
 
     assert outgoing_queue.qsize() == 0
-    assert len(ldap_handler.legacy_backpressure_queue.queue) == 0
+    assert len(ldap_reciever.legacy_backpressure_queue.queue) == 0
     writer.write.assert_called_once()
     assert writer.write.call_args_list[0].args[0] == CONTINUE_RESPONSE
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "request_file, ldap_handler, queue_size",
+    "request_file, ldap_reciever, queue_size",
     [
         ("tests/unit/create_user_socket_requests.json", True, 2),
         ("tests/unit/create_user_socket_requests.json", False, 11),
@@ -190,10 +190,10 @@ async def test_ignore_refint_overlay(ldap_handler: LDAPHandler, outgoing_queue: 
         ("tests/unit/dev-env-requests.json", True, 1),
         ("tests/unit/dev-env-requests.json", False, 1),
     ],
-    indirect=["ldap_handler"],
+    indirect=["ldap_reciever"],
 )
 async def test_replay_socket_requests(
-    ldap_handler: LDAPHandler, outgoing_queue: asyncio.Queue, request_file, queue_size
+    ldap_reciever: LDAPReciever, outgoing_queue: asyncio.Queue, request_file, queue_size
 ):
     request_list: list = get_test_data(request_file)
 
@@ -202,7 +202,7 @@ async def test_replay_socket_requests(
         writer = MagicMock()
         reader.read = AsyncMock(return_value=request["request_data"])
 
-        await ldap_handler.handle(reader, writer)
+        await ldap_reciever.handle(reader, writer)
 
         if writer.write.called:
             handler_response = writer.write.call_args_list[-1].args[0]
@@ -211,11 +211,11 @@ async def test_replay_socket_requests(
             if error_response:
                 pprint(handler_response)
                 pprint(request)
-                pprint(ldap_handler.legacy_backpressure_queue.queue)
+                pprint(ldap_reciever.legacy_backpressure_queue.queue)
             assert not error_response
 
     event_list = list(outgoing_queue._queue)
     pprint([event._asdict() for event in event_list])
 
     assert len(event_list) == queue_size
-    assert len(ldap_handler.legacy_backpressure_queue.queue) == 0
+    assert len(ldap_reciever.legacy_backpressure_queue.queue) == 0

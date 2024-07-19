@@ -6,7 +6,7 @@ import asyncio
 import pytest
 
 from slapdsock.handler import MODIFYRequest
-from univention.ldif_producer.ldap_handler import LDAPHandler
+from univention.ldif_producer.ldap_reciever import LDAPReciever
 
 
 @pytest.fixture
@@ -15,8 +15,8 @@ def throttling_outgoing_queue() -> asyncio.Queue:
 
 
 @pytest.fixture
-def throttling_ldap_handler(throttling_outgoing_queue: asyncio.Queue) -> LDAPHandler:
-    return LDAPHandler(
+def throttling_ldap_reciever(throttling_outgoing_queue: asyncio.Queue) -> LDAPReciever:
+    return LDAPReciever(
         "dc=univention-organization,dc=intranet",
         True,
         throttling_outgoing_queue,
@@ -32,42 +32,42 @@ def modify_request() -> MODIFYRequest:
 
 
 @pytest.mark.asyncio
-async def test_happpy_path(throttling_ldap_handler: LDAPHandler, modify_request: MODIFYRequest):
-    assert await throttling_ldap_handler.request_throttling(modify_request)
+async def test_happpy_path(throttling_ldap_reciever: LDAPReciever, modify_request: MODIFYRequest):
+    assert await throttling_ldap_reciever.request_throttling(modify_request)
 
 
 @pytest.mark.asyncio
-async def test_blocking(throttling_ldap_handler: LDAPHandler, modify_request: MODIFYRequest):
-    await throttling_ldap_handler.outgoing_queue.put("foobar")
+async def test_blocking(throttling_ldap_reciever: LDAPReciever, modify_request: MODIFYRequest):
+    await throttling_ldap_reciever.outgoing_queue.put("foobar")
 
-    assert not await throttling_ldap_handler.request_throttling(modify_request)
+    assert not await throttling_ldap_reciever.request_throttling(modify_request)
 
 
 @pytest.mark.asyncio
-async def test_temporary_blocking(throttling_ldap_handler: LDAPHandler, modify_request: MODIFYRequest):
-    throttling_ldap_handler.backpressure_wait_timeout = 5
+async def test_temporary_blocking(throttling_ldap_reciever: LDAPReciever, modify_request: MODIFYRequest):
+    throttling_ldap_reciever.backpressure_wait_timeout = 5
 
-    await throttling_ldap_handler.outgoing_queue.put("foobar")
+    await throttling_ldap_reciever.outgoing_queue.put("foobar")
 
-    request_throttling_task = asyncio.create_task(throttling_ldap_handler.request_throttling(modify_request))
+    request_throttling_task = asyncio.create_task(throttling_ldap_reciever.request_throttling(modify_request))
     await asyncio.sleep(0.3)
-    assert await throttling_ldap_handler.outgoing_queue.get()
+    assert await throttling_ldap_reciever.outgoing_queue.get()
 
     assert await request_throttling_task
 
 
 @pytest.mark.asyncio
-async def test_multiple_temporary_blocking(throttling_ldap_handler: LDAPHandler, modify_request: MODIFYRequest):
-    throttling_ldap_handler.backpressure_wait_timeout = 5
+async def test_multiple_temporary_blocking(throttling_ldap_reciever: LDAPReciever, modify_request: MODIFYRequest):
+    throttling_ldap_reciever.backpressure_wait_timeout = 5
 
-    await throttling_ldap_handler.outgoing_queue.put("foobar")
+    await throttling_ldap_reciever.outgoing_queue.put("foobar")
 
     tasks = []
     for _ in range(3):
-        t = asyncio.create_task(throttling_ldap_handler.request_throttling(modify_request))
+        t = asyncio.create_task(throttling_ldap_reciever.request_throttling(modify_request))
         tasks.append(t)
     await asyncio.sleep(0.5)
-    assert await throttling_ldap_handler.outgoing_queue.get()
+    assert await throttling_ldap_reciever.outgoing_queue.get()
 
     for request_throttling_task in tasks:
         assert await request_throttling_task

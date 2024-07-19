@@ -21,8 +21,8 @@ modifiersName: cn=Referential Integrity Overlay\n
 import pytest
 
 import slapdsock.message
-from tests.unit.test_ldap_handler import get_test_data
-from univention.ldif_producer.ldap_handler import LDAPHandler
+from tests.unit.test_ldap_reciever import get_test_data
+from univention.ldif_producer.ldap_reciever import LDAPReciever
 
 binary_requests = [
     b"MODIFY\nmsgid: 0\nbinddn: \npeername: \nconnid: 18446744073709551615\nsuffix: dc=univention-organization,dc=intranet\ndn: cn=Domain Users,cn=groups,dc=univention-organization,dc=intranet\ndelete: uniqueMember\nuniqueMember: uid=0ad4a8be-35f2-11ef-951b-37af858e1364,cn=users,dc=univention-organization,dc=intranet\n-\nreplace: modifiersName\nmodifiersName: cn=Referential Integrity Overlay\n-\n\n"  # noqa E501
@@ -34,15 +34,15 @@ binary_requests = [
 @pytest.mark.parametrize("binary_request", binary_requests)
 def test_detect_modifiersName(binary_request):
     req_lines = binary_request.split(b"\n")
-    assert LDAPHandler.is_refint_request(req_lines)
+    assert LDAPReciever.is_refint_request(req_lines)
 
 
 def test_empty_list():
-    assert not LDAPHandler.is_refint_request([])
+    assert not LDAPReciever.is_refint_request([])
 
 
 def test_detect_not_modifiersName():
-    assert not LDAPHandler.is_refint_request([b"foo", b"bar", b"baz"])
+    assert not LDAPReciever.is_refint_request([b"foo", b"bar", b"baz"])
 
 
 @pytest.mark.parametrize("binary_request", binary_requests)
@@ -50,7 +50,7 @@ def test_create_request_class(binary_request):
     req_lines = binary_request.split(b"\n")
     request = slapdsock.message.MODIFYRequest(req_lines)
     assert request
-    assert LDAPHandler.is_refint_request(request._req_lines)
+    assert LDAPReciever.is_refint_request(request._req_lines)
 
 
 def test_many_messages():
@@ -59,4 +59,4 @@ def test_many_messages():
 
     for request in request_list:
         request_lines = request["request_data"].split(b"\n")
-        assert not LDAPHandler.is_refint_request(request_lines)
+        assert not LDAPReciever.is_refint_request(request_lines)

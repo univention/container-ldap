@@ -32,7 +32,7 @@ TIMEOUT_RESPONSE = (
 logger = logging.getLogger(__name__)
 
 
-class LDAPHandler(SlapdSockHandler):
+class LDAPReciever(SlapdSockHandler):
     def __init__(
         self,
         ldap_base: str,

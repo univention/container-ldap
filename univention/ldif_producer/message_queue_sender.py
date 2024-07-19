@@ -15,7 +15,7 @@ from .mq_port import LDIFProducerMQPort
 logger = logging.getLogger(__name__)
 
 
-class NATSController:
+class MessageQueueSender:
     def __init__(
         self,
         queue: asyncio.Queue,
@@ -63,17 +63,17 @@ class NATSController:
             logger.info("Stopped handling the outgoing queue.")
 
 
-async def run_mq_sender(
+async def run_message_queue_sender(
     message_queue_port: LDIFProducerMQPort,
     outgoing_queue: asyncio.Queue,
 ):
     """Start a sending messages found in `outgoing_queue`. Will only return when canceled."""
     request_id.set("mq-sender")
     async with message_queue_port:
-        nats_controller = NATSController(outgoing_queue, message_queue_port)
-        await nats_controller.setup()
+        message_queue_sender = MessageQueueSender(outgoing_queue, message_queue_port)
+        await message_queue_sender.setup()
         logger.info("Starting to send messages to NATS at %r.", message_queue_port.settings.nats_server)
         try:
-            await nats_controller.process_queue_forever()
+            await message_queue_sender.process_queue_forever()
         except asyncio.CancelledError:
             logger.info("Stopped sending messages to NATS at %r.", message_queue_port.settings.nats_server)

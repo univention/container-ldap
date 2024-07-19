@@ -14,9 +14,9 @@ from slapdsock.log import RequestIdFilter, request_id
 from slapdsock.server import serve_forever
 
 from .config import get_ldif_producer_settings
-from .ldap_handler import LDAPHandler
+from .ldap_reciever import LDAPReciever
+from .message_queue_sender import run_message_queue_sender
 from .mq_adapter import LDIFProducerMQAdapter
-from .sender import run_mq_sender
 
 AsyncioHandler = Callable[[asyncio.StreamReader, asyncio.StreamWriter], Awaitable[None]]
 logger = logging.getLogger(__name__)
@@ -41,12 +41,12 @@ async def main() -> None:
     socket_path = Path(settings.socket_file_location)
     outgoing_queue = asyncio.Queue(maxsize=settings.max_in_flight_ldap_messages)
     # start message sender task in the background
-    sender_coro = run_mq_sender(LDIFProducerMQAdapter(settings), outgoing_queue)
+    sender_coro = run_message_queue_sender(LDIFProducerMQAdapter(settings), outgoing_queue)
     sender_task = asyncio.create_task(sender_coro, name="mq_sender")
     await asyncio.sleep(0)
     logger.info("Started MQ sender task in the background.")
     # start socket listener in the foreground
-    handler = LDAPHandler(
+    handler = LDAPReciever(
         ldap_base=settings.ldap_base_dn,
         ignore_temporary=settings.ignore_temporary_objects,
         outgoing_queue=outgoing_queue,

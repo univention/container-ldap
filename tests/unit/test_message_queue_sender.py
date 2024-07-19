@@ -7,27 +7,27 @@ from unittest.mock import ANY, MagicMock, call
 
 import pytest
 
-from univention.ldif_producer.ldap_handler import LDAPMessage, RequestType
+from univention.ldif_producer.ldap_reciever import LDAPMessage, RequestType
+from univention.ldif_producer.message_queue_sender import MessageQueueSender
 from univention.ldif_producer.mq_port import LDIFProducerMQPort
-from univention.ldif_producer.sender import NATSController
 from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
 
 
 @pytest.mark.asyncio
-async def test_controller_setup(mock_message_queue_port: LDIFProducerMQPort):
+async def test_message_queue_sender_setup(mock_message_queue_port: LDIFProducerMQPort):
     queue = MagicMock()
-    controller = NATSController(
+    message_queue_sender = MessageQueueSender(
         queue=queue,
         message_queue_port=mock_message_queue_port,
     )
 
-    await controller.setup()
+    await message_queue_sender.setup()
 
     mock_message_queue_port.ensure_stream.assert_called_once_with(LDIF_STREAM, [LDIF_SUBJECT])
 
 
 @pytest.mark.asyncio
-async def test_nats_controller(mock_message_queue_port: LDIFProducerMQPort):
+async def test_nats_message_queue_sender(mock_message_queue_port: LDIFProducerMQPort):
     queue = asyncio.Queue(maxsize=20)
     expected_calls = []
     for i in range(10):
@@ -42,7 +42,7 @@ async def test_nats_controller(mock_message_queue_port: LDIFProducerMQPort):
         await queue.put(ldap_message)
         expected_calls.append(call(LDIF_STREAM, LDIF_SUBJECT, ANY))
 
-    controller = NATSController(
+    message_queue_sender = MessageQueueSender(
         queue=queue,
         message_queue_port=mock_message_queue_port,
     )
@@ -52,7 +52,7 @@ async def test_nats_controller(mock_message_queue_port: LDIFProducerMQPort):
             await asyncio.sleep(0.2)
         task_.cancel()
 
-    task = asyncio.create_task(controller.process_queue_forever())
+    task = asyncio.create_task(message_queue_sender.process_queue_forever())
     monitor = asyncio.create_task(check_queue_and_cancel(task))
 
     with pytest.raises(asyncio.CancelledError):
