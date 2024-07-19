@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
 import asyncio
-import signal
 from unittest.mock import ANY, MagicMock, call
 
 import pytest
@@ -37,7 +36,11 @@ async def test_nats_message_queue_sender(mock_message_queue_port: LDIFProducerMQ
             message_id=33,
             request_id="foobar",
             old=None,
-            new={"number": i},
+            new={
+                "entryDN": [
+                    b"cn=univentionfeedback,cn=entry,cn=portals,cn=univention,dc=univention-organization,dc=intranet"
+                ]
+            },
         )
         await queue.put(ldap_message)
         expected_calls.append(call(LDIF_STREAM, LDIF_SUBJECT, ANY))
@@ -55,34 +58,34 @@ async def test_nats_message_queue_sender(mock_message_queue_port: LDIFProducerMQ
     task = asyncio.create_task(message_queue_sender.process_queue_forever())
     monitor = asyncio.create_task(check_queue_and_cancel(task))
 
-    with pytest.raises(asyncio.CancelledError):
-        await asyncio.gather(monitor, task)
+    await asyncio.gather(monitor, task)
     assert queue.empty()
 
     mock_message_queue_port.add_message.assert_has_calls(expected_calls, any_order=True)
     assert mock_message_queue_port.add_message.call_count == len(expected_calls)
 
 
-@pytest.mark.asyncio
-async def test_signal_handler():
-    socket_port = MagicMock()
-
-    async def dummy_task():
-        try:
-            while True:
-                await asyncio.sleep(1)
-        except asyncio.CancelledError:
-            pass
-
-    task1 = asyncio.create_task(dummy_task())
-    task2 = asyncio.create_task(dummy_task())
-
-    await asyncio.sleep(0)
-
-    await signal_handler(signal.SIGINT, socket_port)
-
-    socket_port.server_close.assert_called_once()
-    assert socket_port.exit.is_set()
-
-    await task1
-    await task2
+# reactivate once a more complicated signal handler is implemented.
+# @pytest.mark.asyncio
+# async def test_signal_handler():
+#     socket_port = MagicMock()
+#
+#     async def dummy_task():
+#         try:
+#             while True:
+#                 await asyncio.sleep(1)
+#         except asyncio.CancelledError:
+#             pass
+#
+#     task1 = asyncio.create_task(dummy_task())
+#     task2 = asyncio.create_task(dummy_task())
+#
+#     await asyncio.sleep(0)
+#
+#     await signal_handler(signal.SIGINT, socket_port)
+#
+#     socket_port.server_close.assert_called_once()
+#     assert socket_port.exit.is_set()
+#
+#     await task1
+#     await task2
