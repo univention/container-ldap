@@ -11,7 +11,7 @@ from queue import Empty, Full, Queue
 from ldap0.controls.readentry import PostReadControl, PreReadControl
 from ldap0.res import decode_response_ctrls
 
-from slapdsock.handler import SlapdSockHandler
+from slapdsock.handler import NoOpHandler
 from slapdsock.log import request_id
 from slapdsock.message import (
     CONTINUE_RESPONSE,
@@ -32,7 +32,7 @@ TIMEOUT_RESPONSE = (
 logger = logging.getLogger(__name__)
 
 
-class LDAPReciever(SlapdSockHandler):
+class LDAPReciever(NoOpHandler):
     def __init__(
         self,
         ldap_base: str,
@@ -83,13 +83,13 @@ class LDAPReciever(SlapdSockHandler):
                 self.backpressure_wait_timeout,
                 request.msgid,
             )
-            await asyncio.wait_for(self.request_throttling_mutex.acquire(), self.backpressure_wait_timeout * 0.8)
+            await asyncio.wait_for(self.request_throttling_mutex.acquire(), self.backpressure_wait_timeout)
         except asyncio.TimeoutError:
             logger.info("Timed out waiting for the outgoing queue. message id: %s", request.msgid)
             return False
 
         try:
-            max_loops = max(int(self.backpressure_wait_timeout * 0.2 / 0.1), 1)
+            max_loops = max(int(self.backpressure_wait_timeout / 0.1), 1)
             for _ in range(max_loops):
                 if not self.outgoing_queue.full():
                     return True

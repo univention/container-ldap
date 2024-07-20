@@ -893,13 +893,13 @@ files = [
 
 [[package]]
 name = "slapdsock"
-version = "2.0.1.dev0+dtroeder.async.streams.server.8937e079"
+version = "2.0.1.dev0+dtroeder.async.streams.server.0c4da0f4"
 description = "Module package for back-sock listeners for OpenLDAP."
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "slapdsock-2.0.1.dev0+dtroeder.async.streams.server.8937e079-py3-none-any.whl", hash = "sha256:d73e5836c5608681ed4960de074e378763338dba4eb5aba1a74b04fb02a62623"},
-    {file = "slapdsock-2.0.1.dev0+dtroeder.async.streams.server.8937e079.tar.gz", hash = "sha256:bece237e7845e314030526326f0886c8e1faf1486c67844962767dba4f117e57"},
+    {file = "slapdsock-2.0.1.dev0+dtroeder.async.streams.server.0c4da0f4-py3-none-any.whl", hash = "sha256:3b7cadd013c03506c7094e2af70fa8bd4cc17887b5ada2c5fc85af56cdbbf38c"},
+    {file = "slapdsock-2.0.1.dev0+dtroeder.async.streams.server.0c4da0f4.tar.gz", hash = "sha256:12802d6e3855c690788cadd4944ad719a814429911bd84d7bf0b13ea2d7e8e35"},
 ]
 
 [package.dependencies]
@@ -1029,4 +1029,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "71049c2554e5e21dc36309bf624d84b05e3db9e3677632d99847e7e9275df223"
+content-hash = "be285659acb363554b9f72190410f1d0b89a39698873d9bf2795e4fc146a9f46"

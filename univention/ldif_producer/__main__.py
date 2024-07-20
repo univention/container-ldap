@@ -10,6 +10,7 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Awaitable, Callable
 
+from slapdsock.handler import SlapdSockHandler
 from slapdsock.log import RequestIdFilter, request_id
 from slapdsock.server import serve_forever
 
@@ -45,13 +46,16 @@ async def main() -> None:
     sender_task = asyncio.create_task(sender_coro, name="mq_sender")
     await asyncio.sleep(0)
     logger.info("Started MQ sender task in the background.")
+
     # start socket listener in the foreground
-    handler = LDAPReciever(
+    ldap_reciever = LDAPReciever(
         ldap_base=settings.ldap_base_dn,
         ignore_temporary=settings.ignore_temporary_objects,
         outgoing_queue=outgoing_queue,
         backpressure_wait_timeout=settings.backpressure_wait_timeout,
     )
+    handler = SlapdSockHandler(ldap_reciever)
+
     await serve_forever(socket_path, handler.handle)
     # foreground task returned, shutdown background task
     sender_task.cancel("Shutdown")
