@@ -81,18 +81,18 @@ async def run(
             message_queue_sender = MessageQueueSender(outgoing_queue, message_queue_port)
             await message_queue_sender.setup()
 
-            # start message sender task in the background
-            sender_task = asyncio.create_task(run_message_queue_sender(message_queue_sender), name="mq_sender")
-            await asyncio.sleep(0)
-            logger.info("Started MQ sender task in the background.")
+            async with asyncio.TaskGroup() as tg:
+                message_queue_sender_task = tg.create_task(run_message_queue_sender(message_queue_sender))  # noqa F841
+                logger.info("Started message queue sender task in the background.")
 
-            # start socket listener in the foreground
-            await serve_forever(settings.socket_file_location, handler.handle)
-            # foreground task returned, shutdown background task
-            sender_task.cancel("Shutdown")
-            await sender_task
+                ldap_reciever_task = tg.create_task(  # noqa F841
+                    serve_forever(settings.socket_file_location, handler.handle), name="mq_sender"
+                )
+                logger.info("Started ldap socket server task in the background.")
     except MessageQueueConnectionError:
         logger.error("NATS message queue connection failed. Shutting down the ldif-producer")
+    except Exception:
+        logger.exception("An unknown exception occurred while processing ldap messages. Shutting down")
 
 
 def main() -> None:

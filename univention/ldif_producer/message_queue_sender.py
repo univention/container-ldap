@@ -42,10 +42,13 @@ class MessageQueueSender:
                 "request_id": ldap_message.request_id,
             },
         )
-        if ldap_message.old:
-            dn = ldap_message.old["entryDN"][0].decode()
-        elif ldap_message.new:
-            dn = ldap_message.new["entryDN"][0].decode()
+        try:
+            if ldap_message.old:
+                dn = ldap_message.old["entryDN"][0].decode()
+            elif ldap_message.new:
+                dn = ldap_message.new["entryDN"][0].decode()
+        except (KeyError, IndexError, TypeError, UnicodeDecodeError):
+            dn = "n/a"
         else:
             dn = "n/a"
         logger.info("Enqueuing message at NATS: %s %r", ldap_message.request_type.value, dn)
