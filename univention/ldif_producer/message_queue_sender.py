@@ -5,7 +5,6 @@ import asyncio
 import logging
 from datetime import datetime
 
-from slapdsock.log import request_id
 from univention.provisioning.models import Message, PublisherName
 from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
 
@@ -61,19 +60,3 @@ class MessageQueueSender:
                 await self.handle_ldap_message(message)
         except asyncio.CancelledError:
             logger.info("Stopped handling the outgoing queue.")
-
-
-async def run_message_queue_sender(
-    message_queue_port: LDIFProducerMQPort,
-    outgoing_queue: asyncio.Queue,
-):
-    """Start a sending messages found in `outgoing_queue`. Will only return when canceled."""
-    request_id.set("mq-sender")
-    async with message_queue_port:
-        message_queue_sender = MessageQueueSender(outgoing_queue, message_queue_port)
-        await message_queue_sender.setup()
-        logger.info("Starting to send messages to NATS at %r.", message_queue_port.settings.nats_server)
-        try:
-            await message_queue_sender.process_queue_forever()
-        except asyncio.CancelledError:
-            logger.info("Stopped sending messages to NATS at %r.", message_queue_port.settings.nats_server)

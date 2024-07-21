@@ -6,6 +6,7 @@ import logging
 from typing import List, Optional
 
 from nats.aio.client import Client as NATS
+from nats.errors import NoServersError
 from nats.js.api import ConsumerConfig
 from nats.js.errors import NotFoundError
 
@@ -16,7 +17,9 @@ logger = logging.getLogger(__name__)
 #
 # FIXME: The code in this file is a copy of code in provisioning/src/server/adapters/nats_adapter.py
 # TODO:  The common code should be refactored into a common library.
-#
+
+
+class MessageQueueConnectionError(Exception): ...
 
 
 class NatsKeys:
@@ -38,6 +41,10 @@ class NatsMQService:
         self.logger = logging.getLogger(__name__)
         self._message_queue = asyncio.Queue()
 
+    async def error_callback(self, error) -> None:
+        self.logger.exception("Encountered a NATS connection error", exc_info=error)
+        raise MessageQueueConnectionError()
+
     async def connect(self, server: str, user: str, password: str, max_reconnect_attempts=5, **kwargs):
         """Connect to the NATS server.
 
@@ -46,15 +53,21 @@ class NatsMQService:
 
         by default it fails after a maximum of 10 seconds because of a 2 second connect timout * 5 reconnect attempts.
         """
-        await self._nats.connect(
-            servers=server,
-            user=user,
-            password=password,
-            max_reconnect_attempts=max_reconnect_attempts,
-            **kwargs,
-        )
+        try:
+            await self._nats.connect(
+                servers=server,
+                user=user,
+                password=password,
+                max_reconnect_attempts=max_reconnect_attempts,
+                **kwargs,
+            )
+        except (NoServersError, ConnectionRefusedError) as error:
+            self.logger.exception("Failed to establish a connection to NATS", exc_info=error)
+            raise MessageQueueConnectionError()
 
     async def close(self):
+        if not self._nats.is_connected:
+            return
         await self._nats.close()
 
     async def initialize_subscription(self, stream: str, subject: str, durable_name: str) -> None:

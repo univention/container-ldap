@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings
 
@@ -18,7 +19,7 @@ class LDIFProducerSettings(BaseSettings):
     nats_max_reconnect_attempts: int
 
     # File location for the unix socket to the ldap server
-    socket_file_location: str
+    socket_file_location: Path
     # Maximum number of messages that are buffered and waiting to be sent to NATS
     max_in_flight_ldap_messages: int
     # Timeout (seconds) after which a write request is aborted
