@@ -866,19 +866,19 @@ cli = ["click (>=5.0)"]
 
 [[package]]
 name = "setuptools"
-version = "71.0.4"
+version = "71.1.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "setuptools-71.0.4-py3-none-any.whl", hash = "sha256:ed2feca703be3bdbd94e6bb17365d91c6935c6b2a8d0bb09b66a2c435ba0b1a5"},
-    {file = "setuptools-71.0.4.tar.gz", hash = "sha256:48297e5d393a62b7cb2a10b8f76c63a73af933bd809c9e0d0d6352a1a0135dd8"},
+    {file = "setuptools-71.1.0-py3-none-any.whl", hash = "sha256:33874fdc59b3188304b2e7c80d9029097ea31627180896fb549c578ceb8a0855"},
+    {file = "setuptools-71.1.0.tar.gz", hash = "sha256:032d42ee9fb536e33087fb66cac5f840eb9391ed05637b3f2a76a7c8fb477936"},
 ]
 
 [package.extras]
 core = ["importlib-metadata (>=6)", "importlib-resources (>=5.10.2)", "jaraco.text (>=3.7)", "more-itertools (>=8.8)", "ordered-set (>=3.1.1)", "packaging (>=24)", "platformdirs (>=2.6.2)", "tomli (>=2.0.1)", "wheel (>=0.43.0)"]
 doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "pyproject-hooks (!=1.1)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
-test = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.14)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "jaraco.test", "mypy (==1.10.0)", "packaging (>=23.2)", "pip (>=19.1)", "pyproject-hooks (!=1.1)", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy", "pytest-perf", "pytest-ruff (<0.4)", "pytest-ruff (>=0.2.1)", "pytest-ruff (>=0.3.2)", "pytest-subprocess", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
+test = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.14)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "jaraco.test", "mypy (==1.11.*)", "packaging (>=23.2)", "pip (>=19.1)", "pyproject-hooks (!=1.1)", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy", "pytest-perf", "pytest-ruff (<0.4)", "pytest-ruff (>=0.2.1)", "pytest-ruff (>=0.3.2)", "pytest-subprocess", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
 name = "six"
@@ -893,13 +893,13 @@ files = [
 
 [[package]]
 name = "slapdsock"
-version = "2.0.1.dev0+dtroeder.async.streams.server.0c4da0f4"
+version = "2.1.0"
 description = "Module package for back-sock listeners for OpenLDAP."
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "slapdsock-2.0.1.dev0+dtroeder.async.streams.server.0c4da0f4-py3-none-any.whl", hash = "sha256:3b7cadd013c03506c7094e2af70fa8bd4cc17887b5ada2c5fc85af56cdbbf38c"},
-    {file = "slapdsock-2.0.1.dev0+dtroeder.async.streams.server.0c4da0f4.tar.gz", hash = "sha256:12802d6e3855c690788cadd4944ad719a814429911bd84d7bf0b13ea2d7e8e35"},
+    {file = "slapdsock-2.1.0-py3-none-any.whl", hash = "sha256:8066602377fd2636a7d37c599c8e6f4294d5c5978f2063e6ec8253e4b66f7f2d"},
+    {file = "slapdsock-2.1.0.tar.gz", hash = "sha256:fe3f710fb41d9f4a1af02f4cb1d613bc31703e18999224b83ef7470e2334570e"},
 ]
 
 [package.dependencies]
@@ -1029,4 +1029,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "be285659acb363554b9f72190410f1d0b89a39698873d9bf2795e4fc146a9f46"
+content-hash = "5dc9188e1e562069b8636a53ac0cf330e2444f364990af112eeadcd400dd6c67"
