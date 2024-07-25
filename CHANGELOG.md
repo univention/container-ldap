@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.22.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.21.0...v0.22.0) (2024-07-25)
+
+
+### Features
+
+* **ldif-producer:** use async slapdsock, simplify project structure ([60b0178](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/60b01786c61573e3da536bffd0988f5edffd309d))
+* **ldif-producer:** use asyncio streams instead of sockserver with threading ([1c7e5b1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/1c7e5b15b0492d79f22d2ae1ada879bbc581b7fa))
+* send message and request IDs ([af813f0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/af813f0973d80eb8cd7d63a598a8fac5d7e597a1))
+
+
+### Bug Fixes
+
+* improve logging ([dc66be3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/dc66be3e348b346b1ef5d7d70516e10e2362f4d1))
+* **ldif-producer:** don't accept socket requests if the nats connection is not (yet) active ([6ea8e3d](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/6ea8e3d064f7b1b282d8941c46ec7fb4d39e036e))
+* **ldif-producer:** don't log expected behavior ([fdd0ddb](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/fdd0ddbdd25fc3a790811a906d8f7b13a9ae9fb3))
+* **ldif-producer:** don't respond to empty requests ([e3cf94e](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e3cf94efb397cb3adef8de6ab2b31e04c7d2df15))
+* **ldif-producer:** fix container entrypoint and remove default arguments ([52aeea5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/52aeea556fafe80bda4fddf2d03922b1f6a91b13))
+* **ldif-producer:** fix typos ([8db24b8](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/8db24b828df7ba2f99a5f1b8527676d622d17511))
+* **ldif-producer:** improvements with Arvid ([a6cbcc9](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/a6cbcc9e97ee1f64b8f4e4e4920311f2cd4701e1))
+* **ldif-producer:** make request_throttling non-blocking to not block forever if the outgoing_queue is full ([96f21a3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/96f21a3767d16aaaff22ddbce90fd2a3fc531f32))
+* **ldif-producer:** propperly instantiate the two coroutines with a task group ([cc2c68b](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/cc2c68be3f5fe3a4a8fdc79b12bf01cc2c1e1e99))
+* **ldif-producer:** shorten log lines ([49a33a5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/49a33a500008022f33340fc2988b397e7517dc89))
+
 ## [0.21.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.20.1...v0.21.0) (2024-07-19)
 
 
