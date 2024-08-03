@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from nats.aio.client import Client as NATS
 from nats.errors import NoServersError
-from nats.js.api import ConsumerConfig
+from nats.js.api import ConsumerConfig, RetentionPolicy, StreamConfig
 from nats.js.errors import NotFoundError
 
 MAX_RECONNECT_ATTEMPTS = 5
@@ -89,7 +89,13 @@ class NatsMQService:
             await self._js.stream_info(stream_name)
             self.logger.info("A stream with the name '%s' already exists", stream_name)
         except NotFoundError:
-            await self._js.add_stream(name=stream_name, subjects=subjects or [stream])
+            stream_config = StreamConfig(
+                name=stream_name,
+                subjects=subjects or [stream],
+                retention=RetentionPolicy.WORK_QUEUE,
+                num_replicas=3,
+            )
+            await self._js.add_stream(stream_config)
             self.logger.info("A stream with the name '%s' was created", stream_name)
 
     async def ensure_consumer(self, stream: str, deliver_subject: Optional[str] = None):
