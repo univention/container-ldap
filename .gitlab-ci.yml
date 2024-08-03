@@ -80,7 +80,7 @@ test-ldap-smoke:
     - echo -e "\e[0Ksection_start:`date +%s`:docker_compose_config[collapsed=true]\r\e[0KDocker Compose configuration"
     - docker compose config test
     - echo -e "\e[0Ksection_end:`date +%s`:docker_compose_config\r\e[0K"
-    - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 nats ldap-server ldif-producer
+    - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 nats1 nats2 nats3 ldap-server ldif-producer
   script:
     # - sleep 10
     - docker compose run --quiet-pull --rm test .venv/bin/pytest -v tests/integration tests/unit
