@@ -64,7 +64,7 @@ container-sign-external:
 test-ldap-smoke:
   stage: test
   extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:27.1.1"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"
