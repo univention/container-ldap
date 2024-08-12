@@ -5,7 +5,7 @@ import asyncio
 import logging
 from datetime import datetime
 
-from univention.provisioning.models import Message, PublisherName
+from univention.provisioning.models import LDIFProducerBody, LDIFProducerMessage, PublisherName
 from univention.provisioning.models.queue import LDIF_STREAM, LDIF_SUBJECT
 
 from .models import LDAPMessage
@@ -28,19 +28,19 @@ class MessageQueueSender:
         await self.message_queue_port.ensure_stream(LDIF_STREAM, [LDIF_SUBJECT])
 
     async def handle_ldap_message(self, ldap_message: LDAPMessage):
-        message = Message(
+        message = LDIFProducerMessage(
             publisher_name=PublisherName.ldif_producer,
             ts=datetime.now(),
             realm="ldap",
             topic="ldap",
-            body={
-                "ldap_request_type": ldap_message.request_type,
-                "binddn": ldap_message.binddn,
-                "new": ldap_message.new,
-                "old": ldap_message.old,
-                "message_id": ldap_message.message_id,
-                "request_id": ldap_message.request_id,
-            },
+            body=LDIFProducerBody(
+                ldap_request_type=ldap_message.request_type.value,
+                binddn=ldap_message.binddn,
+                new=ldap_message.new,
+                old=ldap_message.old,
+                message_id=ldap_message.message_id,
+                request_id=ldap_message.request_id,
+            ),
         )
         try:
             if ldap_message.old:
