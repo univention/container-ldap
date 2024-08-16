@@ -30,5 +30,5 @@ class LDIFProducerMQPort(ABC):
         pass
 
     @abstractmethod
-    async def ensure_stream(self, stream: str, subjects: Optional[List[str]] = None) -> None:
+    async def ensure_stream(self, stream: str, manual_delete: bool, subjects: Optional[List[str]] = None) -> None:
         pass

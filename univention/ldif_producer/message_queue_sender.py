@@ -25,7 +25,7 @@ class MessageQueueSender:
         self.queue = queue
 
     async def setup(self) -> None:
-        await self.message_queue_port.ensure_stream(LDIF_STREAM, [LDIF_SUBJECT])
+        await self.message_queue_port.ensure_stream(LDIF_STREAM, False, [LDIF_SUBJECT])
 
     async def handle_ldap_message(self, ldap_message: LDAPMessage):
         message = LDIFProducerMessage(

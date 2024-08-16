@@ -22,7 +22,7 @@ async def test_message_queue_sender_setup(mock_message_queue_port: LDIFProducerM
 
     await message_queue_sender.setup()
 
-    mock_message_queue_port.ensure_stream.assert_called_once_with(LDIF_STREAM, [LDIF_SUBJECT])
+    mock_message_queue_port.ensure_stream.assert_called_once_with(LDIF_STREAM, False, [LDIF_SUBJECT])
 
 
 @pytest.mark.asyncio

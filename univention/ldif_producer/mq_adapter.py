@@ -57,5 +57,5 @@ class LDIFProducerMQAdapter(LDIFProducerMQPort):
             subject,
         )
 
-    async def ensure_stream(self, stream: str, subjects: Optional[List[str]] = None):
-        await self.mq_service.ensure_stream(stream, subjects)
+    async def ensure_stream(self, stream: str, manual_delete: bool, subjects: Optional[List[str]] = None):
+        await self.mq_service.ensure_stream(stream, manual_delete, subjects)

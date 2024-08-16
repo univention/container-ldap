@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from nats.aio.client import Client as NATS
 from nats.errors import NoServersError
-from nats.js.api import ConsumerConfig
+from nats.js.api import ConsumerConfig, RetentionPolicy, StreamConfig
 from nats.js.errors import NotFoundError
 
 MAX_RECONNECT_ATTEMPTS = 5
@@ -72,7 +72,7 @@ class NatsMQService:
 
     async def initialize_subscription(self, stream: str, subject: str, durable_name: str) -> None:
         """Initializes a stream for a pull consumer, pull consumers can't define a deliver subject"""
-        await self.ensure_stream(stream, [subject])
+        await self.ensure_stream(stream, False, [subject])
         await self.ensure_consumer(stream)
 
         durable_name = NatsKeys.durable_name(durable_name)
@@ -83,14 +83,24 @@ class NatsMQService:
             stream=stream_name,
         )
 
-    async def ensure_stream(self, stream: str, subjects: Optional[List[str]] = None):
+    async def ensure_stream(self, stream: str, manual_delete: bool, subjects: Optional[List[str]] = None):
         stream_name = NatsKeys.stream(stream)
+        stream_config = StreamConfig(
+            name=stream_name,
+            subjects=subjects or [stream],
+            retention=RetentionPolicy.LIMITS if manual_delete else RetentionPolicy.WORK_QUEUE,
+            # TODO: set to 3 after nats clustering is stable.
+            num_replicas=1,
+        )
         try:
             await self._js.stream_info(stream_name)
             self.logger.info("A stream with the name '%s' already exists", stream_name)
         except NotFoundError:
-            await self._js.add_stream(name=stream_name, subjects=subjects or [stream])
+            await self._js.add_stream(stream_config)
             self.logger.info("A stream with the name '%s' was created", stream_name)
+        else:
+            await self._js.update_stream(stream_config)
+            self.logger.info("A stream with the name '%s' was updated", stream_name)
 
     async def ensure_consumer(self, stream: str, deliver_subject: Optional[str] = None):
         stream_name = NatsKeys.stream(stream)
