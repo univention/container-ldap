@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.22.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.22.0...v0.22.1) (2024-08-19)
+
+
+### Bug Fixes
+
+* initialize queue with the 'WorkQueuePolicy' RetentionPolicy ([fec8810](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/fec881023122bbf2c8596ce7033b6158301e650a))
+* update provisioning consumer client ([2288bf1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/2288bf1c53d99944a14ae4a9955d69384a83cdb7))
+
 ## [0.22.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.21.0...v0.22.0) (2024-07-25)
 
 
