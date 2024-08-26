@@ -120,18 +120,9 @@ key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Val
     {{- end -}}
 {{- end -}}
 
-{{- define "ldap-server.configMapUcrDefaults" -}}
-    {{- $nubusDefaultConfigMapUcrDefaults := printf "%s-stack-data-ums-ucr" .Release.Name -}}
-    {{- tpl (coalesce .Values.configMapUcrDefaults .Values.global.configMapUcrDefaults $nubusDefaultConfigMapUcrDefaults | required ".Values.global.configMapUcrDefaults must be defined.") . -}}
-{{- end -}}
-
 {{- define "ldap-server.configMapUcr" -}}
-    {{- $nubusDefaultConfigMapUcr := printf "%s-stack-data-ums-ucr" .Release.Name -}}
-    {{- tpl (coalesce .Values.configMapUcr .Values.global.configMapUcr $nubusDefaultConfigMapUcr) . -}}
-{{- end -}}
-
-{{- define "ldap-server.configMapUcrForced" -}}
-    {{- tpl (coalesce .Values.configMapUcrForced .Values.global.configMapUcrForced | default "" ) . -}}
+    {{- $nubusConfigMapUcr := printf "%s-stack-data-ums-ucr" .Release.Name -}}
+    {{- tpl (coalesce .Values.configMapUcr .Values.global.configMapUcr $nubusConfigMapUcr) . -}}
 {{- end -}}
 
 {{- define "ldap-server.ldap.connection.servicePrimary" -}}

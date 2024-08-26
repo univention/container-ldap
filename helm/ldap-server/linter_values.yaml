@@ -4,9 +4,7 @@
 global:
   ldap:
     baseDn: dc=univention-organization,dc=intranet
-  configMapUcrDefaults: "stack-data-ums-ucr"
-  configMapUcr: "stack-data-swp-ucr"
-  configMapUcrForced: null
+  configMapUcr: "stack-data-ums-ucr"
 
 extraSecrets:
   - name: openldap-tls

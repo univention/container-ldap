@@ -184,19 +184,12 @@ spec:
           volumeMounts:
             - name: scripts-volume
               mountPath: /scripts
-            - name: "config-map-ucr-defaults"
-              mountPath: "/etc/univention/base-defaults.conf"
-              subPath: "base.conf"
-            {{- if (include "ldap-server.configMapUcr" .) }}
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
-            {{- end }}
-            {{- if (include "ldap-server.configMapUcrForced" .) }}
-            - name: "config-map-ucr-forced"
-              mountPath: "/etc/univention/base-forced.conf"
-              subPath: "base.conf"
-            {{- end }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base-defaults.conf"
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
       {{- end }}
       containers:
@@ -308,19 +301,12 @@ spec:
               */}}
             - name: shared-run
               mountPath: /var/run/slapd
-            - name: "config-map-ucr-defaults"
-              mountPath: "/etc/univention/base-defaults.conf"
-              subPath: "base.conf"
-            {{- if (include "ldap-server.configMapUcr" .) }}
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
-            {{- end }}
-            {{- if (include "ldap-server.configMapUcrForced" .) }}
-            - name: "config-map-ucr-forced"
-              mountPath: "/etc/univention/base-forced.conf"
-              subPath: "base.conf"
-            {{- end }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base-defaults.conf"
             {{- if .Values.persistence.enabled }}
             {{/*
               TODO-0001 (also see above)
@@ -365,19 +351,9 @@ spec:
             defaultMode: 0555
         - name: "plugin-targets"
           emptyDir: {}
-        - name: "config-map-ucr-defaults"
-          configMap:
-            name: {{ include "ldap-server.configMapUcrDefaults" . | quote }}
-        {{- if (include "ldap-server.configMapUcr" .) }}
         - name: "config-map-ucr"
           configMap:
             name: {{ include "ldap-server.configMapUcr" . | quote }}
-        {{- end }}
-        {{- if (include "ldap-server.configMapUcrForced" .) }}
-        - name: "config-map-ucr-forced"
-          configMap:
-            name: {{ include "ldap-server.configMapUcrForced" . | quote }}
-        {{- end }}
           {{/*
               TODO-0002 (also see above)
               When legacy handling is disabled, use an emptyDir

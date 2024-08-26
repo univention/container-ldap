@@ -154,19 +154,12 @@ spec:
           volumeMounts:
             - name: scripts-volume
               mountPath: /scripts
-            - name: "config-map-ucr-defaults"
-              mountPath: "/etc/univention/base-defaults.conf"
-              subPath: "base.conf"
-            {{- if (include "ldap-server.configMapUcr" .) }}
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
-            {{- end }}
-            {{- if (include "ldap-server.configMapUcrForced" .) }}
-            - name: "config-map-ucr-forced"
-              mountPath: "/etc/univention/base-forced.conf"
-              subPath: "base.conf"
-            {{- end }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base-defaults.conf"
       {{- end }}
       containers:
         - name: "openldap"
@@ -225,19 +218,12 @@ spec:
               subPath: ldap-acls
             - name: var-run-volume
               mountPath: /var/run/slapd
-            - name: "config-map-ucr-defaults"
-              mountPath: "/etc/univention/base-defaults.conf"
-              subPath: "base.conf"
-            {{- if (include "ldap-server.configMapUcr" .) }}
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
-            {{- end }}
-            {{- if (include "ldap-server.configMapUcrForced" .) }}
-            - name: "config-map-ucr-forced"
-              mountPath: "/etc/univention/base-forced.conf"
-              subPath: "base.conf"
-            {{- end }}
+            - name: "config-map-ucr"
+              mountPath: "/etc/univention/base-defaults.conf"
+              subPath: "base-defaults.conf"
             - name: "data-volume"
               mountPath: /var/lib/univention-ldap
             {{- if .Values.ldapServer.tls.enabled }}
@@ -277,19 +263,9 @@ spec:
             defaultMode: 0555
         - name: "plugin-targets"
           emptyDir: {}
-        - name: "config-map-ucr-defaults"
-          configMap:
-            name: {{ include "ldap-server.configMapUcrDefaults" . | quote }}
-        {{- if (include "ldap-server.configMapUcr" .) }}
         - name: "config-map-ucr"
           configMap:
             name: {{ include "ldap-server.configMapUcr" . | quote }}
-        {{- end }}
-        {{- if (include "ldap-server.configMapUcrForced" .) }}
-        - name: "config-map-ucr-forced"
-          configMap:
-            name: {{ include "ldap-server.configMapUcrForced" . | quote }}
-        {{- end }}
         {{- if .Values.ldapServer.tls.enabled }}
         - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
           secret:
