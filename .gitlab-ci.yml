@@ -30,6 +30,7 @@ variables:
 lint-pre-commit:
   before_script:
     - cp .env.ldap-server.example .env.ldap-server
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
 
 .build-matrix: &build-matrix
   - IMAGE_NAME:

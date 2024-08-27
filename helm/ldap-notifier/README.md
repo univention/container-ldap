@@ -37,7 +37,7 @@ helm uninstall ldap-notifier
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/common-helm/helm | common | ^0.2.0 |
+| https://charts.bitnami.com/bitnami | common | ^2.x.x |
 
 ## Values
 
@@ -49,6 +49,15 @@ helm uninstall ldap-notifier
 		<th>Description</th>
 	</thead>
 	<tbody>
+		<tr>
+			<td>additionalAnnotations</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td>Additional custom annotations to add to all deployed objects.</td>
+		</tr>
 		<tr>
 			<td>affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].key</td>
 			<td>string</td>
@@ -86,13 +95,80 @@ helm uninstall ldap-notifier
 			<td></td>
 		</tr>
 		<tr>
-			<td>autoscaling.enabled</td>
+			<td>containerSecurityContext.allowPrivilegeEscalation</td>
 			<td>bool</td>
 			<td><pre lang="json">
 false
 </pre>
 </td>
-			<td></td>
+			<td>Enable container privileged escalation.</td>
+		</tr>
+		<tr>
+			<td>containerSecurityContext.capabilities</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "drop": [
+    "ALL"
+  ]
+}
+</pre>
+</td>
+			<td>Security capabilities for container.</td>
+		</tr>
+		<tr>
+			<td>containerSecurityContext.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td>Enable security context.</td>
+		</tr>
+		<tr>
+			<td>containerSecurityContext.readOnlyRootFilesystem</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td>Mounts the container's root filesystem as read-only.</td>
+		</tr>
+		<tr>
+			<td>containerSecurityContext.runAsGroup</td>
+			<td>int</td>
+			<td><pre lang="json">
+102
+</pre>
+</td>
+			<td>Process group id.</td>
+		</tr>
+		<tr>
+			<td>containerSecurityContext.runAsNonRoot</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td>Run container as a user.</td>
+		</tr>
+		<tr>
+			<td>containerSecurityContext.runAsUser</td>
+			<td>int</td>
+			<td><pre lang="json">
+101
+</pre>
+</td>
+			<td>Process user id.</td>
+		</tr>
+		<tr>
+			<td>containerSecurityContext.seccompProfile.type</td>
+			<td>string</td>
+			<td><pre lang="json">
+"RuntimeDefault"
+</pre>
+</td>
+			<td>Disallow custom Seccomp profile by setting it to RuntimeDefault.</td>
 		</tr>
 		<tr>
 			<td>environment</td>
@@ -243,13 +319,31 @@ false
 			<td></td>
 		</tr>
 		<tr>
-			<td>podSecurityContext</td>
-			<td>object</td>
+			<td>podSecurityContext.enabled</td>
+			<td>bool</td>
 			<td><pre lang="json">
-{}
+true
 </pre>
 </td>
-			<td></td>
+			<td>Enable security context.</td>
+		</tr>
+		<tr>
+			<td>podSecurityContext.fsGroup</td>
+			<td>int</td>
+			<td><pre lang="json">
+102
+</pre>
+</td>
+			<td>If specified, all processes of the container are also part of the supplementary group.</td>
+		</tr>
+		<tr>
+			<td>podSecurityContext.fsGroupChangePolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"Always"
+</pre>
+</td>
+			<td>Change ownership and permission of the volume before being exposed inside a Pod.</td>
 		</tr>
 		<tr>
 			<td>replicaCount</td>
@@ -270,22 +364,22 @@ null
 			<td></td>
 		</tr>
 		<tr>
-			<td>securityContext</td>
+			<td>service.annotations</td>
 			<td>object</td>
 			<td><pre lang="json">
 {}
 </pre>
 </td>
-			<td></td>
+			<td>Additional custom annotations.</td>
 		</tr>
 		<tr>
-			<td>service.enabled</td>
-			<td>bool</td>
+			<td>service.ports.notifier.containerPort</td>
+			<td>int</td>
 			<td><pre lang="json">
-true
+6669
 </pre>
 </td>
-			<td></td>
+			<td>Internal port.</td>
 		</tr>
 		<tr>
 			<td>service.ports.notifier.port</td>
@@ -294,7 +388,7 @@ true
 6669
 </pre>
 </td>
-			<td></td>
+			<td>Accessible port.</td>
 		</tr>
 		<tr>
 			<td>service.ports.notifier.protocol</td>
@@ -303,25 +397,7 @@ true
 "TCP"
 </pre>
 </td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>service.sessionAffinity.enabled</td>
-			<td>bool</td>
-			<td><pre lang="json">
-false
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>service.sessionAffinity.timeoutSeconds</td>
-			<td>int</td>
-			<td><pre lang="json">
-10800
-</pre>
-</td>
-			<td></td>
+			<td>service protocol.</td>
 		</tr>
 		<tr>
 			<td>service.type</td>
@@ -330,7 +406,7 @@ false
 "ClusterIP"
 </pre>
 </td>
-			<td></td>
+			<td>Choose the kind of Service, one of "ClusterIP", "NodePort" or "LoadBalancer".</td>
 		</tr>
 		<tr>
 			<td>tolerations</td>

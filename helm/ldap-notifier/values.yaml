@@ -29,6 +29,10 @@ global:
   # "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the
   #            kubelet attempts to start the container; otherwise, startup fails.
   imagePullPolicy: "IfNotPresent"
+
+# -- Additional custom annotations to add to all deployed objects.
+additionalAnnotations: {}
+
 affinity:
   podAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
@@ -40,14 +44,49 @@ affinity:
                 - primary
         topologyKey: kubernetes.io/hostname
 
+# Security Context.
+# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+containerSecurityContext:
+  # -- Enable container privileged escalation.
+  allowPrivilegeEscalation: false
+  # -- Security capabilities for container.
+  capabilities:
+    drop:
+      - "ALL"
+  # -- Enable security context.
+  enabled: true
+  # -- Process user id.
+  runAsUser: 101
+  # -- Process group id.
+  runAsGroup: 102
+  # Set Seccomp profile.
+  seccompProfile:
+    # -- Disallow custom Seccomp profile by setting it to RuntimeDefault.
+    type: "RuntimeDefault"
+  # -- Mounts the container's root filesystem as read-only.
+  readOnlyRootFilesystem: true
+  # -- Run container as a user.
+  runAsNonRoot: true
+
 environment: {}
 fullnameOverride: ""
 nameOverride: ""
 nodeSelector: {}
 podAnnotations: {}
-podSecurityContext: {}
+
+# Pod Security Context.
+# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+podSecurityContext:
+  # -- Enable security context.
+  enabled: true
+
+  # -- If specified, all processes of the container are also part of the supplementary group.
+  fsGroup: 102
+
+  # -- Change ownership and permission of the volume before being exposed inside a Pod.
+  fsGroupChangePolicy: "Always"
+
 replicaCount: 1
-securityContext: {}
 tolerations: []
 
 # -- Application configuration for the Univention Directory Notifier
@@ -77,17 +116,35 @@ volumes:
   #   shared-run: "shared-run-ldap-server-0"
   claims: null
 
+# Define and create Kubernetes Service.
+#
+# Ref.: https://kubernetes.io/docs/concepts/services-networking/service
 service:
-  enabled: true
-  type: ClusterIP
+  # -- Additional custom annotations.
+  annotations: {}
+  # "ClusterIP" => Exposes the Service on a cluster-internal IP. Choosing this value makes the Service only reachable
+  #                from within the cluster. This is the default that is used if you don't explicitly specify a type for
+  #                a Service.
+  # "NodePort" => Exposes the Service on each Node's IP at a static port (the NodePort). To make the node port
+  #               available, Kubernetes sets up a cluster IP address, the same as if you had requested a Service of
+  #               type: ClusterIP.
+  # "LoadBalancer" => Exposes the Service externally using a cloud provider's load balancer.
+  #
+  # Ref.: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  # -- Choose the kind of Service, one of "ClusterIP", "NodePort" or "LoadBalancer".
+  type: "ClusterIP"
+
+  # Define the ports of Service.
+  # You can set the port value to an arbitrary value, it will map the container port by name.
+  #
   ports:
     notifier:
+      # -- Accessible port.
       port: 6669
+      # -- Internal port.
+      containerPort: 6669
+      # -- service protocol.
       protocol: "TCP"
-  sessionAffinity:
-    enabled: false
-    timeoutSeconds: 10800
-
 
 ## Deployment resources
 resources:
@@ -98,7 +155,4 @@ resources:
   #   memory: "4Gi"
   #   cpu: "4"
 
-
-autoscaling:
-  enabled: false
 ...

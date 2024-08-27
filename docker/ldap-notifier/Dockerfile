@@ -122,7 +122,14 @@ RUN \
   # univention-translong tries to open this file somewhere
   # TRANSFILE ( ALL ) : E: failed to open /var/lib/univention-ldap/schema/id
   mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
-  echo '1' > /var/lib/univention-ldap-local/schema/id/id
+  echo '1' > /var/lib/univention-ldap-local/schema/id/id && \
+  # Create config files so univention tooling does not try to write them.
+  touch /etc/univention/base-defaults.conf \
+   /etc/univention/base-forced.conf \
+   /etc/univention/base-ldap.conf \
+   /etc/univention/base-schedule.conf \
+   /etc/univention/base.conf
+
 
 COPY entrypoint.sh /entrypoint.d/50-entrypoint.sh
 COPY run-notifier.sh /
