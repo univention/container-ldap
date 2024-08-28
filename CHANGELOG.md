@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.22.1...v0.23.0) (2024-08-28)
+
+
+### Features
+
+* unify UCR configuration ([dc68ddb](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/dc68ddb22c9daacdb3d3886f81f050b5707bdc87))
+
 ## [0.22.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.22.0...v0.22.1) (2024-08-19)
 
 
