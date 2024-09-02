@@ -41,6 +41,9 @@ spec:
       {{- if .Values.podSecurityContext.enabled }}
       securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
+      {{- if .Values.extraInitContainers }}
+      initContainers: {{- include "common.tplvalues.render" (dict "value" .Values.extraInitContainers "context" .) | nindent 8 }}
+      {{- end }}
       containers:
         - name: "ldap-notifier"
           {{- if .Values.containerSecurityContext.enabled }}

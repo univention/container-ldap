@@ -155,4 +155,9 @@ resources:
   #   memory: "4Gi"
   #   cpu: "4"
 
+# Define extra init containers.
+#
+# Ref.: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+extraInitContainers: []
+
 ...
