@@ -60,7 +60,7 @@ container-generate-sbom:
 
 container-sign-external:
   parallel:
-    matrix: *build-matrix
+    matrix: *publish-matrix
 
 test-ldap-smoke:
   stage: test
