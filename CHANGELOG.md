@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.24.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.23.0...v0.24.0) (2024-09-06)
+
+
+### Features
+
+* add support for extraInitContainers ([612579f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/612579f6df96e5204110631c37b1c0c502560ab8))
+* changes relating to BSI compliance ([a94a0f8](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/a94a0f87f03fca30686ff6c45c79ccaf6376f2f1))
+
+
+### Bug Fixes
+
+* remove testrunner from list of containers to sign ([ef5939c](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ef5939ce3a993f116536cd9123f9a005df7ec02a))
+
 ## [0.23.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.22.1...v0.23.0) (2024-08-28)
 
 
