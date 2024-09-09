@@ -38,10 +38,10 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
           matchExpressions:
-            - key: ldap-server-type
-              operator: In
-              values:
-                - primary
+          - key: statefulset.kubernetes.io/pod-name
+            operator: In
+            values:
+            - "{{ .Release.Name }}-ldap-server-primary-0"
         topologyKey: kubernetes.io/hostname
 
 # Security Context.

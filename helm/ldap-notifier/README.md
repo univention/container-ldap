@@ -62,7 +62,7 @@ helm uninstall ldap-notifier
 			<td>affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].key</td>
 			<td>string</td>
 			<td><pre lang="json">
-"ldap-server-type"
+"statefulset.kubernetes.io/pod-name"
 </pre>
 </td>
 			<td></td>
@@ -80,7 +80,7 @@ helm uninstall ldap-notifier
 			<td>affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].values[0]</td>
 			<td>string</td>
 			<td><pre lang="json">
-"primary"
+"{{ .Release.Name }}-ldap-server-primary-0"
 </pre>
 </td>
 			<td></td>
