@@ -1431,7 +1431,7 @@ true
 			<td>waitForDependency.image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
-"0.25.0@sha256:71a4d66fd67db6f92212b1936862b2b0d5a678d412213d74452a9195c2fe67f7"
+"0.26.0"
 </pre>
 </td>
 			<td></td>
