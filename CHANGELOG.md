@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.24.0...v0.25.0) (2024-09-16)
+
+
+### Features
+
+* update UCS base image to 2024-09-09 ([59d4f84](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/59d4f8494270d67a60d1c28201da4d802bc33fc7))
+* upgrade wait-for-dependency image ([dcae7c7](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/dcae7c71bc6b4513dc0757e4d1325ad7399c2bf8))
+
 ## [0.24.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.23.0...v0.24.0) (2024-09-06)
 
 
