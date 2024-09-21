@@ -43,7 +43,7 @@ data:
     retry_interval=5
     error=1
     while [ $error -ne 0 ]; do
-      ldapsearch -H "${PRIMARY_LDAP_URI}" -x -D "${SYNC_USER_DN}" -w "${LDAP_CN_ADMIN_PW}" -b "${LDAP_BASEDN}" -s base >/dev/null 2>&1
+      (set +x; ldapsearch -H "${PRIMARY_LDAP_URI}" -x -D "${SYNC_USER_DN}" -w "${LDAP_CN_ADMIN_PW}" -b "${LDAP_BASEDN}" -s base >/dev/null 2>&1)
       error=$?
       if [ $error -eq 49 ]; then
         echo "Failed to authenticate with primary LDAP at '${PRIMARY_LDAP_URI}' using binddn '${ADMIN_DN}' , retrying in ${retry_interval} seconds ..."

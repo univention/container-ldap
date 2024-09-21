@@ -110,7 +110,7 @@ data:
     retry_interval=5
     error=1
     while [ $error -ne 0 ]; do
-      ldapsearch -H "${SECONDARY_LDAP_URI}" -x -D "${ADMIN_DN}" -w "${LDAP_CN_ADMIN_PW}" -b "${LDAP_BASEDN}" -s base >/dev/null 2>&1
+      (set +x; ldapsearch -H "${SECONDARY_LDAP_URI}" -x -D "${ADMIN_DN}" -w "${LDAP_CN_ADMIN_PW}" -b "${LDAP_BASEDN}" -s base >/dev/null 2>&1)
       error=$?
       if [ $error -eq 49 ]; then
         echo "Failed to authenticate with secondary LDAP at '${SECONDARY_LDAP_URI}' using binddn '${ADMIN_DN}' , retrying in ${retry_interval} seconds ..."

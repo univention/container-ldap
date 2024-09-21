@@ -90,7 +90,7 @@ data:
 
   is_active_master.sh: |
     #!/bin/bash
-    set -uxo pipefail
+    set -uo pipefail
 
     # Set variables
     POD_NAME="${HOSTNAME}"
@@ -100,10 +100,12 @@ data:
     LDAP_BIND_PASSWORD="${LDAP_CN_ADMIN_PW}"
     LOCK_DN="cn=replicationlock,${LDAP_BASEDN}"
 
+    set -x
+
     # Function to check if the current pod is the active master
     is_active_master() {
       # Check if the lock entry exists
-      ldapsearch -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD" -b "$LOCK_DN" -s base "(objectClass=*)" >/dev/null 2>&1
+      (set +x; ldapsearch -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD" -b "$LOCK_DN" -s base "(objectClass=*)" >/dev/null 2>&1)
       if [ $? -ne 0 ]; then
         # Lock entry doesn't exist, try to create it
         echo "dn: $LOCK_DN
@@ -111,7 +113,7 @@ data:
     objectClass: top
     objectClass: extensibleObject
     objectClass: organizationalRole
-    description: $POD_NAME" | ldapmodify -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD"
+    description: $POD_NAME" | (set +x; ldapmodify -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD")
         if [ $? -eq 0 ]; then
           echo "Acquired lock, becoming the active master"
           echo "is_active_master.sh: Acquired lock, becoming the active master" > /proc/1/fd/1
@@ -123,7 +125,7 @@ data:
         fi
       else
         # Lock entry exists, check if it matches the current pod name
-        active_master=$(ldapsearch -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD" -b "$LOCK_DN" -s base "(objectClass=*)" description | grep ^description: | awk '{print $2}')
+        active_master=$(set +x; ldapsearch -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD" -b "$LOCK_DN" -s base "(objectClass=*)" description | grep ^description: | awk '{print $2}')
         if [ "$active_master" == "$POD_NAME" ]; then
           echo "Current pod is the active master"
           echo "is_active_master.sh: Current pod is the active master" > /proc/1/fd/1
@@ -134,14 +136,14 @@ data:
 
           # Check if the other master is alive
           other_master_uri="${LDAP_PROTOCOL}://$active_master.${HEADLESS_SERVICE_NAME}:${LDAP_PORT}"
-          ldapsearch -H "$other_master_uri" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD" -b "$LOCK_DN" -s base "(objectClass=*)" >/dev/null 2>&1
+          (set +x; ldapsearch -H "$other_master_uri" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD" -b "$LOCK_DN" -s base "(objectClass=*)" >/dev/null 2>&1)
           if [ $? -ne 0 ]; then
             echo "Other master is not responding, attempting to acquire lock"
             echo "is_active_master.sh: Other master is not responding, attempting to acquire lock" > /proc/1/fd/1
             echo "dn: $LOCK_DN
     changetype: modify
     replace: description
-    description: $POD_NAME" | ldapmodify -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD"
+    description: $POD_NAME" | ( set +x; ldapmodify -H "$LDAP_URI" -x -D "$LDAP_BIND_DN" -w "$LDAP_BIND_PASSWORD")
             if [ $? -eq 0 ]; then
               echo "Acquired lock, becoming the active master"
               echo "is_active_master.sh: Acquired lock, becoming the active master" > /proc/1/fd/1
