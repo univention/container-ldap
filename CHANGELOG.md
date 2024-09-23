@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.25.1...v0.25.2) (2024-09-23)
+
+
+### Bug Fixes
+
+* configuration name consistency ([6e31dd2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/6e31dd2e7f54cc75f441f7d546dcddca2bbce8fb))
+
 ## [0.25.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.25.0...v0.25.1) (2024-09-23)
 
 
