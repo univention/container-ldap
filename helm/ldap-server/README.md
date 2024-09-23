@@ -737,7 +737,7 @@ false
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldifProducer.nats.maxReconnectAttempts</td>
+			<td>ldifProducer.nats.natsMaxReconnectAttempts</td>
 			<td>int</td>
 			<td><pre lang="json">
 2

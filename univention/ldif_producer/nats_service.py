@@ -10,8 +10,6 @@ from nats.errors import NoServersError
 from nats.js.api import ConsumerConfig, RetentionPolicy, StreamConfig
 from nats.js.errors import NotFoundError
 
-MAX_RECONNECT_ATTEMPTS = 5
-
 logger = logging.getLogger(__name__)
 
 #

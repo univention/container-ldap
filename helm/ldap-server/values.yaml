@@ -434,7 +434,7 @@ ldifProducer:
     connection:
       host: ""
       port: ""
-    maxReconnectAttempts: 2
+    natsMaxReconnectAttempts: 2
   config:
     # -- Log level for the ldif-producer.
     # valid values are: ERROR WARNING, INFO, DEBUG

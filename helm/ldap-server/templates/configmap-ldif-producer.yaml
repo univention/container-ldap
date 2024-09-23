@@ -23,7 +23,7 @@ data:
   LOG_LEVEL: {{ required ".Values.ldifProducer.config.logLevel is required." .Values.ldifProducer.config.logLevel | quote  }}
   NATS_HOST: {{ required ".Values.ldifProducer.nats.connection.host is required." .Values.ldifProducer.nats.connection.host | quote }}
   NATS_PORT: {{ required ".Values.ldifProducer.nats.connection.port is required." .Values.ldifProducer.nats.connection.port | quote }}
-  NATS_MAX_RECONNECT_ATTEMPTS: {{ required ".Values.ldifProducer.nats.maxReconnectAttempts is required." .Values.ldifProducer.nats.maxReconnectAttempts | quote }}
+  NATS_MAX_RECONNECT_ATTEMPTS: {{ required ".Values.ldifProducer.nats.natsMaxReconnectAttempts is required." .Values.ldifProducer.nats.natsMaxReconnectAttempts | quote }}
   MAX_IN_FLIGHT_LDAP_MESSAGES: {{ required ".Values.ldifProducer.config.maxInFlightLdapMessages is required." .Values.ldifProducer.config.maxInFlightLdapMessages | quote }}
   BACKPRESSURE_WAIT_TIMEOUT: {{ required ".Values.ldifProducer.config.backpressureWaitTimeout is required." .Values.ldifProducer.config.backpressureWaitTimeout | quote }}
   LDAP_THREADS: {{ required ".Values.ldifProducer.config.ldapThreads is required." .Values.ldifProducer.config.ldapThreads | quote }}
