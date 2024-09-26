@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.25.2...v0.26.0) (2024-09-26)
+
+
+### Features
+
+* **ci:** enable malware scanning, disable sbom generation ([ab19c5f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ab19c5fcdd306c7befe26edf54a5ebc8728122d5))
+
 ## [0.25.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.25.1...v0.25.2) (2024-09-23)
 
 
