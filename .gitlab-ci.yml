@@ -35,7 +35,10 @@ lint-pre-commit:
 .build-matrix: &build-matrix
   - IMAGE_NAME:
       - "ldap-server"
-      - "ldap-notifier"
+  - IMAGE_NAME: "ldap-notifier"
+    DOCKERFILE_PATH: "./docker/ldap-notifier/Dockerfile"
+    KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR/docker/ldap-notifier"
+    KANIKO_CACHE_ARGS: "--cache=false"
   - IMAGE_NAME: "testrunner"
     DOCKERFILE_PATH: "./docker/testrunner/Dockerfile"
     KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR"
