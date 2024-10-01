@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.0...v0.26.1) (2024-10-01)
+
+
+### Bug Fixes
+
+* **ci:** use kaniko for building the ldap-notifier image ([76bfab1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/76bfab1494918cd871101708f786ad9302b61dea))
+
 ## [0.26.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.25.2...v0.26.0) (2024-09-26)
 
 
