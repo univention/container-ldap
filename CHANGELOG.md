@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.1...v0.26.2) (2024-10-02)
+
+
+### Bug Fixes
+
+* **ldif-producer:** fix typo leading to missing DN in log ([9f0705a](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9f0705a55cc53243bbfa801817ffa48d3e749eab))
+
 ## [0.26.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.0...v0.26.1) (2024-10-01)
 
 
