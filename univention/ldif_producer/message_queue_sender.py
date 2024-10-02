@@ -47,9 +47,9 @@ class MessageQueueSender:
                 dn = ldap_message.old["entryDN"][0].decode()
             elif ldap_message.new:
                 dn = ldap_message.new["entryDN"][0].decode()
+            else:
+                dn = "n/a"
         except (KeyError, IndexError, TypeError, UnicodeDecodeError):
-            dn = "n/a"
-        else:
             dn = "n/a"
         logger.info("Enqueuing message at NATS: %s %r", ldap_message.request_type.value, dn)
         await self.message_queue_port.add_message(LDIF_STREAM, LDIF_SUBJECT, message)
