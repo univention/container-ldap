@@ -246,6 +246,7 @@ prepare_slapd_run() {
 
   {
     echo '#!/usr/bin/env bash'
+    echo 'ulimit -n 32768'
     echo "/usr/sbin/slapd \\"
     echo "   -f /etc/ldap/slapd.conf \\"
     echo "   -d \"${LOG_LEVEL:-stats}\" \\"
