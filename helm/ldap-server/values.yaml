@@ -427,7 +427,7 @@ ldifProducer:
     # -- Container registry address. This setting has higher precedence than global.registry.
     registry: ""
     repository: "nubus-dev/images/ldif-producer"
-    tag: "latest"
+    tag: "0.26.2"
   nats:
     auth:
       credentialSecretName: ""
@@ -452,7 +452,7 @@ ldapServer:
     # -- Container registry address. This setting has higher precedence than global.registry.
     registry: ""
     repository: "nubus-dev/images/ldap-server"
-    tag: "latest"
+    tag: "0.26.2"
   # Configuration regarding OpenLDAP
   config:
     # -- Internal domain name of the UCS machine
