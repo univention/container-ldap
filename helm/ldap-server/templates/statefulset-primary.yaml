@@ -215,7 +215,8 @@ spec:
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+                  name: {{ tpl (include "common.secrets.name" (dict "existingSecret" .Values.auth.existingSecret "defaultNameSuffix" "admin" "context" .)) . }}
+                  key: {{ include "common.secrets.key" (dict "existingSecret" .Values.auth.existingSecret "key" "adminPassword") }}
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
@@ -249,7 +250,8 @@ spec:
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+                  name: {{ tpl (include "common.secrets.name" (dict "existingSecret" .Values.auth.existingSecret "defaultNameSuffix" "admin" "context" .)) . }}
+                  key: {{ include "common.secrets.key" (dict "existingSecret" .Values.auth.existingSecret "key" "adminPassword") }}
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
