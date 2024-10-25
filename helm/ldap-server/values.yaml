@@ -85,6 +85,17 @@ affinityProxy:
                   - proxy
           topologyKey: kubernetes.io/hostname
 
+auth:
+  # NOTE: Probably not possible to configure the username
+  adminDn: ~
+  # NOTE: Compare postgresql, "postgresPassword", a well-known username
+  adminPassword: ~
+  existingSecret:
+    name: ~
+    # keyMappings:
+    #   adminDn: ~
+    #   adminPassword: ~
+
 # Security Context.
 # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 containerSecurityContext:
