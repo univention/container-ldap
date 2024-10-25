@@ -85,11 +85,17 @@ affinityProxy:
                   - proxy
           topologyKey: kubernetes.io/hostname
 
+# NOTE: For the ldap-server the auth section has keys for multiple users, those
+# users are static, one for admin access, one for the sync operation.
+#
+# Currently they are captured into one secret, comparable to the way how the
+# postgresql chart operates.
 auth:
   # NOTE: Probably not possible to configure the username
   adminDn: ~
   # NOTE: Compare postgresql, "postgresPassword", a well-known username
   adminPassword: ~
+  syncPassword: ~
   existingSecret:
     name: ~
     # keyMappings:

@@ -211,7 +211,8 @@ spec:
             - name: SYNC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+                  name: {{ tpl (include "common.secrets.name" (dict "existingSecret" .Values.auth.existingSecret "context" .)) . }}
+                  key: {{ include "common.secrets.key" (dict "existingSecret" .Values.auth.existingSecret "key" "syncPassword") }}
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
@@ -246,7 +247,8 @@ spec:
             - name: SYNC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+                  name: {{ tpl (include "common.secrets.name" (dict "existingSecret" .Values.auth.existingSecret "context" .)) . }}
+                  key: {{ include "common.secrets.key" (dict "existingSecret" .Values.auth.existingSecret "key" "syncPassword") }}
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
