@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.2...v0.26.3) (2024-11-01)
+
+
+### Bug Fixes
+
+* add digest to wait-for-dependency image tag ([fe42efb](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/fe42efb63232bf1aa33b3f93256b6c37a903967c))
+
 ## [0.26.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.1...v0.26.2) (2024-10-02)
 
 
