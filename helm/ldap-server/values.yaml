@@ -417,7 +417,7 @@ waitForDependency:
     imagePullPolicy: "IfNotPresent"
     registry: ""
     repository: "nubus/images/wait-for-dependency"
-    tag: "0.26.0"
+    tag: "0.26.0@sha256:a31fde86bf21c597a31356fe492ab7e7a03a89282ca215eb7100763d6eb96b6b"
 
 ldifProducer:
   enabled: false
