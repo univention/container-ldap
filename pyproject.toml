@@ -12,10 +12,10 @@ packages = [
 
 [tool.poetry.dependencies]
 aiohttp = "^3.8.5"
-msgpack = "1.0.*"
+msgpack = "1.1.*"
 nats-py = "^2.7.0"
 # TODO: revert back to main branch version after the provisioning MR has also been merged.
-nubus-provisioning-consumer = "0.36.0"
+nubus-provisioning-consumer = "0.44.1"
 pydantic = "^2.3.0"
 pydantic-settings = "^2.0.3"
 python = "^3.11"
