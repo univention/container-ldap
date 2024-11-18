@@ -248,10 +248,15 @@ readinessProbePrimary:
   timeoutSeconds: 5
   exec:
     command:
-      - "/bin/bash"
+      - "/bin/sh"
       - "-c"
       - |
-        /scripts/is_active_master.sh
+        if [ -f /var/run/lease/ldap-leader ] || [ $(cat /var/run/lease/ldap-leader) != $(hostname) ]; then
+          ldapsearch -H ldapi:/// -Y EXTERNAL -b "cn=config" -LLL "(&(objectClass=mdb))" dn
+        else
+          echo "Not the leader, but ready to take over"
+          exit 0
+        fi
 
 #  Configure extra options for containers probes.
 readinessProbe:
@@ -346,9 +351,12 @@ serviceAccount:
   ## @param serviceAccount.automountServiceAccountToken Allows auto mount of ServiceAccountToken on the serviceAccount created
   ## Can be set to false if pods using this serviceAccount do not need to use K8s API
   ##
-  automountServiceAccountToken: false
+  automountServiceAccountToken: true
   # -- Additional custom labels for the ServiceAccount.
   labels: {}
+
+rbac:
+  create: true
 
 #  Configure extra options for containers probes.
 startupProbe:

@@ -987,6 +987,15 @@ true
 			<td>Allow binding to ports below 1024 without root access.</td>
 		</tr>
 		<tr>
+			<td>rbac.create</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>readinessProbe.failureThreshold</td>
 			<td>int</td>
 			<td><pre lang="json">
@@ -1044,7 +1053,7 @@ true
 			<td>readinessProbePrimary.exec.command[0]</td>
 			<td>string</td>
 			<td><pre lang="json">
-"/bin/bash"
+"/bin/sh"
 </pre>
 </td>
 			<td></td>
@@ -1062,7 +1071,7 @@ true
 			<td>readinessProbePrimary.exec.command[2]</td>
 			<td>string</td>
 			<td><pre lang="json">
-"/scripts/is_active_master.sh\n"
+"if [ -f /var/run/lease/ldap-leader ] || [ $(cat /var/run/lease/ldap-leader) != $(hostname) ]; then\n  ldapsearch -H ldapi:/// -Y EXTERNAL -b \"cn=config\" -LLL \"(\u0026(objectClass=mdb))\" dn\nelse\n  echo \"Not the leader, but ready to take over\"\n  exit 0\nfi\n"
 </pre>
 </td>
 			<td></td>
@@ -1260,7 +1269,7 @@ null
 			<td>serviceAccount.automountServiceAccountToken</td>
 			<td>bool</td>
 			<td><pre lang="json">
-false
+true
 </pre>
 </td>
 			<td></td>
