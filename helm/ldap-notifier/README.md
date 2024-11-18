@@ -126,6 +126,15 @@ true
 			<td>Enable security context.</td>
 		</tr>
 		<tr>
+			<td>containerSecurityContext.privileged</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>containerSecurityContext.readOnlyRootFilesystem</td>
 			<td>bool</td>
 			<td><pre lang="json">
@@ -301,6 +310,60 @@ false
 			<td>TODO: Clarify usage of this parameter</td>
 		</tr>
 		<tr>
+			<td>livenessProbe.failureThreshold</td>
+			<td>int</td>
+			<td><pre lang="json">
+10
+</pre>
+</td>
+			<td>Number of failed executions until container is terminated.</td>
+		</tr>
+		<tr>
+			<td>livenessProbe.initialDelaySeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+15
+</pre>
+</td>
+			<td>Delay after container start until LivenessProbe is executed.</td>
+		</tr>
+		<tr>
+			<td>livenessProbe.periodSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+20
+</pre>
+</td>
+			<td>Time between probe executions.</td>
+		</tr>
+		<tr>
+			<td>livenessProbe.successThreshold</td>
+			<td>int</td>
+			<td><pre lang="json">
+1
+</pre>
+</td>
+			<td>Number of successful executions after failed ones until container is marked healthy.</td>
+		</tr>
+		<tr>
+			<td>livenessProbe.tcpSocket.port</td>
+			<td>int</td>
+			<td><pre lang="json">
+6669
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>livenessProbe.timeoutSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+5
+</pre>
+</td>
+			<td>Timeout for command return.</td>
+		</tr>
+		<tr>
 			<td>nameOverride</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -353,6 +416,60 @@ true
 </pre>
 </td>
 			<td>Change ownership and permission of the volume before being exposed inside a Pod.</td>
+		</tr>
+		<tr>
+			<td>readinessProbe.failureThreshold</td>
+			<td>int</td>
+			<td><pre lang="json">
+10
+</pre>
+</td>
+			<td>Number of failed executions until container is considered not ready.</td>
+		</tr>
+		<tr>
+			<td>readinessProbe.initialDelaySeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+15
+</pre>
+</td>
+			<td>Delay after container start until ReadinessProbe is executed.</td>
+		</tr>
+		<tr>
+			<td>readinessProbe.periodSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+20
+</pre>
+</td>
+			<td>Time between probe executions.</td>
+		</tr>
+		<tr>
+			<td>readinessProbe.successThreshold</td>
+			<td>int</td>
+			<td><pre lang="json">
+1
+</pre>
+</td>
+			<td>Number of successful executions after failed ones until container is marked healthy.</td>
+		</tr>
+		<tr>
+			<td>readinessProbe.tcpSocket.port</td>
+			<td>int</td>
+			<td><pre lang="json">
+6669
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>readinessProbe.timeoutSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+5
+</pre>
+</td>
+			<td>Timeout for command return.</td>
 		</tr>
 		<tr>
 			<td>replicaCount</td>
@@ -416,6 +533,105 @@ null
 </pre>
 </td>
 			<td>Choose the kind of Service, one of "ClusterIP", "NodePort" or "LoadBalancer".</td>
+		</tr>
+		<tr>
+			<td>serviceAccount.annotations</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>serviceAccount.automountServiceAccountToken</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>serviceAccount.create</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>serviceAccount.labels</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td>Additional custom labels for the ServiceAccount.</td>
+		</tr>
+		<tr>
+			<td>serviceAccount.name</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>startupProbe.failureThreshold</td>
+			<td>int</td>
+			<td><pre lang="json">
+10
+</pre>
+</td>
+			<td>Number of failed executions until container is terminated.</td>
+		</tr>
+		<tr>
+			<td>startupProbe.initialDelaySeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+15
+</pre>
+</td>
+			<td>Delay after container start until StartupProbe is executed.</td>
+		</tr>
+		<tr>
+			<td>startupProbe.periodSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+20
+</pre>
+</td>
+			<td>Time between probe executions.</td>
+		</tr>
+		<tr>
+			<td>startupProbe.successThreshold</td>
+			<td>int</td>
+			<td><pre lang="json">
+1
+</pre>
+</td>
+			<td>Number of successful executions after failed ones until container is marked healthy.</td>
+		</tr>
+		<tr>
+			<td>startupProbe.tcpSocket.port</td>
+			<td>int</td>
+			<td><pre lang="json">
+6669
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>startupProbe.timeoutSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+5
+</pre>
+</td>
+			<td>Timeout for command return.</td>
 		</tr>
 		<tr>
 			<td>tolerations</td>

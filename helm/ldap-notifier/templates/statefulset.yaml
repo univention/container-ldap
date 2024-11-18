@@ -44,6 +44,9 @@ spec:
       {{- if .Values.extraInitContainers }}
       initContainers: {{- include "common.tplvalues.render" (dict "value" .Values.extraInitContainers "context" .) | nindent 8 }}
       {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.fullname" . }}
+      {{- end }}
       containers:
         - name: "ldap-notifier"
           {{- if .Values.containerSecurityContext.enabled }}
@@ -66,6 +69,9 @@ spec:
               containerPort: 6669
               protocol: TCP
           resources: {{- include "common.tplvalues.render" (dict "value" .Values.resources "context" .) | nindent 12 }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbe "context" .) | nindent 12 }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
       volumes:
         - name: "run"
           emptyDir:
