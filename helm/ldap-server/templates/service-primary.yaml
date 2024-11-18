@@ -35,4 +35,5 @@ spec:
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     ldap-server-type: primary
+    ldap-leader: "true"
 ...

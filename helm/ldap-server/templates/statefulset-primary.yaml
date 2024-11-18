@@ -229,7 +229,35 @@ spec:
           volumeMounts:
             - name: slapd-overlay-unix-socket-volume
               mountPath: /var/lib/univention-ldap/slapd-sock
-          {{- end }}
+        {{- end }}
+        - name: leader-elector
+          image: "python:3.9-slim"  # Or use a custom image with kubernetes client
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              pip install kubernetes
+              python /scripts/leader_elector.py
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: LEASE_NAME
+              value: "ldap-primary-leader"
+            - name: LEASE_DURATION_SECONDS
+              value: "15"
+          volumeMounts:
+            - name: primary-scripts-volume
+              mountPath: /scripts/leader_elector.py
+              subPath: leader_elector.py
+            - name: run-lease
+              mountPath: /var/run/lease
         - name: "openldap"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -301,6 +329,8 @@ spec:
               */}}
             - name: shared-run
               mountPath: /var/run/slapd
+            - name: run-lease
+              mountPath: /var/run/lease
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
@@ -360,6 +390,8 @@ spec:
               - name: "var-run-volume"
                 emptyDir: {}
           */}}
+        - name: "run-lease"
+          emptyDir: {}
         {{- if .Values.ldapServer.tls.enabled }}
         - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
           secret:
