@@ -154,7 +154,11 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
     # this is the current behavior in UCS 5
     && mv "/etc/ldap/slapd.d/cn=config.ldif" \
        "/etc/ldap/slapd.d/cn=config.ldif.DISABLED" \
-    && mkdir /var/lib/univention-ldap
+    && mkdir /var/lib/univention-ldap \
+    # Some file ownerships are explicitly changed to the user openldap with uid 100
+    # in the debian installation scripts.
+    # This leads to errors when running the container as any other user and needs to be reversed.
+    && chown -R 100:102 /etc/ldap/
 
 
 ###############################################################################
