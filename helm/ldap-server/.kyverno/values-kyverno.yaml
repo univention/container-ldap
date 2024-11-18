@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+---
+
+imagePullSecrets:
+  - "kyverno-test"
+
+# -- Set the amount of replicas of the primary statefulset.
+replicaCountPrimary: 42
+
+# -- Set the amount of replicas of the secondary statefulset.
+replicaCountSecondary: 42
+
+# -- Set the amount of replicas of the proxy deployment.
+replicaCountProxy: 42
+
+global:
+  imageRegistry: "my_private_registry.domain.tld"
+  imagePullSecrets:
+    - "kyverno-test"
+  imagePullPolicy: "kyverno"
+
+...
