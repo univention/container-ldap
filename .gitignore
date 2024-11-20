@@ -19,3 +19,7 @@ xunit.xml
 
 # Helm
 /helm/values-*.yaml
+
+# kyverno test files
+helm/**/.kyverno/kyverno-test.yaml
+helm/**/.kyverno/manifest.yaml

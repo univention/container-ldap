@@ -5,6 +5,11 @@ global:
   ldap:
     baseDn: dc=univention-organization,dc=intranet
   configMapUcr: "stack-data-ums-ucr"
+  systemExtensions:
+    - name: "portal"
+      image:
+        repository: "nubus/images/portal-extension"
+        tag: "0.44.3@sha256:734efc0adda680526dde09387db964612f9e0ab020382580984488cc993c68f0"
 
 extraSecrets:
   - name: openldap-tls
