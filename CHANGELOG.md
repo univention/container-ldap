@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.3...v0.26.4) (2024-11-20)
+
+
+### Bug Fixes
+
+* **ldap-server:** remove file ownership errors in the univention-compatibility initContainer ([237d1f3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/237d1f39acc59af5fb7462e811378a6b8435e751))
+
 ## [0.26.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.2...v0.26.3) (2024-11-01)
 
 
