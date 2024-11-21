@@ -15,6 +15,10 @@ ldap
 {{- printf "%s-ldap-server" .Release.Name -}}
 {{- end -}}
 
+{{- define "nubusTemplates.ldapServerNotifier.ldap.connection.host" -}}
+{{- printf "%s-ldap-server-primary-notifier" .Release.Name -}}
+{{- end -}}
+
 {{- define "nubusTemplates.ldapServer.ldap.connection.port" -}}
 389
 {{- end -}}
