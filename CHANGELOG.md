@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.4...v0.26.5) (2024-11-25)
+
+
+### Bug Fixes
+
+* add a systemExtension to the linter_values.yaml file ([9e9bcdd](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9e9bcdd0acd9bd4ed0c162429ad74787ef0079d3))
+* kyverno lint ([23f9406](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/23f94062acfda5e547e042b29717d7e1a8a2ae85))
+
 ## [0.26.4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.3...v0.26.4) (2024-11-20)
 
 
