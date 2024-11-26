@@ -141,13 +141,25 @@ key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Val
 {{- printf "%s://%s" (include "nubusTemplates.ldapServer.ldap.connection.protocol" .) (include "ldap-server.ldap.connection.serviceSecondary" .) -}}
 {{- end -}}
 
+{{- /*
+Validates and returns the primary replica count.
+Fails if replica count exceeds 2.
+*/ -}}
 {{- define "ldap-server.replicaCountPrimary" -}}
-{{- if and .Values.replicaCountPrimary (gt (int .Values.replicaCountPrimary) 1) -}}
-{{- int .Values.replicaCountPrimary -}}
+{{- $maxReplicas := 2 -}}
+{{- if .Values.replicaCountPrimary -}}
+  {{- $count := int .Values.replicaCountPrimary -}}
+  {{- if gt $count $maxReplicas -}}
+    {{- fail (printf "replica count %d exceeds maximum allowed value of %d" $count $maxReplicas) -}}
+  {{- else if gt $count 1 -}}
+    {{- $count -}}
+  {{- else -}}
+    {{- $count -}}
+  {{- end -}}
 {{- else if .Values.highAvailabilityMode -}}
-2
+  2
 {{- else -}}
-{{- int .Values.replicaCountPrimary -}}
+  1
 {{- end -}}
 {{- end -}}
 

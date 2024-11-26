@@ -584,6 +584,42 @@ true
 			<td></td>
 		</tr>
 		<tr>
+			<td>ldapServer.leaderElectorImage.imagePullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"IfNotPresent"
+</pre>
+</td>
+			<td>Image pull policy. This setting has higher precedence than global.imagePullPolicy.</td>
+		</tr>
+		<tr>
+			<td>ldapServer.leaderElectorImage.registry</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td>Container registry address. This setting has higher precedence than global.registry.</td>
+		</tr>
+		<tr>
+			<td>ldapServer.leaderElectorImage.repository</td>
+			<td>string</td>
+			<td><pre lang="json">
+"nubus-dev/images/ldap-server-elector"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapServer.leaderElectorImage.tag</td>
+			<td>string</td>
+			<td><pre lang="json">
+"latest"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>ldapServer.legacy.shareSamlSize</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -1080,7 +1116,7 @@ true
 			<td>readinessProbePrimary.exec.command[2]</td>
 			<td>string</td>
 			<td><pre lang="json">
-"if [ -f /var/run/lease/ldap-leader ] || [ $(cat /var/run/lease/ldap-leader) != $(hostname) ]; then\n  ldapsearch -H ldapi:/// -Y EXTERNAL -b \"cn=config\" -LLL \"(\u0026(objectClass=mdb))\" dn\nelse\n  echo \"Not the leader, but ready to take over\"\n  exit 0\nfi\n"
+"ldapsearch -H ldapi:/// -Y EXTERNAL -b \"cn=config\" -LLL \"(\u0026(objectClass=mdb))\" dn"
 </pre>
 </td>
 			<td></td>

@@ -229,35 +229,7 @@ spec:
           volumeMounts:
             - name: slapd-overlay-unix-socket-volume
               mountPath: /var/lib/univention-ldap/slapd-sock
-        {{- end }}
-        - name: leader-elector
-          image: "python:3.9-slim"  # Or use a custom image with kubernetes client
-          imagePullPolicy: IfNotPresent
-          command:
-            - sh
-            - -c
-            - |
-              pip install kubernetes
-              python /scripts/leader_elector.py
-          env:
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: LEASE_NAME
-              value: "ldap-primary-leader"
-            - name: LEASE_DURATION_SECONDS
-              value: "15"
-          volumeMounts:
-            - name: primary-scripts-volume
-              mountPath: /scripts/leader_elector.py
-              subPath: leader_elector.py
-            - name: run-lease
-              mountPath: /var/run/lease
+          {{- end }}
         - name: "openldap"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -357,6 +329,29 @@ spec:
             {{- if .Values.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
+        - name: leader-elector
+          image: {{ .Values.ldapServer.leaderElectorImage.repository }}:{{ .Values.ldapServer.leaderElectorImage.tag }}
+          imagePullPolicy: {{ .Values.ldapServer.leaderElectorImage.imagePullPolicy }}
+          command:
+            - /scripts/leader_elector.py
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          volumeMounts:
+            - name: primary-scripts-volume
+              mountPath: /scripts
+              readOnly: true
+            - name: run-lease
+              mountPath: /var/run/lease
       volumes:
         - name: "slapd-overlay-unix-socket-volume"
           emptyDir: {}

@@ -251,13 +251,7 @@ readinessProbePrimary:
     command:
       - "/bin/sh"
       - "-c"
-      - |
-        if [ -f /var/run/lease/ldap-leader ] || [ $(cat /var/run/lease/ldap-leader) != $(hostname) ]; then
-          ldapsearch -H ldapi:/// -Y EXTERNAL -b "cn=config" -LLL "(&(objectClass=mdb))" dn
-        else
-          echo "Not the leader, but ready to take over"
-          exit 0
-        fi
+      - ldapsearch -H ldapi:/// -Y EXTERNAL -b "cn=config" -LLL "(&(objectClass=mdb))" dn
 
 #  Configure extra options for containers probes.
 readinessProbe:
@@ -461,6 +455,13 @@ ldapServer:
     # -- Container registry address. This setting has higher precedence than global.registry.
     registry: ""
     repository: "nubus-dev/images/ldap-server"
+    tag: "latest"
+  leaderElectorImage:
+    # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
+    imagePullPolicy: "IfNotPresent"
+    # -- Container registry address. This setting has higher precedence than global.registry.
+    registry: ""
+    repository: "nubus-dev/images/ldap-server-elector"
     tag: "latest"
   # Configuration regarding OpenLDAP
   config:
