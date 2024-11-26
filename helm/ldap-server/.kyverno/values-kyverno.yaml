@@ -6,7 +6,7 @@ imagePullSecrets:
   - "kyverno-test"
 
 # -- Set the amount of replicas of the primary statefulset.
-replicaCountPrimary: 42
+replicaCountPrimary: 2
 
 # -- Set the amount of replicas of the secondary statefulset.
 replicaCountSecondary: 42
