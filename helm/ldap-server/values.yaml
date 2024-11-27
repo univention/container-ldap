@@ -456,13 +456,18 @@ ldapServer:
     registry: ""
     repository: "nubus-dev/images/ldap-server"
     tag: "latest"
-  leaderElectorImage:
-    # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
-    imagePullPolicy: "IfNotPresent"
-    # -- Container registry address. This setting has higher precedence than global.registry.
-    registry: ""
-    repository: "nubus-dev/images/ldap-server-elector"
-    tag: "latest"
+  leaderElector:
+    image:
+      # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
+      pullPolicy: "IfNotPresent"
+      # -- Container registry address. This setting has higher precedence than global.registry.
+      registry: ""
+      repository: "nubus-dev/images/ldap-server-elector"
+      tag: "latest"
+    leaseName: "ldap-primary-leader"
+    leaseDurationSeconds: 15
+    retryPeriodSeconds: 5
+    renewDeadlineSeconds: 10
   # Configuration regarding OpenLDAP
   config:
     # -- Internal domain name of the UCS machine

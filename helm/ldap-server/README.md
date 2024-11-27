@@ -584,7 +584,7 @@ true
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldapServer.leaderElectorImage.imagePullPolicy</td>
+			<td>ldapServer.leaderElector.image.pullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
 "IfNotPresent"
@@ -593,7 +593,7 @@ true
 			<td>Image pull policy. This setting has higher precedence than global.imagePullPolicy.</td>
 		</tr>
 		<tr>
-			<td>ldapServer.leaderElectorImage.registry</td>
+			<td>ldapServer.leaderElector.image.registry</td>
 			<td>string</td>
 			<td><pre lang="json">
 ""
@@ -602,7 +602,7 @@ true
 			<td>Container registry address. This setting has higher precedence than global.registry.</td>
 		</tr>
 		<tr>
-			<td>ldapServer.leaderElectorImage.repository</td>
+			<td>ldapServer.leaderElector.image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
 "nubus-dev/images/ldap-server-elector"
@@ -611,10 +611,46 @@ true
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldapServer.leaderElectorImage.tag</td>
+			<td>ldapServer.leaderElector.image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
 "latest"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapServer.leaderElector.leaseDurationSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+15
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapServer.leaderElector.leaseName</td>
+			<td>string</td>
+			<td><pre lang="json">
+"ldap-primary-leader"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapServer.leaderElector.renewDeadlineSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+10
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapServer.leaderElector.retryPeriodSeconds</td>
+			<td>int</td>
+			<td><pre lang="json">
+5
 </pre>
 </td>
 			<td></td>

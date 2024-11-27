@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
-ARG UCS_BASE_IMAGE_TAG=0.13.1
+ARG UCS_BASE_IMAGE_TAG=0.13.1-post-main-build-2024-09-09
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520
 
 ARG WORKDIR="/app"
@@ -25,7 +25,6 @@ RUN pip3 install --break-system-packages --no-cache-dir \
     pydantic-settings==2.6.1
 
 COPY docker/leader-elector/leader_elector.py ${WORKDIR}/
-RUN chmod +x ${WORKDIR}/leader_elector.py
 
 ###############################################
 # Stage 2: final image

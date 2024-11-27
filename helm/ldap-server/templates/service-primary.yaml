@@ -35,5 +35,5 @@ spec:
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     ldap-server-type: primary
-    ldap-leader: "true"
+    statefulset.kubernetes.io/pod-name: {{ printf "%s-primary-0" (include "common.names.fullname" .) | quote }}  # This will be updated by the leader elector
 ...

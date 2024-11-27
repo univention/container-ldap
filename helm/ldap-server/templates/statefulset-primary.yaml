@@ -301,8 +301,6 @@ spec:
               */}}
             - name: shared-run
               mountPath: /var/run/slapd
-            - name: run-lease
-              mountPath: /var/run/lease
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base.conf"
               subPath: "base.conf"
@@ -330,10 +328,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
         - name: leader-elector
-          image: {{ .Values.ldapServer.leaderElectorImage.repository }}:{{ .Values.ldapServer.leaderElectorImage.tag }}
-          imagePullPolicy: {{ .Values.ldapServer.leaderElectorImage.imagePullPolicy }}
-          command:
-            - /scripts/leader_elector.py
+          image: {{ coalesce .Values.ldapServer.leaderElector.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.leaderElector.image.repository }}:{{ .Values.ldapServer.leaderElector.image.tag }}
+          imagePullPolicy: {{ .Values.ldapServer.leaderElector.image.pullPolicy }}
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
@@ -346,12 +342,14 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          volumeMounts:
-            - name: primary-scripts-volume
-              mountPath: /scripts
-              readOnly: true
-            - name: run-lease
-              mountPath: /var/run/lease
+            - name: LEASE_NAME
+              value: {{ .Values.ldapServer.leaderElector.leaseName | quote }}
+            - name: LEASE_DURATION_SECONDS
+              value: {{ .Values.ldapServer.leaderElector.leaseDurationSeconds | quote }}
+            - name: RETRY_PERIOD_SECONDS
+              value: {{ .Values.ldapServer.leaderElector.retryPeriodSeconds | quote }}
+            - name: RENEW_DEADLINE_SECONDS
+              value: {{ .Values.ldapServer.leaderElector.renewDeadlineSeconds | quote }}
       volumes:
         - name: "slapd-overlay-unix-socket-volume"
           emptyDir: {}
@@ -385,8 +383,6 @@ spec:
               - name: "var-run-volume"
                 emptyDir: {}
           */}}
-        - name: "run-lease"
-          emptyDir: {}
         {{- if .Values.ldapServer.tls.enabled }}
         - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
           secret:
