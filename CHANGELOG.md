@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.27.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.5...v0.27.0) (2024-11-28)
+
+
+### Features
+
+* improve leader election and ldap server configuration ([f743a52](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/f743a527fe0f3fea32a08fe8c735d81e2fa32689))
+* ldap leader election ([70e8e65](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/70e8e656cf56205849eec8f24f0f1d05f73d510d))
+* leader-elector container ([e5b3b28](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e5b3b28833c86a0186a4708ea4fd6b7665d0d326))
+* make ldap-server-primary service headed ([ed5c96e](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ed5c96e4cfa6bbbc6d1283204a3c1eaadf8f15e3))
+
+
+### Bug Fixes
+
+* apply leader_elector.py suggestions ([9ded5e9](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9ded5e966eee9dd1c94a8b555456a79c67b20e6b))
+* handle SIGTERM ([9cc6bc2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9cc6bc282a4dbae71d9e0c5dc0a2d32b3ffa9aa0))
+* kyverno lint values ([3957228](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/3957228500995110b484c51067e91037950bbecc))
+
 ## [0.26.5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.4...v0.26.5) (2024-11-25)
 
 
