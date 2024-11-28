@@ -193,3 +193,14 @@ secondary
 primary
 {{- end -}}
 {{- end -}}
+
+{{- define "ldap-server.validateTerminationGracePeriod" -}}
+{{- $leaseDuration := int .Values.ldapServer.leaderElector.leaseDurationSeconds -}}
+{{- $terminationGracePeriod := 30 -}}
+{{- if .Values.terminationGracePeriodSeconds -}}
+  {{- $terminationGracePeriod = int .Values.terminationGracePeriodSeconds -}}
+{{- end -}}
+{{- if lt $terminationGracePeriod $leaseDuration -}}
+  {{- fail (printf "terminationGracePeriodSeconds (%d) must be greater than or equal to ldapServer.leaderElector.leaseDurationSeconds (%d)" $terminationGracePeriod $leaseDuration) -}}
+{{- end -}}
+{{- end -}}

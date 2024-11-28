@@ -34,15 +34,23 @@ class LDAPLeaderElector:
         self.coordination_api = client.CoordinationV1Api()
         self.settings = Settings()
         self.running = True
-        signal.signal(signal.SIGINT, self.handle_sigint)
+        signal.signal(signal.SIGTERM, self.handle_sigterm)
         self.is_currently_active = False
         self.is_currently_labeled_leader = False
 
-    def handle_sigint(self, signum, frame):
-        logger.info("Received SIGINT, releasing lease and exiting...")
-        self.ensure_pod_is_hot_standby()  # Ensure we remove leader status
+    def handle_sigterm(self, signum, frame):
+        """Handle SIGTERM signal by gracefully releasing the lease and waiting"""
+        logger.info("Received SIGTERM, releasing lease and waiting before exit...")
         self.release_lease()
+
+        # Wait for the lease duration to ensure the other pod can acquire it
+        logger.info(f"Waiting {self.settings.lease_duration_seconds} seconds before exit...")
+        time.sleep(self.settings.lease_duration_seconds)
+
+        self.ensure_pod_is_hot_standby()
+
         self.running = False
+        logger.info("Graceful shutdown complete")
         sys.exit(0)
 
     def ensure_lease(self):
@@ -127,17 +135,13 @@ class LDAPLeaderElector:
 
     def update_service_selector(self, make_active):
         """Update the service selector to point to this pod when it becomes the leader"""
-        # Skip if no state change
-        if make_active == self.is_currently_active:
+        # Skip if no state change or if not making active (e.g., on shutdown)
+        if make_active == self.is_currently_active or not make_active:
             return
 
         try:
             service_name = f"{self.settings.pod_name.rsplit('-', 1)[0]}"
-            body = {
-                "spec": {
-                    "selector": {"statefulset.kubernetes.io/pod-name": self.settings.pod_name if make_active else None}
-                }
-            }
+            body = {"spec": {"selector": {"statefulset.kubernetes.io/pod-name": self.settings.pod_name}}}
             self.core_api.patch_namespaced_service(
                 name=service_name, namespace=self.settings.pod_namespace, body=body, field_manager="leader-elector"
             )
@@ -169,8 +173,6 @@ class LDAPLeaderElector:
                 self.coordination_api.replace_namespaced_lease(
                     name=self.settings.lease_name, namespace=self.settings.pod_namespace, body=lease
                 )
-                # Ensure we remove our pod from being the active primary
-                self.ensure_pod_is_hot_standby()
         except ApiException:
             logger.error("Failed to release lease", exc_info=True)
 

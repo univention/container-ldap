@@ -328,6 +328,7 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
         - name: leader-elector
+          {{- include "ldap-server.validateTerminationGracePeriod" . }}
           image: {{ coalesce .Values.ldapServer.leaderElector.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.leaderElector.image.repository }}:{{ .Values.ldapServer.leaderElector.image.tag }}
           imagePullPolicy: {{ .Values.ldapServer.leaderElector.image.pullPolicy }}
           {{- if .Values.containerSecurityContext.enabled }}

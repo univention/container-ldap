@@ -1447,9 +1447,9 @@ true
 		</tr>
 		<tr>
 			<td>terminationGracePeriodSeconds</td>
-			<td>string</td>
+			<td>int</td>
 			<td><pre lang="json">
-""
+20
 </pre>
 </td>
 			<td>In seconds, time the given to the pod needs to terminate gracefully. Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods</td>
