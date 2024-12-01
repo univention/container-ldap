@@ -22,8 +22,6 @@ metadata:
     {{- end }}
 spec:
   type: "ClusterIP"
-  # TODO: If it would be fine for the write requests to be distributed over all existing primaries, setting this to true would be a solution to the problem of a non-restartable statefulset.
-  publishNotReadyAddresses: false
   ports:
     {{- range $key, $value := .Values.service.ports }}
     - name: "{{ $key }}"

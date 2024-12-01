@@ -55,17 +55,17 @@ data:
 
     if [[ "${replicacount}" -eq 2 ]]; then
       if [[ "${trailing_digit}" -eq 0 ]]; then
-        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-1.${PRIMARY_SERVICE}:${LDAP_PORT}"
+        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-1:${LDAP_PORT}"
       else
-        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-0.${PRIMARY_SERVICE}:${LDAP_PORT}"
+        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-0:${LDAP_PORT}"
       fi
     else
       if [[ "${trailing_digit}" -eq 0 ]]; then
-        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-$((replicacount - 1)).${PRIMARY_SERVICE}:${LDAP_PORT}"
+        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-$((replicacount - 1)):${LDAP_PORT}"
       elif [[ "${trailing_digit}" -eq $((replicacount - 1)) ]]; then
-        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-0.${PRIMARY_SERVICE}:${LDAP_PORT}"
+        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-0:${LDAP_PORT}"
       else
-        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-$((trailing_digit - 1)).${PRIMARY_SERVICE}:${LDAP_PORT}"
+        export PRIMARY_LDAP_URI="${LDAP_PROTOCOL}://${PRIMARY_SERVICE}-$((trailing_digit - 1)):${LDAP_PORT}"
       fi
     fi
 
