@@ -202,7 +202,7 @@ data:
       scope=sub
       retry="60 +"
 
-    mirrormode on
+    multiprovider on
     {{- end }}
 
   slapd.conf.socket_overlay.tpl: |
