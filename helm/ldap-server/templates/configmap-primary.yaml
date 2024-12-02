@@ -99,7 +99,7 @@ data:
     slapd_conf=$(cat /etc/ldap/slapd.conf)
 
     # Initialize an empty modified slapd.conf file
-    modified_slapd_conf="serverID 2${SERVERID}\n"
+    modified_slapd_conf="serverID ${SERVERID}\n"
 
     # Initialize the replication ID counter
     replication_id=1
