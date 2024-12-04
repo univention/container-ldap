@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.28.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.27.0...v0.28.0) (2024-12-04)
+
+
+### Features
+
+* **ldap-server:** Add service for ldap-server-primary-0 to be used by listeners ([8256526](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/82565263a8ac56bd5c30a4f566f4289e0e9b4f68))
+
+
+### Bug Fixes
+
+* **ldap-server:** Do not match any Pod until a leader claims the lead ([93e8336](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/93e8336668a0b156d52bfa73d987198494d0d205))
+* **ldap-server:** ldap-primaries cannot see each other without a headless service for mirror mode ([04e8ae6](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/04e8ae6bc4290ce0b8536ece3cea354d3113a52e))
+* **ldap-server:** multiprovider instead of mirrormode as of openldap 2.5 ([035712e](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/035712eddbb6d79f8524774c652ec96fb710debb))
+* **ldap-server:** serverID must be sequential starting from non 0 ([1dea0c2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/1dea0c2ecd5dc8d26b6fafea40cd4e13f3787bd5))
+* **ldap-server:** Update bitnami common source ([765b2bd](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/765b2bdd00ba8dbfd5f9eb05032e532e39c14593))
+
 ## [0.27.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.26.5...v0.27.0) (2024-11-28)
 
 
