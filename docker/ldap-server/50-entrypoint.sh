@@ -134,6 +134,7 @@ setup_initial_ldif() {
     database_name="data"
   fi
 
+  # FIXME: Should we just check for files in that folder? There is also lock.mdb
   files="$(find /var/lib/univention-ldap/ldap/ -name "${database_name}.*" -type f)"
 
   if [[ -n "${files}" ]]; then
