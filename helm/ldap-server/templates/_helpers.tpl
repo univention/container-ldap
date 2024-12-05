@@ -151,15 +151,10 @@ Fails if replica count exceeds 2.
 */ -}}
 {{- define "ldap-server.replicaCountPrimary" -}}
 {{- $maxReplicas := 2 -}}
-{{- if .Values.replicaCountPrimary -}}
-  {{- $count := int .Values.replicaCountPrimary -}}
-  {{- if gt $count $maxReplicas -}}
-    {{- fail (printf "replica count %d exceeds maximum allowed value of %d" $count $maxReplicas) -}}
-  {{- else if gt $count 1 -}}
-    {{- $count -}}
-  {{- else -}}
-    {{- $count -}}
-  {{- end -}}
+{{- if and .Values.replicaCountPrimary (gt (int .Values.replicaCountPrimary) $maxReplicas) -}}
+  {{- fail (printf "replica count %d exceeds maximum allowed value of %d" $count $maxReplicas) -}}
+{{- else if and .Values.replicaCountPrimary (gt (int .Values.replicaCountPrimary) 1) -}}
+  {{- .Values.replicaCountPrimary -}}
 {{- else if .Values.highAvailabilityMode -}}
   2
 {{- else -}}
