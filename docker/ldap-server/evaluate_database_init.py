@@ -61,6 +61,7 @@ def database_initialized(v1: client.CoreV1Api, namespace: str):
         logger.error("Unexpected error updating the database initialization status.")
         logger.error(error)
         sys.exit(2)
+    logger.info("Database initialization status set to true in the %s ConfigMap" % CONFIGMAP_NAME)
 
 
 def main():
@@ -70,7 +71,8 @@ def main():
     parser.add_argument("--log-level", default="info", help="Set the log level, default is INFO")
     subparsers = parser.add_subparsers(dest="command", required=True)
     command_needs_initialization = subparsers.add_parser(
-        "database-needs-initialization", help="Check the LDAP database initialization status"
+        "database-needs-initialization",
+        help="Check the LDAP database initialization status, returns 0 if initialization is required.",
     )
     command_needs_initialization.set_defaults(func=database_needs_initialization)
     command_initialized = subparsers.add_parser(
