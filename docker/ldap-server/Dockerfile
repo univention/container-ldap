@@ -91,10 +91,14 @@ RUN \
         ca-certificates=* \
         # 30 Mb extra, only needed for ucr-light-filter
         # TODO: Remove when "Config-Adapter" sidecar is ready
-        python3=3.11.* && \
+        python3=3.11.* \
+        python3-pip=23.* && \
     # This file is a dependency of the slapd.conf templates
     mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
     echo "1" >/var/lib/univention-ldap-local/schema/id/id
+
+RUN python3 -m pip install --no-cache-dir --break-system-packages \
+      kubernetes==31.0.0
 
 ###############################################################################
 # Copy LDAP config and libs from UCS builder image
@@ -170,6 +174,8 @@ COPY ucr-light-filter /usr/sbin/
 COPY 40-self-service-acl.sh \
      50-entrypoint.sh \
      /entrypoint.d/
+
+COPY evaluate_database_init.py /usr/local/bin/evaluate_database_init
 
 CMD ["/etc/univention/run-slapd.sh"]
 

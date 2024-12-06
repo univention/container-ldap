@@ -129,13 +129,8 @@ setup_sasl_mech_saml() {
 setup_initial_ldif() {
   # Inspired by 01univention-ldap-server-init.inst
 
-  #if [[ "mdb" = "$ldap_database_type" ]; then
-  if true; then # Let's assume that type is always mdb
-    database_name="data"
-  fi
-
   # FIXME: Should we just check for files in that folder? There is also lock.mdb
-  files="$(find /var/lib/univention-ldap/ldap/ -name "${database_name}.*" -type f)"
+  files="$(find /var/lib/univention-ldap/ldap/ -name "data.*" -type f)"
 
   if [[ -n "${files}" ]]; then
     echo "INFO: Skipping loading of initial content, found existing database files."
