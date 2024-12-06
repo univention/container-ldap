@@ -132,7 +132,14 @@ setup_initial_ldif() {
   # FIXME: Should we just check for files in that folder? There is also lock.mdb
   files="$(find /var/lib/univention-ldap/ldap/ -name "data.*" -type f)"
 
-  if [[ -n "${files}" ]]; then
+  evaluate_database_init database-needs-initialization
+
+  if [[ "$@" -eq 2 ]]; then
+    echo "Fatal error: database will not be initialized"
+    # FIXME: Kill the container somehow
+  fi
+
+  if [[ -n "${files}" || "$@" -eq 1 ]]; then
     echo "INFO: Skipping loading of initial content, found existing database files."
     return 0
   else
@@ -165,6 +172,8 @@ setup_initial_ldif() {
   cat /usr/share/univention-ldap/{base.ldif,core-edition.ldif} \
     | ucr-light-filter | sed -e "${filter_string}" \
     | slapadd -f /etc/ldap/slapd.conf
+
+  evaluate_database_init database-initialized
 
 }
 
