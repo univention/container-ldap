@@ -129,15 +129,17 @@ setup_sasl_mech_saml() {
 setup_initial_ldif() {
   # Inspired by 01univention-ldap-server-init.inst
 
-  #if [[ "mdb" = "$ldap_database_type" ]; then
-  if true; then # Let's assume that type is always mdb
-    database_name="data"
+  # FIXME: Should we just check for files in that folder? There is also lock.mdb
+  files="$(find /var/lib/univention-ldap/ldap/ -name "data.*" -type f)"
+
+  evaluate_database_init database-needs-initialization
+
+  if [[ "$@" -eq 2 ]]; then
+    echo "Fatal error: database will not be initialized"
+    # FIXME: Kill the container somehow
   fi
 
-  # FIXME: Should we just check for files in that folder? There is also lock.mdb
-  files="$(find /var/lib/univention-ldap/ldap/ -name "${database_name}.*" -type f)"
-
-  if [[ -n "${files}" ]]; then
+  if [[ -n "${files}" || "$@" -eq 1 ]]; then
     echo "INFO: Skipping loading of initial content, found existing database files."
     return 0
   else
@@ -170,6 +172,8 @@ setup_initial_ldif() {
   cat /usr/share/univention-ldap/{base.ldif,core-edition.ldif} \
     | ucr-light-filter | sed -e "${filter_string}" \
     | slapadd -f /etc/ldap/slapd.conf
+
+  evaluate_database_init database-initialized
 
 }
 
