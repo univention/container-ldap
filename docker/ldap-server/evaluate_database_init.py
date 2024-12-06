@@ -8,7 +8,6 @@ import sys
 
 from kubernetes import client, config
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -68,7 +67,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Script to check LDAP database initialization status in Nubus for Kubernetes"
     )
-    parser.add_argument("-v", "--verbose", action="count", default=0, help="Set log level")
+    parser.add_argument("--log-level", default="info", help="Set the log level, default is INFO")
     subparsers = parser.add_subparsers(dest="command", required=True)
     command_needs_initialization = subparsers.add_parser(
         "database-needs-initialization", help="Check the LDAP database initialization status"
@@ -80,7 +79,7 @@ def main():
     command_initialized.set_defaults(func=database_initialized)
     args = parser.parse_args()
 
-    logger.setLevel(max(logging.CRITICAL - args.verbose * 10, logging.DEBUG))
+    logging.basicConfig(level=args.log_level.upper())
 
     try:
         config.load_incluster_config()
