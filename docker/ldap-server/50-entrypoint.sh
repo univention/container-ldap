@@ -267,5 +267,5 @@ setup_sasl_mech_saml
 setup_initial_ldif
 setup_translog_ldif
 setup_tls
-log_configuration
+# log_configuration
 prepare_slapd_run
