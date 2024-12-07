@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2023-2024 Univention GmbH
 
 
-set -euxo pipefail
+set -euo pipefail
 
 setup_paths() {
   mkdir --parents /var/lib/univention-ldap/internal
