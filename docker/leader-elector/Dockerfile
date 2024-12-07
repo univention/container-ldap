@@ -25,7 +25,7 @@ RUN pip3 install --break-system-packages --no-cache-dir \
     kubernetes==31.0.0 \
     pydantic-settings==2.6.1
 
-COPY docker/leader-elector/leader_elector.py ${WORKDIR}/
+COPY ./leader_elector.py ${WORKDIR}/
 
 ###############################################
 # Stage 2: final image

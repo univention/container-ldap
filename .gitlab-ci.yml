@@ -47,8 +47,7 @@ lint-pre-commit:
     DOCKERFILE_PATH: "./docker/ldif-producer/Dockerfile"
     KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR"
   - IMAGE_NAME: "ldap-server-elector"
-    DOCKERFILE_PATH: "./docker/leader-elector/Dockerfile"
-    KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR"
+    KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR/docker/leader-elector"
 
 .publish-matrix: &publish-matrix
   - IMAGE_NAME:
