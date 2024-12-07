@@ -270,9 +270,9 @@ setup_paths
 setup_listener_path
 setup_last_id_path
 setup_slapd_conf
-fetch_saml_metadata
+# fetch_saml_metadata
 setup_sasl_mech_whitelist
-setup_sasl_mech_saml
+# setup_sasl_mech_saml
 setup_initial_ldif
 setup_translog_ldif
 setup_tls
