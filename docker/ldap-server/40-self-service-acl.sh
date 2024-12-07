@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2023-2024 Univention GmbH
 
 
-set -euxo pipefail
+set -euo pipefail
 
 ##############################################################################
 # Generate the LDAP ACLs for the self-service from UCR variable.
