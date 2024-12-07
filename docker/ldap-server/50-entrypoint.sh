@@ -137,7 +137,10 @@ setup_initial_ldif() {
   files="$(find /var/lib/univention-ldap/ldap/ -name "${database_name}.*" -type f)"
 
   if [[ -n "${files}" ]]; then
+    echo "INFO: Skipping loading of initial content, found existing database files."
     return 0
+  else
+    echo "INFO: Loading initial directory content."
   fi
 
   pw_crypt="$(slappasswd -h "{CRYPT}" -s "${LDAP_CN_ADMIN_PW}")"
