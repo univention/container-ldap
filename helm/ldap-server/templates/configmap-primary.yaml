@@ -44,7 +44,7 @@ metadata:
 data:
   append-slapd.conf.sh: |
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
     env | sort
     # Export the SERVERID
     export SERVERID=$(echo "${HOSTNAME}" | awk -F '-' '{print $(NF)+1}')
