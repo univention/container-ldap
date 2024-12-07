@@ -165,9 +165,6 @@ data:
 
     # Write the modified slapd.conf
     echo -e "${modified_slapd_conf}" > /etc/ldap/slapd.conf
-    # TODO: Comment this back out
-    cat /etc/ldap/slapd.conf
-    # slaptest -f /etc/ldap/slapd.conf
 ---
 kind: "ConfigMap"
 apiVersion: "v1"
