@@ -80,11 +80,11 @@ def outer_main():
     )
     command_initialized.set_defaults(func=database_initialized)
     args = parser.parse_args()
-    return main(args)
+    return main(subcommand=args.func, log_level=args.log_level)
 
 
-def main(args):
-    logging.basicConfig(level=args.log_level.upper())
+def main(subcommand, log_level: str = "info"):
+    logging.basicConfig(level=log_level.upper())
 
     try:
         config.load_incluster_config()
@@ -97,7 +97,7 @@ def main(args):
         namespace = f.read()
     logger.debug("Namespace: %s" % namespace)
 
-    args.func(v1, namespace)
+    subcommand(v1, namespace)
 
 
 if __name__ == "__main__":
