@@ -18,3 +18,17 @@ def evaluate_database_init():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+@pytest.fixture
+def stub_settings(evaluate_database_init, mocker):
+    """Mock settings with a stub configuration."""
+    mocker.patch.dict(evaluate_database_init.settings, {
+        "configmap": "stub_configmap", "namespace": "stub_namespace",
+    })
+
+
+@pytest.fixture
+def client_mock(evaluate_database_init, mocker):
+    """Mock of the Kubernetes client module."""
+    return mocker.patch.object(evaluate_database_init, "client")
