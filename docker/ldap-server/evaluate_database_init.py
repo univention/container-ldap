@@ -80,10 +80,15 @@ def outer_main():
     )
     command_initialized.set_defaults(func=database_initialized)
     args = parser.parse_args()
-    return main(subcommand=args.func, log_level=args.log_level)
+
+    with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace", "r") as f:
+        namespace = f.read()
+    logger.debug("Namespace: %s" % namespace)
+
+    return main(subcommand=args.func, namespace=namespace, log_level=args.log_level)
 
 
-def main(subcommand, log_level: str = "info"):
+def main(subcommand, namespace: str, log_level: str = "info"):
     logging.basicConfig(level=log_level.upper())
 
     try:
@@ -92,10 +97,6 @@ def main(subcommand, log_level: str = "info"):
         config.load_kube_config()
 
     v1 = client.CoreV1Api()
-
-    with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace", "r") as f:
-        namespace = f.read()
-    logger.debug("Namespace: %s" % namespace)
 
     subcommand(v1, namespace)
 
