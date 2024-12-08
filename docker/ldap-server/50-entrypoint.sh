@@ -136,8 +136,8 @@ setup_initial_ldif() {
   db_exit_code=$?
 
   if [[ ${db_exit_code} -eq 2 ]]; then
-    echo "Fatal error: database will not be initialized"
-    # FIXME: Kill the container somehow
+    echo "ERROR: Failed to check the database initialization status."
+    exit 1
   fi
 
   if [[ -n "${files}" || ${db_exit_code} -eq 1 ]]; then
