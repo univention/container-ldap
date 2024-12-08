@@ -31,21 +31,11 @@ def database_needs_initialization():
         1: Database already initialized: ldap_database_initialized is already true in the ConfigMap.
         2: LDAP server should terminate: Unexpected error accessing or parsing the ConfigMap.
     """
-
-    namespace = settings["namespace"]
-    configmap_name = settings["configmap"]
-    v1 = client.CoreV1Api()
     try:
-        configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
-
-        if DATABASE_INITIALIZED_KEY not in configmap.data:
-            logger.error("ConfigMap does not contain the key `%s`." % DATABASE_INITIALIZED_KEY)
-            raise ValueError("Invalid ConfigMap structure")
-
+        configmap = get_validated_configmap()
         if configmap.data[DATABASE_INITIALIZED_KEY].lower() == "true":
             logger.info("Database already initialized.")
             sys.exit(1)
-
     except Exception as error:
         logger.error("Unexpected error evaluating the database initialization status.")
         logger.error(error)
@@ -61,16 +51,9 @@ def database_initialized():
     namespace = settings["namespace"]
     v1 = client.CoreV1Api()
     try:
-        configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
-
-        if DATABASE_INITIALIZED_KEY not in configmap.data:
-            logger.error("ConfigMap does not contain the key `%s`." % DATABASE_INITIALIZED_KEY)
-            raise ValueError("Invalid ConfigMap structure")
-
+        configmap = get_validated_configmap()
         configmap.data[DATABASE_INITIALIZED_KEY] = "true"
-
         v1.replace_namespaced_config_map(name=configmap_name, namespace=namespace, body=configmap)
-
     except Exception as error:
         logger.error("Unexpected error updating the database initialization status.")
         logger.error(error)
@@ -113,6 +96,19 @@ def prepare_app(
     })
 
     logger.debug("Configuration: %s", settings)
+
+
+def get_validated_configmap():
+    configmap_name = settings["configmap"]
+    namespace = settings["namespace"]
+    v1 = client.CoreV1Api()
+    configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
+
+    if DATABASE_INITIALIZED_KEY not in configmap.data:
+        logger.error("ConfigMap does not contain the key `%s`." % DATABASE_INITIALIZED_KEY)
+        raise ValueError("Invalid ConfigMap structure")
+
+    return configmap
 
 
 def configure_logging(log_level):
