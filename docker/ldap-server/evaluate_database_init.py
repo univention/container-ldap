@@ -64,7 +64,7 @@ def database_initialized(v1: client.CoreV1Api, namespace: str):
     logger.info("Database initialization status set to true in the %s ConfigMap" % CONFIGMAP_NAME)
 
 
-def main():
+def outer_main():
     parser = argparse.ArgumentParser(
         description="Script to check LDAP database initialization status in Nubus for Kubernetes"
     )
@@ -80,7 +80,10 @@ def main():
     )
     command_initialized.set_defaults(func=database_initialized)
     args = parser.parse_args()
+    return main(args)
 
+
+def main(args):
     logging.basicConfig(level=args.log_level.upper())
 
     try:
@@ -98,4 +101,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    outer_main()
