@@ -5,14 +5,18 @@ import pytest
 runner = CliRunner()
 
 
-def test_configmap_provided_via_cli(evaluate_database_init, mocker):
+@pytest.fixture(autouse=True)
+def mock_configure_kubernetes_client(evaluate_database_init, mocker):
+    """Replace configure_kubernetes_client with a mock object."""
     mocker.patch.object(evaluate_database_init, "configure_kubernetes_client")
+
+
+def test_configmap_provided_via_cli(evaluate_database_init):
     evaluate_database_init.prepare_app(configmap="stub_name", namespace="stub_namespace")
     assert evaluate_database_init.settings["configmap"] == "stub_name"
 
 
 def test_configmap_is_provided_via_environment(evaluate_database_init, mocker):
-    mocker.patch.object(evaluate_database_init, "configure_kubernetes_client")
     evaluate_database_init.app.command()(stub_command)
     mocker.patch.dict("os.environ", {"STATUS_CONFIGMAP": "stub_configmap"})
 
@@ -24,7 +28,6 @@ def test_configmap_is_provided_via_environment(evaluate_database_init, mocker):
 
 
 def test_configures_logging(evaluate_database_init, mocker):
-    mocker.patch.object(evaluate_database_init, "configure_kubernetes_client")
     configure_logging_mock = mocker.patch.object(evaluate_database_init, "configure_logging")
 
     evaluate_database_init.prepare_app(
@@ -34,7 +37,6 @@ def test_configures_logging(evaluate_database_init, mocker):
 
 
 def test_discovers_namespace_as_fallback(evaluate_database_init, mocker):
-    mocker.patch.object(evaluate_database_init, "configure_kubernetes_client")
     dn_mock = mocker.patch.object(
         evaluate_database_init, "discover_namespace", return_value="stub_namespace")
 
@@ -44,7 +46,6 @@ def test_discovers_namespace_as_fallback(evaluate_database_init, mocker):
 
 
 def test_uses_provided_namespace(evaluate_database_init, mocker):
-    mocker.patch.object(evaluate_database_init, "configure_kubernetes_client")
     dn_mock = mocker.patch.object(evaluate_database_init, "discover_namespace")
 
     evaluate_database_init.prepare_app(configmap="stub_configmap", namespace="stub_namespace")
@@ -53,7 +54,6 @@ def test_uses_provided_namespace(evaluate_database_init, mocker):
 
 
 def test_namespace_is_provided_via_environment(evaluate_database_init, mocker):
-    mocker.patch.object(evaluate_database_init, "configure_kubernetes_client")
     evaluate_database_init.app.command()(stub_command)
     mocker.patch.dict("os.environ", {"STATUS_NAMESPACE": "stub_namespace"})
 
