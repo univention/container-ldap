@@ -98,6 +98,15 @@ services:
       - "./univention:/app/univention"
       - "./pyproject.toml:/app/pyproject.toml"
 
+  database-initialized-test:
+    build:
+      context: "./docker/ldap-server"
+      target: "pytest"
+    profiles:
+      - test
+    volumes:
+      - "./:/src/"
+
   # Environment of the pre-commit linter.
   pre-commit:
     profiles:
