@@ -100,10 +100,16 @@ def prepare_app(
         config.load_kube_config()
 
     if not namespace:
-        with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace", "r") as f:
-            namespace = f.read()
+        namespace = discover_namespace()
+
     settings["namespace"] = namespace
     logger.debug("Namespace: %s" % namespace)
+
+
+def discover_namespace():
+    with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace", "r") as f:
+        namespace = f.read()
+    return namespace
 
 
 if __name__ == "__main__":
