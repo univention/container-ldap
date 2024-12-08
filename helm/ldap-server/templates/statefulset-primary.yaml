@@ -252,7 +252,11 @@ spec:
                   {{- include "ldap-server.credentialSecret" . | nindent 18 }}
             # TODO: dynamic value instead of hardcoded one
             - name: STATUS_CONFIGMAP
-              value: "nubus-deployment-status"
+              value: {{ printf "%s-status" (include "common.names.fullname" .) }}
+            - name: STATUS_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
