@@ -8,3 +8,6 @@ kubernetes = "*"
 pyasn1-modules = "==0.2.8"
 
 [dev-packages]
+pdbpp = "*"
+pytest = "*"
+pytest-mock = "*"
