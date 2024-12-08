@@ -15,7 +15,7 @@ ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base
 # like cy2-saml
 ###############################################################################
 
-FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} as ucs_builder
+FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS ucs_builder
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
