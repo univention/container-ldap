@@ -147,7 +147,6 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
         slapd=2.5.* \
         ldap-utils=2.5.* \
-    && rm -rf /var/lib/apt/lists/* \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
     # /etc/ldap/slapd.conf
