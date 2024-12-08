@@ -39,15 +39,15 @@ lint-pre-commit:
     DOCKERFILE_PATH: "./docker/ldap-notifier/Dockerfile"
     KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR/docker/ldap-notifier"
     KANIKO_CACHE_ARGS: "--cache=false"
-  - IMAGE_NAME: "testrunner"
-    DOCKERFILE_PATH: "./docker/testrunner/Dockerfile"
-    KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR"
-    KANIKO_CACHE_ARGS: "--cache=false"
   - IMAGE_NAME: "ldif-producer"
     DOCKERFILE_PATH: "./docker/ldif-producer/Dockerfile"
     KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR"
   - IMAGE_NAME: "ldap-server-elector"
     KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR/docker/leader-elector"
+  - IMAGE_NAME: "testrunner"
+    DOCKERFILE_PATH: "./docker/testrunner/Dockerfile"
+    KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR"
+    KANIKO_CACHE_ARGS: "--cache=false"
 
 .publish-matrix: &publish-matrix
   - IMAGE_NAME:
