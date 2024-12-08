@@ -82,6 +82,7 @@ def prepare_app(
     namespace: Annotated[
         Optional[str],
         typer.Option(
+            envvar="STATUS_NAMESPACE",
             help="Kubernetes namespace to lookup the status configmap.",
         ),
     ] = None,
