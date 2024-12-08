@@ -45,6 +45,9 @@ def database_needs_initialization():
 
 @app.command()
 def database_initialized():
+    """
+    Update the status ConfigMap to flag the LDAP database as initialized.
+    """
     configmap_name = settings["configmap"]
     namespace = settings["namespace"]
     v1 = client.CoreV1Api()
