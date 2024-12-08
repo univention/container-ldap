@@ -41,9 +41,9 @@ RUN apt-get download \
     (dpkg --force-all -i ./*.deb || true)
 
 ###############################################################################
-# Final image
+# Base image
 ###############################################################################
-FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG}
+FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS base
 
 ARG LABEL_CREATED=undefined
 ARG LABEL_REVISION=undefined
@@ -168,6 +168,10 @@ COPY Pipfile Pipfile.lock ./
 RUN pipenv sync --system \
     && rm -r ~/.cache
 
+###############################################################################
+# Final image
+###############################################################################
+FROM base AS final
 
 WORKDIR /
 COPY ucr /usr/sbin/
