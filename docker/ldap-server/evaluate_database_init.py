@@ -94,16 +94,20 @@ def prepare_app(
 ):
     logging.basicConfig(level=log_level.upper())
 
-    try:
-        config.load_incluster_config()
-    except config.ConfigException:
-        config.load_kube_config()
+    configure_kubernetes_client()
 
     if not namespace:
         namespace = discover_namespace()
 
     settings["namespace"] = namespace
     logger.debug("Namespace: %s" % namespace)
+
+
+def configure_kubernetes_client():
+    try:
+        config.load_incluster_config()
+    except config.ConfigException:
+        config.load_kube_config()
 
 
 def discover_namespace():
