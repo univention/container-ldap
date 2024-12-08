@@ -14,8 +14,10 @@ logger = logging.getLogger(__name__)
 CONFIGMAP_NAME = "nubus-deployment-status"
 DATABASE_INITIALIZED_KEY = "ldap_database_initialized"
 
+settings = {}
 
-def database_needs_initialization(v1: client.CoreV1Api, namespace: str):
+
+def database_needs_initialization():
     """
     Check if the ConfigMap exists and has the key ldap_database_initialized set to true.
 
@@ -25,6 +27,8 @@ def database_needs_initialization(v1: client.CoreV1Api, namespace: str):
         2: LDAP server should terminate: Unexpected error accessing or parsing the ConfigMap.
     """
 
+    namespace = settings["namespace"]
+    v1 = client.CoreV1Api()
     try:
         configmap = v1.read_namespaced_config_map(name=CONFIGMAP_NAME, namespace=namespace)
 
@@ -45,7 +49,9 @@ def database_needs_initialization(v1: client.CoreV1Api, namespace: str):
     sys.exit(0)
 
 
-def database_initialized(v1: client.CoreV1Api, namespace: str):
+def database_initialized():
+    namespace = settings["namespace"]
+    v1 = client.CoreV1Api()
     try:
         configmap = v1.read_namespaced_config_map(name=CONFIGMAP_NAME, namespace=namespace)
 
@@ -96,9 +102,9 @@ def main(subcommand, namespace: str, log_level: str = "info"):
     except config.ConfigException:
         config.load_kube_config()
 
-    v1 = client.CoreV1Api()
+    settings["namespace"] = namespace
 
-    subcommand(v1, namespace)
+    subcommand()
 
 
 if __name__ == "__main__":
