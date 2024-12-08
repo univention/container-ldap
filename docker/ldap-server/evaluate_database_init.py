@@ -36,13 +36,11 @@ def database_needs_initialization():
         if configmap.data[DATABASE_INITIALIZED_KEY].lower() == "true":
             logger.info("Database already initialized.")
             sys.exit(1)
-    except Exception as error:
-        logger.error("Unexpected error evaluating the database initialization status.")
-        logger.error(error)
+    except Exception:
+        logger.exception("Unexpected error evaluating the database initialization status.")
         sys.exit(2)
 
     logger.info("Database needs initialization.")
-    sys.exit(0)
 
 
 @app.command()
@@ -54,10 +52,10 @@ def database_initialized():
         configmap = get_validated_configmap()
         configmap.data[DATABASE_INITIALIZED_KEY] = "true"
         v1.replace_namespaced_config_map(name=configmap_name, namespace=namespace, body=configmap)
-    except Exception as error:
-        logger.error("Unexpected error updating the database initialization status.")
-        logger.error(error)
+    except Exception:
+        logger.exception("Unexpected error updating the database initialization status.")
         sys.exit(2)
+
     logger.info("Database initialization status set to true in the %s ConfigMap" % configmap_name)
 
 
