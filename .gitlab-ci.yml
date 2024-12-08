@@ -48,6 +48,9 @@ lint-pre-commit:
     DOCKERFILE_PATH: "./docker/testrunner/Dockerfile"
     KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR"
     KANIKO_CACHE_ARGS: "--cache=false"
+  - IMAGE_NAME: "database-initialized-testrunner"
+    KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR/docker/ldap-server"
+    KANIKO_CACHE_ARGS: "--target=pytest"
 
 .publish-matrix: &publish-matrix
   - IMAGE_NAME:
@@ -67,6 +70,17 @@ container-malware-scan:
 container-sign-external:
   parallel:
     matrix: *publish-matrix
+
+test-database-initialized-unit:
+  stage: "test"
+  image: "${CI_REGISTRY_IMAGE}/database-initialized-testrunner:${RELEASE_VERSION}"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: "never"
+    - when: "on_success"
+  script:
+    - cd docker/ldap-server
+    - pytest
 
 test-ldap-smoke:
   stage: test
