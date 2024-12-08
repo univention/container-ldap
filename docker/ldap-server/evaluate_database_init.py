@@ -102,7 +102,7 @@ def get_validated_configmap():
     v1 = client.CoreV1Api()
     configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
 
-    if DATABASE_INITIALIZED_KEY not in configmap.data:
+    if not (configmap.data and DATABASE_INITIALIZED_KEY in configmap.data):
         logger.error('ConfigMap does not contain the key "%s".', DATABASE_INITIALIZED_KEY)
         raise ValueError("Invalid ConfigMap structure")
 
