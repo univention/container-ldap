@@ -16,7 +16,6 @@ app = typer.Typer(
     pretty_exceptions_enable=False,
 )
 
-CONFIGMAP_NAME = "nubus-deployment-status"
 DATABASE_INITIALIZED_KEY = "ldap_database_initialized"
 
 settings = {}
@@ -34,9 +33,10 @@ def database_needs_initialization():
     """
 
     namespace = settings["namespace"]
+    configmap_name = settings["configmap"]
     v1 = client.CoreV1Api()
     try:
-        configmap = v1.read_namespaced_config_map(name=CONFIGMAP_NAME, namespace=namespace)
+        configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
 
         if DATABASE_INITIALIZED_KEY not in configmap.data:
             logger.error("ConfigMap does not contain the key `%s`." % DATABASE_INITIALIZED_KEY)
@@ -57,10 +57,11 @@ def database_needs_initialization():
 
 @app.command()
 def database_initialized():
+    configmap_name = settings["configmap"]
     namespace = settings["namespace"]
     v1 = client.CoreV1Api()
     try:
-        configmap = v1.read_namespaced_config_map(name=CONFIGMAP_NAME, namespace=namespace)
+        configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
 
         if DATABASE_INITIALIZED_KEY not in configmap.data:
             logger.error("ConfigMap does not contain the key `%s`." % DATABASE_INITIALIZED_KEY)
@@ -68,17 +69,24 @@ def database_initialized():
 
         configmap.data[DATABASE_INITIALIZED_KEY] = "true"
 
-        v1.replace_namespaced_config_map(name=CONFIGMAP_NAME, namespace=namespace, body=configmap)
+        v1.replace_namespaced_config_map(name=configmap_name, namespace=namespace, body=configmap)
 
     except Exception as error:
         logger.error("Unexpected error updating the database initialization status.")
         logger.error(error)
         sys.exit(2)
-    logger.info("Database initialization status set to true in the %s ConfigMap" % CONFIGMAP_NAME)
+    logger.info("Database initialization status set to true in the %s ConfigMap" % configmap_name)
 
 
 @app.callback()
 def prepare_app(
+    configmap: Annotated[
+        str,
+        typer.Option(
+            envvar="STATUS_CONFIGMAP",
+            help="Name of the status ConfigMap.",
+        ),
+    ],
     namespace: Annotated[
         Optional[str],
         typer.Option(
@@ -93,15 +101,22 @@ def prepare_app(
         ),
     ] = "info",
 ):
-    logging.basicConfig(level=log_level.upper())
-
+    configure_logging(log_level)
     configure_kubernetes_client()
 
     if not namespace:
         namespace = discover_namespace()
 
-    settings["namespace"] = namespace
-    logger.debug("Namespace: %s" % namespace)
+    settings.update({
+        "configmap": configmap,
+        "namespace": namespace,
+    })
+
+    logger.debug("Configuration: %s", settings)
+
+
+def configure_logging(log_level):
+    logging.basicConfig(level=log_level.upper())
 
 
 def configure_kubernetes_client():
