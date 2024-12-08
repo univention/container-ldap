@@ -165,13 +165,27 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
 ###############################################################################
 WORKDIR /src
 COPY Pipfile Pipfile.lock ./
-RUN pipenv sync --system \
+
+###############################################################################
+# Test image
+###############################################################################
+FROM base AS pytest
+
+RUN pipenv sync --dev --system \
     && rm -r ~/.cache
+
+WORKDIR /src/docker/ldap-server
+
+CMD ["pytest"]
+
 
 ###############################################################################
 # Final image
 ###############################################################################
 FROM base AS final
+
+RUN pipenv sync --system \
+    && rm -r ~/.cache
 
 WORKDIR /
 COPY ucr /usr/sbin/
