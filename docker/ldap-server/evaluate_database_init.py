@@ -56,7 +56,7 @@ def database_initialized():
         logger.exception("Unexpected error updating the database initialization status.")
         sys.exit(2)
 
-    logger.info("Database initialization status set to true in the %s ConfigMap" % configmap_name)
+    logger.info("Database initialization status set to true in the %s ConfigMap", configmap_name)
 
 
 @app.callback()
@@ -103,7 +103,7 @@ def get_validated_configmap():
     configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
 
     if DATABASE_INITIALIZED_KEY not in configmap.data:
-        logger.error("ConfigMap does not contain the key `%s`." % DATABASE_INITIALIZED_KEY)
+        logger.error('ConfigMap does not contain the key "%s".', DATABASE_INITIALIZED_KEY)
         raise ValueError("Invalid ConfigMap structure")
 
     return configmap
