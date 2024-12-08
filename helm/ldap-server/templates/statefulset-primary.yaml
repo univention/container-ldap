@@ -250,6 +250,9 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+            # TODO: dynamic value instead of hardcoded one
+            - name: STATUS_CONFIGMAP
+              value: "nubus-deployment-status"
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
