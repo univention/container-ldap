@@ -2,14 +2,19 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
-import argparse
+from typing import Annotated, Optional
 import logging
 import sys
 
 from kubernetes import client, config
+import typer
 
 logger = logging.getLogger(__name__)
 
+app = typer.Typer(
+    add_completion=False,
+    pretty_exceptions_enable=False,
+)
 
 CONFIGMAP_NAME = "nubus-deployment-status"
 DATABASE_INITIALIZED_KEY = "ldap_database_initialized"
@@ -17,6 +22,7 @@ DATABASE_INITIALIZED_KEY = "ldap_database_initialized"
 settings = {}
 
 
+@app.command()
 def database_needs_initialization():
     """
     Check if the ConfigMap exists and has the key ldap_database_initialized set to true.
@@ -49,6 +55,7 @@ def database_needs_initialization():
     sys.exit(0)
 
 
+@app.command()
 def database_initialized():
     namespace = settings["namespace"]
     v1 = client.CoreV1Api()
@@ -70,31 +77,21 @@ def database_initialized():
     logger.info("Database initialization status set to true in the %s ConfigMap" % CONFIGMAP_NAME)
 
 
-def outer_main():
-    parser = argparse.ArgumentParser(
-        description="Script to check LDAP database initialization status in Nubus for Kubernetes"
-    )
-    parser.add_argument("--log-level", default="info", help="Set the log level, default is INFO")
-    subparsers = parser.add_subparsers(dest="command", required=True)
-    command_needs_initialization = subparsers.add_parser(
-        "database-needs-initialization",
-        help="Check the LDAP database initialization status, returns 0 if initialization is required.",
-    )
-    command_needs_initialization.set_defaults(func=database_needs_initialization)
-    command_initialized = subparsers.add_parser(
-        "database-initialized", help="Set the LDAP database initialization status to true / initialized"
-    )
-    command_initialized.set_defaults(func=database_initialized)
-    args = parser.parse_args()
-
-    with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace", "r") as f:
-        namespace = f.read()
-    logger.debug("Namespace: %s" % namespace)
-
-    return main(subcommand=args.func, namespace=namespace, log_level=args.log_level)
-
-
-def main(subcommand, namespace: str, log_level: str = "info"):
+@app.callback()
+def prepare_app(
+    namespace: Annotated[
+        Optional[str],
+        typer.Option(
+            help="Kubernetes namespace to lookup the status configmap.",
+        ),
+    ] = None,
+    log_level: Annotated[
+        str,
+        typer.Option(
+            help="Set the log level."
+        ),
+    ] = "info",
+):
     logging.basicConfig(level=log_level.upper())
 
     try:
@@ -102,10 +99,12 @@ def main(subcommand, namespace: str, log_level: str = "info"):
     except config.ConfigException:
         config.load_kube_config()
 
+    if not namespace:
+        with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace", "r") as f:
+            namespace = f.read()
     settings["namespace"] = namespace
-
-    subcommand()
+    logger.debug("Namespace: %s" % namespace)
 
 
 if __name__ == "__main__":
-    outer_main()
+    app()
