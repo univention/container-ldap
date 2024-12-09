@@ -22,10 +22,17 @@ def evaluate_database_init():
 
 @pytest.fixture
 def stub_settings(evaluate_database_init, mocker):
-    """Mock settings with a stub configuration."""
-    mocker.patch.dict(evaluate_database_init.settings, {
-        "configmap": "stub_configmap", "namespace": "stub_namespace",
-    })
+    """
+    Mock settings with a stub configuration.
+
+    It does provide access to the injected settings as a `dict`.
+    """
+    settings = {
+        "configmap": "stub_configmap",
+        "namespace": "stub_namespace",
+    }
+    mocker.patch.dict(evaluate_database_init.settings, settings)
+    return settings
 
 
 @pytest.fixture
