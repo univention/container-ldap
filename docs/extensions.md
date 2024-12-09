@@ -1,6 +1,5 @@
 
-Schema Extensions (UDM Extensions)
-==================================
+# Schema Extensions (UDM Extensions)
 
 The Univention Directory Manager (UDM) does support extensions which also can
 include LDAP related extensions:
@@ -24,8 +23,7 @@ Further details regarding the UDM are available at the following URL:
 https://docs.software-univention.de/developer-reference/5.0/en/udm/index.html
 
 
-Extension handling for containers
-=================================
+## Extension handling for containers
 
 There is no support to add extensions after the container image has been built.
 All extensions which shall be used have to be integrated into the image during

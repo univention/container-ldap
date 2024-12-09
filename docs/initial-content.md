@@ -1,5 +1,4 @@
-Initial content
-===============
+# Initial content
 
 The content of the LDAP directory is initialized during the first start of the
 container `ldap-server` through its `ENTRYPOINT` script.
@@ -8,8 +7,7 @@ The script loads the LDIF files which are also used in the join script of the
 Debian package `univention-ldap`.
 
 
-Pointers
-========
+## Pointers
 
 - The join script of the package `univention-ldap`:
   https://git.knut.univention.de/univention/ucs/-/blob/5.0-4/management/univention-ldap/01univention-ldap-server-init.inst
