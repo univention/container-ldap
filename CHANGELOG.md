@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.29.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.28.0...v0.29.0) (2024-12-09)
+
+
+### Features
+
+* Add "managed-by" label to the status ConfigMap ([0b157f5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/0b157f5c995a6269eba77b13423ef95a0fa523ad))
+* Add debug logging into the get_or_create function ([59ae0d4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/59ae0d4bfa655483c7143e007a93122cdd85ed42))
+* Add dependencies via pipenv ([0a1be10](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/0a1be108253a9ef6d943bf01a1e36a3b5fabf280))
+* Add environment variable "LDAP_SERVER_ROLE" ([3b1a2c8](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/3b1a2c807f29ad5ed167550d9150669e95f8b949))
+* Add logging output around database initialization in entrypoint script ([c293812](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/c293812fccdefc279d4757f801c553cd052cb63e))
+* Allow to configure the configmap name via cli and environment variable ([6b3fdfa](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/6b3fdfa7afa743a4fb1b4228ef47fa49a6a9b114))
+* Allow to configure the namespace via environment variable STATUS_NAMESPACE ([42e281a](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/42e281aa9ed032f63d1784da5c345bc2a141a3b9))
+* Create the status ConfigMap if needed ([16c1fed](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/16c1fed794be6b70e94910c577bb215bfc448eab))
+* Do not remove the Apt related artifacts ([adeea9a](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/adeea9acc3e637bc11aafd199ef2c43497e6cdd8))
+* **leader-elector:** Check if an LDAP database is present before trying to become leader ([8e6c24e](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/8e6c24ee078bcd706b61df54855c9e4fb719d67a))
+* Only load initial content if "LDAP_SERVER_ROLE" is "primary" or unset ([3b6ab9c](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/3b6ab9c1d2c81d2eda0cfe168706a3a17b4306a8))
+* Remove echoing of commands in additional entrypoint scripts of ldap-server ([5b70abe](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/5b70abe887196976edb2b53b6f11b5224c738d98))
+* Stop dumping all environment variables on startup ([002608f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/002608f62c527d743411b6c2405d926e0d735783))
+* Stop dumping the full configuration to standard output ([80b14be](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/80b14befa595519b3fc2a16c97cb183a119a43cd))
+* Stop echoing the slapd.conf to stdout ([281ff68](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/281ff6803862f933570f36e1c1a8f21e20316d6f))
+* Stop tracing all commands in "40-self-service-acl" ([d055274](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/d05527491708df15db09289e5f8652fa4b1e92f2))
+* Stop tracing all shell commands in the entrypoint of ldap-server ([e43bffa](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e43bffad1fa7dbc73e482a103df7cb460076363e))
+* Update ucs base image to version 0.13.3-build-2024-12-05 ([6f287a9](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/6f287a9b8862b8710d5ba9dfb5c567f50c030300))
+* Validate the status data using a Pydantic model ([98bebe1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/98bebe16ed4342fde1af8602ea2baab6e6bf18ea))
+
+
+### Bug Fixes
+
+* Add docstring to subcommand "database-initialized" ([fe7d8c1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/fe7d8c1abbec09fa8815371ca7eec1297edc2914))
+* Adjust the Role permissions so that the status ConnfigMap can be created ([fb850c0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/fb850c015282ef035989bbb842e6978d678c4cf9))
+* Configure logging to print timestamps ([77c5496](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/77c5496a10c7101df0af53e242b458d497f6a83d))
+* Correct capturing of exit code in entrypoint script ([c07d730](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/c07d730a3b96e4ad8b15e1c93aa9563372d30aaa))
+* Correct handling of empty ConfigMap ([19e1b35](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/19e1b3526478aa36381f9e54db68156057217d1d))
+* Correct usage of the logging api ([9d1777a](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9d1777a51f299592a4c8633cf6cc49a7eba21f0b))
+* Disable configMap script in docker compose to fix the ldap smoke tests ([28cd2f0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/28cd2f0b7a7b980dbdea0f268b5a205c29ff10ca))
+* Fail if the database status cannot be evaluated ([d056597](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/d0565970538c5ed65ec607c254aedfef349787dc))
+* fix linter warnings ([45e18d5](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/45e18d5bcc94b33a2921823a5656bbb24b11c63a))
+* fix unit tests ([78a7cab](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/78a7cab685ad147e5d598113d79f1996c0824d7e))
+* **ldap-server:** Add intitialization script to Dockerfile ([2cecdbc](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/2cecdbc70dd4ae827748e8c7c3052fe2b27e2757))
+* **ldap-server:** Check LDAP database initialization flag in configmap ([bf0bc66](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/bf0bc668554de26b914d2bfa6c6d9ead49d409ff))
+* **ldap-server:** improve LDAP database initialization script with log level and more ([9e56539](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/9e56539e511cdd51c973981701184c4e8dca6675))
+* **ldap-server:** LDAP database initialization in mirror-mode ([be4e879](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/be4e8798d3facb1c6402936d618e41445aa99e8d))
+
 ## [0.28.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.27.0...v0.28.0) (2024-12-04)
 
 
