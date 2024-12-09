@@ -129,7 +129,6 @@ setup_sasl_mech_saml() {
 setup_initial_ldif() {
   # Inspired by 01univention-ldap-server-init.inst
 
-  # FIXME: Should we just check for files in that folder? There is also lock.mdb
   files="$(find /var/lib/univention-ldap/ldap/ -name "data.*" -type f)"
 
   if [[ "${DOCKER_COMPOSE:-}" != "true" ]]; then
