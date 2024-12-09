@@ -12,7 +12,8 @@ from kubernetes import client, config, watch
 from kubernetes.client.rest import ApiException
 from pydantic_settings import BaseSettings
 
-logging.basicConfig(level=logging.INFO)
+LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,6 +26,17 @@ class Settings(BaseSettings):
     renew_deadline_seconds: int
 
 
+def setup_logging(log_level: str) -> None:
+    logging.captureWarnings(True)
+    formatter = logging.Formatter(fmt=LOG_FORMAT)
+    handler = logging.StreamHandler()
+    handler.setLevel(log_level)
+    handler.setFormatter(formatter)
+    logger = logging.getLogger()
+    logger.setLevel(log_level)
+    logger.addHandler(handler)
+
+
 class LDAPLeaderElector:
     def __init__(self):
         try:
@@ -34,6 +46,7 @@ class LDAPLeaderElector:
         self.core_api = client.CoreV1Api()
         self.coordination_api = client.CoordinationV1Api()
         self.settings = Settings()
+        setup_logging(log_level="INFO")
         self.running = True
         signal.signal(signal.SIGTERM, self.handle_sigterm)
         self.is_currently_active = False
@@ -80,6 +93,8 @@ class LDAPLeaderElector:
     def acquire_or_renew(self):
         """Acquire or renew the lease"""
         if not self.ldap_database_exists():
+            logger.info("No LDAP database files found. Pod is not eligible to become the leader.")
+            self.ensure_pod_is_hot_standby()
             return False
 
         try:

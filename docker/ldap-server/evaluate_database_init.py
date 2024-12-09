@@ -2,15 +2,17 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
-from enum import Enum
-from typing import Annotated, Optional
 import logging
 import sys
+from enum import Enum
+from typing import Annotated, Optional
 
+import typer
 from kubernetes import client, config
 from kubernetes.client.exceptions import ApiException
 from pydantic import BaseModel
-import typer
+
+LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
 
 logger = logging.getLogger(__name__)
 
@@ -92,21 +94,21 @@ def prepare_app(
     ] = None,
     log_level: Annotated[
         str,
-        typer.Option(
-            help="Set the log level."
-        ),
+        typer.Option(help="Set the log level."),
     ] = "info",
 ):
-    configure_logging(log_level)
+    setup_logging(log_level)
     configure_kubernetes_client()
 
     if not namespace:
         namespace = discover_namespace()
 
-    settings.update({
-        "configmap": configmap,
-        "namespace": namespace,
-    })
+    settings.update(
+        {
+            "configmap": configmap,
+            "namespace": namespace,
+        }
+    )
 
     logger.debug("Configuration: %s", settings)
 
@@ -156,8 +158,15 @@ def get_validated_configmap():
     return configmap
 
 
-def configure_logging(log_level):
-    logging.basicConfig(level=log_level.upper())
+def setup_logging(log_level: str) -> None:
+    logging.captureWarnings(True)
+    formatter = logging.Formatter(fmt=LOG_FORMAT)
+    handler = logging.StreamHandler()
+    handler.setLevel(log_level)
+    handler.setFormatter(formatter)
+    logger = logging.getLogger()
+    logger.setLevel(log_level)
+    logger.addHandler(handler)
 
 
 def configure_kubernetes_client():
