@@ -1,7 +1,10 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2024 Univention GmbH
+
 from unittest import mock
 
-from kubernetes.client.exceptions import ApiException
 import pytest
+from kubernetes.client.exceptions import ApiException
 
 
 def test_uses_configuration_from_settings(evaluate_database_init, stub_settings, client_mock):
@@ -12,8 +15,7 @@ def test_uses_configuration_from_settings(evaluate_database_init, stub_settings,
 
     evaluate_database_init.database_needs_initialization()
 
-    read_namespaced_config_map_mock.assert_called_once_with(
-        name="stub_configmap", namespace="stub_namespace")
+    read_namespaced_config_map_mock.assert_called_once_with(name="stub_configmap", namespace="stub_namespace")
 
 
 def test_exit_code_1_if_already_initialized(evaluate_database_init, stub_settings, client_mock):
@@ -30,8 +32,7 @@ def test_exit_code_1_if_already_initialized(evaluate_database_init, stub_setting
 
 def test_creates_status_config_map(evaluate_database_init, stub_settings, client_mock):
     read_namespaced_config_map_mock = client_mock.CoreV1Api().read_namespaced_config_map
-    read_namespaced_config_map_mock.side_effect = ApiException(
-        status=404, reason="Not Found")
+    read_namespaced_config_map_mock.side_effect = ApiException(status=404, reason="Not Found")
     create_namespaced_config_map_mock = client_mock.CoreV1Api().create_namespaced_config_map
 
     evaluate_database_init.database_needs_initialization()
@@ -45,9 +46,9 @@ def test_creates_status_config_map(evaluate_database_init, stub_settings, client
             },
         },
         "data": {
-            evaluate_database_init.DATABASE_INITIALIZED_KEY:
-                evaluate_database_init.InitializedEnum.UNINITIALIZED,
+            evaluate_database_init.DATABASE_INITIALIZED_KEY: evaluate_database_init.InitializedEnum.UNINITIALIZED,
         },
     }
     create_namespaced_config_map_mock.assert_called_once_with(
-        body=expected_configmap, namespace=stub_settings["namespace"])
+        body=expected_configmap, namespace=stub_settings["namespace"]
+    )

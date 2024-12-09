@@ -19,4 +19,3 @@ The dependencies are managed via `Pipenv` and can be updated as follows:
 docker compose run --build --rm -it database-initialized-test \
     pipenv update
 ```
-

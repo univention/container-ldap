@@ -1,6 +1,7 @@
-from unittest import mock
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2024 Univention GmbH
 
-import pytest
+from unittest import mock
 
 
 def test_uses_configuration_from_settings(evaluate_database_init, stub_settings, client_mock, mocker):
@@ -17,4 +18,5 @@ def test_uses_configuration_from_settings(evaluate_database_init, stub_settings,
 
     assert stub_configmap.data["ldap_database_initialized"] == "initialized"
     replace_namespaced_config_map_mock.assert_called_once_with(
-        name="stub_configmap", namespace="stub_namespace", body=stub_configmap)
+        name="stub_configmap", namespace="stub_namespace", body=stub_configmap
+    )

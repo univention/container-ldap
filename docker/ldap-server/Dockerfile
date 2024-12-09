@@ -52,6 +52,7 @@ ARG LABEL_VERSION=undefined
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
+# hadolint ignore=DL3008
 RUN \
     # Do the non-interactive package configuration
     # of slapd otherwise the build process would
