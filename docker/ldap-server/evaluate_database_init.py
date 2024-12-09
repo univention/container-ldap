@@ -114,8 +114,10 @@ def prepare_app(
 def get_or_create_status_config_map():
     try:
         configmap = get_validated_configmap()
+        logger.debug("Got status ConfigMap %s", settings["configmap"])
     except ApiException as exc:
         if exc.status == 404:
+            logger.debug("Creating status ConfigMap %s", settings["configmap"])
             configmap = create_configmap()
         else:
             raise
