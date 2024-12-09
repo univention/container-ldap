@@ -44,13 +44,7 @@ def database_needs_initialization():
         2: LDAP server should terminate: Unexpected error accessing or parsing the ConfigMap.
     """
     try:
-        try:
-            configmap = get_validated_configmap()
-        except ApiException as exc:
-            if exc.status == 404:
-                configmap = create_configmap()
-            else:
-                raise
+        configmap = get_or_create_status_config_map()
         if configmap.data[DATABASE_INITIALIZED_KEY].lower() == InitializedEnum.INITIALIZED:
             logger.info("Database already initialized.")
             sys.exit(1)
@@ -115,6 +109,17 @@ def prepare_app(
     })
 
     logger.debug("Configuration: %s", settings)
+
+
+def get_or_create_status_config_map():
+    try:
+        configmap = get_validated_configmap()
+    except ApiException as exc:
+        if exc.status == 404:
+            configmap = create_configmap()
+        else:
+            raise
+    return configmap
 
 
 def create_configmap():
