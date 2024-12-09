@@ -19,6 +19,7 @@ metadata:
 data:
   PRIMARY_LDAP_URI: {{ include "ldap-server.ldap.connection.uriPrimary" . | quote }}
   LDAP_BASEDN: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
+  LDAP_SERVER_ROLE: "secondary"
   SYNC_USER_DN: {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
 ...
 ---

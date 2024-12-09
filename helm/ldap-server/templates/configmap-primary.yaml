@@ -20,6 +20,7 @@ data:
   PRIMARY_LDAP_URI: {{ include "ldap-server.ldap.connection.uriPrimary" . | quote }}
   PRIMARY_SERVICE: {{ include "ldap-server.ldap.connection.servicePrimary" . | quote }}
   LDAP_BASEDN: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
+  LDAP_SERVER_ROLE: "primary"
   SYNC_USER_DN: {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
   ADMIN_DN: {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
   LDAP_PORT: {{ include "nubusTemplates.ldapServer.ldap.connection.port" . | quote }}

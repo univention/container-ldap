@@ -19,6 +19,7 @@ data:
   PRIMARY_LDAP_URI: {{ include "ldap-server.ldap.connection.uriPrimary" . | quote }}
   SECONDARY_LDAP_URI: {{ include "ldap-server.ldap.connection.uriSecondary" . | quote }}
   LDAP_BASEDN: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
+  LDAP_SERVER_ROLE: "proxy"
   ADMIN_DN: {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
 ...
 ---
