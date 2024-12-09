@@ -8,6 +8,7 @@ import logging
 import sys
 
 from kubernetes import client, config
+from kubernetes.client.exceptions import ApiException
 from pydantic import BaseModel
 import typer
 
@@ -43,7 +44,13 @@ def database_needs_initialization():
         2: LDAP server should terminate: Unexpected error accessing or parsing the ConfigMap.
     """
     try:
-        configmap = get_validated_configmap()
+        try:
+            configmap = get_validated_configmap()
+        except ApiException as exc:
+            if exc.status == 404:
+                configmap = create_configmap()
+            else:
+                raise
         if configmap.data[DATABASE_INITIALIZED_KEY].lower() == InitializedEnum.INITIALIZED:
             logger.info("Database already initialized.")
             sys.exit(1)
@@ -108,6 +115,23 @@ def prepare_app(
     })
 
     logger.debug("Configuration: %s", settings)
+
+
+def create_configmap():
+    configmap_name = settings["configmap"]
+    namespace = settings["namespace"]
+    v1 = client.CoreV1Api()
+    body = {
+        "api_version": "v1",
+        "metadata": {
+            "name": configmap_name,
+        },
+        "data": {
+            DATABASE_INITIALIZED_KEY: InitializedEnum.UNINITIALIZED,
+        },
+    }
+    result = v1.create_namespaced_config_map(namespace=namespace, body=body)
+    return result
 
 
 def get_validated_configmap():

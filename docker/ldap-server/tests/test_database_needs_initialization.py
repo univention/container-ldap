@@ -1,5 +1,6 @@
 from unittest import mock
 
+from kubernetes.client.exceptions import ApiException
 import pytest
 
 
@@ -25,3 +26,25 @@ def test_exit_code_1_if_already_initialized(evaluate_database_init, stub_setting
         evaluate_database_init.database_needs_initialization()
 
     assert exit_info.value.code == 1
+
+
+def test_creates_status_config_map(evaluate_database_init, stub_settings, client_mock):
+    read_namespaced_config_map_mock = client_mock.CoreV1Api().read_namespaced_config_map
+    read_namespaced_config_map_mock.side_effect = ApiException(
+        status=404, reason="Not Found")
+    create_namespaced_config_map_mock = client_mock.CoreV1Api().create_namespaced_config_map
+
+    evaluate_database_init.database_needs_initialization()
+
+    expected_configmap = {
+        "api_version": "v1",
+        "metadata": {
+            "name": stub_settings["configmap"],
+        },
+        "data": {
+            evaluate_database_init.DATABASE_INITIALIZED_KEY:
+                evaluate_database_init.InitializedEnum.UNINITIALIZED,
+        },
+    }
+    create_namespaced_config_map_mock.assert_called_once_with(
+        body=expected_configmap, namespace=stub_settings["namespace"])
