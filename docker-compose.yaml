@@ -38,6 +38,7 @@ services:
     build:
       context: ./docker/ldap-server
     environment:
+      DOCKER_COMPOSE: "true"
       LDAP_CN_ADMIN_PW: univention
     ports:
     - 389:389

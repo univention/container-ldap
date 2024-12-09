@@ -250,7 +250,6 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- include "ldap-server.credentialSecret" . | nindent 18 }}
-            # TODO: dynamic value instead of hardcoded one
             - name: STATUS_CONFIGMAP
               value: {{ printf "%s-status" (include "common.names.fullname" .) }}
             - name: STATUS_NAMESPACE

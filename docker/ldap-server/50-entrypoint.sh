@@ -132,8 +132,12 @@ setup_initial_ldif() {
   # FIXME: Should we just check for files in that folder? There is also lock.mdb
   files="$(find /var/lib/univention-ldap/ldap/ -name "data.*" -type f)"
 
-  evaluate_database_init database-needs-initialization && true
-  db_exit_code=$?
+  if [[ "${DOCKER_COMPOSE:-}" != "true" ]]; then
+    evaluate_database_init database-needs-initialization && true
+    db_exit_code=$?
+  else
+    db_exit_code=0
+  fi
 
   if [[ ${db_exit_code} -eq 2 ]]; then
     echo "ERROR: Failed to check the database initialization status."
@@ -174,7 +178,9 @@ setup_initial_ldif() {
     | ucr-light-filter | sed -e "${filter_string}" \
     | slapadd -f /etc/ldap/slapd.conf
 
-  evaluate_database_init database-initialized
+  if [[ "${DOCKER_COMPOSE:-}" != "true" ]]; then
+    evaluate_database_init database-initialized
+  fi
 
 }
 
