@@ -134,6 +134,9 @@ def create_configmap():
         "api_version": "v1",
         "metadata": {
             "name": configmap_name,
+            "labels": {
+                "app.kubernetes.io/managed-by": "ldap-server-evaluate-database-init",
+            },
         },
         "data": {
             DATABASE_INITIALIZED_KEY: InitializedEnum.UNINITIALIZED,

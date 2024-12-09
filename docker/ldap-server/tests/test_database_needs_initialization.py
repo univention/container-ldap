@@ -40,6 +40,9 @@ def test_creates_status_config_map(evaluate_database_init, stub_settings, client
         "api_version": "v1",
         "metadata": {
             "name": stub_settings["configmap"],
+            "labels": {
+                "app.kubernetes.io/managed-by": "ldap-server-evaluate-database-init",
+            },
         },
         "data": {
             evaluate_database_init.DATABASE_INITIALIZED_KEY:
