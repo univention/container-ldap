@@ -279,7 +279,9 @@ setup_slapd_conf
 fetch_saml_metadata
 setup_sasl_mech_whitelist
 setup_sasl_mech_saml
-setup_initial_ldif
+if [ "${LDAP_SERVER_ROLE:-primary}" = "primary" ]; then
+  setup_initial_ldif
+fi
 setup_translog_ldif
 setup_tls
 # log_configuration
