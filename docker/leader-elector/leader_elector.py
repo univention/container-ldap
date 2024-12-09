@@ -6,6 +6,7 @@ import signal
 import sys
 import time
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from kubernetes import client, config, watch
 from kubernetes.client.rest import ApiException
@@ -53,6 +54,10 @@ class LDAPLeaderElector:
         logger.info("Graceful shutdown complete")
         sys.exit(0)
 
+    def ldap_database_exists(self) -> bool:
+        search_dir = Path("/var/lib/univention-ldap/ldap/")
+        return any(search_dir.rglob("data.*"))
+
     def ensure_lease(self):
         """Ensure the lease exists"""
         try:
@@ -74,6 +79,9 @@ class LDAPLeaderElector:
 
     def acquire_or_renew(self):
         """Acquire or renew the lease"""
+        if not self.ldap_database_exists():
+            return False
+
         try:
             lease = self.coordination_api.read_namespaced_lease(
                 name=self.settings.lease_name, namespace=self.settings.pod_namespace

@@ -358,6 +358,11 @@ spec:
               value: {{ .Values.ldapServer.leaderElector.retryPeriodSeconds | quote }}
             - name: RENEW_DEADLINE_SECONDS
               value: {{ .Values.ldapServer.leaderElector.renewDeadlineSeconds | quote }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: "shared-data"
+              mountPath: /var/lib/univention-ldap
+            {{- end }}
       volumes:
         - name: "slapd-overlay-unix-socket-volume"
           emptyDir: {}
