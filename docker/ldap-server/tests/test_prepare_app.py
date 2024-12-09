@@ -29,11 +29,11 @@ def test_configmap_is_provided_via_environment(evaluate_database_init, mocker):
 
 
 def test_configures_logging(evaluate_database_init, mocker):
-    configure_logging_mock = mocker.patch.object(evaluate_database_init, "configure_logging")
+    setup_logging_mock = mocker.patch.object(evaluate_database_init, "setup_logging")
 
     evaluate_database_init.prepare_app(configmap="stub_name", namespace="stub_namespace", log_level="stub_log_level")
 
-    configure_logging_mock.assert_called_once_with("stub_log_level")
+    setup_logging_mock.assert_called_once_with("stub_log_level")
 
 
 def test_discovers_namespace_as_fallback(evaluate_database_init, mocker):

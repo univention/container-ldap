@@ -1,10 +1,12 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "098b34ae4d832a0ce04fca2a94c34fdb4fdef976f2acd2bdc9abbad9ec7b9dd0"
+            "sha256": "1e9af9dc1b6de767ef3913ba3426999e9ad6d9f662a1543791461315b26f2c1e"
         },
         "pipfile-spec": 6,
-        "requires": {},
+        "requires": {
+            "python_version": "3.11"
+        },
         "sources": [
             {
                 "name": "pypi",
@@ -186,6 +188,7 @@
                 "sha256:bf141e2d380c8520eada8b351f4e319ffee9636328c137aa432bc486ca1200e1"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.6'",
             "version": "==31.0.0"
         },
         "oauthlib": {
@@ -239,6 +242,7 @@
                 "sha256:cb5ac360ce894ceacd69c403187900a02c4b20b693a9dd1d643e1effab9eadf9"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.8'",
             "version": "==2.10.3"
         },
         "pydantic-core": {
@@ -452,6 +456,7 @@
                 "sha256:b8ce8fd2a3c7d52f0d0c1318776e7f2bf897fa203daf899f3863514aa926c725"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.7'",
             "version": "==0.15.1"
         },
         "typing-extensions": {
@@ -547,6 +552,7 @@
                 "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.8'",
             "version": "==8.3.4"
         },
         "pytest-mock": {
@@ -555,6 +561,7 @@
                 "sha256:2719255a1efeceadbc056d6bf3df3d1c5015530fb40cf347c0f9afac88410bd0"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.8'",
             "version": "==3.14.0"
         },
         "wmctrl": {

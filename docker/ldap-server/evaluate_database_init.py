@@ -95,7 +95,7 @@ def prepare_app(
     log_level: Annotated[
         str,
         typer.Option(help="Set the log level."),
-    ] = "info",
+    ] = "INFO",
 ):
     setup_logging(log_level)
     configure_kubernetes_client()
