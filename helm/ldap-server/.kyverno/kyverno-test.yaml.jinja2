@@ -98,3 +98,27 @@ results:
     kind: "Deployment"
     rule: "template-replicas"
     result: "pass"
+  - resources:
+      - "release-name-ldap-server-proxy"
+    policy: "require-requests-limits"
+    kind: "Deployment"
+    rule: "validate-resources"
+    result: "pass"
+  - resources:
+      - "release-name-ldap-server-primary"
+    policy: "require-requests-limits"
+    kind: "StatefulSet"
+    rule: "validate-resources"
+    result: "pass"
+  - resources:
+      - "release-name-ldap-server-primary"
+    policy: "require-imagepullpolicy"
+    kind: "StatefulSet"
+    rule: "require-imagePullPolicy"
+    result: "pass"
+  - resources:
+      - "release-name-ldap-server-primary"
+    policy: "template-image-registries"
+    kind: "StatefulSet"
+    rule: "template-image-registries"
+    result: "pass"

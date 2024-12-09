@@ -20,4 +20,38 @@ global:
     - "kyverno-test"
   imagePullPolicy: "kyverno"
 
+ldapServer:
+  image:
+    imagePullPolicy: "kyverno"
+    tag: "kyverno"
+
+waitForDependency:
+  image:
+    imagePullPolicy: "kyverno"
+
+ldifProducer:
+  image:
+    imagePullPolicy: "kyverno"
+
+initResources:
+  limits:
+    memory: "1Gi"
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
+
+resourcesPrimary:
+  limits:
+    memory: "1Gi"
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
+
+resourcesProxy:
+  limits:
+    memory: "1Gi"
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
+
 ...

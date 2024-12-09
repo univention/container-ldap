@@ -83,7 +83,7 @@ spec:
               mountPath: /target/etc/ldap
             - name: etc-univention-volume
               mountPath: /target/etc/univention
-          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesProxy .Values.resources) "context" .) | nindent 12 }}
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.initResources "context" .) | nindent 12 }}
         - name: "load-internal-plugins"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -137,7 +137,7 @@ spec:
           volumeMounts:
             - name: proxy-scripts-volume
               mountPath: /scripts-proxy
-          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesProxy .Values.resources) "context" .) | nindent 12 }}
+          resources: {{- include "common.tplvalues.render" (dict "value" $.Values.initResources "context" $) | nindent 12 }}
       {{- if .Values.waitForDependency.enabled }}
         - name: "wait-for-saml-metadata"
           {{- if .Values.containerSecurityContext.enabled }}
@@ -160,6 +160,7 @@ spec:
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base-defaults.conf"
               subPath: "base-defaults.conf"
+          resources: {{- include "common.tplvalues.render" (dict "value" $.Values.initResources "context" $) | nindent 12 }}
       {{- end }}
       containers:
         - name: "openldap"
@@ -190,7 +191,7 @@ spec:
               containerPort: {{ $value.containerPort }}
               protocol: {{ $value.protocol }}
             {{- end }}
-          {{- if .Values.resources }}
+          {{- if or .Values.resources .Values.resourcesProxy }}
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesProxy .Values.resources) "context" .) | nindent 12 }}
           {{- end }}
           {{- if .Values.lifecycleHooks }}
