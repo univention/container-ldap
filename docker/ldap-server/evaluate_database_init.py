@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
+from enum import Enum
 from typing import Annotated, Optional
 import logging
 import sys
 
 from kubernetes import client, config
+from pydantic import BaseModel
 import typer
 
 logger = logging.getLogger(__name__)
@@ -21,6 +23,15 @@ DATABASE_INITIALIZED_KEY = "ldap_database_initialized"
 settings = {}
 
 
+class InitializedEnum(str, Enum):
+    INITIALIZED = "initialized"
+    UNINITIALIZED = "uninitialized"
+
+
+class LdapStatus(BaseModel):
+    ldap_database_initialized: InitializedEnum
+
+
 @app.command()
 def database_needs_initialization():
     """
@@ -33,7 +44,7 @@ def database_needs_initialization():
     """
     try:
         configmap = get_validated_configmap()
-        if configmap.data[DATABASE_INITIALIZED_KEY].lower() == "true":
+        if configmap.data[DATABASE_INITIALIZED_KEY].lower() == InitializedEnum.INITIALIZED:
             logger.info("Database already initialized.")
             sys.exit(1)
     except Exception:
@@ -53,7 +64,7 @@ def database_initialized():
     v1 = client.CoreV1Api()
     try:
         configmap = get_validated_configmap()
-        configmap.data[DATABASE_INITIALIZED_KEY] = "true"
+        configmap.data[DATABASE_INITIALIZED_KEY] = InitializedEnum.INITIALIZED
         v1.replace_namespaced_config_map(name=configmap_name, namespace=namespace, body=configmap)
     except Exception:
         logger.exception("Unexpected error updating the database initialization status.")
@@ -105,9 +116,11 @@ def get_validated_configmap():
     v1 = client.CoreV1Api()
     configmap = v1.read_namespaced_config_map(name=configmap_name, namespace=namespace)
 
-    if not (configmap.data and DATABASE_INITIALIZED_KEY in configmap.data):
-        logger.error('ConfigMap does not contain the key "%s".', DATABASE_INITIALIZED_KEY)
-        raise ValueError("Invalid ConfigMap structure")
+    try:
+        LdapStatus.model_validate(configmap.data)
+    except:
+        logger.exception("Validation of the status ConfigMap did fail")
+        raise
 
     return configmap
 
