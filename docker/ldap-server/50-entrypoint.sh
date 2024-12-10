@@ -131,10 +131,11 @@ setup_initial_ldif() {
 
   files="$(find /var/lib/univention-ldap/ldap/ -name "data.*" -type f)"
 
-  if [[ "${DOCKER_COMPOSE:-}" != "true" ]]; then
+  if [[ "${LDAP_SERVER_ENABLE_STATUS_CONFIGMAP:-false}" = "true" ]]; then
     evaluate_database_init database-needs-initialization && true
     db_exit_code=$?
   else
+    echo "INFO: Feature \"Status ConfigMap\" not enabled."
     db_exit_code=0
   fi
 
@@ -177,7 +178,7 @@ setup_initial_ldif() {
     | ucr-light-filter | sed -e "${filter_string}" \
     | slapadd -f /etc/ldap/slapd.conf
 
-  if [[ "${DOCKER_COMPOSE:-}" != "true" ]]; then
+  if [[ "${LDAP_SERVER_ENABLE_STATUS_CONFIGMAP:-false}" = "true" ]]; then
     evaluate_database_init database-initialized
   fi
 
