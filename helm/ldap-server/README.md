@@ -1074,7 +1074,7 @@ true
 true
 </pre>
 </td>
-			<td></td>
+			<td>Allows to disable the creation of "Role" and "RoleBinding".</td>
 		</tr>
 		<tr>
 			<td>readinessProbe.failureThreshold</td>

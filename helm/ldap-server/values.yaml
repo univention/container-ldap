@@ -329,10 +329,6 @@ service:
       # -- service protocol.
       protocol: "TCP"
 
-# Configure resource requests and limits.
-#
-# Ref: https://kubernetes.io/docs/user-guide/compute-resources/
-
 # Service account to use.
 # Ref.: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
 serviceAccount:
@@ -351,6 +347,7 @@ serviceAccount:
   labels: {}
 
 rbac:
+  # -- Allows to disable the creation of "Role" and "RoleBinding".
   create: true
 
 #  Configure extra options for containers probes.
