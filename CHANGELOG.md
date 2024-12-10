@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.29.1...v0.30.0) (2024-12-10)
+
+
+### Features
+
+* Explicit opt-in to enable the status ConfigMap ([ccc4a54](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ccc4a545cb067fcab329eb0dfb9f7b110c2a6462))
+
 ## [0.29.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.29.0...v0.29.1) (2024-12-10)
 
 
