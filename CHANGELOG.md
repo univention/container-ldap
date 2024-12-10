@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.29.0...v0.29.1) (2024-12-10)
+
+
+### Bug Fixes
+
+* kyverno lint for ldap-server ([5648b79](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/5648b7916c8ca5968f4ee8ecc3a41bdf95471cb0))
+
 ## [0.29.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.28.0...v0.29.0) (2024-12-09)
 
 
