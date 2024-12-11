@@ -39,7 +39,7 @@ metadata:
 data:
   wait-for-primary.sh: |
     #!/bin/bash
-    set -uxo pipefail
+    set -uo pipefail
     echo "Waiting for primary LDAP to be available ..."
     retry_interval=5
     error=1
@@ -55,7 +55,7 @@ data:
     done
   append-slapd.conf.sh: |
     #!/usr/bin/env bash
-    set -euxo pipefail
+    set -euo pipefail
 
     # Export the SERVERID
     export SERVERID=$(echo ${HOSTNAME} | awk -F '-' '{print $(NF)+1}')

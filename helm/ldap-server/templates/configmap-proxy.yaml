@@ -106,7 +106,7 @@ metadata:
 data:
   wait-for-secondary.sh: |
     #!/bin/bash
-    set -uxo pipefail
+    set -uo pipefail
     echo "Waiting for secondary LDAP to be available ..."
     retry_interval=5
     error=1
@@ -135,7 +135,6 @@ data:
     while IFS=$'\n' read -r line; do
       # Check if the current line starts with "include" and append the moduleload for back_ldap.so
       if [[ "${line}" =~ ^include ]]; then
-        echo "Appending schema definition from slapd.conf"
         schema_definition_lines+="${line}\n"
       fi
     done < <(echo "${slapd_conf}")

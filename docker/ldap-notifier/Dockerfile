@@ -9,7 +9,7 @@ ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
 
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 WORKDIR /apt
 
@@ -49,7 +49,7 @@ ARG LABEL_REVISION=undefined
 ARG LABEL_SOURCE=undefined
 ARG LABEL_VERSION=undefined
 
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive \

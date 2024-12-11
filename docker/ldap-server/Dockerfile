@@ -17,7 +17,7 @@ ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS ucs_builder
 
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ###############################################################################
 # Install univention-ldap-server
@@ -50,7 +50,7 @@ ARG LABEL_REVISION=undefined
 ARG LABEL_SOURCE=undefined
 ARG LABEL_VERSION=undefined
 
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN \

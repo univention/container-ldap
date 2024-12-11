@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2023-2024 Univention GmbH
 
-set -euxo pipefail
+set -euo pipefail
 shopt -s expand_aliases
 
 alias tsecho='echo "$(date --utc +%Y-%m-%dT%H:%M:%SZ)"'
