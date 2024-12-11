@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.30.0...v0.31.0) (2024-12-11)
+
+
+### Features
+
+* Avoid echoing the commands in shell scripts by default ([2ca48d1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/2ca48d11e36fd919b1bc323bf13e043389c78c43))
+
 ## [0.30.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.29.1...v0.30.0) (2024-12-10)
 
 
