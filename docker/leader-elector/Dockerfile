@@ -11,7 +11,7 @@ WORKDIR ${WORKDIR}
 
 RUN apt-get -qq update \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      python3-pip=23.* \
+      python3-pip \
     && rm -fr /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 ENV \
@@ -22,7 +22,7 @@ ENV \
     PYTHONDONTWRITEBYTECODE=1
 
 RUN pip3 install --break-system-packages --no-cache-dir \
-    kubernetes==31.0.0 \
+    kubernetes==31.* \
     pydantic-settings==2.6.1
 
 COPY ./leader_elector.py ${WORKDIR}/
