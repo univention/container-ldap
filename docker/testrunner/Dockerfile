@@ -12,8 +12,8 @@ WORKDIR ${WORKDIR}
 
 RUN apt-get -qq update \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      python3-pip=23.* \
-      libldap2-dev=2.5.* \
+      python3-pip \
+      libldap2-dev \
     && rm -fr /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 ENV \
