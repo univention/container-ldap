@@ -158,8 +158,8 @@ class LDAPLeaderElector:
 
     def update_service_selector(self, make_active):
         """Update the service selector to point to this pod when it becomes the leader"""
-        # Skip if no state change or if not making active (e.g., on shutdown)
-        if make_active == self.is_currently_active or not make_active:
+        # Skip if not making active (e.g., on shutdown)
+        if not make_active:
             return
 
         try:
