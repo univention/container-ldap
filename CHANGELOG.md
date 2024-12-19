@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.31.0...v0.31.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* **leader-elector:** Overwrite the labelSelector on the primary service every 15 seconds to recover from initial state after the service is overwritten by helm ([58a0343](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/58a0343ed8fc3f85733056f66ab343fe7ed6642f))
+
 ## [0.31.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.30.0...v0.31.0) (2024-12-11)
 
 
