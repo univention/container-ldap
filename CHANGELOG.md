@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.31.1...v0.32.0) (2024-12-20)
+
+
+### Features
+
+* upgrade UCS base image to 2024-12-12 ([252852b](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/252852b7420991877829ec5a28f805e91f2755a8))
+
 ## [0.31.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.31.0...v0.31.1) (2024-12-19)
 
 
