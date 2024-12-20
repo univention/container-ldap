@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
-ARG UCS_BASE_IMAGE_TAG=0.13.1-post-main-build-2024-09-09
+ARG UCS_BASE_IMAGE_TAG=0.14.0-build-2024-12-12
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520
 
 ARG WORKDIR="/app"
@@ -12,8 +12,8 @@ WORKDIR ${WORKDIR}
 
 RUN apt-get -qq update \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      python3-pip=23.* \
-      libldap2-dev=2.5.* \
+      python3-pip \
+      libldap2-dev \
     && rm -fr /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 ENV \

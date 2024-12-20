@@ -6,7 +6,7 @@
 # Global variables
 ###############################################################################
 
-ARG UCS_BASE_IMAGE_TAG=0.13.3-build-2024-12-05
+ARG UCS_BASE_IMAGE_TAG=0.14.0-build-2024-12-12
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520
 
 ###############################################################################
@@ -29,15 +29,15 @@ WORKDIR /home/deb_packages
 RUN apt-get download \
         # The Self-service does not have an extension package. It's part of the UMC.
         # We bake support for it directly into the LDAP server image.
-        univention-self-service-passwordreset-umc=7.0.* \
-        univention-ldap-config=18.0.* \
-        univention-ldap-server=18.0.* \
-        univention-saml-schema=9.0.* \
-        univention-ldap-overlay-memberof=14.0.* \
-        univention-ldap-acl-master=18.0.* \
-        univention-management-console-server=14.0.* \
-        liblasso3=2.8.* \
-        cy2-saml=3.0.* && \
+        univention-self-service-passwordreset-umc \
+        univention-ldap-config \
+        univention-ldap-server \
+        univention-saml-schema \
+        univention-ldap-overlay-memberof \
+        univention-ldap-acl-master \
+        univention-management-console-server \
+        liblasso3 \
+        cy2-saml && \
     (dpkg --force-all -i ./*.deb || true)
 
 ###############################################################################
@@ -67,31 +67,31 @@ RUN \
     DEBIAN_FRONTEND=noninteractive \
       apt-get --assume-yes --verbose-versions --no-install-recommends install \
         # Slapd Debian dependencies, some of them could be removed later
-        libltdl7=2.4.* \
-        libodbc1=2.3.* \
-        libperl5.36=5.36.* \
-        libwrap0=7.6.* \
-        psmisc=23.* \
-        perl=5.36.* \
-        lsb-base=11.* \
+        libltdl7 \
+        libodbc1 \
+        libperl5.36 \
+        libwrap0 \
+        psmisc \
+        perl \
+        lsb-base \
         # Some definitely needed slapd dependencies
-        libsasl2-2=2.1.* \
-        libsasl2-modules=2.1.* \
-        libsasl2-modules-db=2.1.* \
-        libsasl2-modules-gssapi-heimdal=2.1.* \
-        krb5-config=2.7 \
-        libgssapi-krb5-2=1.* \
-        libkrb5-26-heimdal=7.8.* \
-        libkadm5srv8-heimdal=7.8.* \
-        openssl=3.0.* \
+        libsasl2-2 \
+        libsasl2-modules \
+        libsasl2-modules-db \
+        libsasl2-modules-gssapi-heimdal \
+        krb5-config \
+        libgssapi-krb5-2 \
+        libkrb5-26-heimdal \
+        libkadm5srv8-heimdal \
+        openssl \
         # cy2-saml dependencies
-        libglib2.0-0=2.* \
-        libxmlsec1-openssl=1.2.* \
+        libglib2.0-0 \
+        libxmlsec1-openssl \
         # for downloading SAML metadata on startup
-        wget=1.21.* \
-        ca-certificates=* \
-        python3=3.11.* \
-        python3-pip=23.* \
+        wget \
+        ca-certificates \
+        python3 \
+        python3-pip \
         pipenv && \
     # This file is a dependency of the slapd.conf templates
     mkdir -p /var/lib/univention-ldap-local/schema/id/ && \
@@ -146,8 +146,8 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
           /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
-        slapd=2.5.* \
-        ldap-utils=2.5.* \
+        slapd \
+        ldap-utils \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
     # /etc/ldap/slapd.conf

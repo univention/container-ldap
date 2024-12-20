@@ -4,7 +4,7 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
-ARG UCS_BASE_IMAGE_TAG=0.13.1-post-main-build-2024-09-09
+ARG UCS_BASE_IMAGE_TAG=0.14.0-build-2024-12-12
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
@@ -27,10 +27,10 @@ COPY fake.sh /usr/local/bin/univention-config-registry
 RUN \
   apt-get update && \
   apt-get download \
-    libunivention-debug1=14.0.* \
-    python3-univention-config-registry=17.0.* \
-    python3-univention-debhelper=4.0.* \
-    univention-directory-notifier=16.0.* && \
+    libunivention-debug1 \
+    python3-univention-config-registry \
+    python3-univention-debhelper \
+    univention-directory-notifier && \
   mkdir /usr/share/univention-lib/ && \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
@@ -54,10 +54,10 @@ RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive \
     apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      python3=3.11.* \
-      python3-ldap=3.* \
-      python3-lazy-object-proxy=1.* \
-      python3-six=1.* \
+      python3 \
+      python3-ldap \
+      python3-lazy-object-proxy \
+      python3-six \
   && \
   rm -rf /var/lib/apt/lists/*
 
