@@ -214,9 +214,15 @@ spec:
             - name: plugin-targets
               mountPath: /var/lib/univention-ldap-local/local-schema
               subPath: ldap-schema
+              readOnly: true
             - name: plugin-targets
               mountPath: /etc/univention/templates/files/etc/ldap/slapd.conf.d
               subPath: ldap-acls
+              {{/*
+                Can't be made read-only since
+                40-self-service-acl.sh writes to it
+              */}}
+              readOnly: false
             - name: var-run-volume
               mountPath: /var/run/slapd
             - name: "config-map-ucr"
