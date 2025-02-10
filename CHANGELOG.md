@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.32.1...v0.32.2) (2025-02-10)
+
+
+### Bug Fixes
+
+* set plugin mounts to read-only ([4dbecbf](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/4dbecbf222d968ba458f76bdb30804590359160f))
+
 ## [0.32.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.32.0...v0.32.1) (2025-02-10)
 
 
