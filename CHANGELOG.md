@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.32.0...v0.32.1) (2025-02-10)
+
+
+### Bug Fixes
+
+* add .kyverno to helmignore ([1389a4c](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/1389a4cd4a30b6e7b5069ed4e393dafe91dad9a2))
+
 ## [0.32.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.31.1...v0.32.0) (2024-12-20)
 
 
