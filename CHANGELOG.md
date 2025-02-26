@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.32.2...v0.33.0) (2025-02-26)
+
+
+### Features
+
+* Bump ucs-base-image to use released apt sources ([bb86716](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/bb86716317b4ed78c3d5e1d805654dfbec650022))
+
 ## [0.32.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.32.1...v0.32.2) (2025-02-10)
 
 
