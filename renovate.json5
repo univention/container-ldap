@@ -1,0 +1,18 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    ":disableRateLimiting"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "gitregistry.knut.univention.de/univention/components/ucs-base-image/ucs-base-520"
+      ],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+).(?<patch>\\d+)-build-(?<build>\\d+-\\d+-\\d+)$"
+    }
+  ],
+  "semanticCommits": "enabled",
+  "semanticCommitType": "fix",
+  "semanticCommitScope": "deps"
+}
