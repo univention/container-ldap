@@ -2,7 +2,6 @@
 SPDX-FileCopyrightText: 2024 Univention GmbH
 SPDX-License-Identifier: AGPL-3.0-only
 */}}
-{{- if eq (int .Values.replicaCountPrimary) 2 }}
 ---
 apiVersion: "v1"
 kind: "Service"
@@ -35,6 +34,8 @@ spec:
     ldap-server-type: primary
     statefulset.kubernetes.io/pod-name: {{ printf "%s-primary-0" (include "common.names.fullname" .) | quote }}  # This will be updated by the leader elector
 ...
+
+{{- if eq (int .Values.replicaCountPrimary) 2 }}
 ---
 apiVersion: "v1"
 kind: "Service"
