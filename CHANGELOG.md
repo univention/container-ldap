@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.33.0...v0.33.1) (2025-03-11)
+
+
+### Bug Fixes
+
+* Also create Service ldap-server-primary-0 in scaled down deployments ([5b750e9](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/5b750e97683eede659e53ba8d05e5c2e76399034))
+* Make copy calls in init containers more robust ([2260510](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/226051073ec2ce61a65b8cc97e2921be11d901c6))
+
 ## [0.33.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.32.2...v0.33.0) (2025-02-26)
 
 
