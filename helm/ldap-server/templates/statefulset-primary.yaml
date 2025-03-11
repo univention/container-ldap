@@ -109,7 +109,10 @@ spec:
           command:
             - sh
             - -c
-            - 'cp -a /usr/share/univention-ldap/* /target/usr/share/univention-ldap/; cp -a /etc/ldap/* /target/etc/ldap/; cp -a /etc/univention/* /target/etc/univention/'
+            - |
+              cp -a /usr/share/univention-ldap/* /target/usr/share/univention-ldap/
+              cp -a /etc/ldap/* /target/etc/ldap/
+              cp -a /etc/univention/* /target/etc/univention/
           volumeMounts:
             - name: usr-share-univention-ldap-volume
               mountPath: /target/usr/share/univention-ldap
@@ -148,8 +151,10 @@ spec:
             - sh
             - -c
             - |
-              cp -av /var/lib/univention-ldap-local/local-schema /target/ldap-schema
-              cp -av /etc/univention/templates/files/etc/ldap/slapd.conf.d /target/ldap-acls
+              mkdir -p /target/ldap-schema
+              mkdir -p /target/ldap-acls
+              cp -av /var/lib/univention-ldap-local/local-schema/* /target/ldap-schema
+              cp -av /etc/univention/templates/files/etc/ldap/slapd.conf.d/* /target/ldap-acls
           volumeMounts:
             - name: plugin-targets
               mountPath: /target
