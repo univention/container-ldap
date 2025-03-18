@@ -86,6 +86,33 @@ helm uninstall ldap-notifier
 			<td></td>
 		</tr>
 		<tr>
+			<td>affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].key</td>
+			<td>string</td>
+			<td><pre lang="json">
+"apps.kubernetes.io/pod-index"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].operator</td>
+			<td>string</td>
+			<td><pre lang="json">
+"In"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].values[0]</td>
+			<td>string</td>
+			<td><pre lang="json">
+"0"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].topologyKey</td>
 			<td>string</td>
 			<td><pre lang="json">
