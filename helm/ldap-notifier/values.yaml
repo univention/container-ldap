@@ -34,15 +34,19 @@ global:
 additionalAnnotations: {}
 
 affinity:
-  podAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-            - key: ldap-server-type
-              operator: In
-              values:
-                - primary
-        topologyKey: kubernetes.io/hostname
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: ldap-server-type
+                operator: In
+                values:
+                  - primary
+              - key: apps.kubernetes.io/pod-index
+                operator: In
+                values:
+                  - "0"
+          topologyKey: kubernetes.io/hostname
 
 # Security Context.
 # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
