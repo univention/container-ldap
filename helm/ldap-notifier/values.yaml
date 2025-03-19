@@ -42,6 +42,10 @@ affinity:
               operator: In
               values:
                 - primary
+            - key: apps.kubernetes.io/pod-index
+              operator: In
+              values:
+                - "0"
         topologyKey: kubernetes.io/hostname
 
 # Security Context.
