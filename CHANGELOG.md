@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.33.1...v0.33.2) (2025-03-19)
+
+
+### Bug Fixes
+
+* **ldap-notifier:** added pod affinity so that ldap-notifier affines to ldap-server with index 0 ([50033aa](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/50033aa12c6dfcf03ad6a5aaeeeb60f0ef4a5a7c)), closes [univention/dev/internal/team-nubus#1077](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1077)
+
 ## [0.33.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.33.0...v0.33.1) (2025-03-11)
 
 
