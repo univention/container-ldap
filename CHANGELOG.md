@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.33.2...v0.33.3) (2025-03-21)
+
+
+### Bug Fixes
+
+* namespace template in serviceacount ([fb891db](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/fb891dbe2b0d5fe8603b68b3e9fe1ab7dce6f4c2)), closes [univention/dev/internal/team-nubus#1075](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1075)
+
 ## [0.33.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.33.1...v0.33.2) (2025-03-19)
 
 
