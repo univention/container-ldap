@@ -9,6 +9,9 @@ dependencies:
   - name: "common"
     version: "^2.x.x"
     repository: "oci://registry-1.docker.io/bitnamicharts"
+  - name: "nubus-common"
+    version: "^0.8.x"
+    repository: "oci://artifacts.software-univention.de/nubus/charts"
 description: "A Helm Chart that deploys a standalone OpenLDAP server"
 keywords:
   - "openldap"

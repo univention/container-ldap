@@ -108,22 +108,6 @@ These template definitions are only used in this chart.
 {{- coalesce .Values.ldifProducer.nats.auth.credentialSecretName (printf "%s-ldif-producer-nats-credentials" .Release.Name) -}}
 {{- end -}}
 
-{{- define "ldap-server.credentialSecret" -}}
-    {{- $name := default (printf "%s-credentials" (include "common.names.fullname" .)) .Values.ldapServer.credentialSecret.name -}}
-    {{- $key := default "adminPassword" .Values.ldapServer.credentialSecret.key -}}
-
-    {{- if and .Values.ldapServer.credentialSecret .Values.ldapServer.credentialSecret.name -}}
-        name: {{ .Values.ldapServer.credentialSecret.name | quote }}
-key: {{ .Values.ldapServer.credentialSecret.key | quote }}
-    {{- else if .Values.global.nubusDeployment -}}
-        name: {{ $name | quote }}
-key: {{ $key | quote }}
-    {{- else -}}
-        name: {{ required ".Values.ldapServer.credentialSecret.name must be defined." .Values.ldapServer.credentialSecret.name | quote }}
-key: {{ required ".Values.ldapServer.credentialSecret.key must be defined." .Values.ldapServer.credentialSecret.key | quote }}
-    {{- end -}}
-{{- end -}}
-
 {{- define "ldap-server.configMapUcr" -}}
     {{- $nubusConfigMapUcr := printf "%s-stack-data-ums-ucr" .Release.Name -}}
     {{- tpl (coalesce .Values.configMapUcr .Values.global.configMapUcr $nubusConfigMapUcr) . -}}

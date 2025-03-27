@@ -41,6 +41,7 @@ helm uninstall ldap-server
 
 | Repository | Name | Version |
 |------------|------|---------|
+| oci://artifacts.software-univention.de/nubus/charts | nubus-common | ^0.8.x |
 | oci://registry-1.docker.io/bitnamicharts | common | ^2.x.x |
 
 ## Values
@@ -476,6 +477,23 @@ false
 			<td></td>
 		</tr>
 		<tr>
+			<td>ldapServer.auth</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "existingSecret": {
+    "keyMapping": {
+      "password": null
+    },
+    "name": null
+  },
+  "password": null
+}
+</pre>
+</td>
+			<td>Optional reference to a different secret containing credentials  auth:    existingSecret:      name: custom-credentials      keyMapping:        password: adminPassword</td>
+		</tr>
+		<tr>
 			<td>ldapServer.config.domainName</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -528,15 +546,6 @@ false
 </pre>
 </td>
 			<td>A comma separated list of SAML2 Service Provider URLs (must be defined) samlServiceProviders: "http://myportal.local:8000/univention/saml/metadata,http://myportal.local:8000/auth/realms/ucs"</td>
-		</tr>
-		<tr>
-			<td>ldapServer.credentialSecret</td>
-			<td>object</td>
-			<td><pre lang="json">
-{}
-</pre>
-</td>
-			<td>Optional reference to a different secret containing credentials credentialSecret:  name: "custom-credentials"  adminPasswordKey: "adminPassword"</td>
 		</tr>
 		<tr>
 			<td>ldapServer.generateDHparam</td>
@@ -680,7 +689,7 @@ true
 "/certificates/ca.crt"
 </pre>
 </td>
-			<td>Optional reference to the secret to use for reading Diffie-Hellman parameters dhparamSecret: "custom-dhparam" Path the CA certificate file (TLSCACertPath (slapd), CA_CERT_FILE(entrypoint))</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>ldapServer.tls.certificateFile</td>
@@ -701,6 +710,22 @@ true
 			<td></td>
 		</tr>
 		<tr>
+			<td>ldapServer.tls.dhparam</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "existingSecret": {
+    "keyMapping": {
+      "dhparam.pem": null
+    },
+    "name": null
+  }
+}
+</pre>
+</td>
+			<td>Optional reference to the secret to use for reading Diffie-Hellman parameters</td>
+		</tr>
+		<tr>
 			<td>ldapServer.tls.enabled</td>
 			<td>bool</td>
 			<td><pre lang="json">
@@ -708,6 +733,22 @@ false
 </pre>
 </td>
 			<td></td>
+		</tr>
+		<tr>
+			<td>ldapServer.tls.existingSecret</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "keyMapping": {
+    "ca.crt": null,
+    "tls.crt": null,
+    "tls.key": null
+  },
+  "name": null
+}
+</pre>
+</td>
+			<td>Optional reference to the secret to use for reading certificates</td>
 		</tr>
 		<tr>
 			<td>ldifProducer.config.backpressureWaitTimeout</td>
@@ -791,13 +832,21 @@ false
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldifProducer.nats.auth.credentialSecretName</td>
-			<td>string</td>
+			<td>ldifProducer.nats.auth</td>
+			<td>object</td>
 			<td><pre lang="json">
-""
+{
+  "existingSecret": {
+    "keyMapping": {
+      "NATS_PASSWORD": null,
+      "NATS_USERNAME": null
+    },
+    "name": null
+  }
+}
 </pre>
 </td>
-			<td></td>
+			<td>Optional reference to a different secret containing credentials  auth:    existingSecret:      name: null      keyMapping:        NATS_USERNAME: <nats-username>        NATS_PASSWORD: <nats-password></td>
 		</tr>
 		<tr>
 			<td>ldifProducer.nats.connection.host</td>

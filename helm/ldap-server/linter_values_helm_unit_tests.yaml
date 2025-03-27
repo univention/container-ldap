@@ -38,23 +38,24 @@ ldapServer:
     samlServiceProviders: "http://localhost:8000/univention/saml/metadata,http://localhost:8000/auth/realms/ucs"
     ldapBaseDn: "dc=organization,dc=intranet"
   auth:
-    password: "univention"
-    existingSecret:
-      name: null
-      keyMapping:
-        password: "adminPassword"
+    password: "DUMMY"
+    existingSecret: null
 
   tls:
     enabled: true
-    existingSecret:
-        name: openldap-tls
-        keyMapping:
-          ca.crt:  ca2.crt
-          tls.crt: tls2.crt
-          tls.key: tls2.key
+    existingSecret: null
 
     dhparam:
-      existingSecret:
-        name: openldap-dh
-        keyMapping:
-          dhparam.pem: dhparam2.pem
+      existingSecret: null
+
+ldifProducer:
+  enabled: true
+  nats:
+    auth:
+      existingSecret: null
+    connection:
+      host: "TEST"
+      port: "1234"
+    natsMaxReconnectAttempts: 2
+
+...

@@ -208,19 +208,29 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ printf "%s-ldif-producer-config" (include "common.names.fullname" .) }}
-            {{- if (include "ldif-producer.nats.auth.credentialSecretName" .) }}
-            - secretRef:
-                name: {{ include "ldif-producer.nats.auth.credentialSecretName" . | quote }}
-            {{- end }}
           env:
+            {{- if .Values.ldifProducer.nats.auth.existingSecret }}
+            - name: NATS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "key" "NATS_USERNAME") | quote }}
+            - name: NATS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "key" "NATS_PASSWORD") | quote }}
+            {{- end }}
             - name: SYNC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password") | quote }}
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password") | quote }}
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
@@ -250,11 +260,13 @@ spec:
             - name: SYNC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password") | quote }}
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password") | quote }}
             - name: STATUS_CONFIGMAP
               value: {{ printf "%s-status" (include "common.names.fullname" .) }}
             - name: STATUS_NAMESPACE
@@ -411,7 +423,14 @@ spec:
         - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
           secret:
             defaultMode: 0400
-            secretName: {{ .Values.ldapServer.tls.certificateSecret | default (printf "%s-tls" (include "common.names.fullname" . )) | quote }}
+            secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "defaultNameSuffix" "tls" "context" .) | quote }}
+            items:
+              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "ca.crt") | quote }}
+                path: ca.crt
+              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "tls.crt") | quote }}
+                path: tls.crt
+              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "tls.key") | quote }}
+                path: tls.key
         {{- if .Values.ldapServer.generateDHparam }}
         - name: {{ printf "%s-dh-volume" (include "common.names.fullname" .) }}
           emptyDir: {}
@@ -419,7 +438,10 @@ spec:
         - name: {{ printf "%s-dh-volume" (include "common.names.fullname" .) }}
           secret:
             defaultMode: 0400
-            secretName: {{ .Values.ldapServer.tls.dhparamSecret | default (printf "%s-dhparam" (include "common.names.fullname" . ))  | quote }}
+            secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.tls.dhparam.existingSecret "defaultNameSuffix" "tls-dhparams" "context" .) | quote }}
+            items:
+              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.dhparam.existingSecret "key" "dhparam.pem") | quote }}
+                path: dhparam.pem
         {{- end }}
         {{- end }}
         {{- if .Values.extraVolumes }}

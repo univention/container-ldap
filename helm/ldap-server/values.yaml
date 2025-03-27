@@ -429,8 +429,19 @@ ldifProducer:
     repository: "nubus-dev/images/ldif-producer"
     tag: "latest"
   nats:
+    # -- Optional reference to a different secret containing credentials
+    #  auth:
+    #    existingSecret:
+    #      name: null
+    #      keyMapping:
+    #        NATS_USERNAME: <nats-username>
+    #        NATS_PASSWORD: <nats-password>
     auth:
-      credentialSecretName: ""
+      existingSecret:
+        name: null
+        keyMapping:
+          NATS_USERNAME: null
+          NATS_PASSWORD: null
     connection:
       host: ""
       port: ""
@@ -494,10 +505,17 @@ ldapServer:
     samlMetadataUrlInternal: ""
 
   # -- Optional reference to a different secret containing credentials
-  #credentialSecret:
-  #  name: "custom-credentials"
-  #  adminPasswordKey: "adminPassword"
-  credentialSecret: {}
+  #  auth:
+  #    existingSecret:
+  #      name: custom-credentials
+  #      keyMapping:
+  #        password: adminPassword
+  auth:
+    password: null
+    existingSecret:
+      name: null
+      keyMapping:
+        password: null
 
   # Enable to generate DH parameters on startup
   generateDHparam: true
@@ -512,10 +530,20 @@ ldapServer:
   tls:
     enabled: false
     # -- Optional reference to the secret to use for reading certificates
-    # certificateSecret: "custom-tls"
+    existingSecret:
+      name: null
+      keyMapping:
+        ca.crt: null
+        tls.crt: null
+        tls.key: null
 
     # -- Optional reference to the secret to use for reading Diffie-Hellman parameters
-    # dhparamSecret: "custom-dhparam"
+    dhparam:
+      existingSecret:
+            name: null
+            keyMapping:
+              dhparam.pem: null
+
 
     # Path the CA certificate file (TLSCACertPath (slapd), CA_CERT_FILE(entrypoint))
     caCertificateFile: "/certificates/ca.crt"
