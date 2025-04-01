@@ -3,8 +3,8 @@
 
 
 import pytest
-
 from pytest_helm.utils import add_jsonpath_prefix, findone
+
 from univention.testing.helm.base import Base
 
 
@@ -65,7 +65,6 @@ class TestStatefulsetResources(Base):
         resources = self._get_resources(helm, chart_path, values, template_file)
 
         assert resources == expected_resources
-
 
     @pytest.mark.parametrize(
         "template_file, value_path",
