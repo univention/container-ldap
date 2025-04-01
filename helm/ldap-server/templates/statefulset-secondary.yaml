@@ -257,9 +257,7 @@ spec:
               containerPort: {{ $value.containerPort }}
               protocol: {{ $value.protocol }}
             {{- end }}
-          {{- if .Values.resources }}
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesSecondary .Values.resources) "context" .) | nindent 12 }}
-          {{- end }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
           {{- end }}
