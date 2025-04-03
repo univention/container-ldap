@@ -121,7 +121,7 @@ test-ldap-smoke:
 
 test-chart-ldap-server:
   stage: test
-  image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/common-helm/testrunner:0.7.0"
+  image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/common-helm/testrunner:latest"
   script:
     - helm dep build helm/ldap-server
     - pytest tests/helm_unit
