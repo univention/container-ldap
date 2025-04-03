@@ -181,20 +181,18 @@ spec:
           image: "{{ coalesce .Values.waitForDependency.image.registry .Values.global.imageRegistry }}/{{ .Values.waitForDependency.image.repository }}:{{ .Values.waitForDependency.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.waitForDependency.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
           command:
-            - "/bin/bash"
-            - "/scripts/wait-for-saml-metadata.sh"
-          envFrom:
-            - configMapRef:
-                name: {{ include "common.names.fullname" . }}
-          volumeMounts:
-            - name: scripts-volume
-              mountPath: /scripts
-            - name: "config-map-ucr"
-              mountPath: "/etc/univention/base.conf"
-              subPath: "base.conf"
-            - name: "config-map-ucr"
-              mountPath: "/etc/univention/base-defaults.conf"
-              subPath: "base-defaults.conf"
+            - "wait-for"
+            - "url"
+            - "--log-level"
+            - "DEBUG"
+            - "--timeout"
+            - "120"
+            - "--repeat-delay"
+            - "2"
+            - "--url"
+            - "http://keycloak/realms/ucs/protocol/saml/descriptor"
+            - "--success-status"
+            - "200"
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
       {{- end }}
       containers:

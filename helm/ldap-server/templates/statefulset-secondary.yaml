@@ -176,50 +176,46 @@ spec:
           image: "{{ coalesce .Values.waitForDependency.image.registry .Values.global.imageRegistry }}/{{ .Values.waitForDependency.image.repository }}:{{ .Values.waitForDependency.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.waitForDependency.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
           command:
-            - "/bin/bash"
-            - "/scripts/wait-for-saml-metadata.sh"
-          envFrom:
-            - configMapRef:
-                name: {{ include "common.names.fullname" . }}
-          volumeMounts:
-            - name: scripts-volume
-              mountPath: /scripts
-            - name: "config-map-ucr"
-              mountPath: "/etc/univention/base.conf"
-              subPath: "base.conf"
-            - name: "config-map-ucr"
-              mountPath: "/etc/univention/base-defaults.conf"
-              subPath: "base-defaults.conf"
+            - "wait-for"
+            - "url"
+            - "--log-level"
+            - "DEBUG"
+            - "--timeout"
+            - "120"
+            - "--repeat-delay"
+            - "2"
+            - "--url"
+            - "http://keycloak/realms/ucs/protocol/saml/descriptor"
+            - "--success-status"
+            - "200"
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesSecondary .Values.resources) "context" .) | nindent 12 }}
-      {{- end }}
         - name: "wait-for-primary"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-          image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.ldapServer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "common.names.fullname" . }}
-            - configMapRef:
-                name: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
-          env:
-            - name: SYNC_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
-            - name: LDAP_CN_ADMIN_PW
-              valueFrom:
-                secretKeyRef:
-                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
+          image: "{{ coalesce .Values.waitForDependency.image.registry .Values.global.imageRegistry }}/{{ .Values.waitForDependency.image.repository }}:{{ .Values.waitForDependency.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.waitForDependency.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          # (set +x; ldapsearch -H "${PRIMARY_LDAP_URI}" -x -D "${SYNC_USER_DN}" -w "${LDAP_CN_ADMIN_PW}" -b "${LDAP_BASEDN}" -s base >/dev/null 2>&1)
           command:
-            - bash
-            - -c
-            - '/scripts-secondary/wait-for-primary.sh'
-          volumeMounts:
-            - name: secondary-scripts-volume
-              mountPath: /scripts-secondary
+            - "wait-for"
+            - "ldap-login"
+            - "--log-level"
+            - "DEBUG"
+            - "--timeout"
+            - "120"
+            - "--repeat-delay"
+            - "2"
+            - "--url"
+            - {{ include "ldap-server.ldap.connection.uriPrimary" . | quote }}
+            - "--username"
+            - {{ include "nubusTemplates.ldapServer.ldap.adminDn" . | quote}}
+          env:
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- include "ldap-server.credentialSecret" . | nindent 18 }}
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesSecondary .Values.resources) "context" .) | nindent 12 }}
+      {{- end }}
       containers:
         - name: "openldap"
           {{- if .Values.containerSecurityContext.enabled }}

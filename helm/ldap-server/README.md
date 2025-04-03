@@ -578,7 +578,7 @@ true
 			<td>ldapServer.image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
-"latest"
+"0.33.3"
 </pre>
 </td>
 			<td></td>
@@ -614,7 +614,7 @@ true
 			<td>ldapServer.leaderElector.image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
-"latest"
+"0.33.3"
 </pre>
 </td>
 			<td></td>
@@ -785,7 +785,7 @@ false
 			<td>ldifProducer.image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
-"latest"
+"0.33.3"
 </pre>
 </td>
 			<td></td>
@@ -1512,7 +1512,7 @@ true
 			<td>waitForDependency.image.repository</td>
 			<td>string</td>
 			<td><pre lang="json">
-"nubus/images/wait-for-dependency"
+"nubus-dev/images/wait-for-golang"
 </pre>
 </td>
 			<td></td>
@@ -1521,7 +1521,7 @@ true
 			<td>waitForDependency.image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
-"0.28.0@sha256:816ad27b76046be360398274ba3c1f1bcec8f58c2ea5a200b2fb675aab1a5ab8"
+"latest"
 </pre>
 </td>
 			<td></td>

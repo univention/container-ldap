@@ -416,8 +416,8 @@ waitForDependency:
   image:
     imagePullPolicy: "IfNotPresent"
     registry: ""
-    repository: "nubus/images/wait-for-dependency"
-    tag: "0.28.0@sha256:816ad27b76046be360398274ba3c1f1bcec8f58c2ea5a200b2fb675aab1a5ab8"
+    repository: "nubus-dev/images/wait-for-golang"
+    tag: "latest"
 
 ldifProducer:
   enabled: false
@@ -427,7 +427,7 @@ ldifProducer:
     # -- Container registry address. This setting has higher precedence than global.registry.
     registry: ""
     repository: "nubus-dev/images/ldif-producer"
-    tag: "latest"
+    tag: "0.33.3"
   nats:
     auth:
       credentialSecretName: ""
@@ -452,7 +452,7 @@ ldapServer:
     # -- Container registry address. This setting has higher precedence than global.registry.
     registry: ""
     repository: "nubus-dev/images/ldap-server"
-    tag: "latest"
+    tag: "0.33.3"
   leaderElector:
     image:
       # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
@@ -460,7 +460,7 @@ ldapServer:
       # -- Container registry address. This setting has higher precedence than global.registry.
       registry: ""
       repository: "nubus-dev/images/ldap-server-elector"
-      tag: "latest"
+      tag: "0.33.3"
     leaseName: "ldap-primary-leader"
     leaseDurationSeconds: 15
     retryPeriodSeconds: 5
