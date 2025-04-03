@@ -33,13 +33,6 @@ ldifProducer:
   image:
     imagePullPolicy: "kyverno"
 
-initResources:
-  limits:
-    memory: "1Gi"
-  requests:
-    cpu: "250m"
-    memory: "512Mi"
-
 resourcesPrimary:
   limits:
     memory: "1Gi"
