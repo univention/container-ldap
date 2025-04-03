@@ -119,6 +119,13 @@ test-ldap-smoke:
     when: "always"
     expose_as: "docker compose server logs"
 
+test-chart-ldap-server:
+  stage: test
+  image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/common-helm/testrunner:0.7.0"
+  script:
+    - helm dep build helm/ldap-server
+    - pytest tests/helm_unit
+
 push-image-external:
   parallel:
     matrix: *publish-matrix
