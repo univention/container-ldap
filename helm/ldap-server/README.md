@@ -477,8 +477,7 @@ false
       "password": null
     },
     "name": null
-  },
-  "password": null
+  }
 }
 </pre>
 </td>

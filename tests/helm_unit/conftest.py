@@ -13,7 +13,7 @@ def pytest_addoption(parser):
 @pytest.fixture()
 def helm_values(request):
     """By default use "helm/ldap-server/linter_values.yaml"."""
-    default_values = ["helm/ldap-server/linter_values_helm_unit_tests.yaml"]
+    default_values = ["helm/ldap-server/linter_values.yaml"]
     return request.config.option.values or default_values
 
 
