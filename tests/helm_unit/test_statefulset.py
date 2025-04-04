@@ -3,8 +3,8 @@
 
 
 import pytest
+from test_deployment import ContainerAuthFromExistingSecret
 
-from tests.helm_unit.test_deployment import ContainerAuthFromExistingSecret
 from univention.testing.helm.deployment import DeploymentTlsDhparamVolumeSecret, DeploymentTlsVolumeSecret
 
 
