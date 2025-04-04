@@ -52,11 +52,6 @@ setup_slapd_conf() {
     | ucr-light-filter > /etc/ldap/slapd.conf
 }
 
-setup_sasl_mech_whitelist() {
-  printf "%s\n" "mech_list: GSSAPI SAML EXTERNAL" \
-    > /etc/ldap/sasl2/slapd.conf
-}
-
 fetch_saml_metadata() {
   mkdir -p /usr/share/saml/idp
 
@@ -99,10 +94,50 @@ fetch_saml_metadata() {
   fi
 }
 
-setup_sasl_mech_saml() {
+setup_oidc() {
+  OIDC_JWKS_URL=$(echo -n -e '@%@ldap/server/sasl/oauthbearer/issuer@%@' | ucr-light-filter || true)
+  OIDC_JWKS_URL_INTERNAL=$(echo -n -e '@%@ldap/server/sasl/oauthbearer/issuer-internal@%@' | ucr-light-filter || true)
+
+  if [[ -n "${OIDC_JWKS_URL:-}" ]]; then
+    DOWNLOAD_URL="${OIDC_JWKS_URL_INTERNAL:-${OIDC_JWKS_URL}}/protocol/openid-connect/certs"
+    OIDC_HOST=$(echo "${OIDC_JWKS_URL}" | awk -F/ '{print $3}')
+
+    OIDC_JWKS_BASE="/usr/share/oidc/"
+    OIDC_JWKS_PATH="${OIDC_JWKS_BASE}/trusted.jwks"
+
+    echo "Trying to fetch OIDC JWKS from ${DOWNLOAD_URL}"
+    result=1
+    counter=3
+    # 'Connection refused' is not retried by `wget --tries=X` hence the loop
+    while [[ ${result} -gt 0 && ${counter} -gt 0 ]]; do
+      {
+          wget \
+            --quiet \
+            --timeout=3 \
+            --tries=2 \
+            --header="Host: ${OIDC_HOST}" \
+            --output-document="${OIDC_JWKS_PATH}" \
+            "${DOWNLOAD_URL}" \
+          && result=0
+      } || true
+
+      counter=$((counter-1))
+      sleep 3
+    done
+
+    if [[ ${result} -gt 0 ]]; then
+      echo "Error: Failed to fetch OIDC JWKS from ${DOWNLOAD_URL}" >&2
+      exit 255
+    fi
+
+    echo "Successfully set OIDC JWKS in ${OIDC_JWKS_PATH}"
+  fi
+}
+
+setup_sasl_config() {
   SERVICE_PROVIDERS=$(echo -n -e '@%@ldap/saml/service-providers@%@' | ucr-light-filter || true)
 
-  if [[ -n "${SERVICE_PROVIDERS:-}" ]]; then
+  if [[ -n "${SERVICE_PROVIDERS:-}" ]]; then  # FIXME: if it's -z, we need to configure OIDC nevertheless
     # We have to modify the template since the hardcoded univention/saml/metadata
     # URL endpoint is not necessarily valid for future service providers.
     # Therefore we expect a comma-separated list of URLs in SERVICE_PROVIDERS.
@@ -112,7 +147,6 @@ setup_sasl_mech_saml() {
     # and its dependency sys are removed.
 
     printf -v filter_string '%s' \
-     's/#@%@UCRWARNING=# @%@//;' \
      's/import sys/import os/;' \
      '/sys.path.insert/,+1d;' \
      's#univention-management-console/##;' \
@@ -122,7 +156,7 @@ setup_sasl_mech_saml() {
 
     sed -e "${filter_string}" \
       /etc/univention/templates/files/etc/ldap/sasl2/slapd.conf \
-      | ucr-light-filter >> /etc/ldap/sasl2/slapd.conf
+      | ucr-light-filter > /etc/ldap/sasl2/slapd.conf
   fi
 }
 
@@ -277,8 +311,8 @@ setup_listener_path
 setup_last_id_path
 setup_slapd_conf
 fetch_saml_metadata
-setup_sasl_mech_whitelist
-setup_sasl_mech_saml
+setup_sasl_config
+setup_oidc
 if [ "${UPDATE_INDEX_ON_STARTUP}" = "true" ]; then
   /usr/bin/sync-ldap-indexes
 fi
