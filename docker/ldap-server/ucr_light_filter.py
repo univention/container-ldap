@@ -81,31 +81,38 @@ config_registry.add_file("/etc/univention/base-forced.conf")
 # TODO: Eventually admit that it's not
 #       univention-config-registry anymore
 WARNING_TEXT = """\
-# Warning: This file is auto-generated and might be overwritten by
-#          univention-config-registry.
-#          Please edit the following file(s) instead:
-# Warnung: Diese Datei wurde automatisch generiert und kann durch
-#          univention-config-registry ueberschrieben werden.
-#          Bitte bearbeiten Sie an Stelle dessen die folgende(n) Datei(en):
-#
+{prefix}Warning: This file is auto-generated and might be overwritten by
+{prefix}         univention-config-registry.
+{prefix}         Please edit the following file(s) instead:
+{prefix}Warnung: Diese Datei wurde automatisch generiert und kann durch
+{prefix}         univention-config-registry ueberschrieben werden.
+{prefix}         Bitte bearbeiten Sie an Stelle dessen die folgende(n) Datei(en):
+{prefix}
 """  # noqa: E101
 
 
 # TODO: Check if full porting of warning_string() is needed
-def warning_string():
+def warning_string(prefix="# "):
     """Print out a warning message and all filenames from the template-dir"""
-    string = WARNING_TEXT
+    string = WARNING_TEXT.format(prefix=prefix)
     path = "/etc/univention/templates/files/etc/ldap/slapd.conf.d/"
     for file_name in sorted(os.listdir(path)):
         file_path = os.path.join(path, file_name)
-        string += f"# \t{file_path}\n"
+        string += f"{prefix}\t{file_path}\n"
     return string
 
 
 def resolve_variable(line):
     """Replaces a UCR-Template-variable with a value from UCR"""
     VARIABLE_PATTERN = re.compile("@%@([^@]+)@%@")
-    return VARIABLE_PATTERN.sub(lambda x: config_registry[x.group(1)], line)
+
+    def _replace(x):
+        key = x.group(1)
+        if key.startswith("UCRWARNING="):
+            return warning_string(key.replace("UCRWARNING=", ""))
+        return config_registry[key]
+
+    return VARIABLE_PATTERN.sub(_replace, line)
 
 
 # TODO: Complete this
@@ -128,13 +135,6 @@ def run_filter(template, directory):
     buf = io.StringIO()
     for line in template.splitlines():
         line += "\n"
-        # The original implementation is in:
-        # base/univention-config-registry/python/
-        # univention/config_registry/handler.py
-        if line == "@%@UCRWARNING=# @%@\n":
-            print(warning_string(), file=buf)
-            continue
-
         if "@%@" in line:
             line = resolve_variable(line)
 
