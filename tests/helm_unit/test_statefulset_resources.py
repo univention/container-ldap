@@ -49,8 +49,6 @@ class TestStatefulsetResources(Base):
     def test_resource(self, helm, chart_path, template_file):
         """
         Tests if the value for resourses would be set.
-
-        See https://git.knut.univention.de/univention/dev/internal/team-nubus/-/issues/1117
         """
         expected_resources = {
             "a": "resource-a",
@@ -76,8 +74,6 @@ class TestStatefulsetResources(Base):
     def test_overwritten_resource(self, helm, chart_path, template_file, value_path):
         """
         Tests if the value for resourses would be overwritten by resourcesPrimary/resourcesSecondary.
-
-        See https://git.knut.univention.de/univention/dev/internal/team-nubus/-/issues/1117
         """
         expected_resources = {
             "a": "resourceOverwritten-a",
