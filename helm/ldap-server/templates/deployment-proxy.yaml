@@ -207,6 +207,8 @@ spec:
           volumeMounts:
             - name: usr-share-univention-ldap-volume
               mountPath: /usr/share/univention-ldap
+            - name: usr-share-oidc-volume
+              mountPath: /usr/share/oidc
             - name: usr-share-saml-volume
               mountPath: /usr/share/saml
             - name: etc-ldap-volume
@@ -257,6 +259,8 @@ spec:
         - name: "var-run-volume"
           emptyDir: {}
         - name: "usr-share-univention-ldap-volume"
+          emptyDir: {}
+        - name: "usr-share-oidc-volume"
           emptyDir: {}
         - name: "usr-share-saml-volume"
           emptyDir: {}
