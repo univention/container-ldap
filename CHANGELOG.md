@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.34.0...v0.34.1) (2025-04-04)
+
+
+### Bug Fixes
+
+* LDAP – Resources not rendered correctly ([4e2b521](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/4e2b5211b0b21323f08076a4b9cd91bbe25ec4de)), closes [univention/dev/internal/team-nubus#1117](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1117)
+
 ## [0.34.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.33.3...v0.34.0) (2025-04-04)
 
 
