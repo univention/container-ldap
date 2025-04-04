@@ -119,10 +119,11 @@ WARNING_TEXT = """\
 def warning_string(prefix='# '):
     """Print out a warning message and all filenames from the template-dir"""
     string = WARNING_TEXT.format(prefix=prefix)
-    path = "/etc/univention/templates/files/etc/ldap/slapd.conf.d/"
-    for file_name in sorted(os.listdir(path)):
-        file_path = os.path.join(path, file_name)
-        string += f"{prefix}\t{file_path}\n"
+    # FIXME: use correct path
+    # path = "/etc/univention/templates/files/etc/ldap/slapd.conf.d/"
+    # for file_name in sorted(os.listdir(path)):
+    #     file_path = os.path.join(path, file_name)
+    #     string += f"{prefix}\t{file_path}\n"
     return string
 
 
@@ -190,7 +191,7 @@ def run_filter(template, directory):
             if line in (
                 "from univention.config_registry.handler import run_filter\n",
                 "from univention.lib.misc import custom_groupname\n",
-                ("from univention.lib.misc import " "custom_username, custom_groupname\n"),
+                "from univention.lib.misc import custom_username, custom_groupname\n",
             ):
                 continue
             to_be_compiled += line
