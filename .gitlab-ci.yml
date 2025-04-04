@@ -121,7 +121,7 @@ test-ldap-smoke:
 
 test-chart-ldap-server:
   stage: test
-  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:latest"
+  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.12.1"
   script:
     - helm dep build helm/ldap-server --insecure-skip-tls-verify
     - pytest tests/helm_unit
