@@ -166,7 +166,7 @@ spec:
           volumeMounts:
             - name: plugin-targets
               mountPath: /target
-          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce $.Values.resourcesPrimary $.Values.resources) "context" $) | nindent 12 }}
+          resources: {{- include "common.tplvalues.render" (dict "value" (coalesce $.Values.resourcesSecondary $.Values.resources) "context" $) | nindent 12 }}
         {{- end }}
       {{- if .Values.waitForDependency.enabled }}
         - name: "wait-for-saml-metadata"
