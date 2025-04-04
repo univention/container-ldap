@@ -37,6 +37,7 @@ RUN apt-get download \
     univention-ldap-acl-master \
     univention-management-console-server \
     liblasso3 \
+    libsasl2-modules-oauthbearer \
     cy2-saml && \
     (dpkg --force-all -i ./*.deb || true)
 
@@ -87,6 +88,9 @@ RUN \
     # cy2-saml dependencies
     libglib2.0-0 \
     libxmlsec1-openssl \
+    # libsasl2-modules-oauthbearer dependencies
+    libjansson4 \
+    librhonabwy1.1 \
     # for downloading SAML metadata on startup
     wget \
     ca-certificates \
@@ -122,7 +126,7 @@ COPY --from=ucs_builder \
     /usr/share/univention-self-service/self-service-passwordreset.schema \
     /var/lib/univention-ldap-local/local-schema/self-service-passwordreset.schema
 
-# Configuration of the Crude SAML plugin for Cyrus SASL2:
+# Configuration of the Crude OIDC plugin for OAUTHBEARER and Crude SAML plugin for Cyrus SASL2:
 # This template is contained by univention-management-console-server
 COPY --from=ucs_builder \
     /etc/univention/templates/files/etc/ldap/sasl2/slapd.conf \
@@ -132,6 +136,9 @@ COPY --from=ucs_builder \
 COPY --from=ucs_builder \
     /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
     /usr/lib/x86_64-linux-gnu/sasl2/
+COPY --from=ucs_builder \
+    /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0.2.0 \
+    /usr/lib/x86_64-linux-gnu/sasl2/
 
 # Only the UCS version of this library fits as libsaml linked against this
 # and otherwise dlopen(,) complains about 'undefined symbol'
@@ -139,7 +146,13 @@ COPY --from=ucs_builder /usr/lib/liblasso.so.3.15.1  /usr/lib/
 
 # ldconfig doesn't create the following links as this directory
 # is not in any config under /etc/ld.so.conf.d/
-RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0.2.0 \
+    /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0 \
+    \
+    && ln -s /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0.2.0 \
+    /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so \
+    \
+    && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
     /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 \
     \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
