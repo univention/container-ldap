@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.33.3...v0.34.0) (2025-04-04)
+
+
+### Features
+
+* refactor: use existingSecrets for ldap-server and ldif-producer ([9238344](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/923834479bf8745f45247dcb0190a801aa8c0286)), closes [univention/dev/internal/team-nubus#1089](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1089)
+
 ## [0.33.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.33.2...v0.33.3) (2025-03-21)
 
 
