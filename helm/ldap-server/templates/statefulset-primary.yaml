@@ -110,6 +110,7 @@ spec:
             - sh
             - -c
             - |
+              mkdir -p /target/usr/share/univention-ldap /target/etc/ldap /target/etc/univention
               cp -a /usr/share/univention-ldap/* /target/usr/share/univention-ldap/
               cp -a /etc/ldap/* /target/etc/ldap/
               cp -a /etc/univention/* /target/etc/univention/
