@@ -11,6 +11,7 @@ kubernetes = "*"
 pyasn1-modules = "==0.2.8"
 typer-slim = "*"
 pydantic = "*"
+deepdiff = "*"
 
 [dev-packages]
 pdbpp = "*"
