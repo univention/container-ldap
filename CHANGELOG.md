@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.3](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.34.2...v0.34.3) (2025-04-11)
+
+
+### Bug Fixes
+
+* typo in deployment-proxy-yaml ([5bc9461](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/5bc9461da6a9e737252379d20ff0f3edd2883b97)), closes [univention/dev/internal/team-nubus#1079](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1079)
+
 ## [0.34.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.34.1...v0.34.2) (2025-04-11)
 
 
