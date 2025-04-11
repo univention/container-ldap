@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.2](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.34.1...v0.34.2) (2025-04-11)
+
+
+### Bug Fixes
+
+* directory robustness in initContainers of secondary LDAP ([bca99ea](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/bca99eab84369736b9a667e9973dffe81204cb45))
+
 ## [0.34.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.34.0...v0.34.1) (2025-04-04)
 
 
