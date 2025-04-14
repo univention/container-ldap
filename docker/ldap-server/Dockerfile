@@ -201,6 +201,7 @@ COPY ucr-light-filter /usr/sbin/
 
 COPY 40-self-service-acl.sh \
      50-entrypoint.sh \
+     60-sync-ldap-indexes.sh \
      /entrypoint.d/
 
 COPY evaluate_database_init.py /usr/local/bin/evaluate_database_init

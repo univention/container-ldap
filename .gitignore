@@ -25,3 +25,6 @@ helm/**/.kyverno/kyverno-test.yaml
 helm/**/.kyverno/manifest.yaml
 
 helm/**/tests/
+
+# IDEs
+.idea/
