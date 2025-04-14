@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-# SPDX-FileCopyrightText: 2024 Univention GmbH
+# SPDX-FileCopyrightText: 2024-2025 Univention GmbH
 {{- required "# pre-flight check for ldap-server failed. replicaCountPrimary must be defined." .Values.replicaCountPrimary -}}
 {{- required "# pre-flight check for ldap-server failed. replicaCountSecondary must be defined." .Values.replicaCountSecondary -}}
 {{- required "# pre-flight check for ldap-server failed. replicaCountProxy must be defined." .Values.replicaCountProxy -}}
