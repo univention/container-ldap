@@ -164,7 +164,7 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
 # Copy LDAP index tools
 ###############################################################################
 RUN mkdir -p /opt/univention/ldap-tools
-COPY sync-ldap-indexes.py /opt/univention/ldap-tools
+COPY sync_ldap_indexes.py /opt/univention/ldap-tools
 COPY ldap-index-statefile.json /opt/univention/ldap-tools
 
 

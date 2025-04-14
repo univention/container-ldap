@@ -1,0 +1,18 @@
+{
+    "attributes": {
+        "univentionObjectIdentifier": {
+            "equality": "uuidMatch",
+            "indexes": [
+                {
+                    "last_reindex_date": "2025-01-01",
+                    "type": "eq"
+                },
+                {
+                    "last_reindex_date": "2025-01-01",
+                    "type": "pres"
+                }
+            ],
+            "schema_file": "/usr/share/univention-ldap/schema/univention.schema"
+        }
+    }
+}
