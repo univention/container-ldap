@@ -92,7 +92,7 @@ def schema_file():
 def sync_ldap_indexes():
     """Provide "sync_ldap_indexes.py" as a module."""
     module_name = "sync_ldap_indexes"
-    module_path = "docker/ldap-server/sync_ldap_indexes.py"
+    module_path = "./sync_ldap_indexes.py"
     spec = importlib.util.spec_from_file_location(
         module_name,
         os.path.join(module_path),

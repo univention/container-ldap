@@ -166,7 +166,7 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
 RUN mkdir -p /opt/univention/ldap-tools
 COPY sync_ldap_indexes.py /opt/univention/ldap-tools
 COPY ldap-index-statefile.json /opt/univention/ldap-tools
-
+RUN ln -s /opt/univention/ldap-tools/sync_ldap_indexes.py /usr/bin/sync-ldap-indexes
 
 ###############################################################################
 # Copy from Docker build context
