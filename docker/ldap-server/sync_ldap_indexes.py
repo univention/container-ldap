@@ -126,24 +126,32 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
     return state
 
 
-def get_state_from_file(statefile_path: str) -> dict:
+def get_state_from_file(state_file_path: str) -> dict:
     """
-    Returnsstate from the statefile.
+    Returns state from the state file.
     """
-    f = open(os.path.join(statefile_path))
+    f = open(os.path.join(state_file_path), "r")
     file_content = f.read()
+    f.close()
 
     state = json.loads(file_content)
 
     return state
+
+def write_state_file(state_file_path: str, state: dict):
+    state_json = json.dumps(state, indent=4)
+    f = open(os.path.join(state_file_path), "w")
+    f.write(state_json)
+    f.close()
 
 
 def get_changed_attributes(state_file: dict, current_state: dict) -> list:
     """
     Returns the name of all changed attributes.
 
-    Compares the statefile with the current state.
+    Compares the state file with the current state.
     """
+    # TODO Fake Attribute hinzufügen damit die Differenz immer eine Teilmenge ist. Hinterher wieder rausnehmen!!!!
     differences = DeepDiff(
         t1=state_file["attributes"],
         t2=current_state["attributes"],
@@ -164,39 +172,62 @@ def get_ldap_base_dn():
 
 def main():
     schema_dirs = ["/usr/share/univention-ldap/schema", "/etc/ldap/schema"]
-    statefile_path = "/var/lib/univention-ldap/ldap-index-statefile.json"
-    orig_statefile_path = "/opt/univention/ldap-tools/ldap-index-statefile.json"
+    state_file_path = "/var/lib/univention-ldap/ldap-index-statefile.json"
+    orig_state_file_path = "/opt/univention/ldap-tools/ldap-index-statefile.json"
 
-    # Check and create statefile
-    if not os.path.isfile(statefile_path):
-        shutil.copyfile(orig_statefile_path, statefile_path)
+    # Check and create state file
+    create_init_statefile = False
+    if not os.path.isfile(state_file_path) and os.path.isfile("/var/lib/univention-ldap/ldap/data.mdb"):
+        shutil.copyfile(orig_state_file_path, state_file_path)
+    elif not os.path.isfile("/var/lib/univention-ldap/ldap/data.mdb"):
+        create_init_statefile = True
 
     # Get states
     current_state = get_state(
         current_indexes=get_current_indexes(),
         attributes=get_attributes_from_schemas(schema_dirs),
     )
-    state_file = get_state_from_file(statefile_path)
 
-    # Create diff
-    # current_state["attributes"]["univentionObjectIdentifier"] = {"indexes": [{"type": "pres"}, {"type": "eq"}]}
-    # current_state["attributes"]["univentionObjectFlag"]["equality"] = "caseIgnoreMatch"
-    # current_state["attributes"]["univentionServerRole"]["indexes"].append({"type": "pres"})
-    # current_state["attributes"]["cn"]["equality"] = "caseIgnoreMatch"
-    # current_state["attributes"].pop("sambaSID")
+    if create_init_statefile:
+        write_state_file(state_file_path, current_state)
 
-    changed_attributes = get_changed_attributes(state_file=state_file, current_state=current_state)
+    else:
+        # Read statefile
+        state_file = get_state_from_file(state_file_path)
 
-    print("##### Commands:")
-    for attribute_name in changed_attributes:
-        command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
-        print(command)
-        ans = subprocess.run(command, shell=True, executable="/bin/bash")
-        if ans.returncode == 0:
-            print(f"Command {command} executed successful: {ans.stdout}")
-            # TODO Rewrite statefile
-        else:
-            print(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
+        print("################ CURRENT STATE")
+        pprint(current_state)
+        print()
+        print("############### FILE STATE")
+        pprint(state_file)
+        print()
+
+        # Create diff
+        # current_state["attributes"]["univentionObjectIdentifier"] = {"indexes": [{"type": "pres"}, {"type": "eq"}]}
+        # current_state["attributes"]["univentionObjectFlag"]["equality"] = "caseIgnoreMatch"
+        # current_state["attributes"]["univentionServerRole"]["indexes"].append({"type": "pres"})
+        # current_state["attributes"]["cn"]["equality"] = "caseIgnoreMatch"
+        # current_state["attributes"].pop("sambaSID")
+
+        changed_attributes = get_changed_attributes(state_file=state_file, current_state=current_state)
+
+        print("##### Commands:")
+        for attribute_name in changed_attributes:
+            command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
+            print(command)
+            ans = subprocess.run(command, shell=True, executable="/bin/bash")
+            if ans.returncode == 0:
+                print(f"Command {command} executed successful: {ans.stdout}")
+                # Update state
+                state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
+            else:
+                print(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
+
+        print("############### NEW FILE STATE")
+        pprint(state_file)
+        print()
+
+        write_state_file(state_file_path, state_file)
 
 
 if __name__ == "__main__":

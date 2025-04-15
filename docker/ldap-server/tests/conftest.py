@@ -4,6 +4,7 @@
 import importlib.util
 import os
 import sys
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -89,7 +90,7 @@ def schema_file():
 
 
 @pytest.fixture
-def sync_ldap_indexes():
+def sync_ldap_indexes(mock_univention_config_registry_installed):
     """Provide "sync_ldap_indexes.py" as a module."""
     module_name = "sync_ldap_indexes"
     module_path = "./sync_ldap_indexes.py"
