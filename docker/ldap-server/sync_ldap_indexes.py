@@ -4,17 +4,55 @@
 
 import glob
 import json
+import logging
 import os
 import re
 import shutil
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from pprint import pprint
+from pprint import pformat
 
 from deepdiff import DeepDiff
 
 from univention.config_registry import ucr
+
+
+def get_log_level():
+    # Translation of OpenLDAP log levels to Python
+    # https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options
+    ldap_log_levels = (os.environ.get("LOG_LEVEL") or "none").split(",")
+
+    log_levels = {
+        "any": ("DEBUG", 10),
+        "trace": ("DEBUG", 10),
+        "packets": ("INFO", 20),
+        "args": ("INFO", 20),
+        "conns": ("INFO", 20),
+        "BER": ("INFO", 20),
+        "filter": ("INFO", 20),
+        "config": ("DEBUG", 40),
+        "ACL": ("INFO", 20),
+        "stats": ("INFO", 20),
+        "stats2": ("INFO", 20),
+        "shell": ("INFO", 20),
+        "parse": ("DEBUG", 10),
+        "sync": ("INFO", 20),
+        "none": ("ERROR", 40),
+    }
+
+    log_num = 40
+    for log_level in ldap_log_levels:
+        tmp_log_num = log_levels.get(log_level)[1]
+        if tmp_log_num < log_num:
+            log_num = tmp_log_num
+
+    return log_num
+
+
+LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
+logging.basicConfig(format=LOG_FORMAT, level=get_log_level())
+logger = logging.getLogger(__name__)
 
 
 def parse_attributes(file_content: str) -> dict:
@@ -108,6 +146,7 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
     """
     state = {"attributes": {}}
 
+    # Populate state with index information.
     for index_type, index_attributes in current_indexes.items():
         for index_attribute in index_attributes:
             if not state["attributes"].get(index_attribute):
@@ -119,11 +158,13 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
                 }
             )
 
+    # Populate state with attribute information.
     for attr_name, attr_val in attributes.items():
         if state.get("attributes").get(attr_name) and attr_val:
             state["attributes"][attr_name]["equality"] = attr_val.get("equality")
             state["attributes"][attr_name]["schema_file"] = attr_val.get("schema_file")
 
+    logger.debug(f"current state:\n{pformat(state)}")
     return state
 
 
@@ -131,16 +172,17 @@ def read_state_file(state_file_path: Path) -> dict:
     """
     Returns state from the state file.
     """
-    with state_file_path.open() as f:
+    with state_file_path.open("r") as f:
         file_content = f.read()
 
     state = json.loads(file_content)
+    logger.debug(f"state from state file:\n{pformat(state)}")
     return state
 
 
 def write_state_file(state_file_path: Path, state: dict):
     state_json = json.dumps(state, indent=4)
-    with state_file_path.open() as f:
+    with state_file_path.open("w") as f:
         f.write(state_json)
 
 
@@ -150,7 +192,11 @@ def get_changed_attributes(state_file: dict, current_state: dict) -> list:
 
     Compares the state file with the current state.
     """
-    # TODO Fake Attribute hinzufügen damit die Differenz immer eine Teilmenge ist. Hinterher wieder rausnehmen!!!!
+    # Fake attribute for DeepDiff. If there is no intersection in the objects, the result is not usable in this way ...
+    fake_attribute = {"equality": "fakeEquality", "indexes": [{"type": "fakeType"}]}
+    state_file["attributes"]["fakeAttribute"] = fake_attribute
+    current_state["attributes"]["fakeAttribute"] = fake_attribute
+
     differences = DeepDiff(
         t1=state_file["attributes"],
         t2=current_state["attributes"],
@@ -158,9 +204,11 @@ def get_changed_attributes(state_file: dict, current_state: dict) -> list:
         view="text",
         verbose_level=2,
     )
+    logger.debug(f"state differences:\n{pformat(differences)}")
 
-    pprint(differences)
-    print()
+    # Delete fake attribute.
+    state_file["attributes"].pop("fakeAttribute")
+    current_state["attributes"].pop("fakeAttribute")
 
     return differences.affected_root_keys
 
@@ -170,14 +218,17 @@ def get_ldap_base_dn():
 
 
 def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path):
-    virgin_persistent_volume = os.path.isfile("/var/lib/univention-ldap/ldap/data.mdb") and not os.path.isfile(
+    virgin_persistent_volume = not os.path.isfile("/var/lib/univention-ldap/ldap/data.mdb") and not os.path.isfile(
         state_file_path
     )
+    logger.debug(f"virgin_persistent_volume: {virgin_persistent_volume}")
     missing_state_file = not virgin_persistent_volume and not os.path.isfile(state_file_path)
+    logger.debug(f"missing_state_file: {missing_state_file}")
 
     # Check and create state file
     if missing_state_file:
         shutil.copyfile(state_file_template_path, state_file_path)
+        logger.info("Missing state file! New state file from template created.")
 
     # Get states
     current_state = get_state(
@@ -187,42 +238,29 @@ def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path
 
     if virgin_persistent_volume:
         write_state_file(state_file_path, current_state)
+        logger.info("Virgin persistent volume! New state file with current state created.")
         return
 
-    # Read statefile
+    # Read state file
     state_file = read_state_file(state_file_path)
-
-    print("################ CURRENT STATE")
-    pprint(current_state)
-    print()
-    print("############### FILE STATE")
-    pprint(state_file)
-    print()
-
-    # Create diff
-    # current_state["attributes"]["univentionObjectIdentifier"] = {"indexes": [{"type": "pres"}, {"type": "eq"}]}
-    # current_state["attributes"]["univentionObjectFlag"]["equality"] = "caseIgnoreMatch"
-    # current_state["attributes"]["univentionServerRole"]["indexes"].append({"type": "pres"})
-    # current_state["attributes"]["cn"]["equality"] = "caseIgnoreMatch"
-    # current_state["attributes"].pop("sambaSID")
 
     changed_attributes = get_changed_attributes(state_file=state_file, current_state=current_state)
 
-    print("##### Commands:")
+    if not changed_attributes:
+        logger.info("No changed attributes, nothing to do!")
+        return
+
     for attribute_name in changed_attributes:
         command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
-        print(command)
         ans = subprocess.run(command, shell=True, executable="/bin/bash")
         if ans.returncode == 0:
-            print(f"Command {command} executed successful: {ans.stdout}")
+            logger.info(f"Executed successful: {command}")
             # Update state
             state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
         else:
-            print(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
+            logger.error(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
 
-    print("############### NEW FILE STATE")
-    pprint(state_file)
-    print()
+    logger.debug(f"new state: {pformat(state_file)}")
 
     write_state_file(state_file_path, state_file)
 
