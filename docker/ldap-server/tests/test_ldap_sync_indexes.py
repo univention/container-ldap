@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2024 Univention GmbH
 
 import os
+from pathlib import Path
 
 
 def test_parse_attributes(sync_ldap_indexes, schema_file):
@@ -49,7 +50,7 @@ def test_get_changed_attributes(sync_ldap_indexes, schema_file):
 
     # statefile_indexes = ["univentionObjectIdentifier"]
     file_path = os.path.abspath(os.path.dirname(__file__))
-    statefile_state = sync_ldap_indexes.get_state_from_file(f"{file_path}/ldap-testfiles/test-ldap-statefile.json")
+    statefile_state = sync_ldap_indexes.read_state_file(Path(f"{file_path}/ldap-testfiles/test-ldap-statefile.json"))
 
     changed_attributes = sync_ldap_indexes.get_changed_attributes(statefile_state, state)
 

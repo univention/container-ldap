@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 from datetime import datetime
+from pathlib import Path
 from pprint import pprint
 
 from deepdiff import DeepDiff
@@ -126,23 +127,21 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
     return state
 
 
-def get_state_from_file(state_file_path: str) -> dict:
+def read_state_file(state_file_path: Path) -> dict:
     """
     Returns state from the state file.
     """
-    f = open(os.path.join(state_file_path), "r")
-    file_content = f.read()
-    f.close()
+    with state_file_path.open() as f:
+        file_content = f.read()
 
     state = json.loads(file_content)
-
     return state
 
-def write_state_file(state_file_path: str, state: dict):
+
+def write_state_file(state_file_path: Path, state: dict):
     state_json = json.dumps(state, indent=4)
-    f = open(os.path.join(state_file_path), "w")
-    f.write(state_json)
-    f.close()
+    with state_file_path.open() as f:
+        f.write(state_json)
 
 
 def get_changed_attributes(state_file: dict, current_state: dict) -> list:
@@ -170,17 +169,15 @@ def get_ldap_base_dn():
     return os.environ.get("LDAP_BASEDN")
 
 
-def main():
-    schema_dirs = ["/usr/share/univention-ldap/schema", "/etc/ldap/schema"]
-    state_file_path = "/var/lib/univention-ldap/ldap-index-statefile.json"
-    orig_state_file_path = "/opt/univention/ldap-tools/ldap-index-statefile.json"
+def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path):
+    virgin_persistent_volume = os.path.isfile("/var/lib/univention-ldap/ldap/data.mdb") and not os.path.isfile(
+        state_file_path
+    )
+    missing_state_file = not virgin_persistent_volume and not os.path.isfile(state_file_path)
 
     # Check and create state file
-    create_init_statefile = False
-    if not os.path.isfile(state_file_path) and os.path.isfile("/var/lib/univention-ldap/ldap/data.mdb"):
-        shutil.copyfile(orig_state_file_path, state_file_path)
-    elif not os.path.isfile("/var/lib/univention-ldap/ldap/data.mdb"):
-        create_init_statefile = True
+    if missing_state_file:
+        shutil.copyfile(state_file_template_path, state_file_path)
 
     # Get states
     current_state = get_state(
@@ -188,47 +185,51 @@ def main():
         attributes=get_attributes_from_schemas(schema_dirs),
     )
 
-    if create_init_statefile:
+    if virgin_persistent_volume:
         write_state_file(state_file_path, current_state)
+        return
 
-    else:
-        # Read statefile
-        state_file = get_state_from_file(state_file_path)
+    # Read statefile
+    state_file = read_state_file(state_file_path)
 
-        print("################ CURRENT STATE")
-        pprint(current_state)
-        print()
-        print("############### FILE STATE")
-        pprint(state_file)
-        print()
+    print("################ CURRENT STATE")
+    pprint(current_state)
+    print()
+    print("############### FILE STATE")
+    pprint(state_file)
+    print()
 
-        # Create diff
-        # current_state["attributes"]["univentionObjectIdentifier"] = {"indexes": [{"type": "pres"}, {"type": "eq"}]}
-        # current_state["attributes"]["univentionObjectFlag"]["equality"] = "caseIgnoreMatch"
-        # current_state["attributes"]["univentionServerRole"]["indexes"].append({"type": "pres"})
-        # current_state["attributes"]["cn"]["equality"] = "caseIgnoreMatch"
-        # current_state["attributes"].pop("sambaSID")
+    # Create diff
+    # current_state["attributes"]["univentionObjectIdentifier"] = {"indexes": [{"type": "pres"}, {"type": "eq"}]}
+    # current_state["attributes"]["univentionObjectFlag"]["equality"] = "caseIgnoreMatch"
+    # current_state["attributes"]["univentionServerRole"]["indexes"].append({"type": "pres"})
+    # current_state["attributes"]["cn"]["equality"] = "caseIgnoreMatch"
+    # current_state["attributes"].pop("sambaSID")
 
-        changed_attributes = get_changed_attributes(state_file=state_file, current_state=current_state)
+    changed_attributes = get_changed_attributes(state_file=state_file, current_state=current_state)
 
-        print("##### Commands:")
-        for attribute_name in changed_attributes:
-            command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
-            print(command)
-            ans = subprocess.run(command, shell=True, executable="/bin/bash")
-            if ans.returncode == 0:
-                print(f"Command {command} executed successful: {ans.stdout}")
-                # Update state
-                state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
-            else:
-                print(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
+    print("##### Commands:")
+    for attribute_name in changed_attributes:
+        command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
+        print(command)
+        ans = subprocess.run(command, shell=True, executable="/bin/bash")
+        if ans.returncode == 0:
+            print(f"Command {command} executed successful: {ans.stdout}")
+            # Update state
+            state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
+        else:
+            print(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
 
-        print("############### NEW FILE STATE")
-        pprint(state_file)
-        print()
+    print("############### NEW FILE STATE")
+    pprint(state_file)
+    print()
 
-        write_state_file(state_file_path, state_file)
+    write_state_file(state_file_path, state_file)
 
 
 if __name__ == "__main__":
-    main()
+    main(
+        ["/usr/share/univention-ldap/schema", "/etc/ldap/schema"],
+        Path("/var/lib/univention-ldap/ldap-index-statefile.json"),
+        Path("/opt/univention/ldap-tools/ldap-index-statefile.json"),
+    )
