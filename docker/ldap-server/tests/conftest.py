@@ -4,7 +4,6 @@
 import importlib.util
 import os
 import sys
-from unittest.mock import MagicMock, patch
 
 import pytest
 
