@@ -41,8 +41,7 @@ helm uninstall ldap-server
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://artifacts.software-univention.de/nubus/charts | nubus-common | ^0.8.x |
-| oci://registry-1.docker.io/bitnamicharts | common | ^2.x.x |
+| oci://artifacts.software-univention.de/nubus/charts | nubus-common | ^0.12.x |
 
 ## Values
 

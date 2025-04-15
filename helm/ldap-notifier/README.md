@@ -37,7 +37,7 @@ helm uninstall ldap-notifier
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | common | ^2.x.x |
+| oci://artifacts.software-univention.de/nubus/charts | nubus-common | ^0.12.x |
 
 ## Values
 
