@@ -47,7 +47,8 @@ def get_log_level():
         if tmp_log_num < log_num:
             log_num = tmp_log_num
 
-    return log_num
+    # return log_num
+    return 10
 
 
 LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
@@ -217,12 +218,28 @@ def get_ldap_base_dn():
     return os.environ.get("LDAP_BASEDN")
 
 
-def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path):
-    virgin_persistent_volume = not os.path.isfile("/var/lib/univention-ldap/ldap/data.mdb") and not os.path.isfile(
-        state_file_path
-    )
-    logger.debug(f"virgin_persistent_volume: {virgin_persistent_volume}")
+def execute_slapindex(attribute_name: str) -> str:
+    command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
+    ans = subprocess.run(command, shell=True, executable="/bin/bash", capture_output=True, text=True)
+    if ans.returncode == 0:
+        logger.info(f"Executed successful: {command} [{ans.stdout or '-'}]")
+        ret = "SUCCESS"
+    else:
+        if ans.stderr.find(f"mdb_tool_entry_reindex: no index configured for {attribute_name}") > -1:
+            logger.info(f"Index for {attribute_name} is not configured and is deleted from state file.")
+            ret = "NO_INDEX"
+        else:
+            logger.error(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
+            ret = "ERROR"
+
+    return ret
+
+
+def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path: Path, mdb_file_path: Path):
+    # Check ldap installation state.
+    virgin_persistent_volume = not os.path.isfile(mdb_file_path) and not os.path.isfile(state_file_path)
     missing_state_file = not virgin_persistent_volume and not os.path.isfile(state_file_path)
+    logger.debug(f"virgin_persistent_volume: {virgin_persistent_volume}")
     logger.debug(f"missing_state_file: {missing_state_file}")
 
     # Check and create state file
@@ -230,44 +247,51 @@ def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path
         shutil.copyfile(state_file_template_path, state_file_path)
         logger.info("Missing state file! New state file from template created.")
 
-    # Get states
+    # Get current state from ucr.
     current_state = get_state(
         current_indexes=get_current_indexes(),
         attributes=get_attributes_from_schemas(schema_dirs),
     )
 
+    # On a clean installation, the state file is written with the current state.
     if virgin_persistent_volume:
         write_state_file(state_file_path, current_state)
         logger.info("Virgin persistent volume! New state file with current state created.")
         return
 
     # Read state file
-    state_file = read_state_file(state_file_path)
+    try:
+        state_file = read_state_file(state_file_path)
+    except json.decoder.JSONDecodeError as e:
+        logger.error(f"Error reading state file: {e}.")
+        return
 
+    # Check changed attributes.
     changed_attributes = get_changed_attributes(state_file=state_file, current_state=current_state)
-
     if not changed_attributes:
         logger.info("No changed attributes, nothing to do!")
         return
 
+    # Execute slapindex for each changed attribute.
     for attribute_name in changed_attributes:
-        command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
-        ans = subprocess.run(command, shell=True, executable="/bin/bash")
-        if ans.returncode == 0:
-            logger.info(f"Executed successful: {command}")
+        ans = execute_slapindex(attribute_name=attribute_name)
+        if ans == "SUCCESS":
             # Update state
             state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
-        else:
-            logger.error(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
+        elif ans == "NO_INDEX":
+            # If no index existing for one attribute anymore,
+            # the attribute is deleted from state.
+            state_file["attributes"].pop(attribute_name)
 
-    logger.debug(f"new state: {pformat(state_file)}")
-
+    # Write current state to state file.
+    logger.debug(f"new state:\n{pformat(state_file)}")
     write_state_file(state_file_path, state_file)
 
 
 if __name__ == "__main__":
     main(
-        ["/usr/share/univention-ldap/schema", "/etc/ldap/schema"],
-        Path("/var/lib/univention-ldap/ldap-index-statefile.json"),
-        Path("/opt/univention/ldap-tools/ldap-index-statefile.json"),
+        schema_dirs=["/usr/share/univention-ldap/schema", "/etc/ldap/schema"],
+        state_file_path=Path("/var/lib/univention-ldap/ldap-index-statefile.json"),
+        state_file_template_path=Path("/opt/univention/ldap-tools/ldap-index-statefile.json"),
+        mdb_file_path=Path("/var/lib/univention-ldap/ldap/data.mdb"),
     )
