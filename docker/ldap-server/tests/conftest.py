@@ -101,5 +101,11 @@ def sync_ldap_indexes(mock_univention_config_registry_installed):
         raise RuntimeError("Loading the script as module did fail")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    print(module)
+
+    # Mock execute_slapindex method
+    def mock_execute_slapindex(attribute_name):
+        return "SUCCESS"
+
+    module.execute_slapindex = mock_execute_slapindex
+
     return module
