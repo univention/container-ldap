@@ -89,7 +89,8 @@ def test_main_function_missing_state_file(sync_ldap_indexes, caplog):
     mdb_file_path = Path(f"{base_dir}/ldap-testfiles/data.mdb")
 
     # Cleanup tmp state file
-    os.remove(state_file_path)
+    if os.path.isfile(state_file_path):
+        os.remove(state_file_path)
 
     with caplog.at_level(logging.INFO):
         sync_ldap_indexes.main(schema_dirs, state_file_path, state_file_template_path, mdb_file_path)
@@ -120,7 +121,8 @@ def test_main_function_virgin_pv(sync_ldap_indexes, caplog):
     mdb_file_path = Path(f"{base_dir}/ldap-testfiles/data_tmp.mdb")
 
     # Cleanup tmp state file
-    os.remove(state_file_path)
+    if os.path.isfile(state_file_path):
+        os.remove(state_file_path)
 
     with caplog.at_level(logging.INFO):
         sync_ldap_indexes.main(schema_dirs, state_file_path, state_file_template_path, mdb_file_path)

@@ -4,11 +4,11 @@
             "equality": "uuidMatch",
             "indexes": [
                 {
-                    "last_reindex_date": "2025-01-01T00:00:00.000000",
+                    "last_index_date": "2025-01-01T00:00:00.000000",
                     "type": "eq"
                 },
                 {
-                    "last_reindex_date": "2025-01-01T00:00:00.000000",
+                    "last_index_date": "2025-01-01T00:00:00.000000",
                     "type": "pres"
                 }
             ],

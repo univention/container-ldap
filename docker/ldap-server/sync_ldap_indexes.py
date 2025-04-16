@@ -47,7 +47,8 @@ def get_log_level():
         if not log_num or tmp_log_num < log_num:
             log_num = tmp_log_num
 
-    return log_num or 20
+    # return log_num or 20
+    return 10
 
 
 LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
@@ -156,7 +157,7 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
             state["attributes"][index_attribute]["indexes"].append(
                 {
                     "type": index_type,
-                    "last_reindex_date": datetime.now().isoformat(),
+                    "last_index_date": datetime.now().isoformat(),
                 }
             )
 
@@ -183,7 +184,7 @@ def read_state_file(state_file_path: Path) -> dict:
 
 
 def write_state_file(state_file_path: Path, state: dict):
-    state_json = json.dumps(state, indent=4)
+    state_json = json.dumps(dict(sorted(state.items())), indent=4)
     with state_file_path.open("w") as f:
         f.write(state_json)
 
@@ -202,7 +203,7 @@ def get_changed_attributes(state_file: dict, current_state: dict) -> list:
     differences = DeepDiff(
         t1=state_file["attributes"],
         t2=current_state["attributes"],
-        exclude_regex_paths=[r"last_reindex_date", r"schema_file"],
+        exclude_regex_paths=[r"last_index_date", r"schema_file"],
         view="text",
         verbose_level=2,
     )
