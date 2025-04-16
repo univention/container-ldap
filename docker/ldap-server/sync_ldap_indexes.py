@@ -21,7 +21,7 @@ from univention.config_registry import ucr
 def get_log_level():
     # Translation of OpenLDAP log levels to Python
     # https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options
-    ldap_log_levels = (os.environ.get("LOG_LEVEL") or "none").split(",")
+    ldap_log_levels = (os.environ.get("LOG_LEVEL") or "stats").split(",")
 
     log_levels = {
         "any": ("DEBUG", 10),
@@ -41,18 +41,19 @@ def get_log_level():
         "none": ("ERROR", 40),
     }
 
-    log_num = 40
+    log_num = None
     for log_level in ldap_log_levels:
         tmp_log_num = log_levels.get(log_level)[1]
-        if tmp_log_num < log_num:
+        if not log_num or tmp_log_num < log_num:
             log_num = tmp_log_num
 
-    # return log_num
-    return 10
+    return log_num or 20
 
 
 LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
-logging.basicConfig(format=LOG_FORMAT, level=get_log_level())
+LOG_LEVEL = get_log_level()
+print(f"LOG_LEVEL: {LOG_LEVEL}")
+logging.basicConfig(format=LOG_FORMAT, level=LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 
@@ -155,7 +156,7 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
             state["attributes"][index_attribute]["indexes"].append(
                 {
                     "type": index_type,
-                    "last_reindex_date": datetime.now().strftime("%Y-%m-%d"),
+                    "last_reindex_date": datetime.now().isoformat(),
                 }
             )
 
@@ -274,6 +275,7 @@ def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path
 
     # Execute slapindex for each changed attribute.
     for attribute_name in changed_attributes:
+        logger.info(f"Processing attribute {attribute_name}.")
         ans = execute_slapindex(attribute_name=attribute_name)
         if ans == "SUCCESS":
             # Update state

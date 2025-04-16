@@ -30,6 +30,7 @@ repos:
         name: "check that executables have shebangs"
       - id: "check-json"
         name: "check json"
+        exclude: "docker/ldap-server/tests/ldap-testfiles/test-ldap-statefile-broken.json"
       - id: "check-merge-conflict"
         name: "check for merge conflicts"
       - id: "check-yaml"
