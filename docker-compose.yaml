@@ -53,7 +53,7 @@ services:
     - ${LDAP_SOCKET_LOCATION:-ldap-socket}:/var/lib/univention-ldap/slapd-sock/:rw
 
   nats:
-    image: "nats:latest"
+    image: "nats:latest@sha256:29ae7f55fbaa9d23949237c58593a3451ef74493e5b3644d6a837219d1d4028c"
     environment:
       jetstream: "enabled"
     ports:
@@ -67,7 +67,7 @@ services:
     command: --jetstream -m 8222 -p 4222 -config /etc/nats-config/nats.conf
 
   ldap-admin:
-    image: osixia/phpldapadmin:0.9.0
+    image: osixia/phpldapadmin:0.9.0@sha256:d112b82be1336f91e028b0348755133fda333992355b533419355a65c32ff9ad
     environment:
       PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'ldap-server':{'login':{'bind_id':'cn=admin,dc=univention-organization,dc=intranet'}}}]"
       PHPLDAPADMIN_HTTPS: "false"
@@ -77,7 +77,7 @@ services:
       - 8001:80
 
   docs:
-    image: docker-registry.knut.univention.de/sphinx:latest
+    image: docker-registry.knut.univention.de/sphinx:latest@sha256:bd2b67f65aec9681e583379363a9ffb34037e636e79dcf62f5353c4769f228ed
     working_dir: /docs/docs
     volumes:
       - ".:/docs"
@@ -111,7 +111,7 @@ services:
   pre-commit:
     profiles:
       - test
-    image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-pre-commit/upx-pre-commit:latest
+    image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-pre-commit/upx-pre-commit:latest@sha256:c928a775fdbbb6291311b307952e750f06b1931c65f516e999464fbf0e9a1970
     volumes:
       - type: bind
         source: .
