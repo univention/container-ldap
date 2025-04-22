@@ -56,7 +56,7 @@ def test_get_changed_attributes(sync_ldap_indexes, schema_file):
 
     changed_attributes = sync_ldap_indexes.get_changed_attributes(statefile_state, state)
 
-    assert expected_attributes == changed_attributes
+    assert set(expected_attributes) == set(changed_attributes)
 
 
 def test_broken_state_file(sync_ldap_indexes):

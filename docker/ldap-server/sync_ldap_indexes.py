@@ -13,8 +13,6 @@ from datetime import datetime
 from pathlib import Path
 from pprint import pformat
 
-from deepdiff import DeepDiff
-
 from univention.config_registry import ucr
 
 
@@ -189,31 +187,28 @@ def write_state_file(state_file_path: Path, state: dict):
         f.write(state_json)
 
 
-def get_changed_attributes(state_file: dict, current_state: dict) -> list:
-    """
-    Returns the name of all changed attributes.
+def attribute_needs_reindexing(new: dict, old: dict) -> bool:
+    if not new or not old:
+        return True
+    if new.get("equality") != old.get("equality"):
+        return True
+    new_indexes = {i["type"] for i in new.get("indexes", [])}
+    old_indexes = {i["type"] for i in old.get("indexes", [])}
+    return new_indexes != old_indexes
 
-    Compares the state file with the current state.
-    """
-    # Fake attribute for DeepDiff. If there is no intersection in the objects, the result is not usable in this way ...
-    fake_attribute = {"equality": "fakeEquality", "indexes": [{"type": "fakeType"}]}
-    state_file["attributes"]["fakeAttribute"] = fake_attribute
-    current_state["attributes"]["fakeAttribute"] = fake_attribute
 
-    differences = DeepDiff(
-        t1=state_file["attributes"],
-        t2=current_state["attributes"],
-        exclude_regex_paths=[r"last_index_date", r"schema_file"],
-        view="text",
-        verbose_level=2,
-    )
-    logger.debug(f"state differences:\n{pformat(differences)}")
+def get_changed_attributes(new_state: dict, old_state: dict) -> list:
+    differences = []
+    new_attributes = new_state["attributes"]
+    old_attributes = old_state["attributes"]
 
-    # Delete fake attribute.
-    state_file["attributes"].pop("fakeAttribute")
-    current_state["attributes"].pop("fakeAttribute")
-
-    return differences.affected_root_keys
+    for attribute in set(new_attributes) | set(old_attributes):
+        if attribute_needs_reindexing(
+            new_attributes.get(attribute, {}),
+            old_attributes.get(attribute, {}),
+        ):
+            differences.append(attribute)
+    return differences
 
 
 def get_ldap_base_dn():
