@@ -264,7 +264,7 @@ def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path
         return
 
     # Check changed attributes.
-    changed_attributes = get_changed_attributes(state_file=state_file, current_state=current_state)
+    changed_attributes = get_changed_attributes(new_state=state_file, old_state=current_state)
     if not changed_attributes:
         logger.info("No changed attributes, nothing to do!")
         return
