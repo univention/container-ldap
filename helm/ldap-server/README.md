@@ -512,6 +512,15 @@ false
 			<td>Log level for slapd.    Pass a comma-separated list of values from the <a href="https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options">OpenLDAP docs</a>.    Example: `"conns,stats"`.</td>
 		</tr>
 		<tr>
+			<td>ldapServer.config.pythonLogLevel</td>
+			<td>string</td>
+			<td><pre lang="json">
+"INFO"
+</pre>
+</td>
+			<td>Log level for Python.    Pass a value from the <a href="https://docs.python.org/3/library/logging.html#logging-levels">Python logging docs</a>.</td>
+		</tr>
+		<tr>
 			<td>ldapServer.config.samlMetadataUrl</td>
 			<td>string</td>
 			<td><pre lang="json">

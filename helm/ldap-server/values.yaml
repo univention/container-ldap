@@ -488,6 +488,10 @@ ldapServer:
     #    Example: `"conns,stats"`.
     logLevel: "stats"
 
+    # -- Log level for Python.
+    #    Pass a value from the <a href="https://docs.python.org/3/library/logging.html#logging-levels">Python logging docs</a>.
+    pythonLogLevel: "INFO"
+
     # -- A comma separated list of SAML2 Service Provider URLs (must be defined)
     #samlServiceProviders: "http://myportal.local:8000/univention/saml/metadata,http://myportal.local:8000/auth/realms/ucs"
     samlServiceProviders: ""

@@ -20,6 +20,7 @@ data:
   DOMAIN_NAME: {{ ( coalesce .Values.ldapServer.config.domainName .Values.global.ldap.domainName ) | required "Either .Values.ldapServer.config.domainName or .Values.global.ldap.domainName must be set." | quote }}
   LDAP_BASE_DN: {{ ( coalesce .Values.ldapServer.config.ldapBaseDn .Values.global.ldap.baseDn ) | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." | quote }}
   LOG_LEVEL: {{ .Values.ldapServer.config.logLevel | required ".Values.ldapServer.config.logLevel is required" | quote }}
+  PYTHON_LOG_LEVEL: {{ .Values.ldapServer.config.pythonLogLevel | required ".Values.ldapServer.config.pythonLogLevel is required" | quote }}
   SAML_METADATA_URL: {{ include "ldap-server.samlMetadataUrl" . | quote }}
   SAML_METADATA_URL_INTERNAL: {{ include "ldap-server.samlMetadataUrlInternal" . | quote }}
   SERVICE_PROVIDERS: {{ include "ldap-server.samlServiceProviders" . | quote }}
