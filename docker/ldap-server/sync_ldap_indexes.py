@@ -16,41 +16,16 @@ from pprint import pformat
 from univention.config_registry import ucr
 
 
-def get_log_level():
-    # Translation of OpenLDAP log levels to Python
-    # https://openldap.org/doc/admin24/runningslapd.html#Command-Line%20Options
-    ldap_log_levels = (os.environ.get("LOG_LEVEL") or "stats").split(",")
+class NoIndexException(Exception):
+    pass
 
-    log_levels = {
-        "any": ("DEBUG", 10),
-        "trace": ("DEBUG", 10),
-        "packets": ("INFO", 20),
-        "args": ("INFO", 20),
-        "conns": ("INFO", 20),
-        "BER": ("INFO", 20),
-        "filter": ("INFO", 20),
-        "config": ("DEBUG", 40),
-        "ACL": ("INFO", 20),
-        "stats": ("INFO", 20),
-        "stats2": ("INFO", 20),
-        "shell": ("INFO", 20),
-        "parse": ("DEBUG", 10),
-        "sync": ("INFO", 20),
-        "none": ("ERROR", 40),
-    }
 
-    log_num = None
-    for log_level in ldap_log_levels:
-        tmp_log_num = log_levels.get(log_level)[1]
-        if not log_num or tmp_log_num < log_num:
-            log_num = tmp_log_num
-
-    # return log_num or 20
-    return 10
+class SlapindexException(Exception):
+    pass
 
 
 LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
-LOG_LEVEL = get_log_level()
+LOG_LEVEL = os.environ.get("PYTHON_LOG_LEVEL") or "INFO"
 print(f"LOG_LEVEL: {LOG_LEVEL}")
 logging.basicConfig(format=LOG_FORMAT, level=LOG_LEVEL)
 logger = logging.getLogger(__name__)
@@ -107,7 +82,7 @@ def get_current_indexes() -> dict:
 
     for index_type in index_types:
         indexes = ucr.get(f"ldap/index/{index_type}")
-        current_indexes[index_type] = indexes.split(",")
+        current_indexes[index_type] = set(indexes.split(","))
 
     return current_indexes
 
@@ -215,21 +190,17 @@ def get_ldap_base_dn():
     return os.environ.get("LDAP_BASEDN")
 
 
-def execute_slapindex(attribute_name: str) -> str:
+def execute_slapindex(attribute_name: str):
     command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
     ans = subprocess.run(command, shell=True, executable="/bin/bash", capture_output=True, text=True)
     if ans.returncode == 0:
         logger.info(f"Executed successful: {command} [{ans.stdout or '-'}]")
-        ret = "SUCCESS"
+
     else:
         if ans.stderr.find(f"mdb_tool_entry_reindex: no index configured for {attribute_name}") > -1:
-            logger.info(f"Index for {attribute_name} is not configured and is deleted from state file.")
-            ret = "NO_INDEX"
+            raise NoIndexException(f"Index for {attribute_name} is not configured.")
         else:
-            logger.error(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
-            ret = "ERROR"
-
-    return ret
+            raise SlapindexException(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
 
 
 def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path: Path, mdb_file_path: Path):
@@ -272,14 +243,21 @@ def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path
     # Execute slapindex for each changed attribute.
     for attribute_name in changed_attributes:
         logger.info(f"Processing attribute {attribute_name}.")
-        ans = execute_slapindex(attribute_name=attribute_name)
-        if ans == "SUCCESS":
+        try:
+            execute_slapindex(attribute_name=attribute_name)
+
+        except SlapindexException as e:
+            logger.error(e)
+
+        except NoIndexException as e:
+            # If no index exists for an attribute,
+            # the index is deleted from state.
+            logger.info(f"{e} Index is deleted from state file.")
+            state_file["attributes"].pop(attribute_name)
+
+        else:
             # Update state
             state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
-        elif ans == "NO_INDEX":
-            # If no index existing for one attribute anymore,
-            # the attribute is deleted from state.
-            state_file["attributes"].pop(attribute_name)
 
     # Write current state to state file.
     logger.debug(f"new state:\n{pformat(state_file)}")

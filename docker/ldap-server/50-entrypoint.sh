@@ -271,10 +271,6 @@ prepare_slapd_run() {
   chmod +x /etc/univention/run-slapd.sh
 }
 
-sync_ldap_indexes() {
-  sync-ldap-indexes
-}
-
 setup_symlinks
 setup_paths
 setup_listener_path
@@ -283,7 +279,7 @@ setup_slapd_conf
 fetch_saml_metadata
 setup_sasl_mech_whitelist
 setup_sasl_mech_saml
-sync_ldap_indexes
+sync-ldap-indexes
 if [ "${LDAP_SERVER_ROLE:-primary}" = "primary" ]; then
   setup_initial_ldif
 fi

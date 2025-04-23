@@ -34,10 +34,10 @@ def test_get_attributes_from_schemas(sync_ldap_indexes):
 
 def test_get_current_indexes(sync_ldap_indexes):
     expected_indexes = {
-        "eq": ["univentionObjectIdentifier", "newAttrToIndex"],
-        "pres": ["univentionObjectIdentifier", "newAttrToIndex"],
-        "approx": ["univentionObjectIdentifier", "newAttrToIndex"],
-        "sub": ["univentionObjectIdentifier", "newAttrToIndex"],
+        "eq": {"univentionObjectIdentifier", "newAttrToIndex"},
+        "pres": {"univentionObjectIdentifier", "newAttrToIndex"},
+        "approx": {"univentionObjectIdentifier", "newAttrToIndex"},
+        "sub": {"univentionObjectIdentifier", "newAttrToIndex"},
     }
     current_indexes = sync_ldap_indexes.get_current_indexes()
 
