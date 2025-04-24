@@ -23,6 +23,7 @@ class NoIndexException(Exception):
 class SlapindexException(Exception):
     pass
 
+
 def get_logger():
     LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
     LOG_LEVEL = os.environ.get("PYTHON_LOG_LEVEL") or "INFO"
@@ -30,7 +31,9 @@ def get_logger():
     logger = logging.getLogger(__name__)
     return logger
 
+
 logger = get_logger()
+
 
 def parse_attributes(file_content: str) -> dict:
     """
