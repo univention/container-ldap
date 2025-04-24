@@ -1,17 +1,1 @@
-{
-    "attributes": {
-        "univentionObjectIdentifier": {
-            "equality": "uuidMatch",
-            "indexes": [
-                {
-                    "last_index_date": "2025-01-01T00:00:00.000000",
-                    "type": "eq"
-                },
-                {
-                    "last_index_date": "2025-01-01T00:00:00.000000",
-                    "type": "pres"
-                }
-            ],
-            "schema_file": "/usr/share/univention-ldap/schema/univention.schema"
-    }
-}
+{"this is an intentionally broken json file}
