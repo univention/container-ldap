@@ -24,11 +24,15 @@ class SlapindexException(Exception):
     pass
 
 
-LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
-LOG_LEVEL = os.environ.get("PYTHON_LOG_LEVEL") or "INFO"
-print(f"LOG_LEVEL: {LOG_LEVEL}")
-logging.basicConfig(format=LOG_FORMAT, level=LOG_LEVEL)
-logger = logging.getLogger(__name__)
+def get_logger():
+    LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
+    LOG_LEVEL = os.environ.get("PYTHON_LOG_LEVEL") or "INFO"
+    logging.basicConfig(format=LOG_FORMAT, level=LOG_LEVEL)
+    logger = logging.getLogger(__name__)
+    return logger
+
+
+logger = get_logger()
 
 
 def parse_attributes(file_content: str) -> dict:
