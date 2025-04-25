@@ -48,10 +48,10 @@ class SlapindexException(Exception): ...
 
 
 def setup_logging(level: str | int):
-    format = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
-    logging.basicConfig(format=format, level=level)
+    log_format = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
+    logging.basicConfig(format=log_format, level=level)
+    global logger
     logger = logging.getLogger(__name__)
-    return logger
 
 
 def parse_attributes(file_content: str) -> dict:
@@ -63,7 +63,7 @@ def parse_attributes(file_content: str) -> dict:
     ----------------------
     attributetype ( 1.3.6.1.4.1.10176.1003.3 NAME 'univentionObjectIdentifier'
         DESC 'ASCII string representation of a permanent IAM object identifier,
-              like entryUUID or Active Directroy objectGUID'
+              like entryUUID or Active Directory objectGUID'
         EQUALITY uuidMatch
         ORDERING UUIDOrderingMatch
         SYNTAX 1.3.6.1.1.16.1 SINGLE-VALUE )
@@ -118,7 +118,7 @@ def get_attributes_from_schemas(schema_dirs: list) -> dict:
     ----------------------
     attributetype ( 1.3.6.1.4.1.10176.1003.3 NAME 'univentionObjectIdentifier'
         DESC 'ASCII string representation of a permanent IAM object identifier,
-              like entryUUID or Active Directroy objectGUID'
+              like entryUUID or Active Directory objectGUID'
         EQUALITY uuidMatch
         ORDERING UUIDOrderingMatch
         SYNTAX 1.3.6.1.1.16.1 SINGLE-VALUE )
@@ -163,7 +163,7 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
             state["attributes"][attr_name]["equality"] = attr_val.get("equality")
             state["attributes"][attr_name]["schema_file"] = attr_val.get("schema_file")
 
-    logger.debug(f"current state:\n{pformat(state)}")
+    logger.debug("current state:\n%s", pformat(state))
     return state
 
 
@@ -175,7 +175,7 @@ def read_state_file(state_file_path: Path) -> dict:
         file_content = f.read()
 
     state = json.loads(file_content)
-    logger.debug(f"state from state file:\n{pformat(state)}")
+    logger.debug("state from state file:\n%s", pformat(state))
     return state
 
 
@@ -217,14 +217,14 @@ def run_slapindex(ldap_base_dn: str, attribute_name: str):
     command = f'slapindex -b "{ldap_base_dn}" {attribute_name}'
     ans = subprocess.run(command, shell=True, executable="/bin/bash", capture_output=True, text=True)
     if ans.returncode == 0:
-        logger.info(f"Successful index update: {command} [{ans.stdout or '-'}]")
+        logger.info("Successful index update: %s [%s]", command, ans.stdout or "-")
         return
 
     if ans.stderr.find(f"mdb_tool_entry_reindex: no index configured for {attribute_name}") > -1:
         raise NoIndexException(f"Index for {attribute_name} is currently not configured.")
     else:
         raise SlapindexException(
-            f"Encountered an error while runnig slapindex with the following command: {command}: {ans.stderr}"
+            f"Encountered an error while running slapindex with the following command: {command}: {ans.stderr}"
         )
 
 
@@ -234,8 +234,8 @@ def main(config: Config):
     logger.info("Checking if ldap indexes need to be updated")
     virgin_persistent_volume = not any((config.mdb_file_path.is_file(), config.state_file_path.is_file()))
     missing_state_file = not any((virgin_persistent_volume, config.state_file_path.is_file()))
-    logger.debug(f"virgin_persistent_volume: {virgin_persistent_volume}")
-    logger.debug(f"missing_state_file: {missing_state_file}")
+    logger.debug("virgin_persistent_volume: %s", virgin_persistent_volume)
+    logger.debug("missing_state_file: %s", missing_state_file)
 
     # Check and create state file
     if missing_state_file:
@@ -258,7 +258,7 @@ def main(config: Config):
     try:
         state_file = read_state_file(config.state_file_path)
     except json.decoder.JSONDecodeError as e:
-        logger.error(f"Error reading state file: {e}.")
+        logger.error("Error reading state file: %s.", e)
         return
 
     # Check changed attributes.
@@ -273,7 +273,7 @@ def main(config: Config):
 
     # Execute slapindex for each changed attribute.
     for attribute_name in changed_attributes:
-        logger.info(f"Processing attribute {attribute_name}.")
+        logger.info("Processing attribute %s.", attribute_name)
         try:
             run_slapindex(config.ldap_base_dn, attribute_name)
         except SlapindexException as e:
@@ -281,14 +281,14 @@ def main(config: Config):
         except NoIndexException as e:
             # If no index exists for an attribute,
             # the index is deleted from state.
-            logger.info(f"{e} Index is deleted from state file.")
+            logger.info("%s Index is deleted from state file.", e)
             state_file["attributes"].pop(attribute_name)
         else:
             # Update state
             state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
 
     # Write current state to state file.
-    logger.debug(f"new state:\n{pformat(state_file)}")
+    logger.debug("new state:\n%s", pformat(state_file))
     write_state_file(config.state_file_path, state_file)
 
 
