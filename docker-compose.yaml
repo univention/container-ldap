@@ -39,6 +39,8 @@ services:
       context: ./docker/ldap-server
     environment:
       LDAP_CN_ADMIN_PW: univention
+      LDAP_BASEDN: "dc=univention-organization,dc=intranet"
+      PYTHON_LOG_LEVEL: "INFO"
     ports:
     - 389:389
     - 636:636
@@ -51,6 +53,8 @@ services:
     volumes:
     - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
     - ${LDAP_SOCKET_LOCATION:-ldap-socket}:/var/lib/univention-ldap/slapd-sock/:rw
+    - /var/lib/univention-ldap/
+    - ./statefile.json:/var/lib/univention-ldap/ldap-index-statefile.json:rw
 
   nats:
     image: "nats:latest"
