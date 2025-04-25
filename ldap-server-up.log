@@ -1,0 +1,20 @@
+/entrypoint.sh: /entrypoint.d/ is not empty, will attempt to perform configuration
+/entrypoint.sh: Looking for shell scripts in /entrypoint.d/
+/entrypoint.sh: Launching /entrypoint.d/40-self-service-acl.sh
+/entrypoint.sh: Launching /entrypoint.d/50-entrypoint.sh
+Setting 'last_id' to '0' because it is empty
+2025-04-26 13:33:14,582 INFO  [sync-ldap-indexes.main:234] Checking if ldap indexes need to be updated
+2025-04-26 13:33:14,673 INFO  [sync-ldap-indexes.main:271] No index configuration changes or attribute syntax configuration changes detected. Nothing to do
+INFO: Feature "Status ConfigMap" not enabled.
+INFO: Skipping loading of initial content, found existing database files.
+mdb_db_open: database "cn=translog" cannot be opened: No such file or directory (2). Restore from backup!
+backend_startup_one (type=mdb, suffix="cn=translog"): bi_db_open failed! (2)
+slap_startup failed
+No TLS certificates configured!
+Setting OpenLDAP log level from UCS.
+/entrypoint.sh: Configuration complete; ready for start up
+680ce09c.2fd074a2 0x7fac2e1d2740 @(#) $OpenLDAP: slapd 2.5.13+dfsg-5A~5.2.0.202503101504 (Mar 10 2025 15:04:10) $
+	Debian OpenLDAP Maintainers <pkg-openldap-devel@lists.alioth.debian.org>
+680ce09d.2c65486f 0x7fac2e1d2740 WARNING: No dynamic config support for overlay translog.
+680ce09d.2c6718e9 0x7fac2e1d2740 WARNING: No dynamic config support for overlay shadowbind.
+680ce09d.2c7aab29 0x7fac2e1d2740 slapd starting

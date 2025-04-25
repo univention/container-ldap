@@ -2,7 +2,8 @@
 # SPDX-FileCopyrightText: 2023-2025 Univention GmbH
 
 # pylint: disable=redefined-outer-name
-
+import os
+from pathlib import Path
 from typing import Callable
 
 import pytest
@@ -52,3 +53,24 @@ def object_class_is_loaded(connection) -> Callable[[str], bool]:
         return object_class in connection.server.schema.object_classes
 
     return _object_class_is_loaded
+
+
+#######################
+
+
+@pytest.fixture()
+def log_file_path():
+    """
+    Returns full path of the logfile location e.g. /tmp/ldap-server.log
+
+    Could be set via system envirinment LDAP_SERVER_LOG.
+    """
+    log_location = os.environ.get("LDAP_SERVER_LOG", "ldap-server.log")
+    return Path(log_location)
+
+
+@pytest.fixture(autouse=True)
+def skip_no_logfile(request, log_file_path):
+    if request.node.get_closest_marker("skip_no_logfile"):
+        if not log_file_path.is_file():
+            pytest.skip("Logfile doesn't exists!")
