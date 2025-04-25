@@ -12,27 +12,46 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 from pprint import pformat
+from typing import NamedTuple
 
 from univention.config_registry import ucr
 
-
-class NoIndexException(Exception):
-    pass
+logger = logging.getLogger(__name__)
 
 
-class SlapindexException(Exception):
-    pass
+class Config(NamedTuple):
+    log_level: int | str
+    ldap_base_dn: str
+    schema_dirs: list[str] = ["/usr/share/univention-ldap/schema", "/etc/ldap/schema"]
+    state_file_path: Path = Path("/var/lib/univention-ldap/ldap-index-statefile.json")
+    state_file_template_path: Path = Path("/opt/univention/ldap-tools/ldap-index-statefile.json")
+    mdb_file_path: Path = Path("/var/lib/univention-ldap/ldap/data.mdb")
 
 
-def get_logger():
-    LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
-    LOG_LEVEL = os.environ.get("PYTHON_LOG_LEVEL") or "INFO"
-    logging.basicConfig(format=LOG_FORMAT, level=LOG_LEVEL)
+def get_config() -> Config:
+    ldap_base_dn = os.environ.get("LDAP_BASEDN")
+    if not ldap_base_dn:
+        raise ValueError("Missing environment variable: LDAP_BASEDN")
+    log_level = os.environ.get("PYTHON_LOG_LEVEL")
+    if not log_level:
+        raise ValueError("Missing environment variable: PYTHON_LOG_LEVEL")
+    return Config(
+        log_level=log_level,
+        ldap_base_dn=ldap_base_dn,
+    )
+
+
+class NoIndexException(Exception): ...
+
+
+class SlapindexException(Exception): ...
+
+
+def setup_logging(level: str | int):
+    format = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
+    logging.basicConfig(format=format, level=level)
     logger = logging.getLogger(__name__)
     return logger
-
-
-logger = get_logger()
 
 
 def parse_attributes(file_content: str) -> dict:
@@ -112,7 +131,7 @@ def get_attributes_from_schemas(schema_dirs: list) -> dict:
                 file_content = f.read()
 
                 attributes = parse_attributes(file_content=file_content)
-                for attr_name, attr_value in attributes.items():
+                for attr_value in attributes.values():
                     attr_value["schema_file"] = schema_file
 
                 all_attributes |= attributes
@@ -140,7 +159,7 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
 
     # Populate state with attribute information.
     for attr_name, attr_val in attributes.items():
-        if state.get("attributes").get(attr_name) and attr_val:
+        if state.get("attributes", {}).get(attr_name) and attr_val:
             state["attributes"][attr_name]["equality"] = attr_val.get("equality")
             state["attributes"][attr_name]["schema_file"] = attr_val.get("schema_file")
 
@@ -171,8 +190,12 @@ def attribute_needs_reindexing(new: dict, old: dict) -> bool:
         return True
     if new.get("equality") != old.get("equality"):
         return True
-    new_indexes = {i["type"] for i in new.get("indexes", [])}
-    old_indexes = {i["type"] for i in old.get("indexes", [])}
+    try:
+        new_indexes = {i["type"] for i in new.get("indexes", [])}
+        old_indexes = {i["type"] for i in old.get("indexes", [])}
+    except KeyError:
+        logger.warning("Invalid state file data for an index. Forcing a reindex for this attribute.")
+        return False
     return new_indexes != old_indexes
 
 
@@ -190,88 +213,84 @@ def get_changed_attributes(new_state: dict, old_state: dict) -> list:
     return differences
 
 
-def get_ldap_base_dn():
-    return os.environ.get("LDAP_BASEDN")
-
-
-def execute_slapindex(attribute_name: str):
-    command = f'slapindex -b "{get_ldap_base_dn()}" {attribute_name}'
+def run_slapindex(ldap_base_dn: str, attribute_name: str):
+    command = f'slapindex -b "{ldap_base_dn}" {attribute_name}'
     ans = subprocess.run(command, shell=True, executable="/bin/bash", capture_output=True, text=True)
     if ans.returncode == 0:
-        logger.info(f"Executed successful: {command} [{ans.stdout or '-'}]")
+        logger.info(f"Successful index update: {command} [{ans.stdout or '-'}]")
+        return
 
+    if ans.stderr.find(f"mdb_tool_entry_reindex: no index configured for {attribute_name}") > -1:
+        raise NoIndexException(f"Index for {attribute_name} is currently not configured.")
     else:
-        if ans.stderr.find(f"mdb_tool_entry_reindex: no index configured for {attribute_name}") > -1:
-            raise NoIndexException(f"Index for {attribute_name} is not configured.")
-        else:
-            raise SlapindexException(f"SLAPINDEX ERROR: {command}: {ans.stderr}")
+        raise SlapindexException(
+            f"Encountered an error while runnig slapindex with the following command: {command}: {ans.stderr}"
+        )
 
 
-def main(schema_dirs: list[str], state_file_path: Path, state_file_template_path: Path, mdb_file_path: Path):
+def main(config: Config):
     # Check ldap installation state.
-    virgin_persistent_volume = not os.path.isfile(mdb_file_path) and not os.path.isfile(state_file_path)
-    missing_state_file = not virgin_persistent_volume and not os.path.isfile(state_file_path)
+    setup_logging(config.log_level)
+    logger.info("Checking if ldap indexes need to be updated")
+    virgin_persistent_volume = not any((config.mdb_file_path.is_file(), config.state_file_path.is_file()))
+    missing_state_file = not any((virgin_persistent_volume, config.state_file_path.is_file()))
     logger.debug(f"virgin_persistent_volume: {virgin_persistent_volume}")
     logger.debug(f"missing_state_file: {missing_state_file}")
 
     # Check and create state file
     if missing_state_file:
-        shutil.copyfile(state_file_template_path, state_file_path)
+        shutil.copyfile(config.state_file_template_path, config.state_file_path)
         logger.info("Missing state file! New state file from template created.")
 
     # Get current state from ucr.
     current_state = get_state(
         current_indexes=get_current_indexes(),
-        attributes=get_attributes_from_schemas(schema_dirs),
+        attributes=get_attributes_from_schemas(config.schema_dirs),
     )
 
     # On a clean installation, the state file is written with the current state.
     if virgin_persistent_volume:
-        write_state_file(state_file_path, current_state)
-        logger.info("Virgin persistent volume! New state file with current state created.")
+        write_state_file(config.state_file_path, current_state)
+        logger.info("Virgin persistent volume. New state file with current state created.")
         return
 
     # Read state file
     try:
-        state_file = read_state_file(state_file_path)
+        state_file = read_state_file(config.state_file_path)
     except json.decoder.JSONDecodeError as e:
         logger.error(f"Error reading state file: {e}.")
         return
 
     # Check changed attributes.
-    changed_attributes = get_changed_attributes(new_state=state_file, old_state=current_state)
+    try:
+        changed_attributes = get_changed_attributes(new_state=state_file, old_state=current_state)
+    except KeyError:
+        logger.error("Invalid state file schema! Until this is manually fixed, no ldap index changes can be evaluated.")
+        return
     if not changed_attributes:
-        logger.info("No changed attributes, nothing to do!")
+        logger.info("No index configuration changes or attribute syntax configuration changes detected. Nothing to do")
         return
 
     # Execute slapindex for each changed attribute.
     for attribute_name in changed_attributes:
         logger.info(f"Processing attribute {attribute_name}.")
         try:
-            execute_slapindex(attribute_name=attribute_name)
-
+            run_slapindex(config.ldap_base_dn, attribute_name)
         except SlapindexException as e:
             logger.error(e)
-
         except NoIndexException as e:
             # If no index exists for an attribute,
             # the index is deleted from state.
             logger.info(f"{e} Index is deleted from state file.")
             state_file["attributes"].pop(attribute_name)
-
         else:
             # Update state
             state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
 
     # Write current state to state file.
     logger.debug(f"new state:\n{pformat(state_file)}")
-    write_state_file(state_file_path, state_file)
+    write_state_file(config.state_file_path, state_file)
 
 
 if __name__ == "__main__":
-    main(
-        schema_dirs=["/usr/share/univention-ldap/schema", "/etc/ldap/schema"],
-        state_file_path=Path("/var/lib/univention-ldap/ldap-index-statefile.json"),
-        state_file_template_path=Path("/opt/univention/ldap-tools/ldap-index-statefile.json"),
-        mdb_file_path=Path("/var/lib/univention-ldap/ldap/data.mdb"),
-    )
+    main(get_config())

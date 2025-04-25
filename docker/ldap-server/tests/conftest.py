@@ -103,8 +103,8 @@ def sync_ldap_indexes(mock_univention_config_registry_installed):
     spec.loader.exec_module(module)
 
     # Mock execute_slapindex method
-    def mock_execute_slapindex(attribute_name):
-        return "SUCCESS"
+    def mock_execute_slapindex(ldap_base_dn, attribute_name):
+        return
 
     module.execute_slapindex = mock_execute_slapindex
 

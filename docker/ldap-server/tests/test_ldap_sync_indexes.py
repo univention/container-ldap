@@ -8,6 +8,18 @@ from pathlib import Path
 import pytest
 
 
+def get_test_config(sync_ldap_indexes, state_filename: str, mdb_filename: str):
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    return sync_ldap_indexes.Config(
+        log_level="INFO",
+        ldap_base_dn="cn=test,cn=internal",
+        schema_dirs=[Path(f"{base_dir}/ldap-testfiles/")],
+        state_file_path=Path(f"{base_dir}/ldap-testfiles/{state_filename}"),
+        state_file_template_path=Path(f"{base_dir}/ldap-testfiles/test-ldap-statefile.json"),
+        mdb_file_path=Path(f"{base_dir}/ldap-testfiles/{mdb_filename}"),
+    )
+
+
 def test_parse_attributes(sync_ldap_indexes, schema_file):
     expected_attributes = {"univentionObjectIdentifier": {"equality": "uuidMatch"}}
     parsed_attributes = sync_ldap_indexes.parse_attributes(schema_file)
@@ -66,14 +78,14 @@ def test_broken_state_file(sync_ldap_indexes):
 
 
 def test_main_function_broken_state_file(sync_ldap_indexes, caplog):
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    schema_dirs = [Path(f"{base_dir}/ldap-testfiles/")]
-    state_file_path = Path(f"{base_dir}/ldap-testfiles/test-ldap-statefile-broken.json")
-    state_file_template_path = Path(f"{base_dir}/ldap-testfiles/test-ldap-statefile.json")
-    mdb_file_path = Path(f"{base_dir}/ldap-testfiles/data.mdb")
+    test_config = get_test_config(
+        sync_ldap_indexes,
+        "test-ldap-statefile-broken.json",
+        "data.mdb",
+    )
 
     with caplog.at_level(logging.ERROR):
-        sync_ldap_indexes.main(schema_dirs, state_file_path, state_file_template_path, mdb_file_path)
+        sync_ldap_indexes.main(test_config)
 
     assert len(caplog.records) == 1
 
@@ -82,29 +94,23 @@ def test_main_function_broken_state_file(sync_ldap_indexes, caplog):
 
 
 def test_main_function_missing_state_file(sync_ldap_indexes, caplog):
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    schema_dirs = [Path(f"{base_dir}/ldap-testfiles/")]
-    state_file_path = Path(f"{base_dir}/ldap-testfiles/test-ldap-statefile-tmp.json")
-    state_file_template_path = Path(f"{base_dir}/ldap-testfiles/test-ldap-statefile.json")
-    mdb_file_path = Path(f"{base_dir}/ldap-testfiles/data.mdb")
+    test_config = get_test_config(
+        sync_ldap_indexes,
+        "test-ldap-statefile-tmp.json",
+        "data.mdb",
+    )
 
     # Cleanup tmp state file
-    if os.path.isfile(state_file_path):
-        os.remove(state_file_path)
+    if os.path.isfile(test_config.state_file_path):
+        os.remove(test_config.state_file_path)
 
     with caplog.at_level(logging.INFO):
-        sync_ldap_indexes.main(schema_dirs, state_file_path, state_file_template_path, mdb_file_path)
+        sync_ldap_indexes.main(test_config)
 
-    assert len(caplog.records) == 3
-
-    assert caplog.records[0].levelno == logging.INFO
-    assert "Missing state file! New state file from template created." == caplog.records[0].message
+    assert len(caplog.records) == 6
 
     assert caplog.records[1].levelno == logging.INFO
-    assert caplog.records[1].message in (
-        "Processing attribute newAttrToIndex.",
-        "Processing attribute univentionObjectIdentifier.",
-    )
+    assert "Missing state file! New state file from template created." == caplog.records[1].message
 
     assert caplog.records[2].levelno == logging.INFO
     assert caplog.records[2].message in (
@@ -112,22 +118,28 @@ def test_main_function_missing_state_file(sync_ldap_indexes, caplog):
         "Processing attribute univentionObjectIdentifier.",
     )
 
+    assert caplog.records[4].levelno == logging.INFO
+    assert caplog.records[4].message in (
+        "Processing attribute newAttrToIndex.",
+        "Processing attribute univentionObjectIdentifier.",
+    )
+
 
 def test_main_function_virgin_pv(sync_ldap_indexes, caplog):
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    schema_dirs = [Path(f"{base_dir}/ldap-testfiles/")]
-    state_file_path = Path(f"{base_dir}/ldap-testfiles/test-ldap-statefile-tmp.json")
-    state_file_template_path = Path(f"{base_dir}/ldap-testfiles/test-ldap-statefile.json")
-    mdb_file_path = Path(f"{base_dir}/ldap-testfiles/data_tmp.mdb")
+    test_config = get_test_config(
+        sync_ldap_indexes,
+        "test-ldap-statefile-tmp.json",
+        "data_tmp.mdb",
+    )
 
     # Cleanup tmp state file
-    if os.path.isfile(state_file_path):
-        os.remove(state_file_path)
+    if os.path.isfile(test_config.state_file_path):
+        os.remove(test_config.state_file_path)
 
     with caplog.at_level(logging.INFO):
-        sync_ldap_indexes.main(schema_dirs, state_file_path, state_file_template_path, mdb_file_path)
+        sync_ldap_indexes.main(test_config)
 
-    assert len(caplog.records) == 1
+    assert len(caplog.records) == 2
 
-    assert caplog.records[0].levelno == logging.INFO
-    assert "Virgin persistent volume! New state file with current state created." == caplog.records[0].message
+    assert caplog.records[1].levelno == logging.INFO
+    assert "Virgin persistent volume. New state file with current state created." == caplog.records[1].message
