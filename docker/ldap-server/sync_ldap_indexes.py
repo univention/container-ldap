@@ -50,8 +50,6 @@ class SlapindexException(Exception): ...
 def setup_logging(level: str | int):
     format = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
     logging.basicConfig(format=format, level=level)
-    logger = logging.getLogger(__name__)
-    return logger
 
 
 def parse_attributes(file_content: str) -> dict:
@@ -163,7 +161,7 @@ def get_state(current_indexes: dict, attributes: dict) -> dict:
             state["attributes"][attr_name]["equality"] = attr_val.get("equality")
             state["attributes"][attr_name]["schema_file"] = attr_val.get("schema_file")
 
-    logger.debug(f"current state:\n{pformat(state)}")
+    logger.debug("current state:\n%s", pformat(state))
     return state
 
 
@@ -175,7 +173,7 @@ def read_state_file(state_file_path: Path) -> dict:
         file_content = f.read()
 
     state = json.loads(file_content)
-    logger.debug(f"state from state file:\n{pformat(state)}")
+    logger.debug("previous state from state file:\n%s", pformat(state))
     return state
 
 
@@ -217,7 +215,7 @@ def run_slapindex(ldap_base_dn: str, attribute_name: str):
     command = f'slapindex -b "{ldap_base_dn}" {attribute_name}'
     ans = subprocess.run(command, shell=True, executable="/bin/bash", capture_output=True, text=True)
     if ans.returncode == 0:
-        logger.info(f"Successful index update: {command} [{ans.stdout or '-'}]")
+        logger.info("Successful index update: %s, %s]", command, ans.stdout or "-")
         return
 
     if ans.stderr.find(f"mdb_tool_entry_reindex: no index configured for {attribute_name}") > -1:
@@ -234,13 +232,13 @@ def main(config: Config):
     logger.info("Checking if ldap indexes need to be updated")
     virgin_persistent_volume = not any((config.mdb_file_path.is_file(), config.state_file_path.is_file()))
     missing_state_file = not any((virgin_persistent_volume, config.state_file_path.is_file()))
-    logger.debug(f"virgin_persistent_volume: {virgin_persistent_volume}")
-    logger.debug(f"missing_state_file: {missing_state_file}")
+    logger.debug("virgin_persistent_volume: %s", virgin_persistent_volume)
+    logger.debug("missing_state_file: %s", missing_state_file)
 
     # Check and create state file
     if missing_state_file:
         shutil.copyfile(config.state_file_template_path, config.state_file_path)
-        logger.info("Missing state file! New state file from template created.")
+        logger.info("Missing state file! Using the default configuration of Nubus 1.0 - 1.8 as a safe baseline.")
 
     # Get current state from ucr.
     current_state = get_state(
@@ -251,14 +249,19 @@ def main(config: Config):
     # On a clean installation, the state file is written with the current state.
     if virgin_persistent_volume:
         write_state_file(config.state_file_path, current_state)
-        logger.info("Virgin persistent volume. New state file with current state created.")
+        logger.info(
+            "Virgin persistent volume indicating a fresh LDAP instance. New state file with current state created."
+        )
         return
 
     # Read state file
     try:
         state_file = read_state_file(config.state_file_path)
-    except json.decoder.JSONDecodeError as e:
-        logger.error(f"Error reading state file: {e}.")
+    except json.decoder.JSONDecodeError as error:
+        logger.error(
+            "Error reading state file. Until this is manually fixed, no ldap index changes can be evaluated. Error: %s",
+            error,
+        )
         return
 
     # Check changed attributes.
@@ -273,22 +276,22 @@ def main(config: Config):
 
     # Execute slapindex for each changed attribute.
     for attribute_name in changed_attributes:
-        logger.info(f"Processing attribute {attribute_name}.")
+        logger.info("Processing attribute %s.", attribute_name)
         try:
             run_slapindex(config.ldap_base_dn, attribute_name)
-        except SlapindexException as e:
-            logger.error(e)
-        except NoIndexException as e:
+        except SlapindexException as error:
+            logger.error(error)
+        except NoIndexException as error:
             # If no index exists for an attribute,
             # the index is deleted from state.
-            logger.info(f"{e} Index is deleted from state file.")
+            logger.info("%s Index is deleted from state file.", error)
             state_file["attributes"].pop(attribute_name)
         else:
             # Update state
             state_file["attributes"][attribute_name] = current_state["attributes"][attribute_name]
 
     # Write current state to state file.
-    logger.debug(f"new state:\n{pformat(state_file)}")
+    logger.debug("new state:\n%s}", pformat(state_file))
     write_state_file(config.state_file_path, state_file)
 
 
