@@ -119,73 +119,12 @@ test-ldap-smoke:
     when: "always"
     expose_as: "docker compose server logs"
 
-# test-chart-ldap-server:
-#   stage: test
-#   image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.12.1"
-#   script:
-#     - helm dep build helm/ldap-server
-#     - pytest tests/helm_unit
-
-#build-test-ldap-sync:
-#  stage: test
-#  extends: .dind
-#  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-#      when: "never"
-#    - when: "on_success"
-#  before_script:
-#    # Allow that the Docker API version is negotiated between client and server
-#    - unset DOCKER_API_VERSION
-#    - export IMAGE_TAG=${RELEASE_VERSION}
-#    - echo -e "\e[0Ksection_start:`date +%s`:docker_debug[collapsed=true]\r\e[0KDocker version details"
-#    - echo $IMAGE_TAG
-#    - docker version
-#    - echo -e "\e[0Ksection_end:`date +%s`:docker_debug\r\e[0K"
-#    - echo -e "\e[0Ksection_start:`date +%s`:docker_compose_config[collapsed=true]\r\e[0KDocker Compose configuration"
-#    - docker compose config test
-#    - echo -e "\e[0Ksection_end:`date +%s`:docker_compose_config\r\e[0K"
-#  script:
-#    - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 ldap-server
-#  after_script:
-#    - docker logs dev-local-ldap-server-1 >& ldap-server-up.log
-#    - cat ldap-server-up.log
-#  artifacts:
-#    paths:
-#      - ldap-server-up.log
-
-# test-ldap-sync:
-#   stage: test
-#   extends: .dind
-#   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
-#   rules:
-#     - if: '$CI_PIPELINE_SOURCE == "schedule"'
-#       when: "never"
-#     - when: "on_success"
-#   before_script:
-#     # Allow that the Docker API version is negotiated between client and server
-#     # - unset DOCKER_API_VERSION
-#     # - export IMAGE_TAG=${RELEASE_VERSION}
-#     # - echo -e "\e[0Ksection_start:`date +%s`:docker_debug[collapsed=true]\r\e[0KDocker version details"
-#     # - echo $IMAGE_TAG
-#     # - docker version
-#     # - echo -e "\e[0Ksection_end:`date +%s`:docker_debug\r\e[0K"
-#     # - echo -e "\e[0Ksection_start:`date +%s`:docker_compose_config[collapsed=true]\r\e[0KDocker Compose configuration"
-#     # - docker compose config test
-#     # - echo -e "\e[0Ksection_end:`date +%s`:docker_compose_config\r\e[0K"
-#     # - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 ldap-server
-#     # - docker logs dev-local-ldap-server-1 >& /ldap-server-up.log
-#     - cat ldap-server-up.log
-#   script:
-#     - docker compose run --volume ldap-server-up.log:/tmp/ldap-server-up.log --quiet-pull --rm test ls -la /tmp && cat /tmp/ldap-server-up.log
-#     # .venv/bin/pytest -v tests/integration/test_ldap_index_sync.py
-#   after_script:
-#     - docker compose down --volumes
-#   needs:
-#   - job: build-test-ldap-sync
-#     artifacts: true
-#   dependencies:
-#     - build-test-ldap-sync
+test-chart-ldap-server:
+  stage: test
+  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.12.1"
+  script:
+    - helm dep build helm/ldap-server
+    - pytest tests/helm_unit
 
 test-ldap-sync-indexes:
   stage: "test"
@@ -196,10 +135,10 @@ test-ldap-sync-indexes:
     - when: "on_success"
   before_script:
     - cat ldap-server.log
-    - pip install --upgrade pip
-    - pip install poetry
+    - pip install --upgrade --quiet pip
+    - pip install --quiet poetry
     - poetry config --local virtualenvs.create false
-    - poetry install --with dev
+    - poetry install --quiet --with dev
     - export LDAP_SERVER_LOG=ldap-server.log
   script:
     - pytest -v tests/integration/test_ldap_index_sync.py

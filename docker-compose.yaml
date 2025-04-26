@@ -37,9 +37,6 @@ services:
     image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-server:${IMAGE_TAG:-latest}"
     build:
       context: ./docker/ldap-server
-      args:
-        - COPY_TEST_LDAP_INDEX_STATE_FILE=0
-        - COPY_TEST_LDAP_MDB_FILE=0
     environment:
       LDAP_CN_ADMIN_PW: univention
       LDAP_BASEDN: "dc=univention-organization,dc=intranet"
@@ -102,7 +99,6 @@ services:
       - test
     volumes:
       - "./tests:/app/tests"
-      - "./pytest.ini:/app/tests/pytest.ini"
       - "./univention:/app/univention"
       - "./pyproject.toml:/app/pyproject.toml"
 

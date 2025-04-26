@@ -5,17 +5,7 @@ import re
 import pytest
 
 
-@pytest.mark.skip_no_logfile()
 def test_univention_object_identifier(log_file_path):
-    with log_file_path.open("r") as f:
-        file_content = f.read()
-        pattern = re.compile(r"Successful index update: slapindex .* univentionObjectIdentifier")
-        is_sync_executed = bool(pattern.search(file_content))
-
-        assert is_sync_executed
-
-
-def test_univention_object_identifier_2(log_file_path):
     if log_file_path.is_file():
         with log_file_path.open("r") as f:
             file_content = f.read()
