@@ -103,7 +103,6 @@ test-ldap-smoke:
     - echo -e "\e[0Ksection_end:`date +%s`:docker_compose_config\r\e[0K"
     - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 nats ldap-server ldif-producer
   script:
-    # - sleep 10
     - docker compose run --quiet-pull --rm test .venv/bin/pytest -v tests/integration tests/unit
   after_script:
     - docker logs dev-local-ldap-server-1 >& ldap-server.log
@@ -128,20 +127,16 @@ test-chart-ldap-server:
 
 test-ldap-sync-indexes:
   stage: "test"
-  image: docker-registry.knut.univention.de/python:3.11-slim
+  image: "${CI_REGISTRY_IMAGE}/testrunner:latest"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"
     - when: "on_success"
   before_script:
     - cat ldap-server.log
-    - pip install --upgrade --quiet pip
-    - pip install --quiet poetry
-    - poetry config --local virtualenvs.create false
-    - poetry install --quiet --with dev
     - export LDAP_SERVER_LOG=ldap-server.log
   script:
-    - pytest -v tests/integration/test_ldap_index_sync.py
+    - /app/.venv/bin/pytest -v tests/integration/test_ldap_index_sync.py
   needs:
   - job: test-ldap-smoke
     artifacts: true
