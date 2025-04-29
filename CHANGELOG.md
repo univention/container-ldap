@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.35.0...v0.36.0) (2025-04-29)
+
+
+### Features
+
+* Remove docker.io dependencies ([ad8552f](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/ad8552f245c82cd3b86ce3f02640ed38cb0abaab)), closes [univention/dev/internal/team-nubus#1131](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1131)
+
 ## [0.35.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.34.3...v0.35.0) (2025-04-28)
 
 
