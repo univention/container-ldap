@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.37.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.36.0...v0.37.0) (2025-04-29)
+
+
+### Features
+
+* Bump ucs-base-image version ([00f3870](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/00f387069661592f7783dbac8e1d212aefc747ae)), closes [univention/dev/internal/team-nubus#1155](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1155)
+
+
+### Bug Fixes
+
+* final version of wait-for-dependency ([45d2c49](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/45d2c49a7171922e69b0cca9b26760c6edb8d7b8)), closes [univention/dev/internal/team-nubus#1155](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1155)
+
 ## [0.36.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.35.0...v0.36.0) (2025-04-29)
 
 
