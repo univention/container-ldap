@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.38.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.37.0...v0.38.0) (2025-05-05)
+
+
+### Features
+
+* **ldap-server:** Adds switch to (de)activate index update on startup. ([a7c9be8](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/a7c9be871be6a679b3f209d724e8d408f2ceb03e)), closes [univention/dev/internal/team-nubus#1019](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1019)
+
 ## [0.37.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.36.0...v0.37.0) (2025-04-29)
 
 
