@@ -505,6 +505,9 @@ ldapServer:
     #samlMetadataUrlInternal: "http://keycloak.myportal.local/realms/ucs/protocol/saml/descriptor"
     samlMetadataUrlInternal: ""
 
+    # -- Switch to (de)activate the ldap index syncronization on startup. (true/false)
+    updateIndexOnStartup: true
+
   # -- Optional reference to a different secret containing credentials
   #  auth:
   #    existingSecret:

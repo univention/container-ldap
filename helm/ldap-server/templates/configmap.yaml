@@ -36,6 +36,7 @@ data:
   {{- else }}
   TLS_MODE: "off"
   {{- end }}
+  UPDATE_INDEX_ON_STARTUP: {{ .Values.ldapServer.config.updateIndexOnStartup | required ".Values.ldapServer.config.updateIndexOnStartup is required" | quote }}
 ...
 ---
 kind: "ConfigMap"

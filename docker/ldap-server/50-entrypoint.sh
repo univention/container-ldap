@@ -279,7 +279,9 @@ setup_slapd_conf
 fetch_saml_metadata
 setup_sasl_mech_whitelist
 setup_sasl_mech_saml
-sync-ldap-indexes
+if [ "${UPDATE_INDEX_ON_STARTUP}" = "true" ]; then
+  /usr/bin/sync-ldap-indexes
+fi
 if [ "${LDAP_SERVER_ROLE:-primary}" = "primary" ]; then
   setup_initial_ldif
 fi

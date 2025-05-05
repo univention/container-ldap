@@ -547,6 +547,15 @@ false
 			<td>A comma separated list of SAML2 Service Provider URLs (must be defined) samlServiceProviders: "http://myportal.local:8000/univention/saml/metadata,http://myportal.local:8000/auth/realms/ucs"</td>
 		</tr>
 		<tr>
+			<td>ldapServer.config.updateIndexOnStartup</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td>Switch to (de)activate the ldap index syncronization on startup. (true/false)</td>
+		</tr>
+		<tr>
 			<td>ldapServer.generateDHparam</td>
 			<td>bool</td>
 			<td><pre lang="json">
