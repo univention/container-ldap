@@ -3,16 +3,10 @@
 
 import logging
 import os
-import sys
-from pathlib import Path
 from pprint import pformat
-from random import randrange
 from typing import NamedTuple
 
 import ldap
-from dotenv import load_dotenv
-from faker import Faker
-from faker.providers import internet
 
 logger = logging.getLogger(__name__)
 
@@ -27,15 +21,6 @@ class Config(NamedTuple):
 
 
 def get_config() -> Config:
-    global logger
-
-    file_path = os.path.dirname(__file__)
-    env_file = Path(f"{file_path}/../.env.ldap-server")
-    if env_file.is_file():
-        load_dotenv(env_file)
-    else:
-        logger.warning("Environment file %s not found!", env_file)
-
     ldap_host = os.environ.get("LDAP_HOST")
     if not ldap_host:
         raise ValueError("Missing environment variable: LDAP_HOST")
@@ -84,7 +69,7 @@ def ldap_connect(ldap_host: str, ldap_port: int, ldap_admin_user: str, ldap_admi
         exit(1)
 
     try:
-        ldap_connection.simple_bind_s(f"cn={ldap_admin_user},{ldap_base_dn}", ldap_admin_password)
+        ldap_connection.simple_bind_s(ldap_admin_user, ldap_admin_password)
     except ldap.INVALID_CREDENTIALS:
         logger.error("Invalid LDAP credentials")
         exit(1)
@@ -94,70 +79,52 @@ def ldap_connect(ldap_host: str, ldap_port: int, ldap_admin_user: str, ldap_admi
     return ldap_connection
 
 
-def generate_fake_user_data(num_of_users: int):
-    fake = Faker()
-    fake.add_provider(internet)
-
-    user_data = []
-    for _ in range(num_of_users):
-        username = fake.user_name()
-        fullname = fake.name()
-        lastname = fake.last_name()
-        # email = fake.free_email()
-        # Extending with a random number because of uniqueness
-        uid = f"{username}{randrange(10000, 99999)}"
-
-        ldap_user = [
-            ("objectClass", [b"person", b"top", b"univentionObject", b"shadowAccount"]),
-            ("uid", uid.encode()),
-            ("cn", fullname.encode()),
-            ("sn", lastname.encode()),
-            ("userPassword", b"univention"),
-            ("univentionObjectType", b"users/user"),
-        ]
-        user_data.append(ldap_user)
-
-    return user_data
-
-
-def create_user(user: dict, ldap_conn: ldap.ldapobject, ldap_base_dn: str):
-    uid = [item for item in user if item[0] == "uid"][0][1].decode()
-    logger.debug("Userdata:\n%s", pformat(user, indent=4))
-    logger.debug("uid: %s", uid)
-
-    dn = f"uid={uid},cn=users,{ldap_base_dn}"
-    ldap_conn.add_s(dn, user)
-
-
-def get_no_users():
+def update_univention_object_identifier(ldap_connection: ldap.ldapobject, ldap_base_dn: str):
     global logger
-    usage = """---\n
-        python ldap-create-fake-users.py NUMBER_OF_USERS
 
-    """
-    if len(sys.argv) < 2:
-        logger.error("No number of users given!")
-        print(usage)
-        exit(1)
+    result = ldap_connection.search_s(
+        f"{ldap_base_dn}",
+        ldap.SCOPE_SUBTREE,
+        "(&(objectClass=univentionObject)(!(univentionObjectIdentifier=*)))",
+        ["univentionObjectIdentifier", "entryUUID"],
+    )
 
-    try:
-        no_users = int(sys.argv[1])
-    except ValueError:
-        logger.error("Number of users must be numeric!")
-        print(usage)
-        exit(1)
+    cnt = 0
+    for entry in result:
+        logger.debug("Processing %s", entry[0])
+        logger.debug("Values:\n%s", pformat(entry[1], indent=4))
 
-    return no_users
+        if entry[1].get("univentionObjectIdentifier") or not entry[1].get("entryUUID"):
+            logger.warning(
+                "Wrong ldap search condition! univentionObjectIdentifier: %s entryUUID: %s",
+                entry[1].get("univentionObjectIdentifier"),
+                entry[1].get("entryUUID"),
+            )
+            continue
+
+        try:
+            ldap_connection.modify_s(
+                entry[0],
+                [
+                    (
+                        ldap.MOD_REPLACE,
+                        "univentionObjectIdentifier",
+                        entry[1].get("entryUUID"),
+                    )
+                ],
+            )
+        except Exception as e:
+            logger.error(e)
+
+        cnt += 1
+
+    logger.info("Updated %s records.", cnt)
 
 
-def main(config: NamedTuple):
-    global logger
+def main(config: Config):
     setup_logging(config.log_level)
-
-    no_users = get_no_users()
-
-    logger.info("Startet fake user creation.")
-    logger.debug("Number of users to create: %s", no_users)
+    global logger
+    logger.info("Updating univentionObjectIdentifier with entryUUID values.")
     logger.debug("Loaded config:\n%s", pformat(dict(config._asdict()), indent=4))
 
     ldap_connection = ldap_connect(
@@ -168,15 +135,12 @@ def main(config: NamedTuple):
         ldap_base_dn=config.ldap_base_dn,
     )
 
-    users = generate_fake_user_data(num_of_users=no_users)
-
-    cnt = 0
-    for user in users:
-        create_user(user, ldap_connection, ldap_base_dn=config.ldap_base_dn)
-        cnt += 1
-    logger.info("%i fake users created.", cnt)
+    update_univention_object_identifier(ldap_connection=ldap_connection, ldap_base_dn=config.ldap_base_dn)
 
 
-# ##########################################################
+# ###########################################################################
+# # Main
+# ###########################################################################
 
-main(get_config())
+if __name__ == "__main__":
+    main(get_config())

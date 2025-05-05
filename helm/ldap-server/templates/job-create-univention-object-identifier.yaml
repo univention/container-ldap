@@ -1,0 +1,76 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2023-2025 Univention GmbH
+
+{{- if .Values.ldapUpdateUniventionObjectIdentifier.enabled }}
+---
+apiVersion: "batch/v1"
+kind: "Job"
+metadata:
+  name: {{ include "nubus-common.names.fullnameWithRevision" . }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  {{- if .Values.additionalAnnotations }}
+  annotations:
+    {{ toYaml .Values.additionalAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  backoffLimit: 6
+  suspend: true
+  template:
+    metadata:
+      name: {{ include "common.names.name" . }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+      annotations:
+        {{- if .Values.additionalAnnotations }}
+        {{ toYaml .Values.additionalAnnotations | nindent 8 }}
+        {{- end }}
+    spec:
+      restartPolicy: Never
+      {{- if or .Values.pullSecrets .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.global.imagePullSecrets }}
+        - name: "{{ . }}"
+        {{- end }}
+        {{- range .Values.pullSecrets }}
+        - name: "{{ . }}"
+        {{- end }}
+      {{- end }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.fullname" . }}
+      {{- end }}
+
+      containers:
+      - name: "ldap-update-univention-object-identifier"
+        {{- if $.Values.containerSecurityContext.enabled }}
+        securityContext: {{- omit $.Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+        {{- end }}
+        image: "{{ coalesce .Values.ldapUpdateUniventionObjectIdentifier.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapUpdateUniventionObjectIdentifier.image.repository }}:{{ .Values.ldapUpdateUniventionObjectIdentifier.image.tag }}"
+        imagePullPolicy: {{ coalesce .imagePullPolicy $.Values.global.imagePullPolicy | quote }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "common.names.fullname" . }}
+        env:
+          - name: LDAP_HOST
+            value: "{{ printf "%s-primary" (include "common.names.fullname" .) }}"
+          - name: LDAP_PORT
+            value: "{{ .Values.service.ports.ldap.port }}"
+          - name: LDAP_ADMIN_USER
+            value: "cn=admin,{{ include "nubusTemplates.ldapServer.ldap.baseDn" . }}"
+          - name: LDAP_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
+                key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password") | quote }}
+          - name: LDAP_BASE_DN
+            value: {{ include "nubusTemplates.ldapServer.ldap.baseDn" . | quote }}
+          - name: PYTHON_LOG_LEVEL
+            value: "{{ .Values.ldapUpdateUniventionObjectIdentifier.pythonLogLevel }}"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+
+...
+{{- end }}

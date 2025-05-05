@@ -759,6 +759,60 @@ false
 			<td>Optional reference to the secret to use for reading certificates</td>
 		</tr>
 		<tr>
+			<td>ldapUpdateUniventionObjectIdentifier.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapUpdateUniventionObjectIdentifier.image.pullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+"IfNotPresent"
+</pre>
+</td>
+			<td>Image pull policy. This setting has higher precedence than global.imagePullPolicy.</td>
+		</tr>
+		<tr>
+			<td>ldapUpdateUniventionObjectIdentifier.image.registry</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td>Container registry address. This setting has higher precedence than global.registry.</td>
+		</tr>
+		<tr>
+			<td>ldapUpdateUniventionObjectIdentifier.image.repository</td>
+			<td>string</td>
+			<td><pre lang="json">
+"nubus-dev/images/ldap-update-univention-object-identifier"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapUpdateUniventionObjectIdentifier.image.tag</td>
+			<td>string</td>
+			<td><pre lang="json">
+"latest"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldapUpdateUniventionObjectIdentifier.pythonLogLevel</td>
+			<td>string</td>
+			<td><pre lang="json">
+"INFO"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>ldifProducer.config.backpressureWaitTimeout</td>
 			<td>int</td>
 			<td><pre lang="json">

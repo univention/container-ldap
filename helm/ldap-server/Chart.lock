@@ -3,4 +3,4 @@ dependencies:
   repository: oci://artifacts.software-univention.de/nubus/charts
   version: 0.12.3
 digest: sha256:28b8c5199d71d6776ef943e9f4ea87390055be01d3ec112e24160fc3c74b2f3c
-generated: "2025-04-29T09:24:04.242080282+02:00"
+generated: "2025-05-06T11:31:15.08604229+02:00"

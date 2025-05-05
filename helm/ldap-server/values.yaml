@@ -560,3 +560,14 @@ ldapServer:
 
     # -- Optionally set a custom OpenSSL ciphersuite (use `openssl ciphers -v $CIPHERSUITE` to test possible choices).
     #TLSCipherSuite: "HIGH:MEDIUM:!aNULL:!MD5:!RC4"
+
+ldapUpdateUniventionObjectIdentifier:
+  enabled: true
+  pythonLogLevel: "INFO"
+  image:
+    # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
+    pullPolicy: "IfNotPresent"
+    # -- Container registry address. This setting has higher precedence than global.registry.
+    registry: null
+    repository: "nubus-dev/images/ldap-update-univention-object-identifier"
+    tag: "latest"
