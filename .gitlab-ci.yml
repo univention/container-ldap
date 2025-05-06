@@ -51,6 +51,10 @@ lint-pre-commit:
   - IMAGE_NAME: "database-initialized-testrunner"
     KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR/docker/ldap-server"
     KANIKO_CACHE_ARGS: "--target=pytest"
+  - IMAGE_NAME: "ldap-update-univention-object-identifier"
+    DOCKERFILE_PATH: "./docker/ldap-update-univention-object-identifier/Dockerfile"
+    KANIKO_BUILD_CONTEXT: "$CI_PROJECT_DIR/docker/ldap-update-univention-object-identifier"
+    KANIKO_CACHE_ARGS: "--cache=false"
 
 .publish-matrix: &publish-matrix
   - IMAGE_NAME:
@@ -58,6 +62,7 @@ lint-pre-commit:
       - "ldap-notifier"
       - "ldif-producer"
       - "ldap-server-elector"
+      - "ldap-update-univention-object-identifier"
 
 container-build:
   parallel:
