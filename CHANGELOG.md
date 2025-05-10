@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.38.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.38.0...v0.38.1) (2025-05-10)
+
+
+### Bug Fixes
+
+* move addlicense pre-commit hook ([4cd37ae](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/4cd37ae06beced5851546916464f30db7c4bfbc1))
+* move docker-services ([bec2add](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/bec2adda924f5fd1b64bdf377fe4be136cf5ab1b))
+* update common-ci to main ([e1c1c45](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/e1c1c45a2ccba1285d3c11970cfbd3c9a08f6a5b))
+
 ## [0.38.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.37.0...v0.38.0) (2025-05-05)
 
 
