@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.38.1...v0.39.0) (2025-05-11)
+
+
+### Features
+
+* move and upgrade ucs-base-image to 0.17.3-build-2025-05-11 ([c721ace](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/c721ace02e65e6ceedf9e59e91687fc6858c8f80))
+
 ## [0.38.1](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.38.0...v0.38.1) (2025-05-10)
 
 
