@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.40.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.39.0...v0.40.0) (2025-05-15)
+
+
+### Features
+
+* add creation of cn=blocklists to init-internal-database.sh ([5bbef9b](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/5bbef9b7012baa9f1db1578c7fa275bd075a6e67))
+
 ## [0.39.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.38.1...v0.39.0) (2025-05-11)
 
 
