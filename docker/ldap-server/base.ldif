@@ -1,6 +1,9 @@
 @!@
-dn = configRegistry['ldap/base'].split('=')[0]
-print('dn: %s' % configRegistry['ldap/base'])
+import uuid
+ldap_base = configRegistry['ldap/base']
+
+dn = ldap_base.split('=')[0]
+print('dn: %s' % ldap_base)
 print('objectClass: top')
 print('objectClass: krb5Realm')
 print('objectClass: univentionPolicyReference')
@@ -8,158 +11,170 @@ print('objectClass: nisDomainObject')
 print('objectClass: domainRelatedObject')
 if dn == 'dc':
     print('objectClass: domain')
-    print('dc: %s' % configRegistry['ldap/base'].split('=')[1].split(',')[0])
+    print('dc: %s' % ldap_base.split('=')[1].split(',')[0])
 elif dn == 'o':
     print('objectClass: organization')
-    print('o: %s' % configRegistry['ldap/base'].split('=')[1].split(',')[0])
+    print('o: %s' % ldap_base.split('=')[1].split(',')[0])
 elif dn == 'ou':
     print('objectClass: organizationalUnit')
-    print('ou: %s' % configRegistry['ldap/base'].split('=')[1].split(',')[0])
+    print('ou: %s' % ldap_base.split('=')[1].split(',')[0])
 elif dn == 'l':
     print('objectClass: organization')
-    print('l: %s' % configRegistry['ldap/base'].split('=')[1].split(',')[0])
-    print('o: %s' % configRegistry['ldap/base'].split('=')[1].split(',')[0])
+    print('l: %s' % ldap_base.split('=')[1].split(',')[0])
+    print('o: %s' % ldap_base.split('=')[1].split(',')[0])
 elif dn == 'cn':
     print('objectClass: organizationalRole')
-    print('cn: %s' % configRegistry['ldap/base'].split('=')[1].split(',')[0])
+    print('cn: %s' % ldap_base.split('=')[1].split(',')[0])
 elif dn == 'c':
     print('objectClass: country')
-    print('c: %s' % configRegistry['ldap/base'].split('=')[1].split(',')[0])
+    print('c: %s' % ldap_base.split('=')[1].split(',')[0])
 print('objectClass: univentionBase')
 print('objectClass: univentionObject')
 print('univentionObjectType: container/dc')
+print(f"univentionObjectIdentifier: {uuid.uuid4()}")
 print('krb5RealmName: %s' % configRegistry['domainname'].upper())
 print('nisDomain: %s' % configRegistry['domainname'])
 print('associatedDomain: %s' % configRegistry['domainname'])
-print('univentionPolicyReference: cn=default-settings,cn=pwhistory,cn=users,cn=policies,%s' % configRegistry['ldap/base'])
+print('univentionPolicyReference: cn=default-settings,cn=pwhistory,cn=users,cn=policies,%s' % ldap_base)
 print('')
-print('dn: cn=samba,%s' % configRegistry['ldap/base'])
+print('dn: cn=samba,%s' % ldap_base)
 print('objectClass: top')
 print('objectClass: organizationalRole')
 print('objectClass: univentionObject')
 print('univentionObjectType: container/cn')
+print(f"univentionObjectIdentifier: {uuid.uuid4()}")
 print('cn: samba')
 print('')
-print('dn: sambaDomainName=@@%%@@sambadomain@@%%@@,cn=samba,%s' % (configRegistry['ldap/base']))
+print('dn: sambaDomainName=@@%%@@sambadomain@@%%@@,cn=samba,%s' % (ldap_base))
 print('objectClass: top')
 print('sambaDomainName: @@%%@@sambadomain@@%%@@')
 print('sambaSID: @@%%@@sid@@%%@@')
 print('objectClass: sambaDomain')
 print('objectClass: univentionObject')
 print('univentionObjectType: settings/sambadomain')
+print(f"univentionObjectIdentifier: {uuid.uuid4()}")
 print('sambaNextUserRid: 1000')
 print('sambaNextGroupRid: 1000')
 print('sambaMinPwdLength: 8')
 print('univentionSamba4pwdProperties: 1')
-@!@
-dn: cn=admin,@%@ldap/base@%@
+print(
+f"""
+dn: cn=admin,{ldap_base}
 objectClass: top
 objectClass: person
 cn: admin
 sn: admin
-userPassword: {crypt}@@%%@@ldap.pw@@%%@@
+userPassword: {{crypt}}@@%%@@ldap.pw@@%%@@
 
-dn: cn=univention,@%@ldap/base@%@
+dn: cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: settings/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing System Specific Data
 cn: univention
 
-dn: cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: temporary
 
-dn: cn=packages,cn=univention,@%@ldap/base@%@
+dn: cn=packages,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: packages
 
-dn: cn=templates,cn=univention,@%@ldap/base@%@
+dn: cn=templates,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: templates
 
-dn: cn=default containers,cn=univention,@%@ldap/base@%@
+dn: cn=default containers,cn=univention,{ldap_base}
 objectClass: top
 objectClass: univentionDirectory
 objectClass: univentionObject
 univentionObjectType: settings/directory
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: default containers
-univentionComputersObject: cn=computers,@%@ldap/base@%@
-univentionComputersObject: cn=memberserver,cn=computers,@%@ldap/base@%@
-univentionComputersObject: cn=dc,cn=computers,@%@ldap/base@%@
-univentionDomainControllerComputersObject: cn=dc,cn=computers,@%@ldap/base@%@
-univentionDnsObject: cn=dns,@%@ldap/base@%@
-univentionDhcpObject: cn=dhcp,@%@ldap/base@%@
-univentionPolicyObject: cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=desktop,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=shares,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=userquota,cn=shares,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=printquota,cn=shares,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=update,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=ldap,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=installation,cn=update,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=packages,cn=update,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=repository,cn=update,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=boot,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=default-settings,cn=boot,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=dns,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=default-settings,cn=dns,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=dnsupdate,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=leasetime,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=netbios,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=routing,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=default-settings,cn=routing,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=scope,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=statements,cn=dhcp,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=sound,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=config-registry,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=xfree,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=mail,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=users,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=pwhistory,cn=users,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=default-settings,cn=pwhistory,cn=users,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=nfsmounts,cn=policies,@%@ldap/base@%@
-univentionPolicyObject: cn=printservers,cn=policies,@%@ldap/base@%@
-univentionLicenseObject: cn=license,cn=univention,@%@ldap/base@%@
-univentionUsersObject: cn=users,@%@ldap/base@%@
-univentionGroupsObject: cn=groups,@%@ldap/base@%@
-univentionNetworksObject: cn=networks,@%@ldap/base@%@
-univentionSharesObject: cn=shares,@%@ldap/base@%@
-univentionPrintersObject: cn=printers,@%@ldap/base@%@
-univentionMailObject: cn=domain,cn=mail,@%@ldap/base@%@
-univentionMailObject: cn=mailinglists,cn=mail,@%@ldap/base@%@
-univentionMailObject: cn=folder,cn=mail,@%@ldap/base@%@
+univentionComputersObject: cn=computers,{ldap_base}
+univentionComputersObject: cn=memberserver,cn=computers,{ldap_base}
+univentionComputersObject: cn=dc,cn=computers,{ldap_base}
+univentionDomainControllerComputersObject: cn=dc,cn=computers,{ldap_base}
+univentionDnsObject: cn=dns,{ldap_base}
+univentionDhcpObject: cn=dhcp,{ldap_base}
+univentionPolicyObject: cn=policies,{ldap_base}
+univentionPolicyObject: cn=desktop,cn=policies,{ldap_base}
+univentionPolicyObject: cn=shares,cn=policies,{ldap_base}
+univentionPolicyObject: cn=userquota,cn=shares,cn=policies,{ldap_base}
+univentionPolicyObject: cn=printquota,cn=shares,cn=policies,{ldap_base}
+univentionPolicyObject: cn=update,cn=policies,{ldap_base}
+univentionPolicyObject: cn=ldap,cn=policies,{ldap_base}
+univentionPolicyObject: cn=installation,cn=update,cn=policies,{ldap_base}
+univentionPolicyObject: cn=packages,cn=update,cn=policies,{ldap_base}
+univentionPolicyObject: cn=repository,cn=update,cn=policies,{ldap_base}
+univentionPolicyObject: cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=boot,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=default-settings,cn=boot,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=dns,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=default-settings,cn=dns,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=dnsupdate,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=leasetime,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=netbios,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=routing,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=default-settings,cn=routing,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=scope,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=statements,cn=dhcp,cn=policies,{ldap_base}
+univentionPolicyObject: cn=sound,cn=policies,{ldap_base}
+univentionPolicyObject: cn=config-registry,cn=policies,{ldap_base}
+univentionPolicyObject: cn=xfree,cn=policies,{ldap_base}
+univentionPolicyObject: cn=mail,cn=policies,{ldap_base}
+univentionPolicyObject: cn=users,cn=policies,{ldap_base}
+univentionPolicyObject: cn=pwhistory,cn=users,cn=policies,{ldap_base}
+univentionPolicyObject: cn=default-settings,cn=pwhistory,cn=users,cn=policies,{ldap_base}
+univentionPolicyObject: cn=nfsmounts,cn=policies,{ldap_base}
+univentionPolicyObject: cn=printservers,cn=policies,{ldap_base}
+univentionLicenseObject: cn=license,cn=univention,{ldap_base}
+univentionUsersObject: cn=users,{ldap_base}
+univentionGroupsObject: cn=groups,{ldap_base}
+univentionNetworksObject: cn=networks,{ldap_base}
+univentionSharesObject: cn=shares,{ldap_base}
+univentionPrintersObject: cn=printers,{ldap_base}
+univentionMailObject: cn=domain,cn=mail,{ldap_base}
+univentionMailObject: cn=mailinglists,cn=mail,{ldap_base}
+univentionMailObject: cn=folder,cn=mail,{ldap_base}
 
-dn: cn=custom attributes,cn=univention,@%@ldap/base@%@
+dn: cn=custom attributes,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: custom attributes
 
-dn: cn=cups,cn=univention,@%@ldap/base@%@
+dn: cn=cups,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: cups
 
-dn: cn=printeruris,cn=cups,cn=univention,@%@ldap/base@%@
+dn: cn=printeruris,cn=cups,cn=univention,{ldap_base}
 objectClass: top
 objectClass: univentionPrinterURIs
 objectClass: univentionObject
 univentionObjectType: settings/printeruri
+univentionObjectIdentifier: {uuid.uuid4()}
 printerURI: lpd://
 printerURI: ipp://
 printerURI: http://
@@ -170,574 +185,646 @@ printerURI: file:/
 printerURI: smb://
 cn: printeruris
 
-dn: cn=sid,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=sid,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: sid
 
-dn: cn=gidNumber,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=gidNumber,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionLastUsed
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: gidNumber
 univentionLastUsedValue: 5005
 
-dn: cn=uid,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=uid,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: uid
 
-dn: cn=gid,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=gid,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: gid
 
-dn: cn=groupName,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=groupName,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: groupName
 
-dn: cn=mailPrimaryAddress,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=mailPrimaryAddress,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: mailPrimaryAddress
 
-dn: cn=uidNumber,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=uidNumber,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionLastUsed
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: uidNumber
 univentionLastUsedValue: 2000
 
-dn: cn=aRecord,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=aRecord,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: aRecord
 
-dn: cn=mac,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=mac,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: mac
 
-dn: cn=domainSID,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=domainSID,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: domainSID
 
-dn: cn=univentionObjectIdentifier,cn=temporary,cn=univention,@%@ldap/base@%@
+dn: cn=univentionObjectIdentifier,cn=temporary,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: univentionObjectIdentifier
 
-dn: cn=default,cn=univention,@%@ldap/base@%@
+dn: cn=default,cn=univention,{ldap_base}
 objectClass: top
 objectClass: univentionDefault
 objectClass: univentionObject
 univentionObjectType: settings/default
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: default
-univentionDefaultGroup: cn=Domain Users,cn=groups,@%@ldap/base@%@
-univentionDefaultComputerGroup: cn=Windows Hosts,cn=groups,@%@ldap/base@%@
-univentionDefaultDomainControllerGroup: cn=DC Slave Hosts,cn=groups,@%@ldap/base@%@
-univentionDefaultDomainControllerMasterGroup: cn=DC Backup Hosts,cn=groups,@%@ldap/base@%@
-univentionDefaultClientGroup: cn=Computers,cn=groups,@%@ldap/base@%@
-univentionDefaultMemberserverGroup: cn=Computers,cn=groups,@%@ldap/base@%@
+univentionDefaultGroup: cn=Domain Users,cn=groups,{ldap_base}
+univentionDefaultComputerGroup: cn=Windows Hosts,cn=groups,{ldap_base}
+univentionDefaultDomainControllerGroup: cn=DC Slave Hosts,cn=groups,{ldap_base}
+univentionDefaultDomainControllerMasterGroup: cn=DC Backup Hosts,cn=groups,{ldap_base}
+univentionDefaultClientGroup: cn=Computers,cn=groups,{ldap_base}
+univentionDefaultMemberserverGroup: cn=Computers,cn=groups,{ldap_base}
 
-dn: cn=license,cn=univention,@%@ldap/base@%@
+dn: cn=license,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: license
 
-dn: cn=idmap,cn=univention,@%@ldap/base@%@
+dn: cn=idmap,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: idmap
 
-dn: cn=nextUnixId,cn=idmap,cn=univention,@%@ldap/base@%@
+dn: cn=nextUnixId,cn=idmap,cn=univention,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: sambaUnixIdPool
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: nextUnixId
 uidNumber: 55000
 gidNumber: 55000
 
-dn: cn=users,@%@ldap/base@%@
+dn: cn=users,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all User Objects as per default Settings
 cn: users
 
-dn: cn=groups,@%@ldap/base@%@
+dn: cn=groups,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all Group Objects as per default Settings
 cn: groups
 
-dn: cn=computers,@%@ldap/base@%@
+dn: cn=computers,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all Computer Objects as per default Settings
 cn: computers
 
-dn: cn=dc,cn=computers,@%@ldap/base@%@
+dn: cn=dc,cn=computers,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: dc
 
-dn: cn=memberserver,cn=computers,@%@ldap/base@%@
+dn: cn=memberserver,cn=computers,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: memberserver
 
-dn: cn=shares,@%@ldap/base@%@
+dn: cn=shares,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all Share Objects as per default Settings
 cn: shares
 
-dn: cn=networks,@%@ldap/base@%@
+dn: cn=networks,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all Network Objects as per default Settings
 cn: networks
 
-dn: cn=printers,@%@ldap/base@%@
+dn: cn=printers,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all Printer Objects as per default Settings
 cn: printers
 
-dn: cn=policies,@%@ldap/base@%@
+dn: cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all Policy Objects as per default Settings
 cn: policies
 
-dn: cn=kerberos,@%@ldap/base@%@
+dn: cn=kerberos,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all Kerberos Objects as per default Settings
 cn: kerberos
 
-dn: cn=mail,@%@ldap/base@%@
+dn: cn=mail,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all Mail Objects as per default Settings
 cn: mail
 
-dn: cn=desktop,cn=policies,@%@ldap/base@%@
+dn: cn=desktop,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: desktop
 
-dn: cn=shares,cn=policies,@%@ldap/base@%@
+dn: cn=shares,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: shares
 
-dn: cn=userquota,cn=shares,cn=policies,@%@ldap/base@%@
+dn: cn=userquota,cn=shares,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: userquota
 
-dn: cn=printquota,cn=shares,cn=policies,@%@ldap/base@%@
+dn: cn=printquota,cn=shares,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: printquota
 
-dn: cn=update,cn=policies,@%@ldap/base@%@
+dn: cn=update,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: update
 
-dn: cn=ldap,cn=policies,@%@ldap/base@%@
+dn: cn=ldap,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: ldap
 
-dn: cn=installation,cn=update,cn=policies,@%@ldap/base@%@
+dn: cn=installation,cn=update,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: installation
 
-dn: cn=packages,cn=update,cn=policies,@%@ldap/base@%@
+dn: cn=packages,cn=update,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: packages
 
-dn: cn=repository,cn=update,cn=policies,@%@ldap/base@%@
+dn: cn=repository,cn=update,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: repository
 
-dn: cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: dhcp
 
-dn: cn=boot,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=boot,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: boot
 
-dn: cn=default-settings,cn=boot,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=default-settings,cn=boot,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: univentionPolicy
 objectClass: univentionPolicyDhcpBoot
 objectClass: univentionObject
 univentionObjectType: policies/dhcp_boot
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: default-settings
 
-dn: cn=dns,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=dns,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: dns
 
-dn: cn=default-settings,cn=dns,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=default-settings,cn=dns,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: univentionPolicy
 objectClass: univentionPolicyDhcpDns
 objectClass: univentionObject
 univentionObjectType: policies/dhcp_dns
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: default-settings
 
-dn: cn=dnsupdate,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=dnsupdate,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: dnsupdate
 
-dn: cn=leasetime,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=leasetime,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: leasetime
 
-dn: cn=netbios,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=netbios,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: netbios
 
-dn: cn=routing,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=routing,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: routing
 
-dn: cn=default-settings,cn=routing,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=default-settings,cn=routing,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: univentionPolicy
 objectClass: univentionPolicyDhcpRouting
 objectClass: univentionObject
 univentionObjectType: policies/dhcp_routing
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: default-settings
 
-dn: cn=scope,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=scope,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: scope
 
-dn: cn=statements,cn=dhcp,cn=policies,@%@ldap/base@%@
+dn: cn=statements,cn=dhcp,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: statements
 
-dn: cn=sound,cn=policies,@%@ldap/base@%@
+dn: cn=sound,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: sound
 
-dn: cn=config-registry,cn=policies,@%@ldap/base@%@
+dn: cn=config-registry,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: config-registry
 
-dn: cn=xfree,cn=policies,@%@ldap/base@%@
+dn: cn=xfree,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: xfree
 
-dn: cn=mail,cn=policies,@%@ldap/base@%@
+dn: cn=mail,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: mail
 
-dn: cn=folder,cn=mail,@%@ldap/base@%@
+dn: cn=folder,cn=mail,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Shared folders
 cn: folder
 
-dn: cn=domain,cn=mail,@%@ldap/base@%@
+dn: cn=domain,cn=mail,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: domain
 
-dn: cn=mailinglists,cn=mail,@%@ldap/base@%@
+dn: cn=mailinglists,cn=mail,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: mailinglists
 
-dn: cn=dns,@%@ldap/base@%@
+dn: cn=dns,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all DNS Objects as per default Settings
 cn: dns
 
-dn: cn=dhcp,@%@ldap/base@%@
+dn: cn=dhcp,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 description: Containing all DHCP Objects as per default Settings
 cn: dhcp
 
-dn: cn=users,cn=policies,@%@ldap/base@%@
+dn: cn=users,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: users
 
-dn: cn=pwhistory,cn=users,cn=policies,@%@ldap/base@%@
+dn: cn=pwhistory,cn=users,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: pwhistory
 
-dn: cn=default-settings,cn=pwhistory,cn=users,cn=policies,@%@ldap/base@%@
+dn: cn=default-settings,cn=pwhistory,cn=users,cn=policies,{ldap_base}
 objectClass: top
 objectClass: univentionPolicy
 objectClass: univentionPolicyPWHistory
 objectClass: univentionObject
 univentionObjectType: policies/pwhistory
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: default-settings
 univentionPWHistoryLen: 3
 univentionPWLength: 8
 
-dn: cn=nfsmounts,cn=policies,@%@ldap/base@%@
+dn: cn=nfsmounts,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: nfsmounts
 
-dn: cn=printservers,cn=policies,@%@ldap/base@%@
+dn: cn=printservers,cn=policies,{ldap_base}
 objectClass: top
 objectClass: organizationalRole
 objectClass: univentionObject
 univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: printservers
 
-dn: cn=Domain Admins,cn=groups,@%@ldap/base@%@
+dn: cn=Domain Admins,cn=groups,{ldap_base}
 objectClass: top
 objectClass: posixGroup
 objectClass: univentionGroup
 objectClass: sambaGroupMapping
 objectClass: univentionObject
 univentionObjectType: groups/group
+univentionObjectIdentifier: {uuid.uuid4()}
 univentionGroupType: -2147483646
 cn: Domain Admins
 sambaSID: @@%%@@sid@@%%@@-512
 sambaGroupType: 2
 gidNumber: 5000
 
-dn: cn=Domain Users,cn=groups,@%@ldap/base@%@
+dn: cn=Domain Users,cn=groups,{ldap_base}
 objectClass: top
 objectClass: posixGroup
 objectClass: univentionGroup
 objectClass: sambaGroupMapping
 objectClass: univentionObject
 univentionObjectType: groups/group
+univentionObjectIdentifier: {uuid.uuid4()}
 univentionGroupType: -2147483646
 cn: Domain Users
 sambaSID: @@%%@@sid@@%%@@-513
 sambaGroupType: 2
 gidNumber: 5001
 
-dn: cn=Domain Guests,cn=groups,@%@ldap/base@%@
+dn: cn=Domain Guests,cn=groups,{ldap_base}
 objectClass: top
 objectClass: posixGroup
 objectClass: univentionGroup
 objectClass: sambaGroupMapping
 objectClass: univentionObject
 univentionObjectType: groups/group
+univentionObjectIdentifier: {uuid.uuid4()}
 univentionGroupType: -2147483646
 cn: Domain Guests
 sambaSID: @@%%@@sid@@%%@@-514
 sambaGroupType: 2
 gidNumber: 5002
 
-dn: cn=Windows Hosts,cn=groups,@%@ldap/base@%@
+dn: cn=Windows Hosts,cn=groups,{ldap_base}
 objectClass: top
 objectClass: posixGroup
 objectClass: univentionGroup
 objectClass: sambaGroupMapping
 objectClass: univentionObject
 univentionObjectType: groups/group
+univentionObjectIdentifier: {uuid.uuid4()}
 cn: Windows Hosts
 sambaSID: @@%%@@sid@@%%@@-11011
 sambaGroupType: 2
 gidNumber: 1005
-uniqueMember: cn=DC Backup Hosts,cn=groups,@%@ldap/base@%@
+uniqueMember: cn=DC Backup Hosts,cn=groups,{ldap_base}
 
-dn: cn=DC Backup Hosts,cn=groups,@%@ldap/base@%@
+dn: cn=DC Backup Hosts,cn=groups,{ldap_base}
 objectClass: top
 objectClass: posixGroup
 objectClass: univentionGroup
 objectClass: sambaGroupMapping
 objectClass: univentionObject
 univentionObjectType: groups/group
+univentionObjectIdentifier: {uuid.uuid4()}
 univentionGroupType: -2147483646
 cn: DC Backup Hosts
 sambaSID: @@%%@@sid@@%%@@-11012
 sambaGroupType: 2
 gidNumber: 5005
 
-dn: cn=DC Slave Hosts,cn=groups,@%@ldap/base@%@
+dn: cn=DC Slave Hosts,cn=groups,{ldap_base}
 objectClass: top
 objectClass: posixGroup
 objectClass: univentionGroup
 objectClass: sambaGroupMapping
 objectClass: univentionObject
 univentionObjectType: groups/group
+univentionObjectIdentifier: {uuid.uuid4()}
 univentionGroupType: -2147483646
 cn: DC Slave Hosts
 sambaSID: @@%%@@sid@@%%@@-11013
 sambaGroupType: 2
 gidNumber: 5006
-uniqueMember: cn=DC Backup Hosts,cn=groups,@%@ldap/base@%@
+uniqueMember: cn=DC Backup Hosts,cn=groups,{ldap_base}
 
-dn: cn=Computers,cn=groups,@%@ldap/base@%@
+dn: cn=Computers,cn=groups,{ldap_base}
 objectClass: top
 objectClass: posixGroup
 objectClass: univentionGroup
 objectClass: sambaGroupMapping
 objectClass: univentionObject
 univentionObjectType: groups/group
+univentionObjectIdentifier: {uuid.uuid4()}
 univentionGroupType: -2147483646
 cn: Computers
 sambaSID: @@%%@@sid@@%%@@-11015
 sambaGroupType: 2
 gidNumber: 5007
-uniqueMember: cn=DC Backup Hosts,cn=groups,@%@ldap/base@%@
-uniqueMember: cn=DC Slave Hosts,cn=groups,@%@ldap/base@%@
+uniqueMember: cn=DC Backup Hosts,cn=groups,{ldap_base}
+uniqueMember: cn=DC Slave Hosts,cn=groups,{ldap_base}
 
-dn: cn=backup,@%@ldap/base@%@
+dn: cn=backup,{ldap_base}
 objectClass: top
 objectClass: person
 cn: backup
 sn: backup
-userPassword: {crypt}@@%%@@backup.pw@@%%@@
+userPassword: {{crypt}}@@%%@@backup.pw@@%%@@
 
-dn: cn=Printer-Admins,cn=groups,@%@ldap/base@%@
+dn: cn=Printer-Admins,cn=groups,{ldap_base}
 objectClass: top
 objectClass: posixGroup
 objectClass: univentionGroup
 objectClass: sambaGroupMapping
 objectClass: univentionObject
 univentionObjectType: groups/group
+univentionObjectIdentifier: {uuid.uuid4()}
 univentionGroupType: -2147483643
 cn: Printer-Admins
 sambaSID: S-1-5-32-550
 sambaGroupType: 5
 gidNumber: 5016
+"""
+)
+@!@

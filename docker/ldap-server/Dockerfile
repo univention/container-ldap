@@ -198,6 +198,7 @@ RUN pipenv sync --system \
 WORKDIR /
 COPY ucr /usr/sbin/
 COPY ucr-light-filter /usr/sbin/
+COPY base.ldif /usr/share/univention-ldap/base.ldif
 
 COPY 40-self-service-acl.sh \
      50-entrypoint.sh \

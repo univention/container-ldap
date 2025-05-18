@@ -56,6 +56,8 @@ services:
     - ${LDAP_SOCKET_LOCATION:-ldap-socket}:/var/lib/univention-ldap/slapd-sock/:rw
     - ./tests/ldap-index-statefile.json:/var/lib/univention-ldap/ldap-index-statefile.json:rw
     - ./tests/ldap-data.mdb:/var/lib/univention-ldap/ldap/data.mdb:rw
+    # - ./config/:/config/:rw
+    # - ./config/base.ldif:/usr/share/univention-ldap/base.ldif:rw
 
   nats:
     image: "nats:latest"
