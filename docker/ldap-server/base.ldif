@@ -1,64 +1,61 @@
 @!@
 import uuid
-ldap_base = configRegistry['ldap/base']
 
-dn = ldap_base.split('=')[0]
-print('dn: %s' % ldap_base)
-print('objectClass: top')
-print('objectClass: krb5Realm')
-print('objectClass: univentionPolicyReference')
-print('objectClass: nisDomainObject')
-print('objectClass: domainRelatedObject')
-if dn == 'dc':
-    print('objectClass: domain')
-    print('dc: %s' % ldap_base.split('=')[1].split(',')[0])
-elif dn == 'o':
-    print('objectClass: organization')
-    print('o: %s' % ldap_base.split('=')[1].split(',')[0])
-elif dn == 'ou':
-    print('objectClass: organizationalUnit')
-    print('ou: %s' % ldap_base.split('=')[1].split(',')[0])
-elif dn == 'l':
-    print('objectClass: organization')
-    print('l: %s' % ldap_base.split('=')[1].split(',')[0])
-    print('o: %s' % ldap_base.split('=')[1].split(',')[0])
-elif dn == 'cn':
-    print('objectClass: organizationalRole')
-    print('cn: %s' % ldap_base.split('=')[1].split(',')[0])
-elif dn == 'c':
-    print('objectClass: country')
-    print('c: %s' % ldap_base.split('=')[1].split(',')[0])
-print('objectClass: univentionBase')
-print('objectClass: univentionObject')
-print('univentionObjectType: container/dc')
-print(f"univentionObjectIdentifier: {uuid.uuid4()}")
-print('krb5RealmName: %s' % configRegistry['domainname'].upper())
-print('nisDomain: %s' % configRegistry['domainname'])
-print('associatedDomain: %s' % configRegistry['domainname'])
-print('univentionPolicyReference: cn=default-settings,cn=pwhistory,cn=users,cn=policies,%s' % ldap_base)
-print('')
-print('dn: cn=samba,%s' % ldap_base)
-print('objectClass: top')
-print('objectClass: organizationalRole')
-print('objectClass: univentionObject')
-print('univentionObjectType: container/cn')
-print(f"univentionObjectIdentifier: {uuid.uuid4()}")
-print('cn: samba')
-print('')
-print('dn: sambaDomainName=@@%%@@sambadomain@@%%@@,cn=samba,%s' % (ldap_base))
-print('objectClass: top')
-print('sambaDomainName: @@%%@@sambadomain@@%%@@')
-print('sambaSID: @@%%@@sid@@%%@@')
-print('objectClass: sambaDomain')
-print('objectClass: univentionObject')
-print('univentionObjectType: settings/sambadomain')
-print(f"univentionObjectIdentifier: {uuid.uuid4()}")
-print('sambaNextUserRid: 1000')
-print('sambaNextGroupRid: 1000')
-print('sambaMinPwdLength: 8')
-print('univentionSamba4pwdProperties: 1')
-print(
-f"""
+import ldap.dn
+
+ldap_base = configRegistry['ldap/base']
+domainname = configRegistry['domainname']
+
+base_attr, base_value, _ = ldap.dn.str2dn(ldap_base)[0][0]
+base_oc = {
+    'dc': 'domain',
+    'o': 'organization',
+    'ou': 'organizationalUnit',
+    'l': 'organization',
+    'cn': 'organizationalRole',
+    'c': 'country',
+}[base_attr]
+
+extra_line = f'\no: {base_value}' if base_attr == 'l' else ''
+
+print(f"""dn: {ldap_base}
+objectClass: top
+objectClass: krb5Realm
+objectClass: univentionPolicyReference
+objectClass: nisDomainObject
+objectClass: domainRelatedObject
+objectClass: {base_oc}
+{base_attr}: {base_value}{extra_line}
+objectClass: univentionBase
+objectClass: univentionObject
+univentionObjectType: container/dc
+univentionObjectIdentifier: {uuid.uuid4()}
+krb5RealmName: {domainname.upper()}
+nisDomain: {domainname}
+associatedDomain: {domainname}
+univentionPolicyReference: cn=default-settings,cn=pwhistory,cn=users,cn=policies,{ldap_base}
+
+dn: cn=samba,{ldap_base}
+objectClass: top
+objectClass: organizationalRole
+objectClass: univentionObject
+univentionObjectType: container/cn
+univentionObjectIdentifier: {uuid.uuid4()}
+cn: samba
+
+dn: sambaDomainName=@@%%@@sambadomain@@%%@@,cn=samba,{ldap_base}
+objectClass: top
+sambaDomainName: @@%%@@sambadomain@@%%@@
+sambaSID: @@%%@@sid@@%%@@
+objectClass: sambaDomain
+objectClass: univentionObject
+univentionObjectType: settings/sambadomain
+univentionObjectIdentifier: {uuid.uuid4()}
+sambaNextUserRid: 1000
+sambaNextGroupRid: 1000
+sambaMinPwdLength: 8
+univentionSamba4pwdProperties: 1
+
 dn: cn=admin,{ldap_base}
 objectClass: top
 objectClass: person
@@ -825,6 +822,5 @@ cn: Printer-Admins
 sambaSID: S-1-5-32-550
 sambaGroupType: 5
 gidNumber: 5016
-"""
-)
+""")
 @!@
