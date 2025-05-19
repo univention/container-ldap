@@ -9,10 +9,10 @@ def test_univention_object_identifier(log_file_path):
     if log_file_path.is_file():
         with log_file_path.open("r") as f:
             file_content = f.read()
-            pattern = re.compile(r"Successful index update: slapindex .* univentionObjectIdentifier")
-            is_sync_executed = bool(pattern.search(file_content))
+            pattern = re.compile(r"Virgin persistent volume. New state file with current state created.")
+            new_state_file = bool(pattern.search(file_content))
 
-            assert is_sync_executed
+            assert new_state_file
 
     else:
         pytest.skip("Logfile doesn't exists!")
