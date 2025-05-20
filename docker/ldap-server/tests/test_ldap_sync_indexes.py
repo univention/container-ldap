@@ -125,7 +125,7 @@ def test_main_function_missing_state_file(sync_ldap_indexes, caplog):
     )
 
 
-def test_main_function_virgin_pv(sync_ldap_indexes, caplog):
+def test_main_function_empty_pv(sync_ldap_indexes, caplog):
     test_config = get_test_config(
         sync_ldap_indexes,
         "test-ldap-statefile-tmp.json",
@@ -142,4 +142,4 @@ def test_main_function_virgin_pv(sync_ldap_indexes, caplog):
     assert len(caplog.records) == 2
 
     assert caplog.records[1].levelno == logging.INFO
-    assert "Virgin persistent volume. New state file with current state created." == caplog.records[1].message
+    assert "Empty persistent volume. New state file with current state created." == caplog.records[1].message

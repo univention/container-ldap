@@ -232,9 +232,9 @@ def main(config: Config):
     # Check ldap installation state.
     setup_logging(config.log_level)
     logger.info("Checking if ldap indexes need to be updated")
-    virgin_persistent_volume = not any((config.mdb_file_path.is_file(), config.state_file_path.is_file()))
-    missing_state_file = not any((virgin_persistent_volume, config.state_file_path.is_file()))
-    logger.debug("virgin_persistent_volume: %s", virgin_persistent_volume)
+    empty_persistent_volume = not any((config.mdb_file_path.is_file(), config.state_file_path.is_file()))
+    missing_state_file = not any((empty_persistent_volume, config.state_file_path.is_file()))
+    logger.debug("empty_persistent_volume: %s", empty_persistent_volume)
     logger.debug("missing_state_file: %s", missing_state_file)
 
     # Check and create state file
@@ -249,9 +249,9 @@ def main(config: Config):
     )
 
     # On a clean installation, the state file is written with the current state.
-    if virgin_persistent_volume:
+    if empty_persistent_volume:
         write_state_file(config.state_file_path, current_state)
-        logger.info("Virgin persistent volume. New state file with current state created.")
+        logger.info("Empty persistent volume. New state file with current state created.")
         return
 
     # Read state file
