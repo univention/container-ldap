@@ -138,11 +138,17 @@ def run_filter(template, directory):
         if "@%@" in line:
             line = resolve_variable(line)
 
-        if line == "@!@\n":
+        if "@!@" in line:
+            if line.count("@!@") > 1:
+                raise NotImplementedError("only one `@!@` delimiter is allowed per line")
+            before, after = line.split("@!@")
             if not inside_section:
+                print(before, file=buf, end="")
+                to_be_compiled.append(after)
                 inside_section = True
 
             else:
+                to_be_compiled.append(before)
 
                 def print_wrapper(*_args, **kwargs):
                     kwargs.setdefault("file", buf)
@@ -159,8 +165,9 @@ def run_filter(template, directory):
                         "run_filter": run_filter,
                     },
                 )
-                print("", file=buf)
+                # print("", file=buf)
                 to_be_compiled = []
+                print(after, file=buf, end="")
 
         elif inside_section:
             # Workaround for some import that doesn't do much anyway
@@ -168,7 +175,7 @@ def run_filter(template, directory):
             if line in (
                 "from univention.config_registry.handler import run_filter\n",
                 "from univention.lib.misc import custom_groupname\n",
-                ("from univention.lib.misc import " "custom_username, custom_groupname\n"),
+                "from univention.lib.misc import custom_username, custom_groupname\n",
             ):
                 continue
             to_be_compiled += line
