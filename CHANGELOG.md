@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.41.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.40.0...v0.41.0) (2025-05-23)
+
+
+### Features
+
+* **ldap-server:** Add the univentionObjectIdentifier attribute to all relevant LDAP objects created from the base.ldif ([d721f5c](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/d721f5cd4b5d14e37b4b678947909d1060992ae9))
+
+
+### Bug Fixes
+
+* Copied base.ldif to prepare adding a patch to it ([2915fe4](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/2915fe45c85f16663220937b2806011924165e87))
+* **ldap-server:** Fix bug of inline delimiters in UCR templates ([a7f9324](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/commit/a7f93240fb7b99a21898e006c8cd838112b7e0ed))
+
 ## [0.40.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.39.0...v0.40.0) (2025-05-15)
 
 
