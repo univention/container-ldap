@@ -6,8 +6,8 @@
 # Global variables
 ###############################################################################
 
-ARG UCS_BASE_IMAGE_TAG=0.17.3-build-2025-05-11
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base-521
+ARG UCS_BASE_IMAGE_TAG=0.18.1-build-2025-05-29
 
 ###############################################################################
 # Builder image for collecting Univention LDAP schema templates, base LDIFs
@@ -198,7 +198,6 @@ RUN pipenv sync --system \
 WORKDIR /
 COPY ucr /usr/sbin/
 COPY ucr_light_filter.py /usr/sbin/ucr-light-filter
-COPY base.ldif /usr/share/univention-ldap/base.ldif
 
 COPY 40-self-service-acl.sh \
      50-entrypoint.sh \
