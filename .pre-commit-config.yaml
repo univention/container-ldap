@@ -96,6 +96,12 @@ repos:
       - id: "docker-compose-check"
         name: "Validate docker compose files (bash)"
 
+  - repo: "https://git.knut.univention.de/univention/infrastructure/pre-commit-hooks/check-issue-reference"
+    rev: "v1.0.1"
+    hooks:
+      - id: check-issue-reference
+        name: "Check issue reference"
+
   - repo: "https://gitlab.com/univention/pre-commit-hooks/pre-commit-shell"
     rev: "v1.0.6+uv1"
     hooks:
