@@ -9,7 +9,7 @@ from univention.testing.helm.base import Base
 
 
 class TestStatefulsetResources(Base):
-    container_name = "openldap"
+    container_name = "main"
     container_is_init = False
 
     def _get_resources(self, helm, chart_path, values, template_file):
