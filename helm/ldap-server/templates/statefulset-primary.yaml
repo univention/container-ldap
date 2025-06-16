@@ -208,8 +208,6 @@ spec:
             - configMapRef:
                 name: {{ printf "%s-ldif-producer-config" (include "common.names.fullname" .) }}
           env:
-            - name: NATS_USERNAME
-              value: {{ tpl (required "A Nats username has to be supplied, see parameter ldifProducer.nats.auth.username" .Values.ldifProducer.nats.auth.username) . | quote }}
             - name: NATS_PASSWORD
               valueFrom:
                 secretKeyRef:

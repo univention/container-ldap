@@ -3,11 +3,11 @@ from univention.testing.helm.client.nats import (
     Connection,
     ConnectionViaConfigMap,
     SecretUsageViaEnv,
-    UsernameViaEnv,
 )
 
 
-class TestAuth(SecretUsageViaEnv, UsernameViaEnv, Auth):
+class TestAuth(SecretUsageViaEnv, Auth):
+    config_map_name = "release-name-ldap-server-ldif-producer-config"
     workload_kind = "StatefulSet"
     workload_name = "release-name-ldap-server-primary"
     secret_name = "release-name-ldap-server-nats"
