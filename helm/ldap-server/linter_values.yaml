@@ -38,7 +38,7 @@ ldapServer:
     samlServiceProviders: "http://localhost:8000/univention/saml/metadata,http://localhost:8000/auth/realms/ucs"
     ldapBaseDn: "dc=organization,dc=intranet"
   auth:
-    password: "DUMMY"
+    password: "linter-ldap-password"
     existingSecret: null
 
   tls:
