@@ -17,10 +17,6 @@ helm upgrade --install ldap-server oci://gitregistry.knut.univention.de/univenti
 
 This chart does install the OpenLDAP server.
 
-## Source Code
-
-* <https://git.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/-/tree/main/helm/ldap-server?ref_type=heads>
-
 ## Installing
 
 To install the chart with the release name `ldap-server`:
@@ -41,7 +37,7 @@ helm uninstall ldap-server
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://artifacts.software-univention.de/nubus/charts | nubus-common | ^0.12.x |
+| oci://artifacts.software-univention.de/nubus/charts | nubus-common | 0.21.0 |
 
 ## Values
 

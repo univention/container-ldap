@@ -5,17 +5,15 @@
 annotations:
   licenses: "AGPL-3.0-only"
 apiVersion: "v2"
-dependencies:
-  - name: "nubus-common"
-    version: "^0.12.x"
-    repository: "oci://artifacts.software-univention.de/nubus/charts"
 description: "A Helm Chart that deploys a standalone OpenLDAP server"
 keywords:
   - "openldap"
   - "ldap"
 name: "ldap-server"
-sources:
-  - "https://git.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/-/tree/main/helm/ldap-server?ref_type=heads"
 type: "application"
 version: "0.11.0"
-...
+
+dependencies:
+  - name: "nubus-common"
+    version: "0.21.0"
+    repository: "oci://artifacts.software-univention.de/nubus/charts"
