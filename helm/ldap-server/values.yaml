@@ -35,7 +35,7 @@ global:
   #             digest, and uses that image to launch the container.
   # "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the
   #            kubelet attempts to start the container; otherwise, startup fails.
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: null
   ldap:
     baseDn: ""
     domainName: ""
@@ -402,7 +402,7 @@ updateStrategy:
 # OpenSSL container image section (used for DH parameter generation)
 dhInitContainer:
   image:
-    imagePullPolicy: "IfNotPresent"
+    pullPolicy: null
     registry: "docker.io"
     repository: "alpine/openssl"
     tag: "3.1.4@sha256:974b4593b02447256622dce7b930b98764441dab39c5ca729381aa35332d6778"
@@ -411,7 +411,7 @@ dhInitContainer:
 waitForDependency:
   enabled: true
   image:
-    imagePullPolicy: "IfNotPresent"
+    pullPolicy: null
     registry: ""
     repository: "nubus/images/wait-for-dependency"
     tag: "0.32.1@sha256:44d45067e1d4e7a00d3b651e56df5177087e3206368a45cd1816d78ba7b21347"
@@ -420,7 +420,7 @@ ldifProducer:
   enabled: false
   image:
     # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
-    imagePullPolicy: "IfNotPresent"
+    pullPolicy: null
     # -- Container registry address. This setting has higher precedence than global.registry.
     registry: ""
     repository: "nubus-dev/images/ldif-producer"
@@ -456,7 +456,7 @@ ldifProducer:
 ldapServer:
   image:
     # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
-    imagePullPolicy: "IfNotPresent"
+    pullPolicy: null
     # -- Container registry address. This setting has higher precedence than global.registry.
     registry: ""
     repository: "nubus-dev/images/ldap-server"
@@ -464,7 +464,7 @@ ldapServer:
   leaderElector:
     image:
       # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
-      pullPolicy: "IfNotPresent"
+      pullPolicy: null
       # -- Container registry address. This setting has higher precedence than global.registry.
       registry: ""
       repository: "nubus-dev/images/ldap-server-elector"
