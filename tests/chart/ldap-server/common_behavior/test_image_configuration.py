@@ -16,7 +16,6 @@ class TestImageConfiguration(ImageConfiguration):
             "ldapServer.leaderElector.image": "image",
         }
         apply_mapping(values, mapping, copy=True)
-        values.pop("image")
         image_configuration = values.pop("image", {})
 
         # NOTE: Extensions are dynamic in nature, configure one stub extension
