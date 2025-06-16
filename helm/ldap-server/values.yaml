@@ -39,6 +39,11 @@ global:
   ldap:
     baseDn: ""
     domainName: ""
+
+  nats:
+    connection:
+      port: "4222"
+
 # -- Additional custom annotations to add to all deployed objects.
 additionalAnnotations: {}
 
