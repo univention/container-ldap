@@ -9,13 +9,11 @@ metadata:
   name: "{{ include "common.names.fullname" . }}"
   namespace: {{ include "common.names.namespace" . | quote }}
   labels:
-    {{- include "common.labels.standard" . | nindent 4 }}
-    {{- if .Values.additionalLabels }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
-    {{- end }}
-  {{- if .Values.additionalAnnotations }}
-  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
-  {{- end }}
+    {{- include "common.labels.standard" ( dict "customLabels" .Values.additionalLabels "context" . ) | nindent 4 }}
+  {{- include "nubus-common.annotations.render" ( dict
+    "values" ( list .Values.additionalAnnotations )
+    "context" . )
+    | nindent 2 }}
 data:
   DOMAIN_NAME: {{ ( coalesce .Values.ldapServer.config.domainName .Values.global.ldap.domainName ) | required "Either .Values.ldapServer.config.domainName or .Values.global.ldap.domainName must be set." | quote }}
   LDAP_BASE_DN: {{ ( coalesce .Values.ldapServer.config.ldapBaseDn .Values.global.ldap.baseDn ) | required "Either .Values.ldapServer.config.ldapBaseDn or .Values.global.ldap.baseDn must be set." | quote }}
@@ -45,13 +43,11 @@ metadata:
   name: {{ printf "%s-scripts" (include "common.names.fullname" .) }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels:
-    {{- include "common.labels.standard" . | nindent 4 }}
-    {{- if .Values.additionalLabels }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.additionalLabels "context" . ) | nindent 4 }}
-    {{- end }}
-  {{- if .Values.additionalAnnotations }}
-  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.additionalAnnotations "context" . ) | nindent 4 }}
-  {{- end }}
+    {{- include "common.labels.standard" ( dict "customLabels" .Values.additionalLabels "context" . ) | nindent 4 }}
+  {{- include "nubus-common.annotations.render" ( dict
+    "values" ( list .Values.additionalAnnotations )
+    "context" . )
+    | nindent 2 }}
 data:
   wait-for-saml-metadata.sh: |
     #!/bin/bash
