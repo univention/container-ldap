@@ -208,18 +208,13 @@ spec:
             - configMapRef:
                 name: {{ printf "%s-ldif-producer-config" (include "common.names.fullname" .) }}
           env:
-            {{- if .Values.ldifProducer.nats.auth.existingSecret }}
             - name: NATS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
-                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "key" "NATS_USERNAME") | quote }}
+              value: {{ tpl (required "A Nats username has to be supplied, see parameter ldifProducer.nats.auth.username" .Values.ldifProducer.nats.auth.username) . | quote }}
             - name: NATS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "defaultNameSuffix" "credentials" "context" .) | quote }}
-                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "key" "NATS_PASSWORD") | quote }}
-            {{- end }}
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "defaultNameSuffix" "nats" "context" .) | quote }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "key" "password") | quote }}
             - name: SYNC_PASSWORD
               valueFrom:
                 secretKeyRef:
