@@ -28,7 +28,7 @@ global:
   #             digest, and uses that image to launch the container.
   # "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the
   #            kubelet attempts to start the container; otherwise, startup fails.
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: null
 
 # -- Additional custom annotations to add to all deployed objects.
 additionalAnnotations: {}
@@ -103,7 +103,7 @@ ldapNotifier:
 
 ## Docker image
 image:
-  pullPolicy: "IfNotPresent"
+  pullPolicy: null
   pullSecrets: []
   registry: ""
   repository: "nubus-dev/images/ldap-notifier"
