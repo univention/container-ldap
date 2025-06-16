@@ -426,19 +426,13 @@ ldifProducer:
     repository: "nubus-dev/images/ldif-producer"
     tag: "latest"
   nats:
-    # -- Optional reference to a different secret containing credentials
-    #  auth:
-    #    existingSecret:
-    #      name: null
-    #      keyMapping:
-    #        NATS_USERNAME: <nats-username>
-    #        NATS_PASSWORD: <nats-password>
     auth:
+      username: "ldif-producer"
+      password: null
       existingSecret:
         name: null
         keyMapping:
-          NATS_USERNAME: null
-          NATS_PASSWORD: null
+          password: null
     connection:
       host: ""
       port: ""

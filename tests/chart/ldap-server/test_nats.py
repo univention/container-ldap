@@ -1,0 +1,16 @@
+from univention.testing.helm.client.nats import Auth, SecretUsageViaEnv, UsernameViaEnv
+
+
+class TestAuth(SecretUsageViaEnv, UsernameViaEnv, Auth):
+
+    workload_kind = "StatefulSet"
+    workload_name = "release-name-ldap-server-primary"
+    secret_name = "release-name-ldap-server-nats"
+
+    default_username = "ldif-producer"
+
+    path_main_container = "spec.template.spec.containers[?@.name=='ldif-producer']"
+
+    prefix_mapping = {
+        "ldifProducer.nats": "nats",
+    }
