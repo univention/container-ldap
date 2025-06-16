@@ -3,8 +3,7 @@
 
 
 import pytest
-from pytest_helm.utils import add_jsonpath_prefix, findone
-from yaml import safe_load
+from pytest_helm.utils import add_jsonpath_prefix, findone, load_yaml
 
 from univention.testing.helm.base import Base
 from univention.testing.helm.container import ContainerEnvVarSecret
@@ -48,7 +47,7 @@ class TestStatefulSet01LdifNatsAuthFromExistingSecret(Base):
     ):
         values = add_jsonpath_prefix(
             key,
-            safe_load(
+            load_yaml(
                 """
                 auth:
                   existingSecret:
@@ -74,7 +73,7 @@ class TestStatefulSet01LdifNatsAuthFromExistingSecret(Base):
     ):
         values = add_jsonpath_prefix(
             key,
-            safe_load(
+            load_yaml(
                 f"""
                 auth:
                   existingSecret:

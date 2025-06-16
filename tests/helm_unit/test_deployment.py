@@ -3,8 +3,7 @@
 
 
 import pytest
-from pytest_helm.utils import add_jsonpath_prefix, findone
-from yaml import safe_load
+from pytest_helm.utils import add_jsonpath_prefix, findone, load_yaml
 
 from univention.testing.helm.container import ContainerEnvVarSecret
 from univention.testing.helm.deployment import DeploymentTlsDhparamVolumeSecret, DeploymentTlsVolumeSecret
@@ -16,7 +15,7 @@ class ContainerAuthFromExistingSecret(ContainerEnvVarSecret):
     def test_auth_disabling_existing_secret(self, helm, chart_path, key, env_var):
         values = add_jsonpath_prefix(
             key,
-            safe_load(
+            load_yaml(
                 """
                 auth:
                   existingSecret: null
