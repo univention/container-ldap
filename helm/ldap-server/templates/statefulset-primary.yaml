@@ -213,16 +213,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "defaultNameSuffix" "nats" "context" .) | quote }}
                   key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldifProducer.nats.auth.existingSecret "key" "password") | quote }}
-            - name: SYNC_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "ldap" "context" .) | quote }}
-                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password") | quote }}
-            - name: LDAP_CN_ADMIN_PW
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "ldap" "context" .) | quote }}
-                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password") | quote }}
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}

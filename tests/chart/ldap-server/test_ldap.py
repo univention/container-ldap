@@ -35,18 +35,7 @@ class TestPrimaryAuth(LdapAuthUsageViaEnv, LdapAuth):
         pass
 
 
-class TestPrimaryLdifProducerAuth(TestPrimaryAuth):
-
-    path_main_container = "..spec.template.spec.containers[?@.name=='ldif-producer']"
-
-
 class TestPrimaryAuthSyncPassword(TestPrimaryAuth):
-    sub_path_env_password = "env[?@.name=='SYNC_PASSWORD']"
-
-
-class TestPrimaryLdifProducerAuthSyncPassword(TestPrimaryLdifProducerAuth):
-
-    path_main_container = "..spec.template.spec.containers[?@.name=='ldif-producer']"
     sub_path_env_password = "env[?@.name=='SYNC_PASSWORD']"
 
 
