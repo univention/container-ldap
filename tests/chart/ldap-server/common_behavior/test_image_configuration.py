@@ -6,7 +6,6 @@ from univention.testing.helm.utils import apply_mapping
 
 
 class TestImageConfiguration(ImageConfiguration):
-
     def adjust_values(self, values: dict):
         mapping = {
             "dhInitContainer.image": "image",
@@ -25,7 +24,8 @@ class TestImageConfiguration(ImageConfiguration):
             "image": {
                 "repository": "stub-path/stub-image",
                 "tag": "stub-tag",
-            } | image_configuration,
+            }
+            | image_configuration,
         }
         global_ = values.setdefault("global", {})
         global_["systemExtensions"] = [stub_extension]

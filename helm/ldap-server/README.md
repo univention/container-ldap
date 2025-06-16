@@ -274,10 +274,10 @@ true
 			<td>Disallow custom Seccomp profile by setting it to RuntimeDefault.</td>
 		</tr>
 		<tr>
-			<td>dhInitContainer.image.imagePullPolicy</td>
+			<td>dhInitContainer.image.pullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
-"IfNotPresent"
+null
 </pre>
 </td>
 			<td></td>
@@ -385,7 +385,7 @@ null
 			<td>global.imagePullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
-"IfNotPresent"
+null
 </pre>
 </td>
 			<td>Define an ImagePullPolicy.  Ref.: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy  "IfNotPresent" => The image is pulled only if it is not already present locally. "Always" => Every time the kubelet launches a container, the kubelet queries the container image registry to             resolve the name to an image digest. If the kubelet has a container image with that exact digest cached             locally, the kubelet uses its cached image; otherwise, the kubelet pulls the image with the resolved             digest, and uses that image to launch the container. "Never" => The kubelet does not try fetching the image. If the image is somehow already present locally, the            kubelet attempts to start the container; otherwise, startup fails.</td>
@@ -422,6 +422,15 @@ null
 			<td>string</td>
 			<td><pre lang="json">
 ""
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>global.nats.connection.port</td>
+			<td>string</td>
+			<td><pre lang="json">
+"4222"
 </pre>
 </td>
 			<td></td>
@@ -477,7 +486,7 @@ false
 }
 </pre>
 </td>
-			<td>Optional reference to a different secret containing credentials  auth:    existingSecret:      name: custom-credentials      keyMapping:        password: adminPassword</td>
+			<td>LDAP admin user secret configuration</td>
 		</tr>
 		<tr>
 			<td>ldapServer.config.domainName</td>
@@ -561,10 +570,10 @@ true
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldapServer.image.imagePullPolicy</td>
+			<td>ldapServer.image.pullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
-"IfNotPresent"
+null
 </pre>
 </td>
 			<td>Image pull policy. This setting has higher precedence than global.imagePullPolicy.</td>
@@ -600,7 +609,7 @@ true
 			<td>ldapServer.leaderElector.image.pullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
-"IfNotPresent"
+null
 </pre>
 </td>
 			<td>Image pull policy. This setting has higher precedence than global.imagePullPolicy.</td>
@@ -800,10 +809,10 @@ false
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldifProducer.image.imagePullPolicy</td>
+			<td>ldifProducer.image.pullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
-"IfNotPresent"
+null
 </pre>
 </td>
 			<td>Image pull policy. This setting has higher precedence than global.imagePullPolicy.</td>
@@ -836,21 +845,40 @@ false
 			<td></td>
 		</tr>
 		<tr>
-			<td>ldifProducer.nats.auth</td>
-			<td>object</td>
+			<td>ldifProducer.nats.auth.existingSecret.keyMapping.password</td>
+			<td>string</td>
 			<td><pre lang="json">
-{
-  "existingSecret": {
-    "keyMapping": {
-      "NATS_PASSWORD": null,
-      "NATS_USERNAME": null
-    },
-    "name": null
-  }
-}
+null
 </pre>
 </td>
-			<td>Optional reference to a different secret containing credentials  auth:    existingSecret:      name: null      keyMapping:        NATS_USERNAME: <nats-username>        NATS_PASSWORD: <nats-password></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.nats.auth.existingSecret.name</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.nats.auth.password</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.nats.auth.username</td>
+			<td>string</td>
+			<td><pre lang="json">
+"ldif-producer"
+</pre>
+</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>ldifProducer.nats.connection.host</td>
@@ -1544,10 +1572,10 @@ true
 			<td></td>
 		</tr>
 		<tr>
-			<td>waitForDependency.image.imagePullPolicy</td>
+			<td>waitForDependency.image.pullPolicy</td>
 			<td>string</td>
 			<td><pre lang="json">
-"IfNotPresent"
+null
 </pre>
 </td>
 			<td></td>
