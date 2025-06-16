@@ -17,7 +17,7 @@ from univention.testing.helm.deployment import DeploymentTlsDhparamVolumeSecret,
 )
 class TestStatefulSet01LdapServerAuthFromExistingSecret(ContainerAuthFromExistingSecret):
     template_file = "templates/statefulset-primary.yaml"
-    container_name = "openldap"
+    container_name = "main"
     chart_name = "ldap-server"
 
 
@@ -56,7 +56,7 @@ class TestStatefulSet01LdapTlsDhparamVolumesFromExistingSecret(DeploymentTlsDhpa
 )
 class TestStatefulSet02LdapServerAuthFromExistingSecret(ContainerAuthFromExistingSecret):
     template_file = "templates/statefulset-secondary.yaml"
-    container_name = "openldap"
+    container_name = "main"
     chart_name = "ldap-server"
 
 

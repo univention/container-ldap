@@ -43,7 +43,7 @@ class ContainerAuthFromExistingSecret(ContainerEnvVarSecret):
 )
 class TestMainContainerLdapServerAuthFromExistingSecret(ContainerAuthFromExistingSecret):
     template_file = "templates/deployment-proxy.yaml"
-    container_name = "openldap"
+    container_name = "main"
     chart_name = "ldap-server"
 
 

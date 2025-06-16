@@ -227,7 +227,7 @@ spec:
               mountPath: /scripts-secondary
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesSecondary .Values.resources) "context" .) | nindent 12 }}
       containers:
-        - name: "openldap"
+        - name: "main"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
