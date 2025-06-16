@@ -103,7 +103,7 @@ spec:
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.ldapServer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
           command:
             - sh
             - -c
@@ -126,7 +126,7 @@ spec:
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.dhInitContainer.image.registry .Values.global.imageRegistry }}/{{ .Values.dhInitContainer.image.repository }}:{{ .Values.dhInitContainer.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.dhInitContainer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          imagePullPolicy: {{ coalesce .Values.dhInitContainer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
           args:
             - dhparam
             - -out
@@ -145,7 +145,7 @@ spec:
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.ldapServer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
           command:
             - sh
             - -c
@@ -166,7 +166,7 @@ spec:
           securityContext: {{- omit $.Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .image.registry $.Values.global.imageRegistry }}/{{ .image.repository }}:{{ .image.tag }}"
-          imagePullPolicy: {{ coalesce .image.imagePullPolicy $.Values.global.imagePullPolicy | quote }}
+          imagePullPolicy: {{ coalesce .image.pullPolicy $.Values.global.imagePullPolicy | quote }}
           volumeMounts:
             - name: plugin-targets
               mountPath: /target
@@ -178,7 +178,7 @@ spec:
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.waitForDependency.image.registry .Values.global.imageRegistry }}/{{ .Values.waitForDependency.image.repository }}:{{ .Values.waitForDependency.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.waitForDependency.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          imagePullPolicy: {{ coalesce .Values.waitForDependency.image.pullPolicy .Values.global.imagePullPolicy | quote }}
           command:
             - "/bin/bash"
             - "/scripts/wait-for-saml-metadata.sh"
@@ -201,7 +201,7 @@ spec:
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.ldapServer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
@@ -232,7 +232,7 @@ spec:
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.ldapServer.image.imagePullPolicy .Values.global.imagePullPolicy | quote }}
+          imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
