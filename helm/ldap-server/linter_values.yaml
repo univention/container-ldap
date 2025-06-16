@@ -54,6 +54,5 @@ ldifProducer:
     auth:
       password: "linter-nats-password"
     connection:
-      host: "TEST"
-      port: "1234"
+      host: "linter-nats-host"
     natsMaxReconnectAttempts: 2
