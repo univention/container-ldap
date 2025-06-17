@@ -39,7 +39,6 @@ ldapServer:
     ldapBaseDn: "dc=organization,dc=intranet"
   auth:
     password: "linter-ldap-password"
-    existingSecret: null
 
   tls:
     enabled: true
