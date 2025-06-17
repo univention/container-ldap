@@ -3,10 +3,10 @@
 
 import pytest
 
-from univention.testing.helm.client.ldap import LdapAuth, LdapAuthUsageViaEnv
+from univention.testing.helm.client.ldap import Auth, AuthViaEnv
 
 
-class TestPrimaryAuth(LdapAuthUsageViaEnv, LdapAuth):
+class TestPrimaryAuth(AuthViaEnv, Auth):
     config_map_name = "release-name-ldap-server"
     secret_name = "release-name-ldap-server-ldap"
     workload_kind = "StatefulSet"
