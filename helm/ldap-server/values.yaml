@@ -507,12 +507,7 @@ ldapServer:
     # -- Switch to (de)activate the ldap index syncronization on startup. (true/false)
     updateIndexOnStartup: true
 
-  # -- Optional reference to a different secret containing credentials
-  #  auth:
-  #    existingSecret:
-  #      name: custom-credentials
-  #      keyMapping:
-  #        password: adminPassword
+  # -- LDAP admin user secret configuration
   auth:
     password: null
     existingSecret:
@@ -523,7 +518,9 @@ ldapServer:
   # Enable to generate DH parameters on startup
   generateDHparam: true
 
-  # Legacy configuration. These values are used to define shared volume sizes shared. They are shared between ldap-server and ldap-notifier. With the removal of ldap-notifier these values will disappear
+  # Legacy configuration. These values are used to define shared volume sizes
+  # shared. They are shared between ldap-server and ldap-notifier. With the
+  # removal of ldap-notifier these values will disappear
   legacy:
     sharedRunSize: "1Gi"
     shareSamlSize: "100Mi"
@@ -543,9 +540,9 @@ ldapServer:
     # -- Optional reference to the secret to use for reading Diffie-Hellman parameters
     dhparam:
       existingSecret:
-            name: null
-            keyMapping:
-              dhparam.pem: null
+        name: null
+        keyMapping:
+          dhparam.pem: null
 
 
     # Path the CA certificate file (TLSCACertPath (slapd), CA_CERT_FILE(entrypoint))
