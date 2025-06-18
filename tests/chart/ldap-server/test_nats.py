@@ -19,7 +19,7 @@ class TestAuth(SecretUsageViaEnv, Auth):
 
     default_username = "ldif-producer"
 
-    path_main_container = "spec.template.spec.containers[?@.name=='ldif-producer']"
+    path_container = "spec.template.spec.containers[?@.name=='ldif-producer']"
 
     prefix_mapping = {
         "ldifProducer.nats": "nats",
