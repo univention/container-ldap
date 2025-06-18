@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.42.0...v0.42.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* bump umc-base-image version ([13ce7bc](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/13ce7bca55d0fb6d84417ba9cef75e5555a223b5)), closes [univention/dev/internal/team-nubus#1263](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1263)
+
 ## [0.42.0](https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/compare/v0.41.0...v0.42.0) (2025-06-09)
 
 
