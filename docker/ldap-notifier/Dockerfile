@@ -4,8 +4,8 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
-ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base-521
-ARG UCS_BASE_IMAGE_TAG=0.18.1-build-2025-05-29
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base-522
+ARG UCS_BASE_IMAGE_TAG=0.18.2-build-2025-06-12
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
 
@@ -27,10 +27,10 @@ COPY fake.sh /usr/local/bin/univention-config-registry
 RUN \
   apt-get update && \
   apt-get download \
-    libunivention-debug1 \
-    python3-univention-config-registry \
-    python3-univention-debhelper \
-    univention-directory-notifier && \
+  libunivention-debug1 \
+  python3-univention-config-registry \
+  python3-univention-debhelper \
+  univention-directory-notifier && \
   mkdir /usr/share/univention-lib/ && \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
@@ -53,11 +53,11 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive \
-    apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      python3 \
-      python3-ldap \
-      python3-lazy-object-proxy \
-      python3-six \
+  apt-get --assume-yes --verbose-versions --no-install-recommends install \
+  python3 \
+  python3-ldap \
+  python3-lazy-object-proxy \
+  python3-six \
   && \
   rm -rf /var/lib/apt/lists/*
 
@@ -112,11 +112,11 @@ RUN \
   mkdir /var/log/univention/ && \
   SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libuniventiondebug.so.1.*' -printf "%f") && \
   ln --symbolic \
-    "${SRC}" \
-    /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1 && \
+  "${SRC}" \
+  /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1 && \
   ln --symbolic \
-    /dev/stdout \
-    /var/log/univention/notifier.log && \
+  /dev/stdout \
+  /var/log/univention/notifier.log && \
   # univention-translog tries to create /etc/univention/base-forced.conf
   mkdir -p /etc/univention/ && \
   # univention-translong tries to open this file somewhere
@@ -125,10 +125,10 @@ RUN \
   echo '1' > /var/lib/univention-ldap-local/schema/id/id && \
   # Create config files so univention tooling does not try to write them.
   touch /etc/univention/base-defaults.conf \
-   /etc/univention/base-forced.conf \
-   /etc/univention/base-ldap.conf \
-   /etc/univention/base-schedule.conf \
-   /etc/univention/base.conf
+  /etc/univention/base-forced.conf \
+  /etc/univention/base-ldap.conf \
+  /etc/univention/base-schedule.conf \
+  /etc/univention/base.conf
 
 
 COPY entrypoint.sh /entrypoint.d/50-entrypoint.sh
@@ -139,7 +139,7 @@ CMD [ \
   "-d 4", \
   "-v 3", \
   "-F" \
-]
+  ]
 
 LABEL org.opencontainers.image.created="${LABEL_CREATED}"
 LABEL org.opencontainers.image.description="Univention LDAP Notifier"

@@ -58,4 +58,4 @@ Removed
 
 
 
-.. _unreleased: https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/commits/main?ref_type=heads
+.. _unreleased: https://git.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/-/commits/main?ref_type=heads

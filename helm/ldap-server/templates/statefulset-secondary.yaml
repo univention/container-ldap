@@ -26,7 +26,7 @@ spec:
   {{/*
     TODO-0001
     As per decision two volumes, shared-data and shared-run will be mounted by both the ldap-server and the ldap-notifier
-    https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/blob/main/docs/decisions/0002-use-multiple-pods.md?ref_type=heads
+    https://git.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/-/blob/main/docs/decisions/0002-use-multiple-pods.md?ref_type=heads
 
     Change the name to the following to dissolve this coupling.
     name: {{ printf "data-%s" (include "common.names.fullname" .) }}

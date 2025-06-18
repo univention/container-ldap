@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024-2025 Univention GmbH
 
-ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base-521
-ARG UCS_BASE_IMAGE_TAG=0.18.1-build-2025-05-29
+ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base-522
+ARG UCS_BASE_IMAGE_TAG=0.18.2-build-2025-06-12
 
 
 ARG WORKDIR="/app"
@@ -12,35 +12,35 @@ ARG WORKDIR
 WORKDIR ${WORKDIR}
 
 RUN apt-get -qq update \
-    && apt-get --assume-yes --verbose-versions --no-install-recommends install \
-      python3-pip \
-      build-essential \
-      python3-dev \
-      libldap2-dev \
-      libsasl2-dev \
-    && rm -fr /var/lib/apt/lists/* /var/cache/apt/archives/*
+  && apt-get --assume-yes --verbose-versions --no-install-recommends install \
+  python3-pip \
+  build-essential \
+  python3-dev \
+  libldap2-dev \
+  libsasl2-dev \
+  && rm -fr /var/lib/apt/lists/* /var/cache/apt/archives/*
 ENV \
-    PATH="/root/.local/bin:${PATH}" \
-    PYTHONPATH="." \
-    WEB_CONCURRENCY=1 \
-    # Do not buffer `stdout`
-    PYTHONUNBUFFERED=1 \
-    # Do not create `.pyc` files
-    PYTHONDONTWRITEBYTECODE=1 \
-    # Do not ask questions
-    POETRY_NO_INTERACTION=1 \
-    # Put .venv inside source folder
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    # Cache of poetry
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+  PATH="/root/.local/bin:${PATH}" \
+  PYTHONPATH="." \
+  WEB_CONCURRENCY=1 \
+  # Do not buffer `stdout`
+  PYTHONUNBUFFERED=1 \
+  # Do not create `.pyc` files
+  PYTHONDONTWRITEBYTECODE=1 \
+  # Do not ask questions
+  POETRY_NO_INTERACTION=1 \
+  # Put .venv inside source folder
+  POETRY_VIRTUALENVS_IN_PROJECT=1 \
+  # Cache of poetry
+  POETRY_CACHE_DIR=/tmp/poetry_cache
 
 # install Poetry
 RUN pip3 install --break-system-packages --no-cache-dir poetry==1.6.1
 
 # copy source code
 COPY ./poetry.lock \
-     ./pyproject.toml \
-     ${WORKDIR}/
+  ./pyproject.toml \
+  ${WORKDIR}/
 COPY ./univention ${WORKDIR}/univention
 
 # install dependencies

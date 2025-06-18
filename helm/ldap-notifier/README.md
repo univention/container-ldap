@@ -10,7 +10,7 @@ A Helm chart for the ldap-notifier
 ## TL;DR
 
 ```console
-helm upgrade --install ldap-notifier oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/helm/ldap-notifier
+helm upgrade --install ldap-notifier oci://gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/helm/ldap-notifier
 ```
 
 ## Introduction
@@ -22,7 +22,7 @@ This chart does install the Univention Directory Notifier.
 To install the chart with the release name `ldap-notifier`:
 
 ```console
-helm upgrade --install ldap-notifier oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/helm/ldap-notifier
+helm upgrade --install ldap-notifier oci://gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/helm/ldap-notifier
 ```
 
 ## Uninstalling

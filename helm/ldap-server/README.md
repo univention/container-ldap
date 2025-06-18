@@ -10,7 +10,7 @@ A Helm Chart that deploys a standalone OpenLDAP server
 ## TL;DR
 
 ```console
-helm upgrade --install ldap-server oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/helm/ldap-server
+helm upgrade --install ldap-server oci://gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/helm/ldap-server
 ```
 
 ## Introduction
@@ -19,14 +19,14 @@ This chart does install the OpenLDAP server.
 
 ## Source Code
 
-* <https://git.knut.univention.de/univention/customers/dataport/upx/container-ldap/-/tree/main/helm/ldap-server?ref_type=heads>
+* <https://git.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/-/tree/main/helm/ldap-server?ref_type=heads>
 
 ## Installing
 
 To install the chart with the release name `ldap-server`:
 
 ```console
-helm upgrade --install ldap-server oci://gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/helm/ldap-server
+helm upgrade --install ldap-server oci://gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/container-ldap/helm/ldap-server
 ```
 
 ## Uninstalling

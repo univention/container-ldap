@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2023-2025 Univention GmbH
-
 ---
 
 name: "dev-local"
@@ -8,7 +7,7 @@ name: "dev-local"
 services:
   ldif-producer:
     platform: linux/amd64
-    image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldif-producer:${IMAGE_TAG:-latest}"
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/ldap/ldif-producer:${IMAGE_TAG:-latest}"
     # entrypoint:
     #   - "/bin/bash"
     #   - "-c"
@@ -29,12 +28,12 @@ services:
       LDAP_BASE_DN: "dc=univention-organization,dc=intranet"
       IGNORE_TEMPORARY_OBJECTS: true
     volumes:
-    - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
-    - ldap-socket:/var/lib/univention-ldap/slapd-sock/:rw
+      - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
+      - ldap-socket:/var/lib/univention-ldap/slapd-sock/:rw
 
   ldap-server:
     platform: linux/amd64
-    image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/ldap-server:${IMAGE_TAG:-latest}"
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/ldap/ldap-server:${IMAGE_TAG:-latest}"
     build:
       context: ./docker/ldap-server
     environment:
@@ -43,17 +42,17 @@ services:
       PYTHON_LOG_LEVEL: "INFO"
       UPDATE_INDEX_ON_STARTUP: true
     ports:
-    - 389:389
-    - 636:636
-    ## Enable the secrets below if TLS is desired and `directory/manager/starttls` is set.
-    # secrets:
-    # - ca_cert
-    # - cert_pem
-    # - private_key
-    # - dh_param
+      - 389:389
+      - 636:636
+      ## Enable the secrets below if TLS is desired and `directory/manager/starttls` is set.
+      # secrets:
+      # - ca_cert
+      # - cert_pem
+      # - private_key
+      # - dh_param
     volumes:
-    - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
-    - ${LDAP_SOCKET_LOCATION:-ldap-socket}:/var/lib/univention-ldap/slapd-sock/:rw
+      - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
+      - ${LDAP_SOCKET_LOCATION:-ldap-socket}:/var/lib/univention-ldap/slapd-sock/:rw
 
   nats:
     image: "nats:latest"
@@ -88,7 +87,7 @@ services:
       - docs
 
   test:
-    image: "gitregistry.knut.univention.de/univention/customers/dataport/upx/container-ldap/testrunner:${IMAGE_TAG:-latest}"
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/ldap/testrunner:${IMAGE_TAG:-latest}"
     build:
       dockerfile: ./docker/testrunner/Dockerfile
       context: ./
@@ -114,7 +113,7 @@ services:
   pre-commit:
     profiles:
       - test
-    image: gitregistry.knut.univention.de/univention/customers/dataport/upx/container-pre-commit/upx-pre-commit:latest
+    image: gitregistry.knut.univention.de/univention/dev/tooling/pre-commit/upx-pre-commit:latest
     volumes:
       - type: bind
         source: .
@@ -138,5 +137,6 @@ secrets:
 volumes:
   ldap-socket:
   pre-commit-cache:
+
 
 ...
