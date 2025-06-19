@@ -1,12 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2025 Univention GmbH
 
-import pytest
-
-from univention.testing.helm.client.ldap import Auth, AuthViaEnv, AuthOwner
+from univention.testing.helm.client.ldap import AuthOwner, AuthPassword, AuthViaEnv
 
 
-class TestPrimaryAuth(AuthOwner, AuthViaEnv, Auth):
+class TestPrimaryAuth(AuthOwner, AuthViaEnv, AuthPassword):
     config_map_name = "release-name-ldap-server"
     secret_name = "release-name-ldap-server-ldap"
     workload_kind = "StatefulSet"
@@ -19,22 +17,6 @@ class TestPrimaryAuth(AuthOwner, AuthViaEnv, Auth):
     prefix_mapping = {
         "ldapServer.auth": "ldap.auth",
     }
-
-    @pytest.mark.skip(reason="TODO: Decide if bindDn is configurable.")
-    def test_auth_plain_values_provide_bind_dn():
-        pass
-
-    @pytest.mark.skip(reason="TODO: Decide if bindDn is configurable.")
-    def test_auth_plain_values_bind_dn_is_templated():
-        pass
-
-    @pytest.mark.skip(reason="TODO: Decide if bindDn is configurable.")
-    def test_auth_bind_dn_is_required():
-        pass
-
-    @pytest.mark.skip(reason="TODO: Decide if bindDn is configurable.")
-    def test_auth_bind_dn_has_default():
-        pass
 
 
 class TestPrimaryAuthSyncPassword(TestPrimaryAuth):
