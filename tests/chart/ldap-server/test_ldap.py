@@ -14,6 +14,8 @@ class TestPrimaryAuth(AuthOwner, AuthViaEnv, Auth):
 
     sub_path_env_password = "env[?@.name=='LDAP_CN_ADMIN_PW']"
 
+    derived_password = "751120bf3b933a18b7d637bfba5e9389939c4bbd"
+
     prefix_mapping = {
         "ldapServer.auth": "ldap.auth",
     }
