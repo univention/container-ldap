@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.42.2...v0.42.3) (2025-06-26)
+
+
+### Bug Fixes
+
+* add sonarqube ([2924d28](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/2924d28076b7237b758a70f12322199250017d24)), closes [#0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/issues/0)
+
 ## [0.42.2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.42.1...v0.42.2) (2025-06-23)
 
 
