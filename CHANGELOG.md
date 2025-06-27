@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.43.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.42.3...v0.43.0) (2025-06-27)
+
+
+### Features
+
+* **ldap-notifier:** Implement correct handling of pull policy configuration ([c8059f9](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/c8059f97728922f8a0ad96c257a3326cc7778ce9)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-notifier:** Update version of nubus-common to 0.21.0 ([7306cc4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/7306cc4f6aea947b3146180745cf955e6a2bb4be)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Adjust handling of "nats.auth" to common secrets structure ([e7f271a](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/e7f271aa2b98ea5e853d95e4045c291ea85b528a)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Adjust Nats configuration to line up with common secret structure ([6846b24](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/6846b2457d8e607fb4989bac0b60a2c5d2f9687f)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Change image pull policy configuration to "image.pullPolicy" ([ad040a1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/ad040a1767b45b49440192480410ad585f9a0202)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Change secret name for the admin username ([891120b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/891120b37445110a3ee71330f332e847a581a604)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Ensure that the same password value is generated as before. ([40f7eeb](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/40f7eebcf0c90b1755ba5803528deaadceee151a)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Generated secret for ldap access follows common structure ([1b9b4ae](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/1b9b4aee32fd92c8f4824807d35cd6adb0166cbc)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Remove password environment variables in ldif-producer ([759f7ea](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/759f7ea05117ea9617add045c1a7a5783ab7c3a5)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Render the Nats secret only when ldif-producer is enabled ([2366f02](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/2366f02f35901e4784abab02376db3c86f362f95)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+
+
+### Bug Fixes
+
+* **ldap-notifier:** Correct handling of labels and annotations ([25be0a6](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/25be0a656c4c4265431656b4fd11e58ef82bb1d6)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Avoid using the manage template when existingSecret is provided ([0f4e61b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/0f4e61b3f5a8aa4dcae99ef878078224101d8023)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Correct handling of labels and annotations ([3cdd09f](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/3cdd09f9a09eee3e4da5a5000957749204a64204)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+* **ldap-server:** Respect the setting "global.secrets.keep" in the ldap secret ([1bfd7e7](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/1bfd7e79b58853ab090b27ceec072e0f09c44cb4)), closes [univention/dev/internal/team-nubus#892](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/892)
+
 ## [0.42.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.42.2...v0.42.3) (2025-06-26)
 
 
