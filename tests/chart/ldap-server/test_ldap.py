@@ -6,7 +6,7 @@ from univention.testing.helm.client.ldap import AuthOwner, AuthPassword, AuthVia
 
 class TestPrimaryAuth(AuthOwner, AuthViaEnv, AuthPassword):
     config_map_name = "release-name-ldap-server"
-    secret_name = "release-name-ldap-server-ldap"
+    secret_name = "release-name-ldap-server-admin"
     workload_kind = "StatefulSet"
     workload_name = "release-name-ldap-server-primary"
 
