@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.44.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.43.0...v0.44.0) (2025-07-17)
+
+
+### Features
+
+* update ucs-base to 5.2.2-build.20250714 ([62c2e32](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/62c2e32a056064e3d68dcf8c893fea8e2746eb6a)), closes [univention/dev/internal/team-nubus#1320](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1320)
+
 ## [0.43.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.42.3...v0.43.0) (2025-06-27)
 
 
