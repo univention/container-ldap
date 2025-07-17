@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.44.0...v0.45.0) (2025-07-17)
+
+
+### Features
+
+* update wait-for-dependency to 0.35.0 ([d92622c](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/d92622c8e250578f985758aa1195ef59b8ed4cf6)), closes [univention/dev/internal/team-nubus#1320](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1320)
+
 ## [0.44.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.43.0...v0.44.0) (2025-07-17)
 
 
