@@ -59,6 +59,15 @@ data:
     # Read the slapd.conf.tpl file
     template=$(cat /config/templates/slapd.conf.tpl)
 
+    generate_rid() {
+        local hostname="$1"
+        local suffix="$2"
+        # Create a hash and take modulo 999 to ensure it's in range
+        local hash=$(echo "${hostname}-${suffix}" | md5sum | cut -c1-8)
+        local rid=$((0x${hash} % 999 + 1))  # 1-999 range
+        echo $rid
+    }
+
     # Replace placeholders with environment variable values using sed and eval
     while IFS=$'\n' read -r line; do
       # Skip empty lines
@@ -114,9 +123,6 @@ data:
     # Initialize an empty modified slapd.conf file
     modified_slapd_conf="serverID 2${SERVERID}\n"
 
-    # Initialize the replication ID counter
-    replication_id=1
-
     # Initialize the suffix variable
     suffix=""
 
@@ -165,13 +171,10 @@ data:
       # Check if the current line starts with "rootdn"
       if [[ "${line}" =~ ^rootdn ]]; then
         # Generate the syncrepl configuration with the current replication ID and suffix
-        syncrepl_config=$(echo "${template}" | sed "s/PLACEHOLDER_REPLICATION_ID/${replication_id}/"| sed "s/PLACEHOLDER_SERVER_ID/${SERVERID}/" | sed "s|PLACEHOLDER_LDAP_BASEDN|${suffix}|")
-
+        current_rid=$(generate_rid "${HOSTNAME}" "${suffix}")
+        syncrepl_config=$(echo "${template}" | sed "s/PLACEHOLDER_REPLICATION_ID/${current_rid}/" | sed "s/PLACEHOLDER_SERVER_ID/${SERVERID}/" | sed "s|PLACEHOLDER_LDAP_BASEDN|${suffix}|")
         # Append the syncrepl configuration to the modified slapd.conf, preserving indentation
         modified_slapd_conf+="${syncrepl_config}\n"
-
-        # Increment the replication ID
-        replication_id=$((replication_id + 1))
       fi
     done < <(echo "${slapd_conf}")
 
@@ -193,7 +196,7 @@ metadata:
     | nindent 2 }}
 data:
   slapd.conf.tpl: |
-    syncrepl rid=1PLACEHOLDER_SERVER_IDPLACEHOLDER_REPLICATION_ID
+    syncrepl rid=PLACEHOLDER_REPLICATION_ID
       provider=$PRIMARY_LDAP_URI
       type=refreshAndPersist
       interval=00:00:00:10
