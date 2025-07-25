@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.45.0...v0.46.0) (2025-07-25)
+
+
+### Features
+
+* Allow more than 10 ldap secondaries ([51eb28d](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/51eb28d80b187631248c8f7a3368ca8ab489d869)), closes [univention/dev/internal/team-nubus#1353](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1353)
+
 ## [0.45.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.44.0...v0.45.0) (2025-07-17)
 
 
