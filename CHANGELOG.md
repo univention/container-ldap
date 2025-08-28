@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.46.1...v0.46.2) (2025-08-28)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency univention/dev/nubus-for-k8s/common-ci to v1.44.2 ([bb28507](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/bb28507b26d5178fc60a47c56fd93cd3b34ecefb)), closes [#0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/issues/0)
+
 ## [0.46.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.46.0...v0.46.1) (2025-08-27)
 
 
