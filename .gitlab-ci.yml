@@ -121,7 +121,7 @@ test-ldap-smoke:
 test-chart-ldap-server:
   stage: test
   needs: []
-  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.21.0"
+  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.24.2@sha256:44515bc43d2f8b67426535aa796b595ec25c138f415b1e8abf3f69d582ab7e49"
   script:
     - helm dep build helm/ldap-server
     - pytest tests/chart/ldap-server
@@ -129,7 +129,7 @@ test-chart-ldap-server:
 test-chart-ldap-notifier:
   stage: test
   needs: []
-  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.21.0"
+  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.24.2@sha256:44515bc43d2f8b67426535aa796b595ec25c138f415b1e8abf3f69d582ab7e49"
   script:
     - helm dep build helm/ldap-notifier
     - pytest tests/chart/ldap-notifier
