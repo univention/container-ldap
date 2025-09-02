@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.46.2...v0.46.3) (2025-09-02)
+
+
+### Bug Fixes
+
+* **deps:** Update gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base Docker tag to v5.2.2-build.20250828 ([1fc5305](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/1fc5305f075bbd8373091233f75be4d1ab716ba0)), closes [#0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/issues/0)
+
 ## [0.46.2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.46.1...v0.46.2) (2025-08-28)
 
 
