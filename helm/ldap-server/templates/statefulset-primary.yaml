@@ -216,9 +216,9 @@ spec:
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
-          {{/* livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }} */}}
-          {{/* readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbePrimary "context" .) | nindent 12 }} */}}
-          {{/* startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }} */}}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbe "context" .) | nindent 12 }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
@@ -365,6 +365,9 @@ spec:
               value: {{ .Values.ldapServer.leaderElector.retryPeriodSeconds | quote }}
             - name: RENEW_DEADLINE_SECONDS
               value: {{ .Values.ldapServer.leaderElector.renewDeadlineSeconds | quote }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbe "context" .) | nindent 12 }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
           volumeMounts:
             {{- if .Values.persistence.enabled }}
             - name: "shared-data"
