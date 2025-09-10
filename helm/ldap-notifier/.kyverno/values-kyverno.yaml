@@ -2,14 +2,4 @@
 # SPDX-FileCopyrightText: 2024-2025 Univention GmbH
 ---
 
-imagePullSecrets:
-  - "kyverno-test"
-replicaCount: 42
-
-global:
-  imageRegistry: "my_private_registry.domain.tld"
-  imagePullSecrets:
-    - "kyverno-test"
-  imagePullPolicy: "kyverno"
-
 ...

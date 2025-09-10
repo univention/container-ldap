@@ -14,24 +14,10 @@ replicaCountSecondary: 42
 # -- Set the amount of replicas of the proxy deployment.
 replicaCountProxy: 42
 
-global:
-  imageRegistry: "my_private_registry.domain.tld"
-  imagePullSecrets:
-    - "kyverno-test"
-  imagePullPolicy: "kyverno"
-
 ldapServer:
-  image:
-    imagePullPolicy: "kyverno"
-    tag: "kyverno"
-
-waitForDependency:
-  image:
-    imagePullPolicy: "kyverno"
-
-ldifProducer:
-  image:
-    imagePullPolicy: "kyverno"
+  leaderElector:
+    image:
+      tag: "0.46.3@sha256:0c5c7b16c9a6aed2003bb18916783cad647a0efbf4d3d30cbf272b476e2e5c3b"
 
 resourcesPrimary:
   limits:
