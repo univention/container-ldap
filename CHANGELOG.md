@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.47.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.46.3...v0.47.0) (2025-09-12)
+
+
+### Features
+
+* **ldap-server:** support LDAP bind via SASL OAUTHBEARER ([0cd94e7](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/0cd94e71713cc5673e0bf58f6f019416debed59e)), closes [univention/dev/internal/dev-issues/dev-incidents#138](https://git.knut.univention.de/univention/dev/internal/dev-issues/dev-incidents/issues/138)
+
+
+### Bug Fixes
+
+* **deps:** Update gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner Docker tag to v0.24.3 ([17d7cfb](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/17d7cfb89bff714f20530d6fe9d4544c535e7ce2)), closes [#0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/issues/0)
+* **ucr-light-filter:** fix handling of UCRWARNING ([b11ead3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/b11ead36e74d66b91949c46dab7919f5f173d40e)), closes [univention/dev/internal/dev-issues/dev-incidents#138](https://git.knut.univention.de/univention/dev/internal/dev-issues/dev-incidents/issues/138)
+
 ## [0.46.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.46.2...v0.46.3) (2025-09-02)
 
 
