@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.0...v0.47.1) (2025-09-29)
+
+
+### Bug Fixes
+
+* Automated kyverno tests ([a220a79](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/a220a796d22fbe0d8a8fbe489064e21a4ce076bf)), closes [univention/dev/internal/team-nubus#1426](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1426)
+
 ## [0.47.0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.46.3...v0.47.0) (2025-09-12)
 
 
