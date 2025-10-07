@@ -211,13 +211,13 @@ spec:
             - name: SYNC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "admin" "context" .) | quote }}
-                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password" "context" .) | quote }}
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "admin" "context" .) }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password" "context" .) }}
             - name: LDAP_CN_ADMIN_PW
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "admin" "context" .) | quote }}
-                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password" "context" .) | quote }}
+                  name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "admin" "context" .) }}
+                  key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password" "context" .) }}
           command:
             - bash
             - -c
@@ -367,13 +367,13 @@ spec:
         - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
           secret:
             defaultMode: 0400
-            secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "defaultNameSuffix" "tls" "context" .) | quote }}
+            secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "defaultNameSuffix" "tls" "context" .) }}
             items:
-              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "ca.crt" "context" .) | quote }}
+              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "ca.crt" "context" .) }}
                 path: ca.crt
-              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "tls.crt" "context" .) | quote }}
+              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "tls.crt" "context" .) }}
                 path: tls.crt
-              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "tls.key" "context" .) | quote }}
+              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.existingSecret "key" "tls.key" "context" .) }}
                 path: tls.key
         {{- if .Values.ldapServer.generateDHparam }}
         - name: {{ printf "%s-dh-volume" (include "common.names.fullname" .) }}
@@ -382,9 +382,9 @@ spec:
         - name: {{ printf "%s-dh-volume" (include "common.names.fullname" .) }}
           secret:
             defaultMode: 0400
-            secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.tls.dhparam.existingSecret "defaultNameSuffix" "tls-dhparams" "context" .) | quote }}
+            secretName: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.tls.dhparam.existingSecret "defaultNameSuffix" "tls-dhparams" "context" .) }}
             items:
-              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.dhparam.existingSecret "key" "dhparam.pem" "context" .) | quote }}
+              - key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.tls.dhparam.existingSecret "key" "dhparam.pem" "context" .) }}
                 path: dhparam.pem        {{- end }}
         {{- end }}
         {{- if .Values.extraVolumes }}
