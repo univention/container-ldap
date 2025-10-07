@@ -121,7 +121,7 @@ test-ldap-smoke:
 test-chart-ldap-server:
   stage: test
   needs: []
-  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.24.3@sha256:2597661437c31ded486c2583bec278feb02e91d12cbb09dbbc70b7749f4bafdf"
+  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0-pre-dpapoutsis-nubus-common-templated-keymapping"
   script:
     - helm dep build helm/ldap-server
     - pytest tests/chart/ldap-server
