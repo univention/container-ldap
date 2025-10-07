@@ -31,7 +31,7 @@ data:
     ) . | quote }}
   NATS_USERNAME: {{ tpl
     ( required
-      "A Nats username has to be supplied, see parameter ldifProducer.nats.auth.username"
+      "A Nats username is required, see parameter ldifProducer.nats.auth.username"
       .Values.ldifProducer.nats.auth.username
     ) . | quote }}
   NATS_MAX_RECONNECT_ATTEMPTS: {{ required ".Values.ldifProducer.nats.natsMaxReconnectAttempts is required." .Values.ldifProducer.nats.natsMaxReconnectAttempts | quote }}

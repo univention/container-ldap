@@ -3,21 +3,33 @@
 
 
 import pytest
-from test_deployment import ContainerAuthFromExistingSecret
 
 from univention.testing.helm.deployment import DeploymentTlsDhparamVolumeSecret, DeploymentTlsVolumeSecret
 
 
 @pytest.mark.parametrize(
-    "key, env_var",
+    "key, volume_item",
     [
-        ("ldapServer", "LDAP_CN_ADMIN_PW"),
-        ("ldapServer", "SYNC_PASSWORD"),
+        ("ldapServer.tls", "ca.crt"),
+        ("ldapServer.tls", "tls.crt"),
+        ("ldapServer.tls", "tls.key"),
     ],
 )
-class TestStatefulSet01LdapServerAuthFromExistingSecret(ContainerAuthFromExistingSecret):
-    template_file = "templates/statefulset-primary.yaml"
-    container_name = "main"
+class TestMainContainerLdapTlsVolumesFromExistingSecret(DeploymentTlsVolumeSecret):
+    template_file = "templates/deployment-proxy.yaml"
+    volume_name = "release-name-ldap-server-tls-volume"
+    chart_name = "ldap-server"
+
+
+@pytest.mark.parametrize(
+    "key, volume_item",
+    [
+        ("ldapServer.tls.dhparam", "dhparam.pem"),
+    ],
+)
+class TestMainContainerLdapTlsDhparamVolumesFromExistingSecret(DeploymentTlsDhparamVolumeSecret):
+    template_file = "templates/deployment-proxy.yaml"
+    volume_name = "release-name-ldap-server-dh-volume"
     chart_name = "ldap-server"
 
 
@@ -44,19 +56,6 @@ class TestStatefulSet01LdapTlsVolumesFromExistingSecret(DeploymentTlsVolumeSecre
 class TestStatefulSet01LdapTlsDhparamVolumesFromExistingSecret(DeploymentTlsDhparamVolumeSecret):
     template_file = "templates/statefulset-primary.yaml"
     volume_name = "release-name-ldap-server-dh-volume"
-    chart_name = "ldap-server"
-
-
-@pytest.mark.parametrize(
-    "key, env_var",
-    [
-        ("ldapServer", "LDAP_CN_ADMIN_PW"),
-        ("ldapServer", "SYNC_PASSWORD"),
-    ],
-)
-class TestStatefulSet02LdapServerAuthFromExistingSecret(ContainerAuthFromExistingSecret):
-    template_file = "templates/statefulset-secondary.yaml"
-    container_name = "main"
     chart_name = "ldap-server"
 
 
