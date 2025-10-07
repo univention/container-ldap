@@ -38,7 +38,6 @@ global:
   imagePullPolicy: null
   ldap:
     baseDn: ""
-    domainName: ""
 
   nats:
     connection:
@@ -474,10 +473,6 @@ ldapServer:
     renewDeadlineSeconds: 10
   # Configuration regarding OpenLDAP
   config:
-    # -- Internal domain name of the UCS machine
-    # domainName: "univention-organization.intranet"
-    domainName: ""
-
     # -- Base DN of the LDAP directory
     #ldapBaseDn: "dc=univention-organization,dc=intranet"
     ldapBaseDn: ""

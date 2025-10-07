@@ -32,7 +32,6 @@ images:
 ldapServer:
   generateDHparam: false
   config:
-    domainName: univention-organization.intranet
     samlMetadataUrl: "http://localhost:8097/realms/ucs/protocol/saml/descriptor"
     samlMetadataUrlInternal: "http://keycloak/realms/ucs/protocol/saml/descriptor"
     samlServiceProviders: "http://localhost:8000/univention/saml/metadata,http://localhost:8000/auth/realms/ucs"

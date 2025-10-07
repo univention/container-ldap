@@ -418,15 +418,6 @@ null
 			<td></td>
 		</tr>
 		<tr>
-			<td>global.ldap.domainName</td>
-			<td>string</td>
-			<td><pre lang="json">
-""
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
 			<td>global.nats.connection.port</td>
 			<td>string</td>
 			<td><pre lang="json">
@@ -487,15 +478,6 @@ false
 </pre>
 </td>
 			<td>LDAP admin user secret configuration</td>
-		</tr>
-		<tr>
-			<td>ldapServer.config.domainName</td>
-			<td>string</td>
-			<td><pre lang="json">
-""
-</pre>
-</td>
-			<td>Internal domain name of the UCS machine domainName: "univention-organization.intranet"</td>
 		</tr>
 		<tr>
 			<td>ldapServer.config.ldapBaseDn</td>

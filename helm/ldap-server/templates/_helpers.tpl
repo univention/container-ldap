@@ -35,10 +35,6 @@ ldap
 {{- end -}}
 {{- end -}}
 
-{{- define "nubusTemplates.ldapServer.ldap.domainName" -}}
-{{- coalesce .Values.global.ldap.domainName | required "Either .Values.ldapServer.config.domainName or .Values.global.ldap.domainName must be set." -}}
-{{- end -}}
-
 {{- define "nubusTemplates.ldapServer.ldap.adminDn" -}}
 {{- printf "cn=admin,%s" (include "nubusTemplates.ldapServer.ldap.baseDn" . ) -}}
 {{- end -}}
