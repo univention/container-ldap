@@ -100,16 +100,6 @@ services:
       - "./univention:/app/univention"
       - "./pyproject.toml:/app/pyproject.toml"
 
-  test-helm:
-    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0-pre-dpapoutsis-nubus-common-templated-keymapping"
-    pull_policy: "if_not_present"
-    command: "pytest tests/"
-    profiles:
-      - "test"
-    volumes:
-      - "./helm/:/app/helm/"
-      - "./helm-unittests/:/app/tests"
-
   test-chart-ldap-server:
     image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0-pre-dpapoutsis-nubus-common-templated-keymapping"
     pull_policy: "if_not_present"
