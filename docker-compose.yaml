@@ -110,6 +110,26 @@ services:
       - "./helm/:/app/helm/"
       - "./helm-unittests/:/app/tests"
 
+  test-chart-ldap-server:
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.24.3@sha256:2597661437c31ded486c2583bec278feb02e91d12cbb09dbbc70b7749f4bafdf"
+    pull_policy: "if_not_present"
+    command: "pytest tests/helm/chart"
+    profiles:
+      - "test"
+    volumes:
+      - "./helm/:/app/helm/"
+      - "./tests/chart/ldap-server/:/app/tests/helm/chart"
+
+  test-chart-ldap-notifier:
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.24.3@sha256:2597661437c31ded486c2583bec278feb02e91d12cbb09dbbc70b7749f4bafdf"
+    pull_policy: "if_not_present"
+    command: "pytest tests/helm/chart"
+    profiles:
+      - "test"
+    volumes:
+      - "./helm/:/app/helm/"
+      - "./tests/chart/ldap-notifier/:/app/tests/helm/chart"
+
   database-initialized-test:
     build:
       context: "./docker/ldap-server"
