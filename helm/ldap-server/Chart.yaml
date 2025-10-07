@@ -15,5 +15,5 @@ version: "0.11.0"
 
 dependencies:
   - name: "nubus-common"
-    version: "0.21.0"
-    repository: "oci://artifacts.software-univention.de/nubus/charts"
+    version: "0.28.0-pre-dpapoutsis-nubus-common-templated-keymapping"
+    repository: "oci://artifacts.software-univention.de/nubus-dev/charts"

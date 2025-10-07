@@ -1,11 +1,11 @@
-# SPDX-FileCopyrightText: 2024-2025 Univention GmbH
 # SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2025 Univention GmbH
 
 from pathlib import Path
 
 import pytest
 
-base_dir = (Path(__file__).parent / "../../").resolve()
+base_dir = (Path(__file__).parent / "../").resolve()
 
 
 @pytest.fixture
