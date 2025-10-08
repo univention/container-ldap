@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.1...v0.47.2) (2025-10-08)
+
+
+### Bug Fixes
+
+* **ldap-server:** Remove unused domain name ([3d1b893](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/3d1b893a6f5523c2c66db4d2117b9aa686aabb05)), closes [univention/dev/internal/team-nubus#1425](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1425)
+
 ## [0.47.1](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.0...v0.47.1) (2025-09-29)
 
 
