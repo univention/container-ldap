@@ -101,7 +101,7 @@ services:
       - "./pyproject.toml:/app/pyproject.toml"
 
   test-chart-ldap-server:
-    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0-pre-dpapoutsis-nubus-common-templated-keymapping"
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0"
     pull_policy: "if_not_present"
     command: "pytest tests/helm/chart"
     profiles:
@@ -111,7 +111,7 @@ services:
       - "./tests/chart/ldap-server/:/app/tests/helm/chart"
 
   test-chart-ldap-notifier:
-    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0-pre-dpapoutsis-nubus-common-templated-keymapping"
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0"
     pull_policy: "if_not_present"
     command: "pytest tests/helm/chart"
     profiles:
