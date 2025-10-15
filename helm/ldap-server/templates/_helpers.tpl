@@ -188,3 +188,55 @@ primary
   {{- fail (printf "terminationGracePeriodSeconds (%d) must be greater than or equal to ldapServer.leaderElector.leaseDurationSeconds (%d)" $terminationGracePeriod $leaseDuration) -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Configure liveness probe based on health check sidecar availability
+*/}}
+{{- define "ldap-server.livenessProbe" -}}
+{{- if .Values.healthCheckSidecar.enabled }}
+httpGet:
+  path: {{ .Values.healthCheckSidecar.endpoints.liveness }}
+  port: 8080
+{{- else }}
+{{- .Values.livenessProbe | toYaml }}
+{{- end }}
+{{- end }}
+
+{{/*
+Configure readiness probe based on health check sidecar availability
+*/}}
+{{- define "ldap-server.readinessProbe" -}}
+{{- if .Values.healthCheckSidecar.enabled }}
+httpGet:
+  path: {{ .Values.healthCheckSidecar.endpoints.readiness }}
+  port: 8080
+{{- else }}
+{{- .Values.readinessProbe | toYaml }}
+{{- end }}
+{{- end }}
+
+{{/*
+Configure readiness probe for primary based on health check sidecar availability
+*/}}
+{{- define "ldap-server.readinessProbePrimary" -}}
+{{- if .Values.healthCheckSidecar.enabled }}
+httpGet:
+  path: {{ .Values.healthCheckSidecar.endpoints.readiness }}
+  port: 8080
+{{- else }}
+{{- .Values.readinessProbePrimary | toYaml }}
+{{- end }}
+{{- end }}
+
+{{/*
+Configure startup probe based on health check sidecar availability
+*/}}
+{{- define "ldap-server.startupProbe" -}}
+{{- if .Values.healthCheckSidecar.enabled }}
+httpGet:
+  path: {{ .Values.healthCheckSidecar.endpoints.health }}
+  port: 8080
+{{- else }}
+{{- .Values.startupProbe | toYaml }}
+{{- end }}
+{{- end }}

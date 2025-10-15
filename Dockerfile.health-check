@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install required packages
+COPY requirements-health-check.txt .
+RUN pip install --no-cache-dir -r requirements-health-check.txt
+
+# Copy health check script
+COPY ldap-health-check.py .
+
+# Create non-root user
+RUN useradd -r -u 1001 healthcheck
+USER healthcheck
+
+EXPOSE 8080
+
+CMD ["python", "ldap-health-check.py"]

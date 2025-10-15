@@ -1,0 +1,13 @@
+global:
+  ldap:
+    baseDn: "dc=openbaraza,dc=org"
+
+# Minimal required config
+ldapServer:
+  config:
+    ldapBaseDn: "dc=openbaraza,dc=org"
+    samlMetadataUrl: "http://example.com/saml/metadata"
+    samlMetadataUrlInternal: "http://example.com/saml/metadata"
+    samlServiceProviders: "http://example.com/saml/sp"
+  auth:
+    password: "univention"

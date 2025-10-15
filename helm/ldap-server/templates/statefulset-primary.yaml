@@ -216,9 +216,9 @@ spec:
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbe "context" .) | nindent 12 }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
+          livenessProbe: {{- include "ldap-server.livenessProbe" . | nindent 12 }}
+          readinessProbe: {{- include "ldap-server.readinessProbe" . | nindent 12 }}
+          startupProbe: {{- include "ldap-server.startupProbe" . | nindent 12 }}
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
@@ -258,9 +258,9 @@ spec:
           {{- with .Values.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbePrimary "context" .) | nindent 12 }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
+          livenessProbe: {{- include "ldap-server.livenessProbe" . | nindent 12 }}
+          readinessProbe: {{- include "ldap-server.readinessProbePrimary" . | nindent 12 }}
+          startupProbe: {{- include "ldap-server.startupProbe" . | nindent 12 }}
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
           ports:
             {{- range $key, $value := .Values.service.ports }}
@@ -365,14 +365,57 @@ spec:
               value: {{ .Values.ldapServer.leaderElector.retryPeriodSeconds | quote }}
             - name: RENEW_DEADLINE_SECONDS
               value: {{ .Values.ldapServer.leaderElector.renewDeadlineSeconds | quote }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbe "context" .) | nindent 12 }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
+          livenessProbe: {{- include "ldap-server.livenessProbe" . | nindent 12 }}
+          readinessProbe: {{- include "ldap-server.readinessProbe" . | nindent 12 }}
+          startupProbe: {{- include "ldap-server.startupProbe" . | nindent 12 }}
           volumeMounts:
             {{- if .Values.persistence.enabled }}
             - name: "shared-data"
               mountPath: /var/lib/univention-ldap
             {{- end }}
+        {{- if .Values.healthCheckSidecar.enabled }}
+        - name: "health-check"
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- include "common.tplvalues.render" (dict "value" .Values.healthCheckSidecar.securityContext "context" .) | nindent 12 }}
+          {{- end }}
+          image: "{{ coalesce .Values.healthCheckSidecar.image.registry .Values.global.imageRegistry }}/{{ .Values.healthCheckSidecar.image.repository }}:{{ .Values.healthCheckSidecar.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.healthCheckSidecar.image.pullPolicy .Values.global.imagePullPolicy | quote }}
+          env:
+            - name: LDAP_HOST
+              value: {{ .Values.healthCheckSidecar.ldap.host | quote }}
+            - name: LDAP_PORT
+              value: {{ .Values.healthCheckSidecar.ldap.port | quote }}
+            - name: LDAP_BASE_DN
+              value: {{ coalesce .Values.healthCheckSidecar.ldap.baseDn .Values.global.ldap.baseDn | quote }}
+            - name: LDAP_BIND_DN
+              value: {{ .Values.healthCheckSidecar.ldap.bindDn | quote }}
+            - name: LDAP_USE_TLS
+              value: {{ .Values.healthCheckSidecar.ldap.useTls | quote }}
+            {{- if .Values.healthCheckSidecar.ldap.bindPasswordSecret }}
+            - name: LDAP_BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.healthCheckSidecar.ldap.bindPasswordSecret | quote }}
+                  key: password
+            {{- end }}
+          ports:
+            - name: health-http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheckSidecar.endpoints.liveness }}
+              port: health-http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheckSidecar.endpoints.readiness }}
+              port: health-http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.healthCheckSidecar.resources "context" .) | nindent 12 }}
+        {{- end }}
       volumes:
         - name: "slapd-overlay-unix-socket-volume"
           emptyDir: {}

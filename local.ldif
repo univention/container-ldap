@@ -1,0 +1,71 @@
+
+
+
+# Organizational Units
+dn: ou=People,dc=openbaraza,dc=org
+objectClass: top
+objectClass: organizationalUnit
+ou: People
+
+dn: ou=Groups,dc=openbaraza,dc=org
+objectClass: top
+objectClass: organizationalUnit
+ou: Groups
+
+# Users
+dn: uid=jdoe,ou=People,dc=openbaraza,dc=org
+objectClass: inetOrgPerson
+uid: jdoe
+sn: Doe
+givenName: John
+cn: John Doe
+displayName: John Doe
+mail: jdoe@openbaraza.com
+userPassword: password123
+# homeDirectory: /home/jdoe
+
+dn: uid=asmith,ou=People,dc=openbaraza,dc=org
+objectClass: inetOrgPerson
+uid: asmith
+sn: Smith
+givenName: Alice
+cn: Alice Smith
+displayName: Alice Smith
+mail: asmith@openbaraza.com
+userPassword: password123
+# homeDirectory: /home/asmith
+
+dn: uid=afares,ou=People,dc=openbaraza,dc=org
+objectClass: inetOrgPerson
+uid: afares
+sn: Fares
+givenName: Jonson
+cn: Jonson Fares
+displayName: Jonson Fares
+mail: afares@openbaraza.com
+userPassword: password123
+# homeDirectory: /home/afares
+
+# Groups
+dn: cn=admins,ou=Groups,dc=openbaraza,dc=org
+objectClass: top
+objectClass: groupOfNames
+cn: admins
+description: System administrators group
+member: uid=jdoe,ou=People,dc=openbaraza,dc=org
+member: uid=afares,ou=People,dc=openbaraza,dc=org
+
+dn: cn=developers,ou=Groups,dc=openbaraza,dc=org
+objectClass: top
+objectClass: groupOfNames
+cn: developers
+description: Software developers group
+member: uid=jdoe,ou=People,dc=openbaraza,dc=org
+member: uid=asmith,ou=People,dc=openbaraza,dc=org
+
+dn: cn=guests,ou=Groups,dc=openbaraza,dc=org
+objectClass: top
+objectClass: groupOfNames
+cn: guests
+description: Temporary users group
+

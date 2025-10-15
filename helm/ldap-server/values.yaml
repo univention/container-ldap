@@ -159,6 +159,8 @@ livenessProbe:
   successThreshold: 1
   # -- Timeout for command return.
   timeoutSeconds: 5
+  # -- Use HTTP probe when health check sidecar is enabled, otherwise TCP
+  # This will be automatically configured based on healthCheckSidecar.enabled
   tcpSocket:
     port: 389
 
@@ -269,6 +271,8 @@ readinessProbe:
   successThreshold: 1
   # -- Timeout for command return.
   timeoutSeconds: 5
+  # -- Use HTTP probe when health check sidecar is enabled, otherwise TCP
+  # This will be automatically configured based on healthCheckSidecar.enabled
   tcpSocket:
     port: 389
 
@@ -378,6 +382,59 @@ terminationGracePeriodSeconds: 20
 # -- Tolerations for pod assignment.
 # Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 tolerations: []
+
+# -- Health check sidecar configuration
+healthCheckSidecar:
+  # -- Enable the health check sidecar container
+  enabled: false
+  
+  # -- Health check sidecar image configuration
+  image:
+    registry: ""
+    repository: "ldap-health-check"
+    tag: "latest"
+    pullPolicy: "IfNotPresent"
+  
+  # -- Health check sidecar resource limits and requests
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  
+  # -- LDAP connection configuration for health checks
+  ldap:
+    # -- LDAP host (defaults to localhost for sidecar)
+    host: "localhost"
+    # -- LDAP port
+    port: 389
+    # -- Use TLS for LDAP connection
+    useTls: false
+    # -- LDAP bind DN for health checks
+    bindDn: ""
+    # -- Kubernetes secret containing LDAP bind password
+    # Expected key: password
+    bindPasswordSecret: ""
+  
+  # -- Health check endpoint configuration
+  endpoints:
+    # -- Health check endpoint path
+    health: "/health"
+    # -- Readiness check endpoint path
+    readiness: "/ready"
+    # -- Liveness check endpoint path
+    liveness: "/live"
+  
+  # -- Security context for health check sidecar
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
 
 # -- Topology spread constraints rely on node labels to identify the topology domain(s) that each Node is in.
 # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
