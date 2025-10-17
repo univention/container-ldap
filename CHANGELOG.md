@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.3](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.2...v0.47.3) (2025-10-17)
+
+
+### Bug Fixes
+
+* make all helm tests pass with helm test version >=0.27.0 ([268b61d](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/268b61dd4082bffaaba9e69989646a44bec9c32d)), closes [univention/dev/internal/team-nubus#1441](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1441)
+
 ## [0.47.2](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.1...v0.47.2) (2025-10-08)
 
 
