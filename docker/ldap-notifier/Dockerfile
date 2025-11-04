@@ -55,7 +55,8 @@ RUN \
   python3 \
   python3-ldap \
   python3-lazy-object-proxy \
-  python3-six
+  python3-six \
+  libunivention-config0
 
 # Copy python-univention-config-registry dependency for univention-translog
 COPY --from=build \
@@ -106,10 +107,6 @@ RUN \
   touch /usr/lib/python3/dist-packages/univention/__init__.py && \
   # Needed because the notifier creates its log-file in there.
   mkdir /var/log/univention/ && \
-  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libuniventiondebug.so.1.*' -printf "%f") && \
-  ln --symbolic \
-  "${SRC}" \
-  /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1 && \
   ln --symbolic \
   /dev/stdout \
   /var/log/univention/notifier.log && \
