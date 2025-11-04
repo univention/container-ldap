@@ -366,6 +366,28 @@ startupProbe:
   tcpSocket:
     port: 389
 
+#  Configure extra options for containers probes for secondary servers.
+# This startup probe checks that LDAP is responding and can serve queries,
+# ensuring the secondary has completed initial replication before it receives traffic.
+# The probe queries the base DN to verify the server has data and is ready.
+startupProbeSecondary:
+  # -- Delay after container start until StartupProbe is executed.
+  initialDelaySeconds: 15
+  # -- Number of failed executions until container is terminated.
+  # Increased to 30 to allow time for initial replication to complete.
+  failureThreshold: 30
+  # -- Time between probe executions.
+  periodSeconds: 10
+  # -- Number of successful executions after failed ones until container is marked healthy.
+  successThreshold: 1
+  # -- Timeout for command return.
+  timeoutSeconds: 5
+  exec:
+    command:
+      - "/bin/sh"
+      - "-c"
+      - 'ldapsearch -H ldapi:/// -Y EXTERNAL -b "${LDAP_BASEDN}" -s base "(objectClass=*)" dn >/dev/null 2>&1'
+
 # -- Allows to configure the system extensions to load. This is intended for
 # internal usage, prefer to use `extensions` for user configured extensions.
 # This value will override the configuration in `global.systemExtensions`.
