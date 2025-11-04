@@ -25,7 +25,6 @@ COPY fake.sh /usr/local/bin/systemctl
 COPY fake.sh /usr/local/bin/univention-config-registry
 
 RUN \
-  apt-get update && \
   apt-get download \
   libunivention-debug1 \
   python3-univention-config-registry \
@@ -35,7 +34,7 @@ RUN \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
   dpkg --install --force-depends /apt/* && \
-  rm -rf /apt /var/lib/apt/lists/* && \
+  rm -rf /apt && \
   dpkg-query -f '${Version}' -W univention-directory-notifier > /version
 
 
@@ -51,15 +50,12 @@ ARG LABEL_VERSION=undefined
 
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 RUN \
-  apt-get update && \
   DEBIAN_FRONTEND=noninteractive \
   apt-get --assume-yes --verbose-versions --no-install-recommends install \
   python3 \
   python3-ldap \
   python3-lazy-object-proxy \
-  python3-six \
-  && \
-  rm -rf /var/lib/apt/lists/*
+  python3-six
 
 # Copy python-univention-config-registry dependency for univention-translog
 COPY --from=build \
