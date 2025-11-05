@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.47.5](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.4...v0.47.5) (2025-11-05)
+
+
+### Bug Fixes
+
+* **ldap-notifier:** Adapt apt usage to be in line with base image ([33edd7f](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/33edd7f3bc290627ae5ba8cc28f177fbcd79ae58)), closes [univention/dev/internal/team-nubus#1486](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1486)
+* **ldap-notifier:** Install libunivention-config0 ([3e0f531](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/3e0f5319db0e8ff9db3283c8ee39ed87d8a9e3f0)), closes [univention/dev/internal/team-nubus#1486](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1486)
+
 ## [0.47.4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.3...v0.47.4) (2025-11-04)
 
 
