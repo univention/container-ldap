@@ -16,10 +16,26 @@ include:
       - "jobs/package-and-publish-helm-charts-external.yaml"
       - "jobs/check-debian-updates.yaml"
       - "templates/sonarqube.yaml"
-  - project: "univention/infrastructure/docker-services"
-    ref: "master"
-    file:
-      - "dind.yml"
+  # - project: "univention/infrastructure/docker-services"
+  #   ref: "master"
+  #   file:
+  #     - "dind.yml"
+
+.dind_service:
+  tags:
+    - docker
+  services:
+    # - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0-dind"
+    # - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:29.0.2"
+    - name: $KNUT_REGISTRY/knut/docker:dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_VERIFY: ""
+
+.dind:
+  extends: .dind_service
+  image: $KNUT_REGISTRY/docker:stable
 
 variables:
   # Used by pre-commit/gitlab-ci-linter
@@ -85,7 +101,7 @@ test-database-initialized-unit:
 test-ldap-smoke:
   stage: test
   extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"
@@ -121,7 +137,7 @@ test-ldap-smoke:
 test-notifier-smoke:
   stage: test
   extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"
