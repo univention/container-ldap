@@ -53,6 +53,19 @@ services:
     volumes:
       - ./tests/base-defaults.conf:/etc/univention/base-defaults.conf:ro
       - ${LDAP_SOCKET_LOCATION:-ldap-socket}:/var/lib/univention-ldap/slapd-sock/:rw
+      - ldap-run:/var/run/slapd/:rw
+      - ldap-listener:/var/lib/univention-ldap/listener/:rw
+
+  ldap-notifier:
+    platform: linux/amd64
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/ldap/ldap-notifier:${IMAGE_TAG:-latest}"
+    profiles:
+      - manual
+    build:
+      context: ./docker/ldap-notifier
+    volumes:
+      - ldap-run:/var/run/slapd/:rw
+      - ldap-listener:/var/lib/univention-ldap/listener/:rw
 
   nats:
     image: "nats:latest"
@@ -155,8 +168,9 @@ secrets:
     file: ssl/dh_2048.pem
 
 volumes:
+  ldap-listener:
+  ldap-run:
   ldap-socket:
   pre-commit-cache:
-
 
 ...

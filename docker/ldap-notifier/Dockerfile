@@ -4,7 +4,7 @@
 ###############################################################################
 # Dockerfile for the univention-directory-notifier
 
-ARG UCS_BASE_IMAGE_TAG=5.2.2-build.20250828@sha256:40615df599a3ac99e351c04d42895bb2f5104b8f95528ffe62bdc78b73bb6a44
+ARG UCS_BASE_IMAGE_TAG=5.2.3-build.20251030@sha256:d8ed2525a5d6bd8294c6705e802c1e1eb49325b4ebbde1750ebb0ce096b12de7
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
@@ -25,7 +25,6 @@ COPY fake.sh /usr/local/bin/systemctl
 COPY fake.sh /usr/local/bin/univention-config-registry
 
 RUN \
-  apt-get update && \
   apt-get download \
   libunivention-debug1 \
   python3-univention-config-registry \
@@ -35,7 +34,7 @@ RUN \
   # The original file would source many bash-helper-functions not required here.
   touch /usr/share/univention-lib/all.sh && \
   dpkg --install --force-depends /apt/* && \
-  rm -rf /apt /var/lib/apt/lists/* && \
+  rm -rf /apt && \
   dpkg-query -f '${Version}' -W univention-directory-notifier > /version
 
 
@@ -51,15 +50,13 @@ ARG LABEL_VERSION=undefined
 
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 RUN \
-  apt-get update && \
   DEBIAN_FRONTEND=noninteractive \
   apt-get --assume-yes --verbose-versions --no-install-recommends install \
   python3 \
   python3-ldap \
   python3-lazy-object-proxy \
   python3-six \
-  && \
-  rm -rf /var/lib/apt/lists/*
+  libunivention-config0
 
 # Copy python-univention-config-registry dependency for univention-translog
 COPY --from=build \
@@ -110,10 +107,6 @@ RUN \
   touch /usr/lib/python3/dist-packages/univention/__init__.py && \
   # Needed because the notifier creates its log-file in there.
   mkdir /var/log/univention/ && \
-  SRC=$(find /usr/lib/x86_64-linux-gnu -type f -name 'libuniventiondebug.so.1.*' -printf "%f") && \
-  ln --symbolic \
-  "${SRC}" \
-  /usr/lib/x86_64-linux-gnu/libuniventiondebug.so.1 && \
   ln --symbolic \
   /dev/stdout \
   /var/log/univention/notifier.log && \

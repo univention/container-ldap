@@ -5,7 +5,7 @@
 
 include:
   - project: "univention/dev/nubus-for-k8s/common-ci"
-    ref: "v1.44.2"
+    ref: "v1.50.0"
     file:
       - "defaults/stages.yaml"
       - "defaults/nubus-workflow.yaml"
@@ -118,6 +118,38 @@ test-ldap-smoke:
     when: "always"
     expose_as: "docker compose server logs"
 
+test-notifier-smoke:
+  stage: test
+  extends: .dind
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: "never"
+    - when: "on_success"
+  before_script:
+    # Allow that the Docker API version is negotiated between client and server
+    - unset DOCKER_API_VERSION
+    - export IMAGE_TAG=${RELEASE_VERSION}
+    - echo -e "\e[0Ksection_start:`date +%s`:docker_debug[collapsed=true]\r\e[0KDocker version details"
+    - echo $IMAGE_TAG
+    - docker version
+    - echo -e "\e[0Ksection_end:`date +%s`:docker_debug\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:docker_compose_config[collapsed=true]\r\e[0KDocker Compose configuration"
+    - docker compose config ldap-notifier
+    - echo -e "\e[0Ksection_end:`date +%s`:docker_compose_config\r\e[0K"
+    - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 ldap-server
+  script:
+    - docker compose up --wait --wait-timeout 10 ldap-notifier
+  after_script:
+    - docker logs dev-local-ldap-server-1 >& ldap-server.log
+    - docker compose down --volumes
+  artifacts:
+    paths:
+      - ldap-server.log
+    expire_in: "1 day"
+    when: "always"
+    expose_as: "docker compose server logs"
+
 test-chart-ldap-server:
   stage: test
   needs: []
@@ -153,6 +185,10 @@ test-ldap-sync-indexes:
     - test-ldap-smoke
 
 push-image-external:
+  parallel:
+    matrix: *publish-matrix
+
+container-release-attestation:
   parallel:
     matrix: *publish-matrix
 
