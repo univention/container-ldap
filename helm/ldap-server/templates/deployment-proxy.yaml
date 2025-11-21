@@ -202,6 +202,8 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
             - name: usr-share-univention-ldap-volume
               mountPath: /usr/share/univention-ldap
             - name: usr-share-oidc-volume
@@ -237,6 +239,8 @@ spec:
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base-defaults.conf"
               subPath: "base-defaults.conf"
+            - name: tmp-volume
+              mountPath: /tmp
             - name: "data-volume"
               mountPath: /var/lib/univention-ldap
             {{- if .Values.ldapServer.tls.enabled }}
@@ -251,6 +255,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
       volumes:
+        - name: tmp-volume
+          emptyDir: {}
         - name: "data-volume"
           emptyDir: {}
         - name: "var-run-volume"
