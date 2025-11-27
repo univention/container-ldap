@@ -85,7 +85,7 @@ test-database-initialized-unit:
 test-ldap-smoke:
   stage: test
   extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"
@@ -121,7 +121,7 @@ test-ldap-smoke:
 test-notifier-smoke:
   stage: test
   extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:24.0.7"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.6](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.5...v0.47.6) (2025-11-21)
+
+
+### Bug Fixes
+
+* bump images in the values ([24a7d7b](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/24a7d7b026b55947625875d6496189ad446b7d05)), closes [univention/dev/internal/team-nubus#1476](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1476)
+
 ## [0.47.5](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.4...v0.47.5) (2025-11-05)
 
 
