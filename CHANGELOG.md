@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.7](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.6...v0.47.7) (2025-12-03)
+
+
+### Bug Fixes
+
+* bump image to errata 298 ([730e3ef](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/730e3ef9e4df4077a572ae6f0dbcec1b2564d888)), closes [univention/dev/internal/team-nubus#1543](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1543)
+
 ## [0.47.6](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.5...v0.47.6) (2025-11-21)
 
 
