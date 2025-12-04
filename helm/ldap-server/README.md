@@ -543,6 +543,15 @@ true
 			<td>Switch to (de)activate the ldap index syncronization on startup. (true/false)</td>
 		</tr>
 		<tr>
+			<td>ldapServer.extraEnvVars</td>
+			<td>list</td>
+			<td><pre lang="json">
+[]
+</pre>
+</td>
+			<td>Array with extra environment variables to add to containers.  extraEnvVars:   - name: FOO     value: "bar"</td>
+		</tr>
+		<tr>
 			<td>ldapServer.generateDHparam</td>
 			<td>bool</td>
 			<td><pre lang="json">
@@ -586,6 +595,15 @@ null
 </pre>
 </td>
 			<td></td>
+		</tr>
+		<tr>
+			<td>ldapServer.leaderElector.extraEnvVars</td>
+			<td>list</td>
+			<td><pre lang="json">
+[]
+</pre>
+</td>
+			<td>Array with extra environment variables to add to containers.  extraEnvVars:   - name: FOO     value: "bar"</td>
 		</tr>
 		<tr>
 			<td>ldapServer.leaderElector.image.pullPolicy</td>
@@ -789,6 +807,15 @@ false
 </pre>
 </td>
 			<td></td>
+		</tr>
+		<tr>
+			<td>ldifProducer.extraEnvVars</td>
+			<td>list</td>
+			<td><pre lang="json">
+[]
+</pre>
+</td>
+			<td>Array with extra environment variables to add to containers.  extraEnvVars:   - name: FOO     value: "bar"</td>
 		</tr>
 		<tr>
 			<td>ldifProducer.image.pullPolicy</td>
@@ -1552,6 +1579,15 @@ true
 </pre>
 </td>
 			<td></td>
+		</tr>
+		<tr>
+			<td>waitForDependency.extraEnvVars</td>
+			<td>list</td>
+			<td><pre lang="json">
+[]
+</pre>
+</td>
+			<td>Array with extra environment variables to add to containers.  extraEnvVars:   - name: FOO     value: "bar"</td>
 		</tr>
 		<tr>
 			<td>waitForDependency.image.pullPolicy</td>

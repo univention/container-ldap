@@ -153,7 +153,7 @@ test-notifier-smoke:
 test-chart-ldap-server:
   stage: test
   needs: []
-  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0"
+  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.29.0"
   script:
     - helm dep build helm/ldap-server
     - pytest tests/chart/ldap-server
@@ -161,7 +161,7 @@ test-chart-ldap-server:
 test-chart-ldap-notifier:
   stage: test
   needs: []
-  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.28.0"
+  image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.29.0"
   script:
     - helm dep build helm/ldap-notifier
     - pytest tests/chart/ldap-notifier
@@ -201,5 +201,3 @@ check-debian-updates:
 sonarqube:
   extends: .sonarqube
   needs: []
-
-...
