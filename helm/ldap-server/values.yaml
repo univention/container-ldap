@@ -118,13 +118,6 @@ containerSecurityContext:
 # `global.extensions`.
 extensions: []
 
-# -- Array with extra environment variables to add to containers.
-#
-# extraEnvVars:
-#   - name: FOO
-#     value: "bar"
-extraEnvVars: []
-
 # -- Optionally specify a secret to create (primarily intended to be used in development environments to provide custom certificates)
 extraSecrets: []
 
@@ -459,6 +452,12 @@ ldapServer:
     registry: ""
     repository: "nubus-dev/images/ldap-server"
     tag: "latest"
+  # -- Array with extra environment variables to add to containers.
+  #
+  # extraEnvVars:
+  #   - name: FOO
+  #     value: "bar"
+  extraEnvVars: []
   leaderElector:
     image:
       # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
@@ -467,6 +466,12 @@ ldapServer:
       registry: ""
       repository: "nubus-dev/images/ldap-server-elector"
       tag: "latest"
+    # -- Array with extra environment variables to add to containers.
+    #
+    # extraEnvVars:
+    #   - name: FOO
+    #     value: "bar"
+    extraEnvVars: []
     leaseName: "ldap-primary-leader"
     leaseDurationSeconds: 15
     retryPeriodSeconds: 5
@@ -520,7 +525,6 @@ ldapServer:
     sharedRunSize: "1Gi"
     shareSamlSize: "100Mi"
 
-
   # TLS configuration for the OpenLDAP server
   tls:
     enabled: false
@@ -538,7 +542,6 @@ ldapServer:
         name: null
         keyMapping:
           dhparam.pem: null
-
 
     # Path the CA certificate file (TLSCACertPath (slapd), CA_CERT_FILE(entrypoint))
     caCertificateFile: "/certificates/ca.crt"

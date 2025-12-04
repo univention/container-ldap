@@ -112,6 +112,10 @@ spec:
               cp -a /usr/share/univention-ldap/* /target/usr/share/univention-ldap/
               cp -a /etc/ldap/* /target/etc/ldap/
               cp -a /etc/univention/* /target/etc/univention/
+          {{- with .Values.ldapServer.extraEnvVars }}
+          env:
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: usr-share-univention-ldap-volume
               mountPath: /target/usr/share/univention-ldap
@@ -132,6 +136,10 @@ spec:
             - -out
             - /dhparam/dhparam.pem
             - "2048"
+          {{- with .Values.ldapServer.extraEnvVars }}
+          env:
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: '{{ include "common.names.fullname" . }}-dh-volume'
               mountPath: /dhparam
@@ -154,6 +162,10 @@ spec:
               mkdir -p /target/ldap-acls
               cp -av /var/lib/univention-ldap-local/local-schema/* /target/ldap-schema
               cp -av /etc/univention/templates/files/etc/ldap/slapd.conf.d/* /target/ldap-acls
+          {{- with .Values.ldapServer.extraEnvVars }}
+          env:
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: plugin-targets
               mountPath: /target
@@ -167,6 +179,10 @@ spec:
           {{- end }}
           image: "{{ coalesce .image.registry $.Values.global.imageRegistry }}/{{ .image.repository }}:{{ .image.tag }}"
           imagePullPolicy: {{ coalesce .image.pullPolicy $.Values.global.imagePullPolicy | quote }}
+          {{- with $.Values.ldapServer.extraEnvVars }}
+          env:
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: plugin-targets
               mountPath: /target
@@ -185,6 +201,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
+          {{- with .Values.ldapServer.extraEnvVars }}
+          env:
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: scripts-volume
               mountPath: /scripts
@@ -218,6 +238,9 @@ spec:
                 secretKeyRef:
                   name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "admin" "context" .) }}
                   key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password" "context" .) }}
+          {{- with .Values.ldapServer.extraEnvVars }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
           command:
             - bash
             - -c
@@ -249,7 +272,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "nubus-common.secrets.name" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "defaultNameSuffix" "admin" "context" .) }}
                   key: {{ include "nubus-common.secrets.key" (dict "existingSecret" .Values.ldapServer.auth.existingSecret "key" "password" "context" .) }}
-          {{- with .Values.extraEnvVars }}
+          {{- with .Values.ldapServer.extraEnvVars }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.livenessProbe "context" .) | nindent 12 }}

@@ -79,6 +79,14 @@ nameOverride: ""
 nodeSelector: {}
 podAnnotations: {}
 
+# -- Array with extra environment variables to add to containers.
+#
+# extraEnvVars:
+#   - name: FOO
+#     value: "bar"
+#
+extraEnvVars: []
+
 # Pod Security Context.
 # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 podSecurityContext:
