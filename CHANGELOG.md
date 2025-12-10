@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.8](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.7...v0.47.8) (2025-12-10)
+
+
+### Bug Fixes
+
+* **helm:** Add component-specific extraEnvVars support ([11fc11f](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/11fc11f3a730ff5ed23c8f3ed42a62635da84ea9)), closes [univention/dev/internal/team-nubus#977](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/977)
+
 ## [0.47.7](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.6...v0.47.7) (2025-12-03)
 
 
