@@ -392,11 +392,15 @@ spec:
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.readinessProbe "context" .) | nindent 12 }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.startupProbe "context" .) | nindent 12 }}
           volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
             {{- if .Values.persistence.enabled }}
             - name: "shared-data"
               mountPath: /var/lib/univention-ldap
             {{- end }}
       volumes:
+        - name: tmp-volume
+          emptyDir: {}
         - name: "slapd-overlay-unix-socket-volume"
           emptyDir: {}
         - name: "usr-share-univention-ldap-volume"
