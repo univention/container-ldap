@@ -2,11 +2,13 @@
 SPDX-FileCopyrightText: 2024-2025 Univention GmbH
 SPDX-License-Identifier: AGPL-3.0-only
 */}}
+{{- $serviceName := printf "%s-primary" (include "common.names.fullname" .) -}}
+{{- $existingService := (lookup "v1" "Service" (include "common.names.namespace" .) $serviceName) -}}
 ---
 apiVersion: "v1"
 kind: "Service"
 metadata:
-  name: {{ printf "%s-primary" (include "common.names.fullname" .) }}
+  name: {{ $serviceName }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels:
     {{- include "common.labels.standard" ( dict "customLabels" .Values.additionalLabels "context" . ) | nindent 4 }}
@@ -23,8 +25,15 @@ spec:
       targetPort: {{ $key | quote }}
       protocol: "{{ $value.protocol | default "TCP" }}"
     {{- end }}
+  {{/* On upgrade, preserve the existing selector to avoid conflicts with the leader-elector
+       which dynamically adds statefulset.kubernetes.io/pod-name to route traffic to the leader.
+       On fresh install, use the default selector labels. */}}
   selector:
+    {{- if and $existingService $existingService.spec.selector }}
+    {{- toYaml $existingService.spec.selector | nindent 4 }}
+    {{- else }}
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     ldap-server-type: primary
     statefulset.kubernetes.io/pod-name: "will-be-updated-by-elector"  # This will be updated by the leader elector
+    {{- end }}
 ...
