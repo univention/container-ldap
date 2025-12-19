@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.9](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.8...v0.47.9) (2025-12-19)
+
+
+### Bug Fixes
+
+* **ldap-server:** Preserve selectors on existing Service ([75144d4](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/75144d4cb5179e5ba635e9e995bf1f89aa38db8c)), closes [univention/dev/internal/team-nubus#1567](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1567)
+
 ## [0.47.8](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.7...v0.47.8) (2025-12-10)
 
 
