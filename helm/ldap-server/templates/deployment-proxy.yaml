@@ -221,6 +221,8 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" .) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
             - name: usr-share-univention-ldap-volume
               mountPath: /usr/share/univention-ldap
             - name: usr-share-oidc-volume
@@ -270,6 +272,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
       volumes:
+        - name: tmp-volume
+          emptyDir: {}
         - name: "data-volume"
           emptyDir: {}
         - name: "var-run-volume"
