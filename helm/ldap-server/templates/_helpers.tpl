@@ -88,13 +88,13 @@ These template definitions are only used in this chart.
 
 {{- define "ldap-server.samlServiceProviders" -}}
     {{- $protocol := "https" -}}
-    {{- $nubusKeycloakDefaultSubdomain := "portal" -}}
+    {{- $nubusPortalDefaultSubdomain := "portal" -}}
     {{- if and .Values.ldapServer .Values.ldapServer.config .Values.ldapServer.config.samlServiceProviders -}}
         {{- .Values.ldapServer.config.samlServiceProviders -}}
-    {{- else if and .Values.global.domain .Values.global.keycloak .Values.global.keycloak.subdomain -}}
-        {{- printf "%s://%s.%s/univention/saml/metadata" $protocol .Values.global.keycloak.subdomain .Values.global.domain -}}
+    {{- else if and .Values.global.nubusDeployment .Values.global.domain .Values.global.subDomains .Values.global.subDomains.portal -}}
+        {{- printf "%s://%s.%s/univention/saml/metadata" $protocol .Values.global.subDomains.portal .Values.global.domain -}}
     {{- else if and .Values.global.nubusDeployment .Values.global.domain -}}
-        {{- printf "%s://%s.%s/univention/saml/metadata" $protocol $nubusKeycloakDefaultSubdomain .Values.global.domain -}}
+        {{- printf "%s://%s.%s/univention/saml/metadata" $protocol $nubusPortalDefaultSubdomain .Values.global.domain -}}
     {{- else -}}
         {{- required ".Values.ldapServer.config.samlServiceProviders must be defined." .Values.ldapServer.config.samlServiceProviders -}}
     {{- end -}}
