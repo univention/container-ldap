@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.10](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.9...v0.47.10) (2026-01-02)
+
+
+### Bug Fixes
+
+* **helm:** Use global.subDomains.portal for SAML service providers URL ([a369c7f](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/a369c7f97e00011237e800c008c735eab434ce3c)), closes [univention/dev/internal/team-nubus#866](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/866)
+
 ## [0.47.9](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.8...v0.47.9) (2025-12-19)
 
 
