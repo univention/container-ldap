@@ -6,7 +6,7 @@
 # Global variables
 ###############################################################################
 
-ARG UCS_BASE_IMAGE_TAG=5.2.3-build.20251128@sha256:2febf0d2be06f0cca264085db0270c2c61170ea93d14c7ff840c61ecd5328c70
+ARG UCS_BASE_IMAGE_TAG=5.2.4-build.20260101@sha256:1d35be0057311e0ab432b2d4c98295638d99de2e8c12fa98ab89090a9d536ae1
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base
 
 ###############################################################################
