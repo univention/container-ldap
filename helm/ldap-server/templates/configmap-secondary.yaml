@@ -128,6 +128,18 @@ data:
 
     # Process the slapd.conf file line by line
     while IFS=$'\n' read -r line; do
+      # Skip DDS overlay for shadow databases
+      # All databases on secondaries become shadow databases (read-only replicas via syncrepl)
+      # DDS overlay requires write access and is incompatible with shadow databases
+      if [[ "${line}" =~ ^overlay[[:space:]]+dds ]]; then
+        continue
+      fi
+
+      # Skip DDS configuration lines
+      if [[ "${line}" =~ ^dds- ]]; then
+        continue
+      fi
+
       # Append the current line to the modified slapd.conf
       modified_slapd_conf+="${line}\n"
 
