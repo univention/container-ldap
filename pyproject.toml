@@ -29,7 +29,7 @@ pytest-profiling = "1.7"
 pytest-timeout = "2.3.1"
 ldap3 = "^2.9.1"
 pytest-helm = ">=0.12.0"
-helm-test-harness = "0.12.0"
+helm-test-harness = "0.29.8"
 # pytest-helm = { path = "../common-helm/pytest-helm", develop = true }
 # helm-test-harness = { path = "../common-helm/helm-test-harness", develop = true }
 
