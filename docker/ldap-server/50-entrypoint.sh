@@ -10,6 +10,7 @@ setup_paths() {
   mkdir --parents /var/lib/univention-ldap/ldap
   mkdir --parents /var/lib/univention-ldap/translog
   mkdir --parents /var/lib/univention-ldap/notify
+  mkdir --parents /var/lib/univention-ldap/changes
   touch /var/lib/univention-ldap/notify/transaction
   if [ ! -e /var/run/slapd ]
   then

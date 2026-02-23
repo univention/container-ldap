@@ -25,6 +25,20 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 WORKDIR /home/deb_packages
 
+RUN echo 'deb [trusted=yes] http://omar.knut.univention.de/build2/ ucs_5.2-0-fbotner/all/' >> /etc/apt/sources.list; \
+    echo 'deb [trusted=yes] http://omar.knut.univention.de/build2/ ucs_5.2-0-fbotner/$(ARCH)/' >> /etc/apt/sources.list; \
+    echo 'deb [trusted=yes] http://omar.knut.univention.de/build2/git/fbotner-poc-accesslog git main' >> /etc/apt/sources.list; \
+    echo 'Package: *' >/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin: release release v=5.2.0,o=Univention,a=apt,n=ucs_5.2-0-fbotner/amd64,l=Univention Corporate Server,c=' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin-Priority: 1000' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Package: *' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin: release release v=5.2.0,o=Univention,a=apt,n=ucs_5.2-0-fbotner/all,l=Univention Corporate Server,c=' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin-Priority: 1000' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Package: *' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin: release o=Univention,a=git,n=git,l=fbotner-poc-accesslog,c=main,b=amd64' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin-Priority: 1000' >>/etc/apt/preferences.d/ldap.pref; \
+    apt-get update;
+
 
 RUN apt-get download \
     # The Self-service does not have an extension package. It's part of the UMC.
@@ -41,6 +55,7 @@ RUN apt-get download \
     cy2-saml && \
     (dpkg --force-all -i ./*.deb || true)
 
+
 ###############################################################################
 # Base image
 ###############################################################################
@@ -52,6 +67,18 @@ ARG LABEL_SOURCE=undefined
 ARG LABEL_VERSION=undefined
 
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+
+RUN echo 'deb [trusted=yes] http://omar.knut.univention.de/build2/ ucs_5.2-0-fbotner/all/' >> /etc/apt/sources.list; \
+    echo 'deb [trusted=yes] http://omar.knut.univention.de/build2/ ucs_5.2-0-fbotner/$(ARCH)/' >> /etc/apt/sources.list; \
+    echo 'Package: *' >/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin: release release v=5.2.0,o=Univention,a=apt,n=ucs_5.2-0-fbotner/amd64,l=Univention Corporate Server,c=' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin-Priority: 1000' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Package: *' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin: release release v=5.2.0,o=Univention,a=apt,n=ucs_5.2-0-fbotner/all,l=Univention Corporate Server,c=' >>/etc/apt/preferences.d/ldap.pref; \
+    echo 'Pin-Priority: 1000' >>/etc/apt/preferences.d/ldap.pref; \
+    apt-get update;
+
+
 
 # hadolint ignore=DL3008
 RUN \

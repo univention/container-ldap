@@ -47,6 +47,45 @@ def container(connection, test_dn):
     assert not writer.failed, "Cleanup from LDAP failed, tests are leaking. Manual cleanup required."
 
 
+@pytest.fixture()
+def some_ldap_object(connection, container):
+    person = ObjectDef(
+        [
+            "top",
+            "person",
+            "univentionObject",
+            "posixAccount",
+            "organizationalPerson",
+            "inetOrgPerson",
+            "univentionMail",
+        ],
+        connection,
+    )
+    writer = Writer(connection, person)
+    child = writer.new("uid=hans," + container.entry_dn)
+    child.cn = "hans"
+    child.sn = "surename"
+    child.uid = "hans"
+    child.uidNumber = "123"
+    child.gecos = "gecos"
+    child.gidNumber = "456"
+    child.homeDirectory = "/tmp"
+    child.mail = ["mail1@com", "mail2@com"]
+    child.telephoneNumber = ["1", "2"]
+    child.mobile = ["1", "2", "3"]
+    child.pager = ["1", "2"]
+    child.univentionObjectType = "my/object"
+    assert writer.commit(), writer.errors
+
+    connection.search(child.entry_dn, "(objectclass=*)", attributes=["*", "+"])
+    yield connection.entries[0]
+
+    if connection.search(child.entry_dn, "(objectclass=*)", attributes=["*", "+"]):
+        child.entry_refresh()
+        child.entry_delete()
+        assert writer.commit(), writer.errors
+
+
 @pytest.fixture(scope="session")
 def object_class_is_loaded(connection) -> Callable[[str], bool]:
     def _object_class_is_loaded(object_class: str) -> bool:
