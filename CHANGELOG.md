@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.13](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.12...v0.47.13) (2026-02-25)
+
+
+### Bug Fixes
+
+* trigger version bump ([594747e](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/594747ef5ac27d8e1e7546924b4a2f3e47ce4283)), closes [#0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/issues/0)
+
 ## [0.47.12](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.11...v0.47.12) (2026-01-16)
 
 
