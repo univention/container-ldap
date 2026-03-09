@@ -32,3 +32,4 @@ helm/**/tests/
 
 # Tmp files for unit tests
 /docker/ldap-server/tests/ldap-testfiles/test-ldap-statefile-tmp.json
+vanilla/data
