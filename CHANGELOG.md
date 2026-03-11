@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.14](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.13...v0.47.14) (2026-03-11)
+
+
+### Bug Fixes
+
+* **ldap-server:** Bump dependencies ([111dc67](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/111dc67e44da2602218344edcfdfd94aabf90a15)), closes [univention/dev/internal/team-nubus#1477](https://git.knut.univention.de/univention/dev/internal/team-nubus/issues/1477)
+
 ## [0.47.13](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.12...v0.47.13) (2026-02-25)
 
 
