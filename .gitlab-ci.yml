@@ -26,6 +26,7 @@ variables:
   GITLAB_PRIVATE_TOKEN: "${GITLAB_TOKEN}"
   GITLAB_PROJECT_ID: "${CI_PROJECT_ID}"
   GITLAB_SERVER: "https://git.knut.univention.de"
+  RENOVATE_USER_ID: "1393"
 
 lint-pre-commit:
   before_script:
@@ -86,9 +87,11 @@ test-ldap-smoke:
   stage: test
   extends: .dind
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
-  rules:
+  rules: &rules_dind
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"
+    - if: '$GITLAB_USER_ID == $RENOVATE_USER_ID && $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS !~ /Renovate run dind/'
+      when: "manual"
     - when: "on_success"
   before_script:
     # Allow that the Docker API version is negotiated between client and server
@@ -122,10 +125,7 @@ test-notifier-smoke:
   stage: test
   extends: .dind
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: "never"
-    - when: "on_success"
+  rules: *rules_dind
   before_script:
     # Allow that the Docker API version is negotiated between client and server
     - unset DOCKER_API_VERSION
