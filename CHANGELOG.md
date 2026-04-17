@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.15](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.14...v0.47.15) (2026-04-17)
+
+
+### Bug Fixes
+
+* **deps:** Update Base Image ([4b65dca](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/commit/4b65dca6576d264f396ea28c100181f21c97f871)), closes [#0](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/issues/0)
+
 ## [0.47.14](https://git.knut.univention.de/univention/dev/nubus-for-k8s/ldap/compare/v0.47.13...v0.47.14) (2026-03-11)
 
 
