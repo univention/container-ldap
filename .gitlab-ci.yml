@@ -86,7 +86,7 @@ test-database-initialized-unit:
 test-ldap-smoke:
   stage: test
   extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:29.4.1@sha256:c77e5d7912f9b137cc67051fdc2991d8f5ae22c55ddf532bb836dcb693a04940"
   rules: &rules_dind
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: "never"
@@ -124,7 +124,7 @@ test-ldap-smoke:
 test-notifier-smoke:
   stage: test
   extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:29.4.1@sha256:c77e5d7912f9b137cc67051fdc2991d8f5ae22c55ddf532bb836dcb693a04940"
   rules: *rules_dind
   before_script:
     # Allow that the Docker API version is negotiated between client and server
