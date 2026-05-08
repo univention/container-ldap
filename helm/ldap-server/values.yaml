@@ -164,8 +164,14 @@ nodeSelector: {}
 
 # Database persistence settings.
 persistence:
-  # -- The volume access modes, some of "ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany", "ReadWriteOncePod".
+  # -- Enable persistent storage for the shared-data volume (true) or use an emptyDir (false).
+  # The shared-run volume is always a PVC regardless of this setting, as it holds the slapd
+  # socket required by the ldap-notifier.
+  enabled: true
+
+  # Per-volume PVC configuration.
   #
+  # accessModes options:
   # "ReadWriteOnce" => The volume can be mounted as read-write by a single node. ReadWriteOnce access mode still can
   #                    allow multiple pods to access the volume when the pods are running on the same node.
   # "ReadOnlyMany" => The volume can be mounted as read-only by many nodes.
@@ -173,37 +179,27 @@ persistence:
   # "ReadWriteOncePod" => The volume can be mounted as read-write by a single Pod. Use ReadWriteOncePod access mode if
   #                       you want to ensure that only one pod across whole cluster can read that PVC or write to it.
   #
-  accessModes:
-    - "ReadWriteOnce"
-
-  # -- Annotations for the PVC.
-  annotations: {}
-
-  # -- Custom PVC data source.
-  dataSource: {}
-
-  # -- Enable data persistence (true) or use temporary storage (false).
-  enabled: true
-
-  # -- Use an already existing claim.
-  existingClaim: ""
-
-  # -- Labels for the PVC.
-  labels: {}
-
-  # -- The volume size with unit.
-  size: "10Gi"
-
-  # -- The (storage) class of PV.
-  storageClass: ""
-
-  # -- Selector to match an existing Persistent Volume (this value is evaluated as a template).
-  #
-  # selector:
-  #   matchLabels:
-  #     app: my-app
-  #
-  selector: {}
+  volumes:
+    # -- PVC configuration for the shared-data volume, which holds the LDAP database.
+    sharedData:
+      # -- The volume access modes.
+      accessModes:
+        - "ReadWriteOnce"
+      # -- The volume size with unit.
+      size: "10Gi"
+      # -- The (storage) class of PV. If empty, the cluster's default storage class will be applied.
+      storageClass: ""
+    # -- PVC configuration for the shared-run volume, which holds transient slapd runtime state
+    # (socket, PID). It can be small and does not require a high-performance storage class.
+    # Set storageClass to a cheaper class to reduce cost.
+    sharedRun:
+      # -- The volume access modes.
+      accessModes:
+        - "ReadWriteOnce"
+      # -- The volume size with unit.
+      size: "1Gi"
+      # -- The (storage) class of PV. If empty, the cluster's default storage class will be applied.
+      storageClass: ""
 
 # -- Pod Annotations.
 # Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/

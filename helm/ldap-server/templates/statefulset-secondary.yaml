@@ -19,7 +19,6 @@ spec:
   serviceName: {{ printf "%s-secondary" (include "common.names.fullname" .) }}
   replicas: {{ include "ldap-server.replicaCountSecondary" . }}
   podManagementPolicy: {{ .Values.podManagementPolicy | default "OrderedReady" }}
-  {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
   {{/*
     TODO-0001
@@ -29,27 +28,30 @@ spec:
     Change the name to the following to dissolve this coupling.
     name: {{ printf "data-%s" (include "common.names.fullname" .) }}
   */}}
+    {{- if .Values.persistence.enabled }}
+    {{- $sharedData := .Values.persistence.volumes.sharedData }}
     - metadata:
         name: "shared-data"
       spec:
-        accessModes: [{{ range .Values.persistence.accessModes }}{{ . | quote }}{{ end }}]
-        {{- if .Values.persistence.storageClass }}
-        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        accessModes: [{{ range $sharedData.accessModes }}{{ . | quote }}{{ end }}]
+        {{- if $sharedData.storageClass }}
+        storageClassName: {{ $sharedData.storageClass | quote }}
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.persistence.size | quote }}
+            storage: {{ $sharedData.size | quote }}
+    {{- end }}
+    {{- $sharedRun := .Values.persistence.volumes.sharedRun }}
     - metadata:
         name: "shared-run"
       spec:
-        accessModes: [{{ range .Values.persistence.accessModes }}{{ . | quote }}{{ end }}]
-        {{- if .Values.persistence.storageClass }}
-        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        accessModes: [{{ range $sharedRun.accessModes }}{{ . | quote }}{{ end }}]
+        {{- if $sharedRun.storageClass }}
+        storageClassName: {{ $sharedRun.storageClass | quote }}
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.ldapServer.legacy.sharedRunSize | quote }}
-  {{- end }}
+            storage: {{ $sharedRun.size | quote }}
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
@@ -333,7 +335,6 @@ spec:
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base-defaults.conf"
               subPath: "base-defaults.conf"
-            {{- if .Values.persistence.enabled }}
             {{/*
               TODO-0001 (also see above)
               When legacy share volume between ldap-server and ldap-notifier has been resolved, use a pvc exclusive to ldap-server
@@ -341,7 +342,6 @@ spec:
             */}}
             - name: "shared-data"
               mountPath: /var/lib/univention-ldap
-            {{- end }}
             {{- if .Values.ldapServer.tls.enabled }}
             - name: {{ printf "%s-tls-volume" (include "common.names.fullname" .) }}
               mountPath: /certificates
@@ -354,6 +354,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
       volumes:
+        {{- if not .Values.persistence.enabled }}
+        - name: "shared-data"
+          emptyDir: {}
+        {{- end }}
         - name: "usr-share-univention-ldap-volume"
           emptyDir: {}
         - name: "usr-share-saml-volume"

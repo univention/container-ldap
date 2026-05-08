@@ -980,7 +980,31 @@ null
 			<td>Node labels for pod assignment. Ref: https://kubernetes.io/docs/user-guide/node-selection/</td>
 		</tr>
 		<tr>
-			<td>persistence.accessModes</td>
+			<td>persistence.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+true
+</pre>
+</td>
+			<td>Enable persistent storage for the shared-data volume (true) or use an emptyDir (false). The shared-run volume is always a PVC regardless of this setting, as it holds the slapd socket required by the ldap-notifier.</td>
+		</tr>
+		<tr>
+			<td>persistence.volumes.sharedData</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "accessModes": [
+    "ReadWriteOnce"
+  ],
+  "size": "10Gi",
+  "storageClass": ""
+}
+</pre>
+</td>
+			<td>PVC configuration for the shared-data volume, which holds the LDAP database.</td>
+		</tr>
+		<tr>
+			<td>persistence.volumes.sharedData.accessModes</td>
 			<td>list</td>
 			<td><pre lang="json">
 [
@@ -988,64 +1012,10 @@ null
 ]
 </pre>
 </td>
-			<td>The volume access modes, some of "ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany", "ReadWriteOncePod".  "ReadWriteOnce" => The volume can be mounted as read-write by a single node. ReadWriteOnce access mode still can                    allow multiple pods to access the volume when the pods are running on the same node. "ReadOnlyMany" => The volume can be mounted as read-only by many nodes. "ReadWriteMany" => The volume can be mounted as read-write by many nodes. "ReadWriteOncePod" => The volume can be mounted as read-write by a single Pod. Use ReadWriteOncePod access mode if                       you want to ensure that only one pod across whole cluster can read that PVC or write to it. </td>
+			<td>The volume access modes.</td>
 		</tr>
 		<tr>
-			<td>persistence.annotations</td>
-			<td>object</td>
-			<td><pre lang="json">
-{}
-</pre>
-</td>
-			<td>Annotations for the PVC.</td>
-		</tr>
-		<tr>
-			<td>persistence.dataSource</td>
-			<td>object</td>
-			<td><pre lang="json">
-{}
-</pre>
-</td>
-			<td>Custom PVC data source.</td>
-		</tr>
-		<tr>
-			<td>persistence.enabled</td>
-			<td>bool</td>
-			<td><pre lang="json">
-true
-</pre>
-</td>
-			<td>Enable data persistence (true) or use temporary storage (false).</td>
-		</tr>
-		<tr>
-			<td>persistence.existingClaim</td>
-			<td>string</td>
-			<td><pre lang="json">
-""
-</pre>
-</td>
-			<td>Use an already existing claim.</td>
-		</tr>
-		<tr>
-			<td>persistence.labels</td>
-			<td>object</td>
-			<td><pre lang="json">
-{}
-</pre>
-</td>
-			<td>Labels for the PVC.</td>
-		</tr>
-		<tr>
-			<td>persistence.selector</td>
-			<td>object</td>
-			<td><pre lang="json">
-{}
-</pre>
-</td>
-			<td>Selector to match an existing Persistent Volume (this value is evaluated as a template).  selector:   matchLabels:     app: my-app </td>
-		</tr>
-		<tr>
-			<td>persistence.size</td>
+			<td>persistence.volumes.sharedData.size</td>
 			<td>string</td>
 			<td><pre lang="json">
 "10Gi"
@@ -1054,13 +1024,57 @@ true
 			<td>The volume size with unit.</td>
 		</tr>
 		<tr>
-			<td>persistence.storageClass</td>
+			<td>persistence.volumes.sharedData.storageClass</td>
 			<td>string</td>
 			<td><pre lang="json">
 ""
 </pre>
 </td>
-			<td>The (storage) class of PV.</td>
+			<td>The (storage) class of PV. If empty, the cluster's default storage class will be applied.</td>
+		</tr>
+		<tr>
+			<td>persistence.volumes.sharedRun</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "accessModes": [
+    "ReadWriteOnce"
+  ],
+  "size": "1Gi",
+  "storageClass": ""
+}
+</pre>
+</td>
+			<td>PVC configuration for the shared-run volume, which holds transient slapd runtime state (socket, PID). It can be small and does not require a high-performance storage class. Set storageClass to a cheaper class to reduce cost.</td>
+		</tr>
+		<tr>
+			<td>persistence.volumes.sharedRun.accessModes</td>
+			<td>list</td>
+			<td><pre lang="json">
+[
+  "ReadWriteOnce"
+]
+</pre>
+</td>
+			<td>The volume access modes.</td>
+		</tr>
+		<tr>
+			<td>persistence.volumes.sharedRun.size</td>
+			<td>string</td>
+			<td><pre lang="json">
+"1Gi"
+</pre>
+</td>
+			<td>The volume size with unit.</td>
+		</tr>
+		<tr>
+			<td>persistence.volumes.sharedRun.storageClass</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td>The (storage) class of PV. If empty, the cluster's default storage class will be applied.</td>
 		</tr>
 		<tr>
 			<td>podAnnotationsPrimary</td>
