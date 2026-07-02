@@ -75,6 +75,33 @@ data:
     done
 
     echo "Success, the SAML Metadata is available."
+  wait-for-oidc-jwks.sh: |
+    #!/bin/bash
+
+    set -euo pipefail
+
+    # we have no UCR in this container, so just grep the OIDC issuer URL from the config file
+    UCR_FILES="/etc/univention/base-defaults.conf /etc/univention/base.conf /etc/univention/base-forced.conf"
+    OIDC_JWKS_URL=$(grep --no-filename '^ldap/server/sasl/oauthbearer/issuer:' $UCR_FILES 2>/dev/null | cut --delimiter=':' --fields='2-' | tail --lines=1 | xargs || true)
+    OIDC_JWKS_URL_INTERNAL=$(grep --no-filename '^ldap/server/sasl/oauthbearer/issuer-internal:' $UCR_FILES 2>/dev/null | cut --delimiter=':' --fields='2-' | tail --lines=1 | xargs || true)
+
+    DOWNLOAD_URL="${OIDC_JWKS_URL_INTERNAL:-${OIDC_JWKS_URL}}/protocol/openid-connect/certs"
+    echo "Checking endpoint ${DOWNLOAD_URL}."
+
+    SECONDS=0
+    TIMEOUT=120
+
+    while ! curl -k -o /dev/null -sf "${DOWNLOAD_URL}"; do
+      echo "Checking if the OIDC JWKS can be downloaded from keycloak ..."
+      sleep 2
+
+      if (($SECONDS > $TIMEOUT)); then
+        echo "Giving up after $TIMEOUT seconds"
+        exit 1
+      fi
+    done
+
+    echo "Success, the OIDC JWKS is available."
   init-internal-database.sh: |
     #!/bin/bash
 
