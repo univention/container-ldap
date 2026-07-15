@@ -158,9 +158,19 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0.2.0 \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
     /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so \
     \
+    # The slapd postinst script starts the daemon directly via
+    # /etc/init.d/slapd (not through invoke-rc.d), so it ignores
+    # policy-rc.d. It needs to bind the privileged LDAP port, which
+    # rootless buildkit's sandbox does not allow. Divert the init
+    # script to a no-op for the duration of the install to prevent
+    # the postinst from actually starting the daemon during the build.
+    && dpkg-divert --local --rename --add /etc/init.d/slapd \
+    && ln -s /bin/true /etc/init.d/slapd \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
     slapd \
     ldap-utils \
+    && rm /etc/init.d/slapd \
+    && dpkg-divert --local --rename --remove /etc/init.d/slapd \
     # Explicitly disable cn=config, so
     # slapcat defaults to reading the config from
     # /etc/ldap/slapd.conf
