@@ -80,7 +80,6 @@ RUN \
     libsasl2-modules \
     libsasl2-modules-db \
     libsasl2-modules-gssapi-heimdal \
-    krb5-config \
     libgssapi-krb5-2 \
     libkrb5-26-heimdal \
     libkadm5srv8-heimdal \
