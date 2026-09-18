@@ -217,6 +217,10 @@ FROM base AS final
 RUN pipenv sync --system \
     && rm -r ~/.cache
 
+# bind9 arrives as a hard dependency of python3-univention-lib, which only calls
+# dig for AD member mode. This has to stay the last dpkg operation in the stage.
+RUN dpkg --purge --force-depends bind9-dnsutils bind9-host bind9-libs
+
 WORKDIR /
 COPY ucr /usr/sbin/
 COPY ucr_light_filter.py /usr/sbin/ucr-light-filter
