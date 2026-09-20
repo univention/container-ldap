@@ -225,6 +225,9 @@ WORKDIR /
 COPY ucr /usr/sbin/
 COPY ucr_light_filter.py /usr/sbin/ucr-light-filter
 
+# UCR defaults the image owns, overridable by a mounted base.conf
+COPY base-defaults.conf /etc/univention/base-defaults.conf
+
 COPY 40-self-service-acl.sh \
     50-entrypoint.sh \
     /entrypoint.d/
