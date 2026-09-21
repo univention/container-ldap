@@ -131,8 +131,10 @@ spec:
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-          image: "{{ coalesce .Values.dhInitContainer.image.registry .Values.global.imageRegistry }}/{{ .Values.dhInitContainer.image.repository }}:{{ .Values.dhInitContainer.image.tag }}"
-          imagePullPolicy: {{ coalesce .Values.dhInitContainer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
+          image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
+          command:
+            - openssl
           args:
             - dhparam
             - -out

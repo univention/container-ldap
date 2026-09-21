@@ -274,42 +274,6 @@ true
 			<td>Disallow custom Seccomp profile by setting it to RuntimeDefault.</td>
 		</tr>
 		<tr>
-			<td>dhInitContainer.image.pullPolicy</td>
-			<td>string</td>
-			<td><pre lang="json">
-null
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>dhInitContainer.image.registry</td>
-			<td>string</td>
-			<td><pre lang="json">
-"docker.io"
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>dhInitContainer.image.repository</td>
-			<td>string</td>
-			<td><pre lang="json">
-"alpine/openssl"
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>dhInitContainer.image.tag</td>
-			<td>string</td>
-			<td><pre lang="json">
-"3.1.4@sha256:974b4593b02447256622dce7b930b98764441dab39c5ca729381aa35332d6778"
-</pre>
-</td>
-			<td></td>
-		</tr>
-		<tr>
 			<td>extensions</td>
 			<td>list</td>
 			<td><pre lang="json">

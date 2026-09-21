@@ -392,14 +392,6 @@ updateStrategy:
   # are destroyed first.
   type: "RollingUpdate"
 
-# OpenSSL container image section (used for DH parameter generation)
-dhInitContainer:
-  image:
-    pullPolicy: null
-    registry: "docker.io"
-    repository: "alpine/openssl"
-    tag: "3.1.4@sha256:974b4593b02447256622dce7b930b98764441dab39c5ca729381aa35332d6778"
-
 # Configures an init container that waits for keycloak to be ready
 waitForDependency:
   enabled: true
