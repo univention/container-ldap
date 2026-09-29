@@ -64,6 +64,20 @@ affinityPrimary:
                 values:
                   - primary
           topologyKey: kubernetes.io/hostname
+  # -- The ldap-notifier requires a hard affinity to run on the same node as the primary,
+  # since it shares a node-local volume with it. Without a matching preference here,
+  # the primary could be rescheduled onto a different node than the notifier, breaking that setup.
+  podAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - ldap-notifier
+          topologyKey: kubernetes.io/hostname
 affinitySecondary:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
