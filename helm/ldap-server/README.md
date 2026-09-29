@@ -72,6 +72,27 @@ helm uninstall ldap-server
 			<td>object</td>
 			<td><pre lang="json">
 {
+  "podAffinity": {
+    "preferredDuringSchedulingIgnoredDuringExecution": [
+      {
+        "podAffinityTerm": {
+          "labelSelector": {
+            "matchExpressions": [
+              {
+                "key": "app.kubernetes.io/name",
+                "operator": "In",
+                "values": [
+                  "ldap-notifier"
+                ]
+              }
+            ]
+          },
+          "topologyKey": "kubernetes.io/hostname"
+        },
+        "weight": 100
+      }
+    ]
+  },
   "podAntiAffinity": {
     "preferredDuringSchedulingIgnoredDuringExecution": [
       {
@@ -97,6 +118,35 @@ helm uninstall ldap-server
 </pre>
 </td>
 			<td>Affinity for pod assignment. Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity Note: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set.</td>
+		</tr>
+		<tr>
+			<td>affinityPrimary.podAffinity</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "preferredDuringSchedulingIgnoredDuringExecution": [
+    {
+      "podAffinityTerm": {
+        "labelSelector": {
+          "matchExpressions": [
+            {
+              "key": "app.kubernetes.io/name",
+              "operator": "In",
+              "values": [
+                "ldap-notifier"
+              ]
+            }
+          ]
+        },
+        "topologyKey": "kubernetes.io/hostname"
+      },
+      "weight": 100
+    }
+  ]
+}
+</pre>
+</td>
+			<td>The ldap-notifier requires a hard affinity to run on the same node as the primary, since it shares a node-local volume with it. Without a matching preference here, the primary could be rescheduled onto a different node than the notifier, breaking that setup.</td>
 		</tr>
 		<tr>
 			<td>affinityProxy.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].key</td>
