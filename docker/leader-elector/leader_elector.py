@@ -8,11 +8,17 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import urllib3
 from kubernetes import client, config, watch
 from kubernetes.client.rest import ApiException
+from pydantic import PositiveInt
 from pydantic_settings import BaseSettings
 
 LOG_FORMAT = "%(asctime)s %(levelname)-5s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
+
+# A request either gets an error answer from the API server or no answer at all (timeout, refused or dropped
+# connection). The loop retries both in its next iteration.
+API_ERRORS = (ApiException, urllib3.exceptions.HTTPError)
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +30,9 @@ class Settings(BaseSettings):
     lease_duration_seconds: int
     retry_period_seconds: int
     renew_deadline_seconds: int
+    # Without a timeout, a request to an API server that stops answering blocks the loop forever. It applies to each
+    # attempt: the client retries GET and PUT requests up to three times.
+    request_timeout_seconds: PositiveInt = 5
 
 
 def setup_logging(log_level: str) -> None:
@@ -75,7 +84,9 @@ class LDAPLeaderElector:
         """Ensure the lease exists"""
         try:
             self.coordination_api.read_namespaced_lease(
-                name=self.settings.lease_name, namespace=self.settings.pod_namespace
+                name=self.settings.lease_name,
+                namespace=self.settings.pod_namespace,
+                _request_timeout=self.settings.request_timeout_seconds,
             )
         except ApiException as e:
             if not e.status == 404:
@@ -88,7 +99,11 @@ class LDAPLeaderElector:
                     renew_time=None,
                 ),
             )
-            self.coordination_api.create_namespaced_lease(namespace=self.settings.pod_namespace, body=lease)
+            self.coordination_api.create_namespaced_lease(
+                namespace=self.settings.pod_namespace,
+                body=lease,
+                _request_timeout=self.settings.request_timeout_seconds,
+            )
 
     def acquire_or_renew(self):
         """Acquire or renew the lease"""
@@ -99,7 +114,9 @@ class LDAPLeaderElector:
 
         try:
             lease = self.coordination_api.read_namespaced_lease(
-                name=self.settings.lease_name, namespace=self.settings.pod_namespace
+                name=self.settings.lease_name,
+                namespace=self.settings.pod_namespace,
+                _request_timeout=self.settings.request_timeout_seconds,
             )
             current_time = datetime.now(timezone.utc)
 
@@ -117,7 +134,10 @@ class LDAPLeaderElector:
             lease.spec.renew_time = current_time.isoformat()
 
             self.coordination_api.replace_namespaced_lease(
-                name=self.settings.lease_name, namespace=self.settings.pod_namespace, body=lease
+                name=self.settings.lease_name,
+                namespace=self.settings.pod_namespace,
+                body=lease,
+                _request_timeout=self.settings.request_timeout_seconds,
             )
             return True
         except ApiException as e:
@@ -150,10 +170,11 @@ class LDAPLeaderElector:
                 name=self.settings.pod_name,
                 namespace=self.settings.pod_namespace,
                 body={"metadata": {"labels": {"ldap-leader": label_value}}},
+                _request_timeout=self.settings.request_timeout_seconds,
             )
             logger.info(f"Pod {self.settings.pod_name} {'labeled' if is_leader else 'unlabeled'} as leader")
             self.is_currently_labeled_leader = is_leader  # Update tracked state
-        except ApiException as e:
+        except API_ERRORS as e:
             logger.error(f"Error updating pod leader label: {e}")
 
     def update_service_selector(self, make_active):
@@ -166,13 +187,18 @@ class LDAPLeaderElector:
             service_name = f"{self.settings.pod_name.rsplit('-', 1)[0]}"
             body = {"spec": {"selector": {"statefulset.kubernetes.io/pod-name": self.settings.pod_name}}}
             self.core_api.patch_namespaced_service(
-                name=service_name, namespace=self.settings.pod_namespace, body=body, field_manager="leader-elector"
+                name=service_name,
+                namespace=self.settings.pod_namespace,
+                body=body,
+                field_manager="leader-elector",
+                _request_timeout=self.settings.request_timeout_seconds,
             )
             logger.info(f"Service selector {'updated to' if make_active else 'removed from'} {self.settings.pod_name}")
             self.is_currently_active = make_active  # Update tracked state
-        except ApiException as e:
+        except API_ERRORS as e:
+            # The next iteration patches it again. Exiting would take the pod out of service until the elector
+            # container is ready again.
             logger.error(f"Error updating service selector: {e}")
-            sys.exit(1)
 
     def ensure_pod_is_active_primary(self):
         """Configure pod as active primary"""
@@ -188,24 +214,32 @@ class LDAPLeaderElector:
         """Release the lease if we're the holder"""
         try:
             lease = self.coordination_api.read_namespaced_lease(
-                name=self.settings.lease_name, namespace=self.settings.pod_namespace
+                name=self.settings.lease_name,
+                namespace=self.settings.pod_namespace,
+                _request_timeout=self.settings.request_timeout_seconds,
             )
             if lease.spec.holder_identity == self.settings.pod_name:
                 lease.spec.holder_identity = None
                 lease.spec.renew_time = None
                 self.coordination_api.replace_namespaced_lease(
-                    name=self.settings.lease_name, namespace=self.settings.pod_namespace, body=lease
+                    name=self.settings.lease_name,
+                    namespace=self.settings.pod_namespace,
+                    body=lease,
+                    _request_timeout=self.settings.request_timeout_seconds,
                 )
-        except ApiException:
+        except API_ERRORS:
             logger.error("Failed to release lease", exc_info=True)
 
     def run(self):
         """Main execution logic"""
         logger.info(f"Starting leader election for pod {self.settings.pod_name}")
-        self.ensure_lease()
+        lease_exists = False
 
         while self.running:
             try:
+                if not lease_exists:
+                    self.ensure_lease()
+                    lease_exists = True
                 is_leader = self.acquire_or_renew()
                 if is_leader:
                     self.ensure_pod_is_active_primary()
@@ -218,7 +252,7 @@ class LDAPLeaderElector:
                 # If we're leader, wait until near lease expiration before renewing
                 time.sleep(self.settings.renew_deadline_seconds)
 
-            except ApiException:
+            except API_ERRORS:
                 logger.error("Failed to acquire/renew lease", exc_info=True)
                 self.ensure_pod_is_hot_standby()
                 time.sleep(self.settings.retry_period_seconds)
