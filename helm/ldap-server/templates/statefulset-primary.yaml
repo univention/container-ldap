@@ -396,6 +396,7 @@ spec:
           volumeMounts:
             - name: "shared-data"
               mountPath: /var/lib/univention-ldap
+              readOnly: true
       volumes:
         {{- if not .Values.persistence.enabled }}
         - name: "shared-data"
