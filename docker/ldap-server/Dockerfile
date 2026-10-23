@@ -167,6 +167,7 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0.2.0 \
     && ln -s /bin/true /etc/init.d/slapd \
     && apt-get --assume-yes --verbose-versions --no-install-recommends install \
     slapd \
+    slapd-contrib \
     ldap-utils \
     && rm /etc/init.d/slapd \
     && dpkg-divert --local --rename --remove /etc/init.d/slapd \
