@@ -136,7 +136,7 @@ COPY --from=ucs_builder \
     /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
     /usr/lib/x86_64-linux-gnu/sasl2/
 COPY --from=ucs_builder \
-    /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0.2.0 \
+    /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so \
     /usr/lib/x86_64-linux-gnu/sasl2/
 
 # Only the UCS version of this library fits as libsaml linked against this
@@ -145,13 +145,7 @@ COPY --from=ucs_builder /usr/lib/liblasso.so.3.15.1  /usr/lib/
 
 # ldconfig doesn't create the following links as this directory
 # is not in any config under /etc/ld.so.conf.d/
-RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0.2.0 \
-    /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0 \
-    \
-    && ln -s /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so.0.2.0 \
-    /usr/lib/x86_64-linux-gnu/sasl2/liboauthbearer.so \
-    \
-    && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
+RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
     /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0 \
     \
     && ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
