@@ -175,7 +175,12 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/sasl2/libsaml.so.0.2.0 \
     # Some file ownerships are explicitly changed to the user openldap with uid 100
     # in the debian installation scripts.
     # This leads to errors when running the container as any other user and needs to be reversed.
-    && chown -R 100:102 /etc/ldap/
+    && chown -R 100:102 /etc/ldap/ \
+    # The packages also restrict slapd.conf* and slapd.d/ to openldap:openldap.
+    # On OpenShift the container runs with an arbitrary UID and GID 0, so the
+    # "univention-compatibility" init container could not copy them. They are
+    # part of a public image and contain no secrets, so make them world-readable.
+    && chmod -R a+rX /etc/ldap/
 
 ###############################################################################
 # Copy LDAP index tools
