@@ -27,13 +27,19 @@ spec:
     {{- end }}
   {{/* On upgrade, preserve the existing selector to avoid conflicts with the leader-elector
        which dynamically adds statefulset.kubernetes.io/pod-name to route traffic to the leader.
-       On fresh install, use the default selector labels. */}}
+       On fresh install, use the default selector labels. A single primary has nothing to elect,
+       so its pod is named right away: where no live Service can be looked up (helm template,
+       Argo CD), every sync would otherwise put the placeholder back. */}}
   selector:
     {{- if and $existingService $existingService.spec.selector }}
     {{- toYaml $existingService.spec.selector | nindent 4 }}
     {{- else }}
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     ldap-server-type: primary
+    {{- if eq (int (include "ldap-server.replicaCountPrimary" .)) 1 }}
+    statefulset.kubernetes.io/pod-name: {{ printf "%s-0" $serviceName | quote }}
+    {{- else }}
     statefulset.kubernetes.io/pod-name: "will-be-updated-by-elector"  # This will be updated by the leader elector
+    {{- end }}
     {{- end }}
 ...
