@@ -91,7 +91,7 @@ spec:
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.nodeSelector "context" .) | nindent 8 }}
       {{- end }}
       {{- if .Values.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.podSecurityContext "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.serviceAccount.create }}
       serviceAccountName: {{ include "common.names.fullname" . }}
@@ -102,7 +102,7 @@ spec:
       initContainers:
         - name: "univention-compatibility"
           {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
@@ -129,7 +129,7 @@ spec:
       {{- if and .Values.ldapServer.generateDHparam .Values.ldapServer.tls.enabled }}
         - name: "init-dh"
           {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
@@ -154,7 +154,7 @@ spec:
       {{- end }}
         - name: "load-internal-plugins"
           {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
@@ -179,7 +179,7 @@ spec:
         {{- range (concat $systemExtensions $extensions) }}
         - name: "load-{{ .name }}-extension"
           {{- if $.Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit $.Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .image.registry $.Values.global.imageRegistry }}/{{ .image.repository }}:{{ .image.tag }}"
           imagePullPolicy: {{ coalesce .image.pullPolicy $.Values.global.imagePullPolicy | quote }}
@@ -195,7 +195,7 @@ spec:
       {{- if .Values.waitForDependency.enabled }}
         - name: "wait-for-saml-metadata"
           {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.waitForDependency.image.registry .Values.global.imageRegistry }}/{{ .Values.waitForDependency.image.repository }}:{{ .Values.waitForDependency.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.waitForDependency.image.pullPolicy .Values.global.imagePullPolicy | quote }}
@@ -224,7 +224,7 @@ spec:
         {{- if .Values.ldifProducer.enabled }}
         - name: "ldif-producer"
           {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldifProducer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldifProducer.image.repository }}:{{ .Values.ldifProducer.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.ldifProducer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
@@ -253,7 +253,7 @@ spec:
           {{- end }}
         - name: "main"
           {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           image: "{{ coalesce .Values.ldapServer.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.image.repository }}:{{ .Values.ldapServer.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.ldapServer.image.pullPolicy .Values.global.imagePullPolicy | quote }}
@@ -367,7 +367,7 @@ spec:
           image: {{ coalesce .Values.ldapServer.leaderElector.image.registry .Values.global.imageRegistry }}/{{ .Values.ldapServer.leaderElector.image.repository }}:{{ .Values.ldapServer.leaderElector.image.tag }}
           imagePullPolicy: {{ coalesce .Values.ldapServer.leaderElector.image.pullPolicy .Values.global.imagePullPolicy }}
           {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "nubus-common.compatibility.renderSecurityContext" (dict "secContext" $.Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesPrimary .Values.resources) "context" .) | nindent 12 }}
           env:
