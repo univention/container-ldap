@@ -148,6 +148,27 @@ test-notifier-smoke:
     when: "always"
     expose_as: "docker compose server logs"
 
+# Run the images with an arbitrary UID and GID 0, like OpenShift's SCC "restricted-v2".
+test-image-arbitrary-uid:
+  stage: test
+  extends: .dind
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.0"
+  rules: *rules_dind
+  parallel:
+    matrix:
+      # /var/lib/ldap is Debian's default database, Nubus uses /var/lib/univention-ldap
+      - IMAGE_NAME: "ldap-server"
+        CHECK_ARGS: "--ignore /var/lib/ldap"
+      - IMAGE_NAME:
+          - "ldap-notifier"
+          - "ldif-producer"
+          - "ldap-server-elector"
+  before_script:
+    # Allow that the Docker API version is negotiated between client and server
+    - unset DOCKER_API_VERSION
+  script:
+    - sh tests/arbitrary-uid.sh "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${RELEASE_VERSION}" ${CHECK_ARGS:-}
+
 test-chart-ldap-server:
   stage: test
   needs: []
