@@ -752,11 +752,11 @@
         },
         "oauthlib": {
             "hashes": [
-                "sha256:624c28c13a0a59cabf9747dfa52af63be3e512a7f2714df16e91b5b3a145e6cd",
-                "sha256:efb274799819440f95b4ab3b818869f1ce9ae26c5beacba0201d1a1b76b54f86"
+                "sha256:3d73febdb6faa00f277c81fb04be7b7586fb96fc3b7f0b9c772dada69a25ede7",
+                "sha256:498a298876e996301950a5b053d12c31628bb7b895db03666430c69ce182eb61"
             ],
             "markers": "python_version >= '3.9'",
-            "version": "==4.0.0"
+            "version": "==4.0.1"
         },
         "propcache": {
             "hashes": [
@@ -1105,11 +1105,11 @@
         },
         "python-dateutil": {
             "hashes": [
-                "sha256:3c79630202e4152c6add678446984236efe4f57e84d8e892aab0637bab82e9fd",
-                "sha256:7ebcb3c29a92f3ceafe79a7a48a5c45677e9e004bbeec5742ac0bbb00560b7a2"
+                "sha256:a5e246f79eb80475e691bf93862cead98decd8a498cf53ba0516fcdc0f50dc1c",
+                "sha256:d7295ff14fdc0f92f662100bfb6c551d160ca090f2939f1ec5b9794265c03f06"
             ],
-            "markers": "python_version >= '2.7' and python_version != '3.0' and python_version != '3.1' and python_version != '3.2'",
-            "version": "==3.0.0"
+            "markers": "python_version >= '3.11'",
+            "version": "==4.0.0"
         },
         "pyyaml": {
             "hashes": [
@@ -1221,14 +1221,6 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==1.5.4"
-        },
-        "six": {
-            "hashes": [
-                "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274",
-                "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81"
-            ],
-            "markers": "python_version >= '2.7' and python_version != '3.0' and python_version != '3.1' and python_version != '3.2'",
-            "version": "==1.17.0"
         },
         "typer": {
             "hashes": [
