@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2024-2026 Univention GmbH
 
-ARG UCS_BASE_IMAGE_TAG=5.3.0-build.20261029@sha256:f3537936ec8293ea1dc880bd076e4ac305acc2268338684e8ad2fa89dcebdd3d
+ARG UCS_BASE_IMAGE_TAG=5.3.0-build.20261106@sha256:c59ae38f5a819046f9283904c4c64dbc9c77cf323173c44e4686db472334d184
 ARG UCS_BASE_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-base-python
-ARG UCS_DISTROLESS_IMAGE_TAG=5.3.0-build.20261029@sha256:f65cefc852c76dfd42ad0c1ad0f6885357e62899f51aa421b6f89eef550b97cf
+ARG UCS_DISTROLESS_IMAGE_TAG=5.3.0-build.20261106@sha256:f4e537e49d316d4a744ca7c2f11ab11936993811bf0ed76a6bd0414ed03f03bc
 ARG UCS_DISTROLESS_IMAGE=gitregistry.knut.univention.de/univention/dev/projects/ucs-base-image/ucs-distroless-python
 
 FROM ${UCS_BASE_IMAGE}:${UCS_BASE_IMAGE_TAG} AS build
