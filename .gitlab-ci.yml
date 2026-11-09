@@ -4,7 +4,7 @@
 
 include:
   - project: "univention/dev/nubus-for-k8s/common-ci"
-    ref: "v1.71.0"
+    ref: "v1.72.0"
     file:
       - "defaults/stages.yaml"
       - "defaults/nubus-workflow.yaml"
@@ -15,11 +15,8 @@ include:
       - "jobs/package-and-publish-helm-charts-external.yaml"
       - "jobs/check-debian-updates.yaml"
       - "templates/sonarqube.yaml"
-  - project: "univention/infrastructure/docker-services"
-    ref: "master"
-    file:
-      - "dind.yml"
-  - component: "$CI_SERVER_FQDN/univention/dev/nubus-for-k8s/common-ci/vul-man@v1.71.0"
+      - "templates/compose-test.yaml"
+  - component: "$CI_SERVER_FQDN/univention/dev/nubus-for-k8s/common-ci/vul-man@v1.72.0"
 
 variables:
   # Used by pre-commit/gitlab-ci-linter
@@ -82,71 +79,20 @@ test-database-initialized-unit:
     - pytest
 
 test-ldap-smoke:
+  extends: ".compose-test"
   stage: test
-  extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.2@sha256:2a232a42256f70d78e3cc5d2b5d6b3276710a0de0596c145f627ecfae90282ac"
-  rules: &rules_dind
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: "never"
-    - if: '$GITLAB_USER_ID == $RENOVATE_USER_ID && $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS !~ /Renovate run dind/'
-      when: "manual"
-    - when: "on_success"
-  before_script:
-    # Allow that the Docker API version is negotiated between client and server
-    - unset DOCKER_API_VERSION
-    - export IMAGE_TAG=${RELEASE_VERSION}
-    - echo -e "\e[0Ksection_start:`date +%s`:docker_debug[collapsed=true]\r\e[0KDocker version details"
-    - echo $IMAGE_TAG
-    - docker version
-    - echo -e "\e[0Ksection_end:`date +%s`:docker_debug\r\e[0K"
-    - echo -e "\e[0Ksection_start:`date +%s`:docker_compose_config[collapsed=true]\r\e[0KDocker Compose configuration"
-    - docker compose config test
-    - echo -e "\e[0Ksection_end:`date +%s`:docker_compose_config\r\e[0K"
-    - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 nats ldap-server ldif-producer
+  variables:
+    COMPOSE_TEST_SERVICES: "nats ldap-server ldif-producer"
   script:
     - docker compose run --quiet-pull --rm test .venv/bin/pytest -v tests/integration tests/unit
-  after_script:
-    - docker logs dev-local-ldap-server-1 >& ldap-server.log
-    - docker logs dev-local-ldif-producer-1 >& ldif-producer.log
-    - docker logs dev-local-nats-1 >& nats.log
-    - docker compose down --volumes
-  artifacts:
-    paths:
-      - ldap-server.log
-      - ldif-producer.log
-      - nats.log
-    expire_in: "1 day"
-    when: "always"
-    expose_as: "docker compose server logs"
 
 test-notifier-smoke:
+  extends: ".compose-test"
   stage: test
-  extends: .dind
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:28.5.2@sha256:2a232a42256f70d78e3cc5d2b5d6b3276710a0de0596c145f627ecfae90282ac"
-  rules: *rules_dind
-  before_script:
-    # Allow that the Docker API version is negotiated between client and server
-    - unset DOCKER_API_VERSION
-    - export IMAGE_TAG=${RELEASE_VERSION}
-    - echo -e "\e[0Ksection_start:`date +%s`:docker_debug[collapsed=true]\r\e[0KDocker version details"
-    - echo $IMAGE_TAG
-    - docker version
-    - echo -e "\e[0Ksection_end:`date +%s`:docker_debug\r\e[0K"
-    - echo -e "\e[0Ksection_start:`date +%s`:docker_compose_config[collapsed=true]\r\e[0KDocker Compose configuration"
-    - docker compose config ldap-notifier
-    - echo -e "\e[0Ksection_end:`date +%s`:docker_compose_config\r\e[0K"
-    - docker compose up --no-build --quiet-pull --wait --wait-timeout 60 ldap-server
+  variables:
+    COMPOSE_TEST_SERVICES: "ldap-server"
   script:
     - docker compose up --wait --wait-timeout 10 ldap-notifier
-  after_script:
-    - docker logs dev-local-ldap-server-1 >& ldap-server.log
-    - docker compose down --volumes
-  artifacts:
-    paths:
-      - ldap-server.log
-    expire_in: "1 day"
-    when: "always"
-    expose_as: "docker compose server logs"
 
 test-chart-ldap-server:
   stage: test
@@ -172,8 +118,8 @@ test-ldap-sync-indexes:
       when: "never"
     - when: "on_success"
   before_script:
-    - cat ldap-server.log
-    - export LDAP_SERVER_LOG=ldap-server.log
+    - cat compose-logs/ldap-server.log
+    - export LDAP_SERVER_LOG=compose-logs/ldap-server.log
   script:
     - /app/.venv/bin/pytest -v tests/integration/test_ldap_index_sync.py
   needs:
