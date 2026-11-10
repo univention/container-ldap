@@ -877,22 +877,43 @@ fast-parse = ["fast-mail-parser"]
 nkeys = ["nkeys"]
 
 [[package]]
-name = "nubus-provisioning-consumer"
-version = "0.36.0"
-description = "Provisioning consumer library"
+name = "nubus-provisioning-common"
+version = "2.2.11"
+description = "Univention Nubus - Provisioning common code"
 optional = false
-python-versions = ">=3.11,<4.0"
+python-versions = "<4.0,>=3.11"
 groups = ["main"]
 files = [
-    {file = "nubus_provisioning_consumer-0.36.0-py3-none-any.whl", hash = "sha256:32ff183bca6c9c98a47e0da6bdec3bcc71229341471500456860ac361dc5eaa2"},
-    {file = "nubus_provisioning_consumer-0.36.0.tar.gz", hash = "sha256:0f644d4bd335c36ac5ffa562df1ffd9bb2a2e6fcfb1c3095a75c3b3f65c5ff47"},
+    {file = "nubus_provisioning_common-2.2.11-py3-none-any.whl", hash = "sha256:9d96818df2f62fb5aa52d992abde32181392db21046176ba66191643910ad5ef"},
+    {file = "nubus_provisioning_common-2.2.11.tar.gz", hash = "sha256:85c5f5bb8083d3eb0610c296dfcfcc99526b10aaf6f5ab868e2dfaa8cd8dfe2a"},
 ]
 
 [package.dependencies]
-aiohttp = ">=3.8.5,<4.0.0"
-jsondiff = ">=2.2.0,<3.0.0"
-pydantic = ">=2.3.0,<3.0.0"
-pydantic-settings = ">=2.0.3,<3.0.0"
+pydantic = ">=2.13.4"
+
+[package.source]
+type = "legacy"
+url = "https://git.knut.univention.de/api/v4/projects/882/packages/pypi/simple"
+reference = "nubus-provisioning"
+
+[[package]]
+name = "nubus-provisioning-consumer"
+version = "2.2.11"
+description = "Univention Nubus - Provisioning Consumer"
+optional = false
+python-versions = "<4.0,>=3.11"
+groups = ["main"]
+files = [
+    {file = "nubus_provisioning_consumer-2.2.11-py3-none-any.whl", hash = "sha256:0bce7041dfd03d5263d69d0c12f41dd11dc6f0bdd9323996c286bc22f2d561f3"},
+    {file = "nubus_provisioning_consumer-2.2.11.tar.gz", hash = "sha256:4b7ffecc84c8e6799add1db3ef3d4634939bd5e0ac2a59620a686b59f02c29ff"},
+]
+
+[package.dependencies]
+aiohttp = ">=3.14.2,<4.0.0"
+jsondiff = ">=2.2.1,<3.0.0"
+nubus-provisioning-common = ">=0.1.0"
+pydantic = ">=2.13.4,<3.0.0"
+pydantic-settings = ">=2.14.2,<3.0.0"
 
 [package.source]
 type = "legacy"
@@ -1803,4 +1824,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "b3a633768e109a89a8641f1d351c2afe0369c902a281399de04cf42221e03973"
+content-hash = "04eaeda28e21a1053261eca0ec86a34104cca21b14cf4ea8a1960b60bd44dc5c"
