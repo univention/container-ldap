@@ -22,7 +22,7 @@
     "list": [
       {
         "name": "datasource",
-        "label": "Data source (site)",
+        "label": "Data source",
         "type": "datasource",
         "query": "prometheus",
         "current": {},
@@ -80,7 +80,7 @@
       },
       {
         "name": "role",
-        "label": "Fleet",
+        "label": "Role",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -400,7 +400,7 @@
     {
       "type": "stat",
       "title": "Busiest reader table",
-      "description": "Highest readers_used / readers_max over every selected pod \u00d7 database. A reader slot is held per concurrent read transaction; when the table is full new reads fail. Threshold is the alert rule's (SlaptainMDBReaderSlotsHigh, 80%).",
+      "description": "Highest readers_used / readers_max over every selected pod \u00d7 database. A reader slot is held per concurrent read transaction; when the table is full, new reads fail. Threshold at 80%.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -467,7 +467,7 @@
     {
       "type": "stat",
       "title": "Operations completed /s",
-      "description": "All operation types, all selected pods, from monitorOpCompleted (openldap_operations_completed_total). Includes slaptain's own background: every exporter scrape is a bind, a search and an unbind; every readiness probe a bind, a WhoAmI extended operation and an unbind; the operator's per-pod passes and the syncrepl consumers add searches.",
+      "description": "All operation types, all selected pods (openldap_operations_completed_total). Includes the exporter's own scrape, a bind, a search and an unbind each time; syncrepl between the pods adds searches.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -609,7 +609,7 @@
     {
       "type": "state-timeline",
       "title": "cn=Monitor reading per pod",
-      "description": "Per selected pod: 'reading' \u2014 the exporter answered with openldap_up 1 and slapd's cn=Monitor families; 'slapd unreadable' \u2014 the exporter answered with openldap_up 0: its dial, bind or search of slapd failed or timed out (5s), so the scrape carried only openldap_up and the exporter's own counters (SlaptainSlapdMonitorUnreadable); 'exporter down' \u2014 Prometheus could not scrape the sidecar at all (SlaptainSlapdExporterDown). A gap is a pod with no target in that interval \u2014 not yet created, or gone.",
+      "description": "Per selected pod: 'reading' means the exporter answered with openldap_up 1 and slapd's cn=Monitor families. 'slapd unreadable' means the exporter answered with openldap_up 0: its dial, bind or search of slapd failed or timed out (5s), so the scrape carried only openldap_up and the exporter's own counters. 'exporter down' means Prometheus could not scrape the sidecar at all. A gap is a pod with no target in that interval, not yet created or gone.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -696,7 +696,7 @@
     {
       "type": "timeseries",
       "title": "Scrape duration per pod",
-      "description": "How long each exporter scrape took \u2014 dominated by the cn=Monitor read (dial, EXTERNAL bind over ldapi, one subtree search). The red line is the exporter's own --timeout (5s): a read still running then is abandoned and that scrape carries no cn=Monitor families. A climb here while slapd still answers is slapd itself getting slow; a frozen slapd (ADR-030) shows as a flat 5s.",
+      "description": "How long each exporter scrape took, mostly the cn=Monitor read: a dial to ldap://127.0.0.1, a simple bind as cn=admin and one subtree search. The red line is the exporter's --timeout (5s): a read still running then is abandoned, and that scrape carries no cn=Monitor families. A climb here while slapd still answers means slapd itself is getting slow; a frozen slapd shows as a flat 5s.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -842,7 +842,7 @@
     {
       "type": "timeseries",
       "title": "Failed exporter dials and binds",
-      "description": "Failures per scrape interval of the exporter's own connection (openldap_exporter_dials_total) and SASL EXTERNAL bind (openldap_exporter_binds_total) to slapd. These counters are the exporter's, so they survive a slapd that cannot be read. The result=\"fail\" series only exists once a first failure has happened, so a healthy exporter shows nothing here \u2014 that is the absence of any failure since the sidecar started, not a reading of zero. A frozen slapd shows as bind failures (the dial still succeeds).",
+      "description": "Failures per scrape interval of the exporter's own connection (openldap_exporter_dials_total) and simple bind as cn=admin (openldap_exporter_binds_total) to slapd. These counters are the exporter's, so they survive a slapd that cannot be read. The result=\"fail\" series only exists once a first failure has happened, so a healthy exporter shows nothing here \u2014 that is the absence of any failure since the sidecar started, not a reading of zero. A frozen slapd shows as bind failures (the dial still succeeds).",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1419,7 +1419,7 @@
     {
       "type": "timeseries",
       "title": "Reader slots in use per pod \u00d7 database",
-      "description": "readers_used / readers_max \u2014 the LMDB reader table, one slot per concurrent read transaction. Threshold is SlaptainMDBReaderSlotsHigh (80%). Slots of a crashed reader are reclaimed only when the environment is reopened.",
+      "description": "readers_used / readers_max, the LMDB reader table: one slot per concurrent read transaction. Threshold at 80%. Slots of a crashed reader are reclaimed only when the environment is reopened.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1507,7 +1507,7 @@
     {
       "type": "timeseries",
       "title": "Current connections per pod",
-      "description": "openldap_connections_current (cn=Current,cn=Connections) \u2014 open client connections right now, including the syncrepl consumers of other pods and sites, the operator's per-pod sessions and the exporter's own. Read-only pods take only client and consumer-side traffic.",
+      "description": "openldap_connections_current (cn=Current,cn=Connections): open client connections right now, including the syncrepl connections of the other pods and the exporter's own.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1579,7 +1579,7 @@
     {
       "type": "timeseries",
       "title": "New connections per second per pod",
-      "description": "Rate of openldap_connections_total (cn=Total,cn=Connections) \u2014 connections accepted. The steady floor is slaptain's own: one per exporter scrape and one per readiness probe. A storm of short-lived connections (a client without connection reuse, a reconnect loop) shows here before it shows anywhere else.",
+      "description": "Rate of openldap_connections_total (cn=Total,cn=Connections), the connections accepted. The steady floor comes from the exporter's scrapes and the kubelet's TCP probes on port 389. A storm of short-lived connections, from a client without connection reuse or a reconnect loop, shows here first.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1720,8 +1720,8 @@
     },
     {
       "type": "timeseries",
-      "title": "Operations per second by type and fleet",
-      "description": "The operation mix, summed over the selected pods of each fleet: read-write versus read-only. Searches and binds normally dominate; extended is mostly slaptain's readiness probe (WhoAmI). Comparing the fleets shows where client reads actually land.",
+      "title": "Operations per second by type and role",
+      "description": "The operation mix, summed over the selected pods of each role: primary versus secondary. Searches and binds normally dominate. Comparing the roles shows where client reads land.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
