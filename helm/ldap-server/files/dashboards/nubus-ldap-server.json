@@ -594,6 +594,154 @@
       "id": 7
     },
     {
+      "type": "state-timeline",
+      "title": "Current primary",
+      "description": "Which primary pod holds the Lease ldap-primary-leader of the leader elector, and since when. The Service of the primary sends writes to this pod; a change of colour is a failover. From kube-state-metrics (kube_lease_owner), so empty without it.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 85,
+            "lineWidth": 0,
+            "spanNulls": false,
+            "insertNulls": false
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "primary",
+                  "color": "blue",
+                  "index": 0
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "no ldap-primary-leader Lease in scope, or kube-state-metrics does not export Leases"
+        },
+        "overrides": []
+      },
+      "options": {
+        "alignValue": "center",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (lease_holder) (kube_lease_owner{namespace=\"$namespace\",lease=\"ldap-primary-leader\",lease_holder!=\"\"})",
+          "legendFormat": "{{lease_holder}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 18,
+        "x": 0,
+        "y": 7
+      },
+      "id": 36
+    },
+    {
+      "type": "stat",
+      "title": "Lease renewed",
+      "description": "Seconds since the primary holding the Lease last renewed it (kube_lease_renew_time). The elector renews every few seconds; kube-state-metrics is scraped every 30 s, so up to about 45 s is normal. A value that keeps rising means no pod is acting as primary.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 7
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 120
+              }
+            ]
+          },
+          "noValue": "no ldap-primary-leader Lease in scope",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "time() - max(kube_lease_renew_time{namespace=\"$namespace\",lease=\"ldap-primary-leader\"})",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "id": 37
+    },
+    {
       "type": "row",
       "title": "Exporter and process health",
       "collapsed": false,
@@ -602,7 +750,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 12
       },
       "id": 8
     },
@@ -689,7 +837,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 13
       },
       "id": 9
     },
@@ -705,7 +853,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 13
       },
       "interval": "30s",
       "fieldConfig": {
@@ -780,7 +928,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 21
       },
       "interval": "30s",
       "fieldConfig": {
@@ -851,7 +999,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 21
       },
       "interval": "30s",
       "fieldConfig": {
@@ -930,7 +1078,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 29
       },
       "id": 13
     },
@@ -946,7 +1094,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 30
       },
       "fieldConfig": {
         "defaults": {
@@ -1025,7 +1173,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 25
+        "y": 30
       },
       "fieldConfig": {
         "defaults": {
@@ -1341,7 +1489,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 38
       },
       "id": 16
     },
@@ -1357,7 +1505,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 47
       },
       "fieldConfig": {
         "defaults": {
@@ -1428,7 +1576,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 47
       },
       "fieldConfig": {
         "defaults": {
@@ -1500,7 +1648,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 50
+        "y": 55
       },
       "id": 19
     },
@@ -1516,7 +1664,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 51
+        "y": 56
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1588,7 +1736,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 51
+        "y": 56
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1659,7 +1807,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 51
+        "y": 56
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1730,7 +1878,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 59
+        "y": 64
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1801,7 +1949,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 59
+        "y": 64
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1877,7 +2025,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 68
+            "y": 73
           },
           "interval": "30s",
           "fieldConfig": {
@@ -1997,7 +2145,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 68
+            "y": 73
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2080,7 +2228,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 68
+            "y": 73
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2156,7 +2304,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 67
+        "y": 72
       },
       "id": 25
     },
@@ -2177,7 +2325,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 69
+            "y": 74
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2248,7 +2396,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 69
+            "y": 74
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2334,7 +2482,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 73
       },
       "id": 29
     }
