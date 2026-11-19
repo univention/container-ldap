@@ -588,3 +588,11 @@ metrics:
     interval: ""
     # -- Scrape timeout. Empty uses the Prometheus default.
     scrapeTimeout: ""
+  dashboard:
+    # -- Render slaptain's slapd dashboard as a ConfigMap for the Grafana dashboard sidecar. Needs `metrics.enabled`.
+    enabled: false
+    # -- Labels the Grafana sidecar selects ConfigMaps by.
+    labels:
+      grafana_dashboard: "1"
+    # -- Annotations of the ConfigMap, such as the sidecar's folder annotation.
+    annotations: {}

@@ -1,0 +1,25 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Univention GmbH
+SPDX-License-Identifier: AGPL-3.0-only
+*/}}
+{{- /*
+files/dashboards/slaptain-slapd.json is an unchanged copy of monitoring/dashboards/slaptain-slapd.json
+from https://github.com/chuck-chuck-chuck-net/slaptain (commit e3826bc), licensed Apache-2.0.
+*/}}
+{{- if and .Values.metrics.enabled .Values.metrics.dashboard.enabled }}
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: {{ include "common.names.fullname" . }}-dashboard
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" ( dict "customLabels" ( merge ( deepCopy .Values.metrics.dashboard.labels ) .Values.additionalLabels ) "context" . ) | nindent 4 }}
+  {{- include "nubus-common.annotations.render" ( dict
+    "values" ( list .Values.additionalAnnotations .Values.metrics.dashboard.annotations )
+    "context" . )
+    | nindent 2 }}
+data:
+  slaptain-slapd.json: |-
+    {{- .Files.Get "files/dashboards/slaptain-slapd.json" | nindent 4 }}
+{{- end }}

@@ -985,6 +985,35 @@ null
 			<td>Port the exporter serves /metrics on.</td>
 		</tr>
 		<tr>
+			<td>metrics.dashboard.annotations</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td>Annotations of the ConfigMap, such as the sidecar's folder annotation.</td>
+		</tr>
+		<tr>
+			<td>metrics.dashboard.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td>Render slaptain's slapd dashboard as a ConfigMap for the Grafana dashboard sidecar. Needs `metrics.enabled`.</td>
+		</tr>
+		<tr>
+			<td>metrics.dashboard.labels</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "grafana_dashboard": "1"
+}
+</pre>
+</td>
+			<td>Labels the Grafana sidecar selects ConfigMaps by.</td>
+		</tr>
+		<tr>
 			<td>metrics.enabled</td>
 			<td>bool</td>
 			<td><pre lang="json">

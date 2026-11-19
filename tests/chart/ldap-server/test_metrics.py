@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2026 Univention GmbH
 
+import json
+
 import pytest
 
 from univention.testing.helm.base import Base
@@ -89,7 +91,11 @@ class TestPodMonitor(Base):
         values = {"metrics": {"enabled": True, "podMonitor": {"enabled": True}}}
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
 
-        assert result.findone("spec.podMetricsEndpoints") == [{"port": "metrics", "path": "/metrics"}]
+        endpoint = result.findone("spec.podMetricsEndpoints[0]")
+        assert endpoint["port"] == "metrics"
+        assert endpoint["path"] == "/metrics"
+        assert "interval" not in endpoint
+        assert "scrapeTimeout" not in endpoint
 
     def test_sets_interval_and_scrape_timeout(self, helm, chart_path):
         values = {
@@ -103,3 +109,27 @@ class TestPodMonitor(Base):
         endpoint = result.findone("spec.podMetricsEndpoints[0]")
         assert endpoint["interval"] == "30s"
         assert endpoint["scrapeTimeout"] == "10s"
+
+
+class TestDashboardConfigMap(Base):
+    template_file = "templates/configmap-metrics-dashboard.yaml"
+
+    @pytest.mark.parametrize(
+        "metrics",
+        [
+            {},
+            {"enabled": True},
+            {"dashboard": {"enabled": True}},
+        ],
+    )
+    def test_needs_metrics_and_dashboard_enabled(self, helm, chart_path, metrics):
+        resources = helm.helm_template(chart_path, {"metrics": metrics})
+
+        assert helm.get_resources(resources, kind="ConfigMap", name="release-name-ldap-server-dashboard") == []
+
+    def test_holds_the_slapd_dashboard(self, helm, chart_path):
+        values = {"metrics": {"enabled": True, "dashboard": {"enabled": True}}}
+        result = self.helm_template_file(helm, chart_path, values, self.template_file)
+
+        dashboard = json.loads(result.findone("data")["slaptain-slapd.json"])
+        assert dashboard["uid"] == "slaptain-slapd"
