@@ -258,7 +258,7 @@
     {
       "type": "stat",
       "title": "Fullest data database",
-      "description": "Highest (pages_used \u2212 pages_free) / pages_max over the selected pods' data databases (every suffix except cn=accesslog-*; the node-local cn=slaptain-auth is included). Thresholds are the alert rules': SlaptainMDBMapFilling at 80%, SlaptainMDBMapNearlyFull at 90%. A full map refuses every write; olcDbMaxSize can only be raised by recreate (ADR-024).",
+      "description": "Highest (pages_used \u2212 pages_free) / pages_max over the selected pods' data databases, every suffix except cn=translog. A full map refuses every write. Thresholds at 80% and 90%.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -318,7 +318,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max((openldap_mdb_pages_used{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix!~\"cn=accesslog-.*\"} - openldap_mdb_pages_free{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix!~\"cn=accesslog-.*\"}) / openldap_mdb_pages_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix!~\"cn=accesslog-.*\"})",
+          "expr": "max((openldap_mdb_pages_used{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix!=\"cn=translog\"} - openldap_mdb_pages_free{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix!=\"cn=translog\"}) / openldap_mdb_pages_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix!=\"cn=translog\"})",
           "legendFormat": "",
           "range": true,
           "refId": "A"
@@ -328,8 +328,8 @@
     },
     {
       "type": "stat",
-      "title": "Fullest accesslog",
-      "description": "Highest map fill over the selected pods' cn=accesslog-* journals (read-write pods only \u2014 read-only pods keep no journal). Thresholds are the alert rules': SlaptainAccesslogMapFilling at 70%, SlaptainAccesslogMapNearlyFull at 85% \u2014 lower than for data databases, because a journal fills with write rate and purge age, not with directory size, and a full one stops every write to the database it journals.",
+      "title": "Fullest translog",
+      "description": "Highest map fill of cn=translog over the selected pods. cn=translog is the transaction log of Nubus: every write to the directory adds an entry to it, so it fills with the write rate, not with the directory size. A full one stops every write. Thresholds at 70% and 85%.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -362,7 +362,7 @@
               }
             ]
           },
-          "noValue": "no accesslog statistics in scope \u2014 read-only pods only, or no replicated database",
+          "noValue": "no cn=translog statistics in scope",
           "decimals": 1
         },
         "overrides": []
@@ -389,7 +389,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max((openldap_mdb_pages_used{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix=~\"cn=accesslog-.*\"} - openldap_mdb_pages_free{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix=~\"cn=accesslog-.*\"}) / openldap_mdb_pages_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix=~\"cn=accesslog-.*\"})",
+          "expr": "max((openldap_mdb_pages_used{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix=\"cn=translog\"} - openldap_mdb_pages_free{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix=\"cn=translog\"}) / openldap_mdb_pages_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix=\"cn=translog\"})",
           "legendFormat": "",
           "range": true,
           "refId": "A"
@@ -937,7 +937,7 @@
     {
       "type": "timeseries",
       "title": "Data database map fill",
-      "description": "(pages_used \u2212 pages_free) / pages_max per pod \u00d7 database \u2014 the share of the map in use, against olcDbMaxSize. pages_used alone is a high-water mark that never shrinks after deletes; pages_free is what LMDB will reuse. Same expression and thresholds as the alert rules. A missing line is a database without statistics (opened before cn=Monitor existed \u2014 the pod's next restart attaches them), never an empty one. Data databases and the node-local cn=slaptain-auth; thresholds SlaptainMDBMapFilling (80%) and SlaptainMDBMapNearlyFull (90%).",
+      "description": "(pages_used \u2212 pages_free) / pages_max per pod \u00d7 database, the share of the map in use. pages_used alone is a high-water mark that never shrinks after deletes; pages_free is what LMDB will reuse. A missing line is a database without statistics, never an empty one. Data databases: every suffix except cn=translog. Thresholds at 80% and 90%.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1005,7 +1005,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "(openldap_mdb_pages_used{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix!~\"cn=accesslog-.*\"} - openldap_mdb_pages_free{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\"}) / openldap_mdb_pages_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\"}",
+          "expr": "(openldap_mdb_pages_used{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix!=\"cn=translog\"} - openldap_mdb_pages_free{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\"}) / openldap_mdb_pages_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\"}",
           "legendFormat": "{{cluster}}  {{pod}}  {{suffix}}",
           "range": true,
           "refId": "A"
@@ -1015,8 +1015,8 @@
     },
     {
       "type": "timeseries",
-      "title": "Accesslog map fill",
-      "description": "(pages_used \u2212 pages_free) / pages_max per pod \u00d7 database \u2014 the share of the map in use, against olcDbMaxSize. pages_used alone is a high-water mark that never shrinks after deletes; pages_free is what LMDB will reuse. Same expression and thresholds as the alert rules. A missing line is a database without statistics (opened before cn=Monitor existed \u2014 the pod's next restart attaches them), never an empty one. The cn=accesslog-* journals of the read-write pods: they fill with write rate times purge age (accesslogPurge, docs/TUNING.md), not with directory size. Thresholds SlaptainAccesslogMapFilling (70%) and SlaptainAccesslogMapNearlyFull (85%).",
+      "title": "Translog map fill",
+      "description": "(pages_used \u2212 pages_free) / pages_max per pod \u00d7 database, the share of the map in use. pages_used alone is a high-water mark that never shrinks after deletes; pages_free is what LMDB will reuse. A missing line is a database without statistics, never an empty one. cn=translog, which fills with the write rate, not with the directory size. Thresholds at 70% and 85%.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1062,7 +1062,7 @@
           },
           "min": 0,
           "max": 1,
-          "noValue": "no accesslog statistics in scope \u2014 read-only pods only, or no replicated database"
+          "noValue": "no cn=translog statistics in scope"
         },
         "overrides": []
       },
@@ -1084,7 +1084,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "(openldap_mdb_pages_used{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix=~\"cn=accesslog-.*\"} - openldap_mdb_pages_free{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\"}) / openldap_mdb_pages_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\"}",
+          "expr": "(openldap_mdb_pages_used{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\",suffix=\"cn=translog\"} - openldap_mdb_pages_free{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\"}) / openldap_mdb_pages_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",suffix=~\"$suffix\"}",
           "legendFormat": "{{cluster}}  {{pod}}  {{suffix}}",
           "range": true,
           "refId": "A"
@@ -1792,7 +1792,7 @@
     {
       "type": "timeseries",
       "title": "Write operations per second per pod",
-      "description": "Add, Modify, Delete and Modrdn per pod, as clients sent them (op=~\"add|modify|delete|modrdn\"). cn=Monitor counts client operations only: a change a pod applies through syncrepl counts nowhere, on a read-write consumer and a read-only pod alike. So this is not the rate an accesslog fills at \u2014 a read-write pod journals the changes it replicates in as well as its own, so its accesslog grows with the whole cluster's writes. That rate is the accesslog's line in 'Entries per database per pod'.",
+      "description": "Add, Modify, Delete and Modrdn per pod, as clients sent them (op=~\"add|modify|delete|modrdn\"). cn=Monitor counts client operations only: a change a pod applies through syncrepl counts nowhere. The growth of cn=translog is in 'Entries per database per pod'.",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
