@@ -556,3 +556,35 @@ ldapServer:
 
     # -- Optionally set a custom OpenSSL ciphersuite (use `openssl ciphers -v $CIPHERSUITE` to test possible choices).
     #TLSCipherSuite: "HIGH:MEDIUM:!aNULL:!MD5:!RC4"
+
+# Prometheus metrics of slapd, read from cn=Monitor by slaptain's slapd-exporter in a sidecar container.
+# The exporter binds as the LDAP admin user.
+metrics:
+  # -- Run the slapd-exporter sidecar in the primary and secondary pods.
+  # Also forces the UCR variable `ldap/monitor` to true, which turns on slapd's cn=Monitor database.
+  enabled: false
+  image:
+    # -- Image pull policy. This setting has higher precedence than global.imagePullPolicy.
+    pullPolicy: null
+    # -- Container registry address. This setting has higher precedence than global.registry.
+    registry: "ghcr.io"
+    repository: "chuck-chuck-chuck-net/slaptain/slapd-exporter"
+    tag: "0.0.1@sha256:c816269828468ffc01cf5060e1bd51ec7c1d19955ecd7823d72faf41d41dc7da"
+  # -- Port the exporter serves /metrics on.
+  containerPort: 9330
+  # -- Resources of the exporter container.
+  resources:
+    requests:
+      cpu: "10m"
+      memory: "16Mi"
+    limits:
+      memory: "64Mi"
+  podMonitor:
+    # -- Render a PodMonitor for the Prometheus Operator. Needs `metrics.enabled`.
+    enabled: false
+    # -- Labels the Prometheus instance selects PodMonitors by, such as `release: monitoring`.
+    labels: {}
+    # -- Scrape interval. Empty uses the Prometheus default.
+    interval: ""
+    # -- Scrape timeout. Empty uses the Prometheus default.
+    scrapeTimeout: ""

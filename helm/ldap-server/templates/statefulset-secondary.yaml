@@ -254,6 +254,9 @@ spec:
               mountPath: /scripts-secondary
           resources: {{- include "common.tplvalues.render" (dict "value" (coalesce .Values.resourcesSecondary .Values.resources) "context" .) | nindent 12 }}
       containers:
+        {{- if .Values.metrics.enabled }}
+        {{- include "ldap-server.metrics.container" . | nindent 8 }}
+        {{- end }}
         - name: "main"
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -337,6 +340,11 @@ spec:
             - name: "config-map-ucr"
               mountPath: "/etc/univention/base-defaults.conf"
               subPath: "base-defaults.conf"
+            {{- if .Values.metrics.enabled }}
+            - name: "metrics-ucr-forced"
+              mountPath: "/etc/univention/base-forced.conf"
+              subPath: "base-forced.conf"
+            {{- end }}
             {{/*
               TODO-0001 (also see above)
               When legacy share volume between ldap-server and ldap-notifier has been resolved, use a pvc exclusive to ldap-server
@@ -356,6 +364,12 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" .) | nindent 12 }}
             {{- end }}
       volumes:
+        {{- if .Values.metrics.enabled }}
+        {{- include "ldap-server.metrics.volume" . | nindent 8 }}
+        - name: "metrics-ucr-forced"
+          configMap:
+            name: {{ printf "%s-metrics-ucr" (include "common.names.fullname" .) }}
+        {{- end }}
         {{- if not .Values.persistence.enabled }}
         - name: "shared-data"
           emptyDir: {}

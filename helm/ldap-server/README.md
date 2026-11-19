@@ -976,6 +976,113 @@ null
 			<td>Timeout for command return.</td>
 		</tr>
 		<tr>
+			<td>metrics.containerPort</td>
+			<td>int</td>
+			<td><pre lang="json">
+9330
+</pre>
+</td>
+			<td>Port the exporter serves /metrics on.</td>
+		</tr>
+		<tr>
+			<td>metrics.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td>Run the slapd-exporter sidecar in the primary and secondary pods. Also forces the UCR variable `ldap/monitor` to true, which turns on slapd's cn=Monitor database.</td>
+		</tr>
+		<tr>
+			<td>metrics.image.pullPolicy</td>
+			<td>string</td>
+			<td><pre lang="json">
+null
+</pre>
+</td>
+			<td>Image pull policy. This setting has higher precedence than global.imagePullPolicy.</td>
+		</tr>
+		<tr>
+			<td>metrics.image.registry</td>
+			<td>string</td>
+			<td><pre lang="json">
+"ghcr.io"
+</pre>
+</td>
+			<td>Container registry address. This setting has higher precedence than global.registry.</td>
+		</tr>
+		<tr>
+			<td>metrics.image.repository</td>
+			<td>string</td>
+			<td><pre lang="json">
+"chuck-chuck-chuck-net/slaptain/slapd-exporter"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>metrics.image.tag</td>
+			<td>string</td>
+			<td><pre lang="json">
+"0.0.1@sha256:c816269828468ffc01cf5060e1bd51ec7c1d19955ecd7823d72faf41d41dc7da"
+</pre>
+</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>metrics.podMonitor.enabled</td>
+			<td>bool</td>
+			<td><pre lang="json">
+false
+</pre>
+</td>
+			<td>Render a PodMonitor for the Prometheus Operator. Needs `metrics.enabled`.</td>
+		</tr>
+		<tr>
+			<td>metrics.podMonitor.interval</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td>Scrape interval. Empty uses the Prometheus default.</td>
+		</tr>
+		<tr>
+			<td>metrics.podMonitor.labels</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td>Labels the Prometheus instance selects PodMonitors by, such as `release: monitoring`.</td>
+		</tr>
+		<tr>
+			<td>metrics.podMonitor.scrapeTimeout</td>
+			<td>string</td>
+			<td><pre lang="json">
+""
+</pre>
+</td>
+			<td>Scrape timeout. Empty uses the Prometheus default.</td>
+		</tr>
+		<tr>
+			<td>metrics.resources</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "limits": {
+    "memory": "64Mi"
+  },
+  "requests": {
+    "cpu": "10m",
+    "memory": "16Mi"
+  }
+}
+</pre>
+</td>
+			<td>Resources of the exporter container.</td>
+		</tr>
+		<tr>
 			<td>nameOverride</td>
 			<td>string</td>
 			<td><pre lang="json">

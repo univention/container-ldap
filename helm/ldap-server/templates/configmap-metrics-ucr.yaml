@@ -1,0 +1,22 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Univention GmbH
+SPDX-License-Identifier: AGPL-3.0-only
+*/}}
+{{- if .Values.metrics.enabled }}
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: {{ printf "%s-metrics-ucr" (include "common.names.fullname" .) }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" ( dict "customLabels" .Values.additionalLabels "context" . ) | nindent 4 }}
+  {{- include "nubus-common.annotations.render" ( dict
+    "values" ( list .Values.additionalAnnotations )
+    "context" . )
+    | nindent 2 }}
+data:
+  # base-forced.conf is the last UCR layer, so cn=Monitor stays on whatever the UCR ConfigMap says.
+  base-forced.conf: |
+    ldap/monitor: true
+{{- end }}

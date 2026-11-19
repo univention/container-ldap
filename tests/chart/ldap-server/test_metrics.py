@@ -1,0 +1,105 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 Univention GmbH
+
+import pytest
+
+from univention.testing.helm.base import Base
+
+FORCED_UCR_MOUNT = "volumeMounts[?@.mountPath=='/etc/univention/base-forced.conf']"
+EXPORTER = "spec.template.spec.containers[?@.name=='slapd-exporter']"
+PASSWORD_VOLUME = "spec.template.spec.volumes[?@.name=='metrics-bind-password']"
+
+STATEFULSETS = ["templates/statefulset-primary.yaml", "templates/statefulset-secondary.yaml"]
+
+
+@pytest.mark.parametrize("template_file", STATEFULSETS)
+class TestMetricsSidecar(Base):
+    def test_no_exporter_by_default(self, helm, chart_path, template_file):
+        statefulset = self.helm_template_file(helm, chart_path, {}, template_file)
+
+        assert statefulset.findall(EXPORTER) == []
+        assert statefulset.findall(PASSWORD_VOLUME) == []
+
+    def test_exporter_binds_as_the_ldap_admin(self, helm, chart_path, template_file):
+        values = {
+            "global": {"ldap": {"baseDn": "dc=stub,dc=test"}},
+            "metrics": {"enabled": True},
+        }
+        statefulset = self.helm_template_file(helm, chart_path, values, template_file)
+
+        args = statefulset.findone(EXPORTER)["args"]
+        assert "--bind=simple" in args
+        assert "--bind-dn=cn=admin,dc=stub,dc=test" in args
+
+    def test_exporter_reads_the_password_from_the_existing_secret(self, helm, chart_path, template_file):
+        values = {
+            "metrics": {"enabled": True},
+            "ldapServer": {
+                "auth": {"existingSecret": {"name": "stub-secret", "keyMapping": {"password": "stub-key"}}},
+            },
+        }
+        statefulset = self.helm_template_file(helm, chart_path, values, template_file)
+
+        secret = statefulset.findone(PASSWORD_VOLUME)["secret"]
+        assert secret["secretName"] == "stub-secret"
+        assert secret["items"] == [{"key": "stub-key", "path": "password"}]
+
+    def test_container_port_sets_listen_address_and_port(self, helm, chart_path, template_file):
+        values = {"metrics": {"enabled": True, "containerPort": 9999}}
+        statefulset = self.helm_template_file(helm, chart_path, values, template_file)
+
+        exporter = statefulset.findone(EXPORTER)
+        assert "--listen=:9999" in exporter["args"]
+        assert exporter["ports"] == [{"name": "metrics", "containerPort": 9999, "protocol": "TCP"}]
+
+    def test_main_mounts_forced_ucr_only_with_metrics(self, helm, chart_path, template_file):
+        main = "spec.template.spec.containers[?@.name=='main']"
+        default = self.helm_template_file(helm, chart_path, {}, template_file)
+        enabled = self.helm_template_file(helm, chart_path, {"metrics": {"enabled": True}}, template_file)
+
+        assert default.findone(main).findall(FORCED_UCR_MOUNT) == []
+        assert enabled.findone(main).findone(FORCED_UCR_MOUNT)["subPath"] == "base-forced.conf"
+        volume = enabled.findone("spec.template.spec.volumes[?@.name=='metrics-ucr-forced']")
+        assert volume["configMap"]["name"] == "release-name-ldap-server-metrics-ucr"
+
+
+class TestPodMonitor(Base):
+    template_file = "templates/podmonitor.yaml"
+
+    @pytest.mark.parametrize(
+        "metrics",
+        [
+            {},
+            {"enabled": True},
+            {"podMonitor": {"enabled": True}},
+        ],
+    )
+    def test_needs_metrics_and_pod_monitor_enabled(self, helm, chart_path, metrics):
+        resources = helm.helm_template(chart_path, {"metrics": metrics})
+
+        assert helm.get_resources(resources, kind="PodMonitor") == []
+
+    def test_carries_the_configured_labels(self, helm, chart_path):
+        values = {"metrics": {"enabled": True, "podMonitor": {"enabled": True, "labels": {"release": "stub"}}}}
+        result = self.helm_template_file(helm, chart_path, values, self.template_file)
+
+        assert result.findone("metadata.labels")["release"] == "stub"
+
+    def test_scrapes_port_metrics_with_the_prometheus_defaults(self, helm, chart_path):
+        values = {"metrics": {"enabled": True, "podMonitor": {"enabled": True}}}
+        result = self.helm_template_file(helm, chart_path, values, self.template_file)
+
+        assert result.findone("spec.podMetricsEndpoints") == [{"port": "metrics", "path": "/metrics"}]
+
+    def test_sets_interval_and_scrape_timeout(self, helm, chart_path):
+        values = {
+            "metrics": {
+                "enabled": True,
+                "podMonitor": {"enabled": True, "interval": "30s", "scrapeTimeout": "10s"},
+            },
+        }
+        result = self.helm_template_file(helm, chart_path, values, self.template_file)
+
+        endpoint = result.findone("spec.podMetricsEndpoints[0]")
+        assert endpoint["interval"] == "30s"
+        assert endpoint["scrapeTimeout"] == "10s"
