@@ -1,7 +1,7 @@
 {
   "uid": "nubus-ldap-server",
   "title": "Nubus LDAP server",
-  "description": "ADR-033 Surface 3, this site: each slapd pod's own cn=Monitor via the exporter sidecar \u2014 exporter and process health, connections and operations, threads, traffic, and LMDB per database. Scoped data source \u2192 namespace \u2192 cluster \u2192 role \u2192 pod \u2192 suffix.",
+  "description": "Each Nubus ldap-server pod's own cn=Monitor, read by the slapd-exporter sidecar: exporter and process health, connections and operations, threads, traffic, and LMDB per database. Scoped data source \u2192 namespace \u2192 cluster \u2192 role \u2192 pod \u2192 suffix.",
   "tags": [
     "nubus",
     "openldap",
@@ -17,20 +17,7 @@
     "from": "now-3h",
     "to": "now"
   },
-  "links": [
-    {
-      "title": "slaptain \u2014 mesh state",
-      "type": "link",
-      "icon": "dashboard",
-      "url": "/d/slaptain-mesh/slaptain-mesh-state",
-      "includeVars": true,
-      "keepTime": true,
-      "targetBlank": false,
-      "asDropdown": false,
-      "tags": [],
-      "tooltip": "This site's mesh: CR state and the operator's replication judgments"
-    }
-  ],
+  "links": [],
   "templating": {
     "list": [
       {
@@ -187,7 +174,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "**slapd itself, per pod \u2014 Surface 3 of ADR-033.** slapd's own `cn=Monitor`, read on every scrape by the exporter sidecar and scraped through the operator chart's `slapdPodMonitor`. Empty unless the SlapdCluster has `spec.monitoring.enabled` **and** this site's operator chart has `slapdPodMonitor.enabled`. **This site only** \u2014 pick another site's data source to see it. Replication within this site \u2014 the operator's ReplicationConverged and the contextCSN spread behind it \u2014 is the row under the headline, for every cluster, with or without a meshRef; it needs kube-state-metrics and the operator's metrics, not the exporter. Cross-site links are on the *slaptain \u2014 mesh state* dashboard (link above).\n\n**A missing line is not a zero.** A reading slapd could not give is absent from the scrape; the panels draw it as a gap. The families are the exporter's curated, typed table (ADR-033 decision 4, `docs/MONITORING.md`): counters end in `_total` and are drawn as rates. Rates use `$__rate_interval` with a 30 s floor, matching the PodMonitor's default interval."
+        "content": "**The Nubus LDAP server, per pod.** The `slapd-exporter` sidecar reads each pod's `cn=Monitor` on every scrape. The panels stay empty unless the `ldap-server` chart has `metrics.enabled` and `metrics.podMonitor.enabled`. `cluster` is the Helm release, `role` is `primary` or `secondary`.\n\n**A missing line is not a zero.** When slapd cannot give a reading, the scrape leaves it out and the panel draws a gap. Counters end in `_total` and are drawn as rates, with `$__rate_interval` and a 30 s floor."
       },
       "gridPos": {
         "h": 3,
@@ -233,7 +220,7 @@
               }
             ]
           },
-          "noValue": "no exporter target in scope \u2014 spec.monitoring.enabled or slapdPodMonitor.enabled is off",
+          "noValue": "no exporter target in scope \u2014 metrics.enabled or metrics.podMonitor.enabled is off",
           "decimals": 0
         },
         "overrides": []
@@ -608,254 +595,6 @@
     },
     {
       "type": "row",
-      "title": "Replication within this site \u2014 per cluster \u00d7 database",
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 7
-      },
-      "panels": [],
-      "id": 32
-    },
-    {
-      "type": "state-timeline",
-      "title": "ReplicationConverged per cluster",
-      "description": "The operator's judgment of whether every read-write pod of the cluster carries the same contextCSN vector, per database, AND-ed over databases (ADR-008 amendment). It compares pods of this site with each other, so every replicated cluster has it, with or without a meshRef; cross-site links are on the mesh state dashboard. The reason is part of the row label: CSNsDiverged is lag, CSNQueriesIncomplete is missing evidence \u2014 two different alerts.\n\nFrom kube-state-metrics (Surface 1), so empty without it. The fleet, pod and database selectors do not apply.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 8
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 85,
-            "lineWidth": 0,
-            "spanNulls": false,
-            "insertNulls": false
-          },
-          "mappings": [
-            {
-              "type": "value",
-              "options": {
-                "0": {
-                  "text": "not met",
-                  "color": "red",
-                  "index": 0
-                },
-                "1": {
-                  "text": "met",
-                  "color": "green",
-                  "index": 1
-                }
-              }
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          },
-          "noValue": "no ReplicationConverged recorded for this cluster \u2014 kube-state-metrics is not scraping slaptain's CRs, or the cluster does not replicate"
-        },
-        "overrides": []
-      },
-      "options": {
-        "alignValue": "center",
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "mergeValues": true,
-        "rowHeight": 0.9,
-        "showValue": "never",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "slaptain_cluster_condition{namespace=\"$namespace\",cluster=~\"$cluster\",condition=\"ReplicationConverged\"}",
-          "legendFormat": "{{cluster}}  ({{reason}})",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "id": 33
-    },
-    {
-      "type": "timeseries",
-      "title": "contextCSN spread across pods",
-      "description": "Newest minus oldest contextCSN timestamp across the read-write pods that answered, per database. This is the MAGNITUDE behind ReplicationConverged, which is an exact set comparison and so reads the same for half a second of propagation and for a pod frozen since yesterday.\n\n**A gap in a line is not a zero.** The series is ABSENT below two readable pods, because a 0 there would read as perfect convergence for a measurement nobody took (ADR-033 decision 5). A measured 0 \u2014 two or more pods that agree \u2014 is drawn as a point on the zero line; an absent one leaves a hole, because spanNulls is off. If a line stops, read the CSN evidence panel beside it, not this one.\n\nThe operator's own metrics (Surface 2), so empty unless its chart has metrics.serviceMonitor.enabled. The fleet, pod and database selectors do not apply.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 14
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "always",
-            "pointSize": 6,
-            "spanNulls": false,
-            "insertNulls": false,
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 300
-              }
-            ]
-          },
-          "noValue": "no spread measured anywhere in scope \u2014 fewer than two pods answered for every database, which is an absence of evidence and not a clean reading"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "slaptain_csn_spread_seconds{namespace=\"$namespace\",cluster=~\"$cluster\"}",
-          "legendFormat": "{{cluster}}/{{database}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "id": 34
-    },
-    {
-      "type": "timeseries",
-      "title": "CSN evidence per database \u2014 pairs read of expected",
-      "description": "The two absolute counts behind the ratio, per database. They are two counts rather than one ratio because a ratio has to divide by a count that can be 0. `read` dropping below `expected` while `expected` holds steady is pods going unreadable; both dropping together is a database leaving the pass.\n\nA present 0 on `read` means every pair was attempted and every one failed \u2014 the attempt is the observation. An absent series means the pass never looked at that database at all.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 14
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "none",
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "always",
-            "pointSize": 6,
-            "spanNulls": false,
-            "insertNulls": false,
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          },
-          "noValue": "no CSN pass recorded in scope"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "slaptain_csn_pairs_read{namespace=\"$namespace\",cluster=~\"$cluster\"}",
-          "legendFormat": "read  {{cluster}}/{{database}}",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "slaptain_csn_pairs_expected{namespace=\"$namespace\",cluster=~\"$cluster\"}",
-          "legendFormat": "expected  {{cluster}}/{{database}}",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "id": 35
-    },
-    {
-      "type": "row",
       "title": "Exporter and process health",
       "collapsed": false,
       "panels": [],
@@ -863,7 +602,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 7
       },
       "id": 8
     },
@@ -914,7 +653,7 @@
               }
             ]
           },
-          "noValue": "no exporter target in scope \u2014 spec.monitoring.enabled or slapdPodMonitor.enabled is off"
+          "noValue": "no exporter target in scope \u2014 metrics.enabled or metrics.podMonitor.enabled is off"
         },
         "overrides": []
       },
@@ -950,7 +689,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 23
+        "y": 8
       },
       "id": 9
     },
@@ -966,7 +705,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 23
+        "y": 8
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1041,7 +780,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 31
+        "y": 16
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1112,7 +851,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 31
+        "y": 16
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1191,7 +930,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 24
       },
       "id": 13
     },
@@ -1207,7 +946,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 25
       },
       "fieldConfig": {
         "defaults": {
@@ -1286,7 +1025,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 40
+        "y": 25
       },
       "fieldConfig": {
         "defaults": {
@@ -1602,7 +1341,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 33
       },
       "id": 16
     },
@@ -1618,7 +1357,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 57
+        "y": 42
       },
       "fieldConfig": {
         "defaults": {
@@ -1689,7 +1428,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 57
+        "y": 42
       },
       "fieldConfig": {
         "defaults": {
@@ -1761,7 +1500,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 65
+        "y": 50
       },
       "id": 19
     },
@@ -1777,7 +1516,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 66
+        "y": 51
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1849,7 +1588,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 66
+        "y": 51
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1920,7 +1659,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 66
+        "y": 51
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1991,7 +1730,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 74
+        "y": 59
       },
       "interval": "30s",
       "fieldConfig": {
@@ -2062,7 +1801,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 74
+        "y": 59
       },
       "interval": "30s",
       "fieldConfig": {
@@ -2138,7 +1877,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 83
+            "y": 68
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2258,7 +1997,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 83
+            "y": 68
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2341,7 +2080,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 83
+            "y": 68
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2417,7 +2156,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 67
       },
       "id": 25
     },
@@ -2438,7 +2177,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 84
+            "y": 69
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2509,7 +2248,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 84
+            "y": 69
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2595,7 +2334,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 83
+        "y": 68
       },
       "id": 29
     }
