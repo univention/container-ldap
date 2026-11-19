@@ -127,9 +127,9 @@ class TestDashboardConfigMap(Base):
 
         assert helm.get_resources(resources, kind="ConfigMap", name="release-name-ldap-server-dashboard") == []
 
-    def test_holds_the_slapd_dashboard(self, helm, chart_path):
+    def test_holds_the_ldap_server_dashboard(self, helm, chart_path):
         values = {"metrics": {"enabled": True, "dashboard": {"enabled": True}}}
         result = self.helm_template_file(helm, chart_path, values, self.template_file)
 
-        dashboard = json.loads(result.findone("data")["slaptain-slapd.json"])
-        assert dashboard["uid"] == "slaptain-slapd"
+        dashboard = json.loads(result.findone("data")["nubus-ldap-server.json"])
+        assert dashboard["uid"] == "nubus-ldap-server"

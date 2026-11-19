@@ -28,7 +28,7 @@ spec:
       {{- with .Values.metrics.podMonitor.scrapeTimeout }}
       scrapeTimeout: {{ . | quote }}
       {{- end }}
-      # The labels slaptain's slapd dashboard selects on.
+      # The labels the LDAP dashboard selects on.
       relabelings:
         - targetLabel: "job"
           replacement: "slapd-exporter"

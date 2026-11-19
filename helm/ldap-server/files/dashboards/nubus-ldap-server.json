@@ -1,9 +1,9 @@
 {
-  "uid": "slaptain-slapd",
-  "title": "slaptain \u2014 slapd",
+  "uid": "nubus-ldap-server",
+  "title": "Nubus LDAP server",
   "description": "ADR-033 Surface 3, this site: each slapd pod's own cn=Monitor via the exporter sidecar \u2014 exporter and process health, connections and operations, threads, traffic, and LMDB per database. Scoped data source \u2192 namespace \u2192 cluster \u2192 role \u2192 pod \u2192 suffix.",
   "tags": [
-    "slaptain",
+    "nubus",
     "openldap",
     "slapd"
   ],

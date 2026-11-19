@@ -3,8 +3,8 @@ SPDX-FileCopyrightText: 2026 Univention GmbH
 SPDX-License-Identifier: AGPL-3.0-only
 */}}
 {{- /*
-files/dashboards/slaptain-slapd.json is an unchanged copy of monitoring/dashboards/slaptain-slapd.json
-from https://github.com/chuck-chuck-chuck-net/slaptain (commit e3826bc), licensed Apache-2.0.
+files/dashboards/nubus-ldap-server.json is derived from monitoring/dashboards/slaptain-slapd.json
+of https://github.com/chuck-chuck-chuck-net/slaptain (commit e3826bc), licensed Apache-2.0, and changed for Nubus.
 */}}
 {{- if and .Values.metrics.enabled .Values.metrics.dashboard.enabled }}
 ---
@@ -20,6 +20,6 @@ metadata:
     "context" . )
     | nindent 2 }}
 data:
-  slaptain-slapd.json: |-
-    {{- .Files.Get "files/dashboards/slaptain-slapd.json" | nindent 4 }}
+  nubus-ldap-server.json: |-
+    {{- .Files.Get "files/dashboards/nubus-ldap-server.json" | nindent 4 }}
 {{- end }}
