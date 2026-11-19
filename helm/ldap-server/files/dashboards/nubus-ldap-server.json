@@ -743,7 +743,7 @@
     },
     {
       "type": "row",
-      "title": "Exporter and process health",
+      "title": "Connections and operations",
       "collapsed": false,
       "panels": [],
       "gridPos": {
@@ -751,6 +751,674 @@
         "w": 24,
         "x": 0,
         "y": 12
+      },
+      "id": 19
+    },
+    {
+      "type": "timeseries",
+      "title": "Current connections per pod",
+      "description": "openldap_connections_current (cn=Current,cn=Connections): open client connections right now, including the syncrepl connections of the other pods and the exporter's own.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 13
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "insertNulls": false,
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "noValue": "no connection counters in scope",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "openldap_connections_current{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
+          "legendFormat": "{{cluster}}  {{pod}} ({{role}})",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "id": 20
+    },
+    {
+      "type": "timeseries",
+      "title": "New connections per second per pod",
+      "description": "Rate of openldap_connections_total (cn=Total,cn=Connections), the connections accepted. The steady floor comes from the exporter's scrapes and the kubelet's TCP probes on port 389. A storm of short-lived connections, from a client without connection reuse or a reconnect loop, shows here first.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 13
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cps",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "insertNulls": false,
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "noValue": "no connection counters in scope"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "rate(openldap_connections_total{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}[$__rate_interval])",
+          "legendFormat": "{{cluster}}  {{pod}} ({{role}})",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "id": 21
+    },
+    {
+      "type": "timeseries",
+      "title": "Operations completed per second per pod",
+      "description": "Every operation type per pod (openldap_operations_completed_total, from monitorOpCompleted). A replication storm \u2014 a stale-cookie refresh loop \u2014 reads as hundreds of binds and searches per second on the affected pods while every signal in the replication row above stays flat. Completed only; openldap_operations_initiated_total is exported alongside it. The thread panels below show the queue.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 13
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "insertNulls": false,
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "noValue": "no operation counters in scope"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (namespace, cluster, role, pod) (rate(openldap_operations_completed_total{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}[$__rate_interval]))",
+          "legendFormat": "{{cluster}}  {{pod}} ({{role}})",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "id": 22
+    },
+    {
+      "type": "timeseries",
+      "title": "Operations per second by type and role",
+      "description": "The operation mix, summed over the selected pods of each role: primary versus secondary. Searches and binds normally dominate. Comparing the roles shows where client reads land.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 21
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "insertNulls": false,
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "noValue": "no operation counters in scope"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (cluster, role, op) (rate(openldap_operations_completed_total{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}[$__rate_interval]))",
+          "legendFormat": "{{cluster}} {{role}}  {{op}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "id": 23
+    },
+    {
+      "type": "timeseries",
+      "title": "Write operations per second per pod",
+      "description": "Add, Modify, Delete and Modrdn per pod, as clients sent them (op=~\"add|modify|delete|modrdn\"). cn=Monitor counts client operations only: a change a pod applies through syncrepl counts nowhere. The growth of cn=translog is in 'Entries per database per pod'.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 21
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "insertNulls": false,
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "noValue": "no operation counters in scope"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "rate(openldap_operations_completed_total{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",op=~\"add|modify|delete|modrdn\"}[$__rate_interval])",
+          "legendFormat": "{{cluster}}  {{pod}}  {{op}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "id": 24
+    },
+    {
+      "type": "row",
+      "title": "Threads and waiters",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "id": 25
+    },
+    {
+      "type": "timeseries",
+      "title": "Worker threads per pod",
+      "description": "openldap_threads_active (cn=Active) \u2014 threads executing an operation; openldap_threads_open (cn=Open) \u2014 threads that exist in the pool; the dashed line is openldap_threads_max (cn=Max, olcThreads), the pool's ceiling. Active pinned at Max with operations queuing (next panel) is saturation; Active far below Max with a queue is not.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 30
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "insertNulls": false,
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "noValue": "no thread readings in scope",
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max (olcThreads)"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "openldap_threads_active{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
+          "legendFormat": "active  {{cluster}}  {{pod}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "openldap_threads_open{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
+          "legendFormat": "open  {{cluster}}  {{pod}}",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max(openldap_threads_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"})",
+          "legendFormat": "max (olcThreads)",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "id": 26
+    },
+    {
+      "type": "timeseries",
+      "title": "Queued operations per pod",
+      "description": "openldap_threads_pending (cn=Pending) \u2014 operations waiting for a worker thread; openldap_threads_backload (cn=Backload) \u2014 pending plus active, slapd's own load figure. Not alerted on: live it read above zero with only 2\u20139 of 16 threads active, so a non-zero queue is depth, not saturation. Sustained growth together with Active at Max is the signal.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 30
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "insertNulls": false,
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "noValue": "no thread readings in scope",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "openldap_threads_pending{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
+          "legendFormat": "pending  {{cluster}}  {{pod}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "openldap_threads_backload{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
+          "legendFormat": "backload  {{cluster}}  {{pod}}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "id": 27
+    },
+    {
+      "type": "timeseries",
+      "title": "Waiters per pod",
+      "description": "openldap_waiters{direction=\"read\"} (cn=Read,cn=Waiters) \u2014 connections idle, waiting for the client to send; roughly the open connections. cn=Write,cn=Waiters \u2014 connections whose results slapd cannot write because the client is not reading. Write waiters that persist mean slow or stuck clients holding threads.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 30
+      },
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "insertNulls": false,
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "noValue": "no waiter counters in scope",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "openldap_waiters{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",direction=\"read\"}",
+          "legendFormat": "read  {{cluster}}  {{pod}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "openldap_waiters{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",direction=\"write\"}",
+          "legendFormat": "write  {{cluster}}  {{pod}}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "id": 28
+    },
+    {
+      "type": "row",
+      "title": "Exporter and process health",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 38
       },
       "id": 8
     },
@@ -837,7 +1505,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 13
+        "y": 39
       },
       "id": 9
     },
@@ -853,7 +1521,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 13
+        "y": 39
       },
       "interval": "30s",
       "fieldConfig": {
@@ -928,7 +1596,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 47
       },
       "interval": "30s",
       "fieldConfig": {
@@ -999,7 +1667,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 47
       },
       "interval": "30s",
       "fieldConfig": {
@@ -1078,7 +1746,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 55
       },
       "id": 13
     },
@@ -1094,7 +1762,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 30
+        "y": 56
       },
       "fieldConfig": {
         "defaults": {
@@ -1173,7 +1841,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 30
+        "y": 56
       },
       "fieldConfig": {
         "defaults": {
@@ -1489,7 +2157,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 64
       },
       "id": 16
     },
@@ -1505,7 +2173,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 47
+        "y": 73
       },
       "fieldConfig": {
         "defaults": {
@@ -1576,7 +2244,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 47
+        "y": 73
       },
       "fieldConfig": {
         "defaults": {
@@ -1641,675 +2309,6 @@
     },
     {
       "type": "row",
-      "title": "Connections and operations",
-      "collapsed": false,
-      "panels": [],
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 55
-      },
-      "id": 19
-    },
-    {
-      "type": "timeseries",
-      "title": "Current connections per pod",
-      "description": "openldap_connections_current (cn=Current,cn=Connections): open client connections right now, including the syncrepl connections of the other pods and the exporter's own.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 56
-      },
-      "interval": "30s",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "auto",
-            "pointSize": 5,
-            "spanNulls": false,
-            "insertNulls": false,
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "min": 0,
-          "noValue": "no connection counters in scope",
-          "decimals": 0
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "openldap_connections_current{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
-          "legendFormat": "{{cluster}}  {{pod}} ({{role}})",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "id": 20
-    },
-    {
-      "type": "timeseries",
-      "title": "New connections per second per pod",
-      "description": "Rate of openldap_connections_total (cn=Total,cn=Connections), the connections accepted. The steady floor comes from the exporter's scrapes and the kubelet's TCP probes on port 389. A storm of short-lived connections, from a client without connection reuse or a reconnect loop, shows here first.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 56
-      },
-      "interval": "30s",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "cps",
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "auto",
-            "pointSize": 5,
-            "spanNulls": false,
-            "insertNulls": false,
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "min": 0,
-          "noValue": "no connection counters in scope"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "rate(openldap_connections_total{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}[$__rate_interval])",
-          "legendFormat": "{{cluster}}  {{pod}} ({{role}})",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "id": 21
-    },
-    {
-      "type": "timeseries",
-      "title": "Operations completed per second per pod",
-      "description": "Every operation type per pod (openldap_operations_completed_total, from monitorOpCompleted). A replication storm \u2014 a stale-cookie refresh loop \u2014 reads as hundreds of binds and searches per second on the affected pods while every signal in the replication row above stays flat. Completed only; openldap_operations_initiated_total is exported alongside it. The thread panels below show the queue.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 56
-      },
-      "interval": "30s",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ops",
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "auto",
-            "pointSize": 5,
-            "spanNulls": false,
-            "insertNulls": false,
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "min": 0,
-          "noValue": "no operation counters in scope"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "sum by (namespace, cluster, role, pod) (rate(openldap_operations_completed_total{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}[$__rate_interval]))",
-          "legendFormat": "{{cluster}}  {{pod}} ({{role}})",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "id": 22
-    },
-    {
-      "type": "timeseries",
-      "title": "Operations per second by type and role",
-      "description": "The operation mix, summed over the selected pods of each role: primary versus secondary. Searches and binds normally dominate. Comparing the roles shows where client reads land.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 64
-      },
-      "interval": "30s",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ops",
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "auto",
-            "pointSize": 5,
-            "spanNulls": false,
-            "insertNulls": false,
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "min": 0,
-          "noValue": "no operation counters in scope"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "sum by (cluster, role, op) (rate(openldap_operations_completed_total{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}[$__rate_interval]))",
-          "legendFormat": "{{cluster}} {{role}}  {{op}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "id": 23
-    },
-    {
-      "type": "timeseries",
-      "title": "Write operations per second per pod",
-      "description": "Add, Modify, Delete and Modrdn per pod, as clients sent them (op=~\"add|modify|delete|modrdn\"). cn=Monitor counts client operations only: a change a pod applies through syncrepl counts nowhere. The growth of cn=translog is in 'Entries per database per pod'.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 64
-      },
-      "interval": "30s",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ops",
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "auto",
-            "pointSize": 5,
-            "spanNulls": false,
-            "insertNulls": false,
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "min": 0,
-          "noValue": "no operation counters in scope"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "rate(openldap_operations_completed_total{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",op=~\"add|modify|delete|modrdn\"}[$__rate_interval])",
-          "legendFormat": "{{cluster}}  {{pod}}  {{op}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "id": 24
-    },
-    {
-      "type": "row",
-      "title": "Threads and waiters",
-      "collapsed": true,
-      "panels": [
-        {
-          "type": "timeseries",
-          "title": "Worker threads per pod",
-          "description": "openldap_threads_active (cn=Active) \u2014 threads executing an operation; openldap_threads_open (cn=Open) \u2014 threads that exist in the pool; the dashed line is openldap_threads_max (cn=Max, olcThreads), the pool's ceiling. Active pinned at Max with operations queuing (next panel) is saturation; Active far below Max with a queue is not.",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 0,
-            "y": 73
-          },
-          "interval": "30s",
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 8,
-                "showPoints": "auto",
-                "pointSize": 5,
-                "spanNulls": false,
-                "insertNulls": false,
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "min": 0,
-              "noValue": "no thread readings in scope",
-              "decimals": 0
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "max (olcThreads)"
-                },
-                "properties": [
-                  {
-                    "id": "custom.lineStyle",
-                    "value": {
-                      "fill": "dash",
-                      "dash": [
-                        10,
-                        10
-                      ]
-                    }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "fixed",
-                      "fixedColor": "red"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "openldap_threads_active{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
-              "legendFormat": "active  {{cluster}}  {{pod}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "openldap_threads_open{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
-              "legendFormat": "open  {{cluster}}  {{pod}}",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "max(openldap_threads_max{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"})",
-              "legendFormat": "max (olcThreads)",
-              "range": true,
-              "refId": "C"
-            }
-          ],
-          "id": 26
-        },
-        {
-          "type": "timeseries",
-          "title": "Queued operations per pod",
-          "description": "openldap_threads_pending (cn=Pending) \u2014 operations waiting for a worker thread; openldap_threads_backload (cn=Backload) \u2014 pending plus active, slapd's own load figure. Not alerted on: live it read above zero with only 2\u20139 of 16 threads active, so a non-zero queue is depth, not saturation. Sustained growth together with Active at Max is the signal.",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 8,
-            "y": 73
-          },
-          "interval": "30s",
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 8,
-                "showPoints": "auto",
-                "pointSize": 5,
-                "spanNulls": false,
-                "insertNulls": false,
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "min": 0,
-              "noValue": "no thread readings in scope",
-              "decimals": 0
-            },
-            "overrides": []
-          },
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "openldap_threads_pending{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
-              "legendFormat": "pending  {{cluster}}  {{pod}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "openldap_threads_backload{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\"}",
-              "legendFormat": "backload  {{cluster}}  {{pod}}",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "id": 27
-        },
-        {
-          "type": "timeseries",
-          "title": "Waiters per pod",
-          "description": "openldap_waiters{direction=\"read\"} (cn=Read,cn=Waiters) \u2014 connections idle, waiting for the client to send; roughly the open connections. cn=Write,cn=Waiters \u2014 connections whose results slapd cannot write because the client is not reading. Write waiters that persist mean slow or stuck clients holding threads.",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 16,
-            "y": 73
-          },
-          "interval": "30s",
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 8,
-                "showPoints": "auto",
-                "pointSize": 5,
-                "spanNulls": false,
-                "insertNulls": false,
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "min": 0,
-              "noValue": "no waiter counters in scope",
-              "decimals": 0
-            },
-            "overrides": []
-          },
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "openldap_waiters{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",direction=\"read\"}",
-              "legendFormat": "read  {{cluster}}  {{pod}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "openldap_waiters{namespace=\"$namespace\",cluster=~\"$cluster\",role=~\"$role\",pod=~\"$pod\",direction=\"write\"}",
-              "legendFormat": "write  {{cluster}}  {{pod}}",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "id": 28
-        }
-      ],
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 72
-      },
-      "id": 25
-    },
-    {
-      "type": "row",
       "title": "Traffic sent",
       "collapsed": true,
       "panels": [
@@ -2325,7 +2324,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 74
+            "y": 82
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2396,7 +2395,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 74
+            "y": 82
           },
           "interval": "30s",
           "fieldConfig": {
@@ -2482,7 +2481,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 73
+        "y": 81
       },
       "id": 29
     }
