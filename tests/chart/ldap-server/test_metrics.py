@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2026 Univention GmbH
 
 import json
+import re
 
 import pytest
 
@@ -133,3 +134,62 @@ class TestDashboardConfigMap(Base):
 
         dashboard = json.loads(result.findone("data")["nubus-ldap-server.json"])
         assert dashboard["uid"] == "nubus-ldap-server"
+
+
+def dashboard_queries(node):
+    """Yield every PromQL expression and variable query in a Grafana dashboard."""
+    if isinstance(node, list):
+        for item in node:
+            yield from dashboard_queries(item)
+    elif isinstance(node, dict):
+        for key, value in node.items():
+            if key in ("expr", "query", "definition") and isinstance(value, str):
+                yield value
+            else:
+                yield from dashboard_queries(value)
+
+
+def selected_labels(query):
+    """Return the label names a query filters, groups or lists by."""
+    labels = set(re.findall(r"(\w+)\s*(?:=~|!~|!=|=)\s*\"", query))
+    for grouping in re.findall(r"\b(?:by|without)\s*\(([^)]*)\)", query):
+        labels.update(label.strip() for label in grouping.split(",") if label.strip())
+    labels.update(re.findall(r"label_values\(.*,\s*(\w+)\)", query))
+    return labels
+
+
+# Labels the dashboard reads that the PodMonitor's relabelings do not set:
+# Prometheus adds namespace and pod to every pod target, the exporter labels its series with suffix, op,
+# direction and result, and kube-state-metrics labels its Lease series with lease and lease_holder.
+LABELS_NOT_FROM_RELABELINGS = {"namespace", "pod", "suffix", "op", "direction", "result", "lease", "lease_holder"}
+
+
+class TestDashboardMatchesPodMonitor(Base):
+    values = {"metrics": {"enabled": True, "podMonitor": {"enabled": True}, "dashboard": {"enabled": True}}}
+
+    @pytest.fixture
+    def queries(self, helm, chart_path):
+        configmap = self.helm_template_file(helm, chart_path, self.values, "templates/configmap-metrics-dashboard.yaml")
+        return list(dashboard_queries(json.loads(configmap.findone("data")["nubus-ldap-server.json"])))
+
+    @pytest.fixture
+    def relabelings(self, helm, chart_path):
+        pod_monitor = self.helm_template_file(helm, chart_path, self.values, "templates/podmonitor.yaml")
+        return pod_monitor.findone("spec.podMetricsEndpoints[0].relabelings")
+
+    def test_selects_the_job_the_pod_monitor_sets(self, queries, relabelings):
+        job = next(relabeling["replacement"] for relabeling in relabelings if relabeling["targetLabel"] == "job")
+
+        assert {name for query in queries for name in re.findall(r'job="([^"]*)"', query)} == {job}
+
+    def test_selects_only_labels_the_pod_monitor_sets(self, queries, relabelings):
+        set_by_relabelings = {relabeling["targetLabel"] for relabeling in relabelings}
+        selected = set().union(*(selected_labels(query) for query in queries))
+
+        assert selected - LABELS_NOT_FROM_RELABELINGS <= set_by_relabelings
+
+    def test_reads_the_lease_of_the_leader_elector(self, helm, chart_path, queries):
+        statefulset = self.helm_template_file(helm, chart_path, self.values, "templates/statefulset-primary.yaml")
+        lease_name = statefulset.findone("spec.template.spec.containers[*].env[?@.name=='LEASE_NAME']")["value"]
+
+        assert {name for query in queries for name in re.findall(r'lease="([^"]*)"', query)} == {lease_name}
