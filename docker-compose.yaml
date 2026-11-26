@@ -69,7 +69,7 @@ services:
       - ldap-listener:/var/lib/univention-ldap/listener/:rw
 
   nats:
-    image: "nats:latest@sha256:b6c40dcfe5ae9174dcafa9c43f800afb93b8b0ffcde02ac00efc6b66031d9a50"
+    image: "nats:latest@sha256:4b83414183aa5fb87cd164962c47eaffd214e84668dc4fa4f1d4c44a3e765ee8"
     environment:
       jetstream: "enabled"
     ports:
@@ -115,7 +115,7 @@ services:
       - "./pyproject.toml:/app/pyproject.toml"
 
   test-chart-ldap-server:
-    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.29.24@sha256:1f34d54d23452475db4e92a43b669b8cb1817c4837b0003b2d897d47ed2f9d35"
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.30.1@sha256:c11f2d5210be69da131df071a442bfef55ff5892734b33718523579a74193602"
     pull_policy: "if_not_present"
     command: "pytest tests/helm/chart"
     profiles:
@@ -125,7 +125,7 @@ services:
       - "./tests/chart/ldap-server/:/app/tests/helm/chart"
 
   test-chart-ldap-notifier:
-    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.29.24@sha256:1f34d54d23452475db4e92a43b669b8cb1817c4837b0003b2d897d47ed2f9d35"
+    image: "gitregistry.knut.univention.de/univention/dev/nubus-for-k8s/common-helm/testrunner:0.30.1@sha256:c11f2d5210be69da131df071a442bfef55ff5892734b33718523579a74193602"
     pull_policy: "if_not_present"
     command: "pytest tests/helm/chart"
     profiles:
